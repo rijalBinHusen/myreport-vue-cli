@@ -8,8 +8,10 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "localbase": "^0.7.5",
     "vue": "^3.2.13",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "w3-css": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",

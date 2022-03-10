@@ -1,0 +1,51 @@
+<template>
+  <button v-if="type === 'button'" :class="className" @click="trigger">
+    <slot></slot>
+    {{ value }}
+  </button>
+
+  <a v-if="type === 'link'" :href="href" :class="className" @click="trigger">
+    <slot></slot>
+    {{ value }}
+  </a>
+</template>
+
+<script>
+export default {
+  name: "Button",
+  props: {
+    datanya: String,
+    danger: Boolean,
+    primary: Boolean,
+    secondary: Boolean,
+    value: String,
+    type: {
+      type: String,
+      required: true,
+    },
+    class: String,
+    href: String,
+    icon: String,
+    small: Boolean,
+  },
+  emits: ["trig"],
+  methods: {
+    trigger() {
+      this.$emit("trig", this.datanya);
+    },
+  },
+  computed: {
+    className() {
+      let classList = [];
+      if (this.type == "button") classList.push("w3-button w3-border w3-margin-right");
+      if (this.small) classList.push("w3-small");
+      if (this.primary) classList.push("w3-teal");
+      if (this.secondary) classList.push("w3-aqua");
+      if (this.danger) classList.push("w3-pink");
+      if (this.class) classList.push(this.class.split(" "));
+
+      return classList.join(" ");
+    },
+  },
+};
+</script>
