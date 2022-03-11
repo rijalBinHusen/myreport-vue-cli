@@ -5,9 +5,12 @@ import Modal from "./modules/Modal";
 import Collect from "./modules/Collect";
 import Name from "./modules/Name.js";
 import Uncollected from "./modules/Uncollected";
+import Expor from "./modules/Expor";
 
 export default createStore({
-  state: {},
+  state: {
+    store: ["Name", "Uncollected", "Collect"],
+  },
   mutations: {},
   actions: {
     append({ commit }, value) {
@@ -65,11 +68,9 @@ export default createStore({
       commit(`${value.store}/update`, value.obj, { root: true });
     },
 
-    getStart({ commit }) {
-      // list of store
-      let store = ["Name", "Uncollected", "Collect"];
+    getStart({ commit, state }) {
       // iterate the store
-      store.forEach((val) => {
+      state.store.forEach((val) => {
         // call the get data functions
         Localbase.getData({
           store: val.toLowerCase(),
@@ -80,12 +81,15 @@ export default createStore({
         );
       });
     },
+    getAllData({ commit }, value) {
+      return Localbase.getData({ store: value.toLowerCase(), withKey: true });
+    },
   },
   getters: {
-	  dateFormat: (state) => (value) => {
-		  // value = { format: dateMonth, time: new Date().getTime() }
-		  return Localbase.dateFormat([value.format, value.time])
-	  }
+    dateFormat: (state) => (value) => {
+      // value = { format: dateMonth, time: new Date().getTime() }
+      return Localbase.dateFormat([value.format, value.time]);
+    },
   },
   modules: {
     Navbar,
@@ -93,5 +97,6 @@ export default createStore({
     Collect,
     Name,
     Uncollected,
+    Expor,
   },
 });

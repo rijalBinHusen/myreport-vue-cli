@@ -11,6 +11,9 @@
 </template>
 
 <script>
+/**
+<Button primary value="Periode" type="button" @trig="addPeriod" />
+ */
 export default {
   name: "Button",
   props: {

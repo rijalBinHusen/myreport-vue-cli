@@ -17,7 +17,7 @@ export default {
     db.collection(store).set(val);
   },
   getData: function (deData) {
-    //deData = {'store': nameOfStoreData, 'orderBy': keyData, 'desc': Boolean, 'limit': number}
+    //deData = {'store': nameOfStoreData, 'orderBy': keyData, 'desc': Boolean, 'limit': number, withKey: true}
     //limit order desc
     if (deData.limit && deData.orderBy && deData.desc) {
       return db
@@ -46,7 +46,12 @@ export default {
     if (deData.orderBy) {
       return db.collection(deData.store).orderBy(deData.orderBy).get();
     }
-    //   all data
+
+    // if get all data withKey
+    if (deData.withKey) {
+      return db.collection(deData.store).get({ keys: true });
+    }
+    //   all data without key
     return db.collection(deData.store).get();
   },
   findData: function (store, keyword) {
@@ -106,7 +111,7 @@ export default {
     return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   },
   dateFormat: function (a) {
-	  // a = ["full", new Date()]
+    // a = ["full", new Date()]
     const a001 = a[1] ? new Date(a[1]) : new Date();
     const a002 = a001.getDate();
     const a003 = a001.getMonth();
@@ -145,7 +150,7 @@ export default {
       return a001.getTime() - 25200000;
     } // hari yang tersebut pada jam 00:00
     else if (a[0] == "dateMonth") {
-      return a002 + "-" + a007[a003]
+      return a002 + "-" + a007[a003];
     } //dapatkan tanggal bulan dd-mmm
   },
 };
