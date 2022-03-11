@@ -12,12 +12,14 @@ export default {
         Button
     },
     methods: {
-        async expor() {
+        expor() {
       // tutup Loader
     //   this.$store.dispatch("Modal/loading", "close");
       //append time to export record
     //   this.$store.dispatch("ExIm/exportAppend");
-    this.$store.dispatch("Expor/expor")
+    this.$store.dispatch("Expor/expor").then(() => {
+        this.download(this.$store.state.Expor.lists)
+    })
     // .then((val) => {
         // console.log(val)
         // var a = document.createElement("a");
@@ -35,6 +37,19 @@ export default {
     // })
       //destroy data collect
     //   this.$store.dispatch("ExIm/destroyDataCollect");
+        },
+        download(val) {
+            var a = document.createElement("a");
+        var file = new Blob(
+          [JSON.stringify(val)],
+          {
+            type: "text/plain",
+          }
+        );
+        a.href = URL.createObjectURL(file);
+        a.download =
+          "All data absensi.js";
+        a.click();
         }
     }
 }
