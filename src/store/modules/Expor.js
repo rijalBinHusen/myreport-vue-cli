@@ -7,22 +7,26 @@ const Expor = {
     append(state, value) {
       state.lists[value.store] = value.obj;
     },
+    replace(state, value) {
+      state.lists = value;
+    },
   },
   actions: {
     //   expor all data
     expor({ commit, rootState, dispatch }) {
+      commit("replace", {});
       // get all store from state
       let store = JSON.parse(JSON.stringify(rootState.store));
       // iterate, push to variable and waiting
       for (let i = 0; i < store.length; i++) {
-        dispatch("getAllData", store[i], { root: true }).then((val) =>
-          commit("append", { store: store[i], obj: val })
-        );
+        dispatch("getAllData", store[i], { root: true }).then((val) => {
+          commit("append", { store: store[i], obj: val });
+          if (i === store.length - 1) {
+            // change status to true
+            commit("append", { store: "status", obj: true });
+          }
+        });
       }
-      // return the variable
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(), 1500);
-      });
     },
     // async exportDataCollect(state) {
     //     // set download indicator to false
