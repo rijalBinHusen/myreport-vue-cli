@@ -143,8 +143,8 @@ export default {
 			})
 			let pesan = `Mohon maaf mengganggu bapak ${ev.name}, Mohon laporan ${ev.warehouse} tanggal : [ ${tanggalnya.join(", ")} ] untuk segera dikumpulkan, karena jika lebih dari 3 hari report bapak akan diberi tanda terlambat mengumpulkan, Terimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-			console.log(link)
-			// window.open(link)
+			// console.log(link)
+			window.open(link)
 			// console.log(tanggalnya.join(", "))
 		},
         edit(ev) {
