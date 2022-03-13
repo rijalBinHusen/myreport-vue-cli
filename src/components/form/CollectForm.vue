@@ -51,7 +51,8 @@ export default {
                             id: this.$store.state.Uncollected.lists.length > 0 
                             ? this.$store.state.Uncollected.lists[0]["id"]
                             : "unc22030000",
-                            obj: {name: allName[i].id, periode: this.collect.periode}
+                            obj: {name: allName[i].id, periode: this.collect.periode},
+                            waktu: true,
                         })
                     }
                 } else {
@@ -60,7 +61,8 @@ export default {
                             id: this.$store.state.Uncollected.lists.length > 0 
                             ? this.$store.state.Uncollected.lists[0]["id"]
                             : "unc22030000",
-                            obj: Object.assign({}, this.collect)
+                            obj: Object.assign({}, this.collect),
+                            waktu: true,
                         })
                 }
                 

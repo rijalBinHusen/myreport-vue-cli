@@ -14,13 +14,12 @@ const Uncollected = {
       state.lists.unshift(value);
     },
     delete(state, value) {
-      console.log(value);
       state.lists = state.lists.filter((val) => val.id !== value);
     },
   },
   actions: {},
   getters: {
-    uncollected(state) {
+    uncollected(state, getters, rootState, rootGetters) {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
       let result = {};
       state.lists.forEach((val) => {

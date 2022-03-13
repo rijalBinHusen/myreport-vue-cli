@@ -179,6 +179,7 @@ export default {
 			collect.forEach((val) => {
 				val.nameSPV = this.$store.getters["Name/nameId"](val.name)["name"]
 				val.warehouse = this.$store.getters["Name/nameId"](val.name)["warehouse"]
+                val.periode = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
                 val.date = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
 				result.push(val)
 			})
