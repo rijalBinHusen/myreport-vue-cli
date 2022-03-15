@@ -152,5 +152,8 @@ export default {
     else if (a[0] == "dateMonth") {
       return a002 + "-" + a007[a003];
     } //dapatkan tanggal bulan dd-mmm
+    else if (a[0] === "yearMonth") {
+      return a004 + (a003 + 1 > 9 ? a003 : "0" + (a003 + 1));
+    } //dapatkan tahun bulan, yyyym
   },
 };

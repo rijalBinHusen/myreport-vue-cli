@@ -118,7 +118,8 @@ export default {
             // append to collected
             this.$store.dispatch("append", {
                 store: "Collect",
-                obj: ev
+                obj: ev,
+                split: ev.collected
             })
             // delete from uncollected
             this.$store.dispatch("delete", { store: "Uncollected", doc: { id: ev.id }})
@@ -156,7 +157,7 @@ export default {
             rec.collected = window.prompt()
             delete rec.date
             if(rec.collected) {
-                this.$store.dispatch("update", {store: "Collect", obj: rec})
+                this.$store.dispatch("update", {store: "Collect", obj: rec, split: true})
             }
         }
     },
