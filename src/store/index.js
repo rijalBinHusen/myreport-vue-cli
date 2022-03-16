@@ -77,8 +77,8 @@ export default createStore({
     update({ commit }, value) {
       // value = {store: 'nameOfStore', obj: {id: idOfDocument, obj: {asd: 'to append to indexeddb'}, split: "202203" }
       // the first letter of value.store must be capital e.g 'Group'
-      console.log(value.split);
-      console.log(value.obj.id.length);
+      // console.log(value.split);
+      // console.log(value.obj.id.length);
       let dbstore;
       // jika split maka store akan ditambah dengan 20223
       if (value.obj.id.length === 11 && value.split) {
