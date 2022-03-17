@@ -1,6 +1,6 @@
 <template>
 <div class="w3-container">
-    <h1>Ini adalah name</h1>
+    <h1>Daftar Nama</h1>
     <Button primary class="w3-right" value="Tambah" type="button" datanya="Tambah" @trig="tambahNama" />
     <Table v-if="listsName.length > 0"
             :headers="['Nama', 'Gudang']" 

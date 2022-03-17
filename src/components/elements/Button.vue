@@ -17,7 +17,7 @@
 export default {
   name: "Button",
   props: {
-    datanya: String,
+    datanya: String ,
     danger: Boolean,
     primary: Boolean,
     secondary: Boolean,
