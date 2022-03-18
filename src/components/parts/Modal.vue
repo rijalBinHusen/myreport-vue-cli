@@ -27,7 +27,7 @@
 <script>
 
 import newName from "../form/newName.vue"
-import CollectForm from "../form/CollectForm.vue"
+import UncollectedForm from "../form/UncollecedtForm.vue"
 
 export default {
   name: "Modal",
@@ -53,7 +53,7 @@ export default {
   },
   components: {
     newName,
-    CollectForm,
+    UncollectedForm,
   },
 };
 </script>

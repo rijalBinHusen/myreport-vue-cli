@@ -50,7 +50,7 @@ export default {
     methods: {
 		addPeriod() {
             // bring up the form and the modal
-            this.$store.commit("Modal/active", {judul: "Masukkan periode", form: "CollectForm"});
+            this.$store.commit("Modal/active", {judul: "Masukkan periode", form: "UncollectedForm"});
 		},
         collect(ev) {
             console.log(ev)
@@ -75,7 +75,6 @@ export default {
             name.forEach((val) => {
                 result.push(Object.assign(val, {uncollected: uncollected[val.id] }))
             })
-
             return result
             // return this.$store.state.Name.lists
         },

@@ -9,7 +9,7 @@ import Expor from "./modules/Expor";
 
 export default createStore({
   state: {
-    store: ["Name"],
+    store: ["Name", "Uncollected"],
   },
   mutations: {},
   actions: {
@@ -112,7 +112,6 @@ export default createStore({
           .then((result) =>
             commit(`${val}/${val.toLowerCase()}`, result, { root: true })
           );
-        console.log();
       });
     },
     getAllData({ commit }, value) {
@@ -120,9 +119,9 @@ export default createStore({
     },
   },
   getters: {
-    dateFormat: (state) => (value) => {
+    dateFormat: () => (value) => {
       // value = { format: dateMonth, time: new Date().getTime() }
-      return Localbase.dateFormat([value.format, value.time]);
+      return myfunction.dateFormat([value.format, value.time]);
     },
   },
   modules: {

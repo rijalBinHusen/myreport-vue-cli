@@ -7,8 +7,13 @@
     text="name"
     @selected="collect.name = $event"
     />
-
-    <Input label="Periode" type="date" placeholder="jumlah" @inp="collect.periode = $event" />
+    <label class="w3-margin-top w3-margin-bottom">Periode</label>
+    <Datepicker 
+        class="w3-input" 
+        v-model="collect.periode" 
+        :lowerLimit="this.$store.getters['Uncollected/lastDate']"
+        inputFormat="yyyy-MM-dd"
+    />
 
     <Button
     primary 
@@ -24,21 +29,22 @@
 
 <script>
 import Select from "../elements/Select.vue"
-import Input from "../elements/Input.vue"
 import Button from "../elements/Button.vue"
+import Datepicker from "vue3-datepicker"
 
 export default {
-    name: "CollectForm",
+    name: "UncollectedForm",
     data() {
         return {
             collect: {
                 name: "",
-                periode: "",
+                periode: new Date(),
             }
         }
     },
     methods: {
         async send(){
+            console.log(this.collect)
             if(this.collect.name) {
                 if(this.collect.name === "semua") {
                     // ambil semua nama
@@ -71,9 +77,9 @@ export default {
         }
     },
     components: {
-        Input,
         Select,
-        Button
+        Button,
+        Datepicker,
     },
     computed: {
         names() {

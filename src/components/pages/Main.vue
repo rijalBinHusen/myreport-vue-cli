@@ -9,7 +9,7 @@
 <script>
 	import Navbar from "../parts/Navbar.vue";
 	import Name from "./Name.vue"
-	import Uncollect from "./Uncollect.vue"
+	import Uncollected from "./Uncollected.vue"
 	import Impor from "./Impor.vue"
 	import Collect from "./Collect.vue"
 	import Report from "./Report.vue"
@@ -20,7 +20,7 @@
 		components: { 
 			Navbar,
 			Name,
-			Uncollect,
+			Uncollected,
 			Impor,
 			Collect,
 			Report,
