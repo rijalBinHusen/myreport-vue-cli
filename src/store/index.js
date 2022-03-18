@@ -28,9 +28,7 @@ export default createStore({
 
       // create id to the record
       if (value.id) {
-        if (objToSend.split) {
-          objToSend.obj.id = myfunction.generateId(value.id, true);
-        } else objToSend.obj.id = myfunction.generateId(value.id);
+        objToSend.obj.id = myfunction.generateId(value.id, true);
       }
       // commit to module e.g 'Group/append
       commit(`${value.store}/append`, value.obj, { root: true });

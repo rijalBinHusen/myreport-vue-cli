@@ -38,7 +38,7 @@ export default {
                 store: "Name",
                 id: this.$store.state.Name.lists.length > 0 
                     ? this.$store.state.Name.lists[0]["id"]
-                    : "nme0000",
+                    : "nme22030000",
                 obj: JSON.parse(JSON.stringify(this.name))
             }
             // if edit mode
