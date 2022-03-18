@@ -20,6 +20,7 @@ const Uncollected = {
   },
   actions: {},
   getters: {
+    // all uncollected record
     uncollected(state, getters, rootState, rootGetters) {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
       let result = {};
@@ -34,9 +35,11 @@ const Uncollected = {
       });
       return result;
     },
+    // mengembalikan info store
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
+    // mengembalikan tanggal terakhir yang sudah diinput
     lastDate(state) {
       let temp =
         state.lists.length > 0
@@ -44,6 +47,11 @@ const Uncollected = {
           : new Date("2022-01-01");
       temp.setDate(temp.getDate() + 1);
       return temp;
+    },
+    //mengembalikan record sesuai id
+    getId: (state) => (id) => {
+      let lists = JSON.parse(JSON.stringify(state.lists));
+      return lists.find((val) => val.id === id);
     },
   },
 };

@@ -27,7 +27,7 @@
 <script>
 
 import newName from "../form/newName.vue"
-import UncollectedForm from "../form/UncollecedtForm.vue"
+import UncollectedForm from "../form/UncollectedForm.vue"
 
 export default {
   name: "Modal",

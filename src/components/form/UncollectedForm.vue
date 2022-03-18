@@ -56,7 +56,9 @@ export default {
                             id: this.$store.state.Uncollected.lists.length > 0 
                             ? this.$store.state.Uncollected.lists[0]["id"]
                             : "unc0000",
-                            obj: {name: allName[i].id, periode: this.collect.periode},
+                            obj: {name: allName[i].id, periode: 
+                            this.$store.getters["dateFormat"]({format: "time", time: this.collect.periode})
+                            },
                         })
                     }
                 } else {

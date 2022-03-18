@@ -2,6 +2,7 @@ const Collect = {
   namespaced: true,
   state: {
     lists: [],
+    store: { store: "Collected", split: "bulan" },
   },
   mutations: {
     // new data from localbase
@@ -24,7 +25,12 @@ const Collect = {
     },
   },
   actions: {},
-  getters: {},
+  getters: {
+    // mengembalikan info store
+    store(state) {
+      return JSON.parse(JSON.stringify(state.store));
+    },
+  },
 };
 
 export default Collect;

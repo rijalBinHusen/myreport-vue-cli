@@ -2,7 +2,7 @@ import { createStore } from "vuex";
 import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
-import Collect from "./modules/Collect";
+import Collected from "./modules/Collected";
 import Name from "./modules/Name.js";
 import Uncollected from "./modules/Uncollected";
 import Expor from "./modules/Expor";
@@ -17,7 +17,8 @@ export default createStore({
       /* value = { 
             store: "nameOfStore",
             obj: { key: 'value', obj: 'to input to store' },
-            id: "id" //optional
+            id: "id" //optional,
+		        period: "202203/time()"
           } 
        the first letter of value.store must be capital e.g 'Group'
        */
@@ -47,7 +48,7 @@ export default createStore({
         id: value.id,
       });
       //delete from state
-      commit(`${value.store}/delete`, value.doc.id, { root: true });
+      commit(`${value.store}/delete`, value.id, { root: true });
       // if the store is split
       if (objToSend.split) {
         objToSend.period =
@@ -125,7 +126,7 @@ export default createStore({
   modules: {
     Navbar,
     Modal,
-    Collect,
+    Collected,
     Name,
     Uncollected,
     Expor,

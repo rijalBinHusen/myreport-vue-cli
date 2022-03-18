@@ -53,17 +53,20 @@ export default {
             this.$store.commit("Modal/active", {judul: "Masukkan periode", form: "UncollectedForm"});
 		},
         collect(ev) {
-            console.log(ev)
-            // // add date collect
-            // ev.collected = new Date().getTime()
-            // // append to collected
-            // this.$store.dispatch("append", {
-            //     store: "Collect",
-            //     obj: ev,
-            //     split: ev.collected
-            // })
-            // // delete from uncollected
-            // this.$store.dispatch("delete", { store: "Uncollected", doc: { id: ev.id }})
+            // get record from uncollected the state
+            let info = this.$store.getters["Uncollected/getId"](ev)
+
+            // append to collected store
+            this.$store.dispatch("append", {
+                            store: "Collected",
+                            obj: info,
+                            period: info.periode
+                        })
+
+            // delete from uncollected store
+            // value = { store: "listsnames", id: 001 }
+            this.$store.dispatch("delete", {store: "Uncollected", id: ev})
+            
         }
     },
     computed: {
