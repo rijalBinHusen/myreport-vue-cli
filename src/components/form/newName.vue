@@ -1,11 +1,8 @@
 <template>
 <form @submit.prevent="send" class="w3-container w3-light-grey">
-  <label>Masukkan nama</label>
-  <input v-model="name.name" class="w3-margin-bottom w3-input w3-border-0" type="text">
-  <label>Masukkan nama gudang</label>
-  <input v-model="name.warehouse" class="w3-input w3-border-0" type="text">
-  <label>Nomor telefon</label>
-  <input v-model="name.phone" class="w3-input w3-border-0" type="text">
+  <Input type="text" @inp="name.name = $event" label="Masukkan nama" placeholder="Nama" :value="name.name" />
+  <Input type="text" @inp="name.warehouse = $event" label="Masukkan nama gudang" placeholder="Nama gudang" :value="name.warehouse" />
+  <Input type="number" @inp="name.phone = $event" label="Masukkan nomor telfon" placeholder="Nomor telfon" :value="name.phone" />
   <Button
     v-if="name.name && name.warehouse" primary 
     class="w3-margin-top" 
@@ -17,6 +14,8 @@
 
 <script>
 import Button from "../elements/Button.vue";
+import Input from "../elements/Input.vue"
+
 export default {
     name: "newName",
     data() {
@@ -31,6 +30,7 @@ export default {
     },
     components: { 
         Button,
+        Input,
     },
     methods: {
         send() {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="modal" style="display: block" class="w3-modal">
+  <div v-if="modal" style="display: block;" class="w3-modal">
     <div class="w3-modal-content w3-animate-zoom">
       <header class="w3-container w3-teal">
           <!-- v-if="modal.mode !== 'loading'" -->
@@ -15,10 +15,9 @@
         </h2>
       </header>
       <div
-        class="w3-container w3-padding margin-top"
-        style="min-height: 300px"
+        class="w3-container margin-top w3-padding"
       >
-        <component :is="form"> </component>
+        <component style="min-height: 400px" :is="form"> </component>
       </div>
     </div>
   </div>
@@ -28,6 +27,7 @@
 
 import newName from "../form/newName.vue"
 import UncollectedForm from "../form/UncollectedForm.vue"
+import CollectedForm from "../form/CollectedForm.vue"
 
 export default {
   name: "Modal",
@@ -54,6 +54,7 @@ export default {
   components: {
     newName,
     UncollectedForm,
+    CollectedForm
   },
 };
 </script>
