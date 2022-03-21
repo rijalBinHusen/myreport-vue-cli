@@ -59,10 +59,6 @@ export default {
             // jika yang diminta total qty
             if(this.total) {
                 this.$store.dispatch("getData", {  store: "Collected", 'limit': Number(this.total), })
-                
-                    console.log(
-                        this.$store.getters["Collected/lists"]
-                    )
             }
 
             // jika yang diminta nama dan periode

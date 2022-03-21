@@ -5,7 +5,7 @@
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" @trig="collectedForm" />
     </div>
-			<!-- <Table v-if="collected.length > 0"
+			<Table v-if="collected.length > 0"
 			:headers="['Nama', 'Gudang', 'Periode', 'Collected']" 
 			:lists="collected" 
 			:keys="['nameSPV', 'warehouse', 'periode', 'date']"
@@ -16,7 +16,7 @@
 				<Button href="#" value="Batal" type="link" @trig="unCollect(slotProp.prop)" />
                 /
                 <Button href="#" value="Edit" type="link" @trig="edit(slotProp.prop)" />
-			</table> -->
+			</table>
 			
         </div>
 </template>
@@ -58,18 +58,18 @@ export default {
         //     return result
         //     // return this.$store.state.Name.lists
         // },
-        // collected() {
-		// 	let collect = JSON.parse(JSON.stringify(this.$store.state.Collect.lists))
-		// 	let result = []
-		// 	collect.forEach((val) => {
-		// 		val.nameSPV = this.$store.getters["Name/nameId"](val.name)["name"]
-		// 		val.warehouse = this.$store.getters["Name/nameId"](val.name)["warehouse"]
-        //         val.periode = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
-        //         val.date = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
-		// 		result.push(val)
-		// 	})
-        //     return result
-        // },
+        collected() {
+			let collect = JSON.parse(JSON.stringify(this.$store.state.Collected.lists))
+			let result = []
+			collect.forEach((val) => {
+				val.nameSPV = this.$store.getters["Name/nameId"](val.name)["name"]
+				val.warehouse = this.$store.getters["Name/nameId"](val.name)["warehouse"]
+                val.periode = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
+                val.date = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
+				result.push(val)
+			})
+            return result
+        },
         // uncollected() {
         //     return this.$store.getters["Uncollected/uncollected"]
         // }
