@@ -6,7 +6,7 @@ const Collect = {
   },
   mutations: {
     // new data from localbase
-    collect(state, value) {
+    collected(state, value) {
       state.lists = value;
     },
     // add data to
@@ -26,6 +26,9 @@ const Collect = {
   },
   actions: {},
   getters: {
+    lists(state) {
+      return JSON.parse(JSON.stringify(state.lists));
+    },
     // mengembalikan info store
     store(state) {
       return JSON.parse(JSON.stringify(state.store));

@@ -116,6 +116,31 @@ export default createStore({
     getAllData({ commit }, value) {
       return myfunction.getData({ store: value.toLowerCase(), withKey: true });
     },
+    getData({ commit, rootGetters }, value) {
+      // the first letter of value.store must be capital e.g 'Group'
+      /*value = { 
+            store: "nameOfStore",
+            'limit': number,
+          }
+    	} */
+      // call the get data functions
+      myfunction
+        .getData(
+          Object.assign(
+            rootGetters[`${value.store}/store`],
+            {
+              orderBy: "id",
+              desc: true,
+            },
+            { limit: value.limit }
+          )
+        )
+        .then((result) =>
+          commit(`${value.store}/${value.store.toLowerCase()}`, result, {
+            root: true,
+          })
+        );
+    },
   },
   getters: {
     dateFormat: () => (value) => {
