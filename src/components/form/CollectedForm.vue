@@ -60,8 +60,12 @@ export default {
             if(this.total) {
                 this.$store.dispatch("getData", {  store: "Collected", 'limit': Number(this.total), })
             }
-
             // jika yang diminta nama dan periode
+            else {
+                this.$store.dispatch("findDataByDateArrays", {
+                        store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1, this.periode2)
+                    })
+            }
             this.$store.commit("Modal/active")
         }
     },

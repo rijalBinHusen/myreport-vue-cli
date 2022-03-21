@@ -13,8 +13,8 @@ const Collect = {
     append(state, value) {
       state.lists.unshift(value);
     },
+    //delete lists
     delete(state, value) {
-      console.log(value);
       state.lists = state.lists.filter((val) => val.id !== value);
     },
     // update data

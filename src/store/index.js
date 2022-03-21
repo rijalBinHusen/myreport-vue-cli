@@ -146,11 +146,53 @@ export default createStore({
           })
         );
     },
+    findDataByDateArrays({ commit, rootGetters }, value) {
+      // value = { store: nameOfStore, date: ["array", "of", "date"] }
+
+      //empty the store
+      commit(`${value.store}/${value.store.toLowerCase()}`, []);
+
+      /*value = {
+        store: "nameStore", 
+        split: "tahun/bulan/false",
+        period: "202203/time()"
+        obj: {key: value}
+    	} */
+
+      if (Array.isArray(value.date)) {
+        value.date.map((val) => {
+          myfunction
+            .findData(
+              Object.assign(rootGetters[`${value.store}/store`], {
+                period: val,
+                obj: { periode: val },
+              })
+            )
+            .then((res) => {
+              // commit to module e.g 'Group/append
+              commit(`${value.store}/append`, res, { root: true });
+            });
+        });
+        // Promise.all(getAll).then((res) => {})
+      }
+    },
   },
   getters: {
     dateFormat: () => (value) => {
       // value = { format: dateMonth, time: new Date().getTime() }
       return myfunction.dateFormat([value.format, value.time]);
+    },
+    getDaysArray: () => (start, end) => {
+      let arr = [];
+      for (
+        let dt = new Date(start);
+        dt <= new Date(end);
+        dt.setDate(dt.getDate() + 1)
+      ) {
+        arr.push(new Date(dt));
+      }
+      return arr.map((val) => val.getTime());
+      // toISOString().slice(0, 10));
     },
   },
   modules: {
