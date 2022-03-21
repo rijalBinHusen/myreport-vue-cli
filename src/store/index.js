@@ -76,10 +76,14 @@ export default createStore({
       let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
         obj: value.obj,
       });
-
+      console.log(value);
       if (objToSend.split) {
         objToSend.period =
-          value.obj.id.slice(3, 7) + "-" + value.id.slice(7, 9) + "-01";
+          "20" +
+          value.obj.id.slice(3, 5) +
+          "-" +
+          value.obj.id.slice(5, 7) +
+          "-01";
       }
 
       // send to indexeddb

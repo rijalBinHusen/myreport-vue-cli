@@ -44,6 +44,17 @@ export default {
         collectedForm() {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "CollectedForm"});
         },
+        edit(ev) {
+            // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
+            //this.$store.dispatch("update", objToSend)
+            // ev.collected = window.prompt()
+
+            let rec = this.$store.getters["Collected/listsId"](ev.id)
+            rec.collected = window.prompt()
+            if(rec.collected) {
+                this.$store.dispatch("update", {store: "Collected", obj: rec})
+            }
+        },
     },
     computed: {
         // lists() {

@@ -29,6 +29,11 @@ const Collect = {
     lists(state) {
       return JSON.parse(JSON.stringify(state.lists));
     },
+    listsId: (state, getters, rootState, rootGetters) => (id) => {
+      return JSON.parse(
+        JSON.stringify(state.lists.find((val) => val.id === id))
+      );
+    },
     // mengembalikan info store
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
