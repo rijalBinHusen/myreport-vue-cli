@@ -38,13 +38,16 @@ export default {
         return {
             collect: {
                 name: "",
-                periode: new Date(),
+                periode: this.$store.getters['Uncollected/lastDate'],
             }
         }
     },
     methods: {
         async send(){
             if(this.collect.name) {
+                // bring up the loader
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+                
                 if(this.collect.name === "semua") {
                     // ambil semua nama
                     let allName = this.$store.getters["Name/enabled"]
@@ -70,7 +73,7 @@ export default {
                             obj: Object.assign({}, this.collect),
                         })
                 }
-                
+                //close the modeal
                 this.$store.commit("Modal/active")
             }
         }

@@ -25,6 +25,7 @@ export default createStore({
 
       let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
         obj: value.obj,
+        period: value.period,
       });
 
       // create id to the record
@@ -52,7 +53,7 @@ export default createStore({
       // if the store is split
       if (objToSend.split) {
         objToSend.period =
-          value.id.slice(3, 7) + "-" + value.id.slice(7, 9) + "-01";
+          "20" + value.id.slice(3, 5) + "-" + value.id.slice(5, 7) + "-01";
       }
       // delete record from indexeddb and return as promise
       return new Promise((resolve) => {

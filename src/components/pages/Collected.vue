@@ -13,9 +13,9 @@
 			small
 			options
 			>
-				<Button href="#" value="Batal" type="link" @trig="unCollect(slotProp.prop)" />
+				<Button href="#" value="Batal" type="link" @trig="unCollect(slotProp.prop.id)" />
                 /
-                <Button href="#" value="Edit" type="link" @trig="edit(slotProp.prop)" />
+                <Button href="#" value="Edit" type="link" @trig="edit(slotProp.prop.id)" />
 			</table>
 			
         </div>
@@ -48,27 +48,27 @@ export default {
             // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
             //this.$store.dispatch("update", objToSend)
             // ev.collected = window.prompt()
-
-            let rec = this.$store.getters["Collected/listsId"](ev.id)
+            
+            let rec = this.$store.getters["Collected/listsId"](ev)
             rec.collected = window.prompt()
             if(rec.collected) {
                 this.$store.dispatch("update", {store: "Collected", obj: rec})
             }
         },
+		unCollect(ev) {
+            let record = this.$store.getters["Collected/listsId"](ev)
+			// remove date collect
+			delete record.collected
+			// append to uncollected
+			this.$store.dispatch("append", {
+			    store: "Uncollected",
+			    obj: record
+			})
+			// delete from collected
+			this.$store.dispatch("delete", { store: "Collected", id: ev })
+		},
     },
     computed: {
-        // lists() {
-        //     let uncollected = this.$store.getters["Uncollected/uncollected"]
-        //     let name = JSON.parse(JSON.stringify(this.$store.state.Name.lists))
-        //     let result = []
-
-        //     name.forEach((val) => {
-        //         result.push(Object.assign(val, {uncollected: uncollected[val.id] }))
-        //     })
-
-        //     return result
-        //     // return this.$store.state.Name.lists
-        // },
         collected() {
 			let collect = JSON.parse(JSON.stringify(this.$store.state.Collected.lists))
 			let result = []
@@ -81,9 +81,6 @@ export default {
 			})
             return result
         },
-        // uncollected() {
-        //     return this.$store.getters["Uncollected/uncollected"]
-        // }
     },
 }
 </script>

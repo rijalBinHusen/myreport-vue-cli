@@ -1,7 +1,7 @@
 <template>
   <div v-if="modal" style="display: block;" class="w3-modal">
     <div class="w3-modal-content w3-animate-zoom">
-      <header class="w3-container w3-teal">
+      <header v-if="form !== 'Loader'" class="w3-container w3-teal">
           <!-- v-if="modal.mode !== 'loading'" -->
         <span
           @click="active"
@@ -28,6 +28,7 @@
 import newName from "../form/newName.vue"
 import UncollectedForm from "../form/UncollectedForm.vue"
 import CollectedForm from "../form/CollectedForm.vue"
+import Loader from "./Loader.vue"
 
 export default {
   name: "Modal",
@@ -54,7 +55,8 @@ export default {
   components: {
     newName,
     UncollectedForm,
-    CollectedForm
+    CollectedForm,
+    Loader,
   },
 };
 </script>

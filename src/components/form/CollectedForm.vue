@@ -62,6 +62,7 @@ export default {
             }
 
             // jika yang diminta nama dan periode
+            this.$store.commit("Modal/active")
         }
     },
     components: {
