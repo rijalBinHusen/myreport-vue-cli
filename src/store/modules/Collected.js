@@ -11,7 +11,7 @@ const Collect = {
     },
     // add data to
     append(state, value) {
-      if (Array.isArray(value)) {
+      if (Array.isArray(value) && value.length > 0) {
         value.forEach((val) => state.lists.push(val));
       } else {
         state.lists.unshift(value);

@@ -152,13 +152,6 @@ export default createStore({
       //empty the store
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
-      /*value = {
-        store: "nameStore", 
-        split: "tahun/bulan/false",
-        period: "202203/time()"
-        obj: {key: value}
-    	} */
-
       if (Array.isArray(value.date)) {
         value.date.map((val) => {
           myfunction
@@ -169,7 +162,6 @@ export default createStore({
               })
             )
             .then((res) => {
-              console.log(res);
               // commit to module e.g 'Group/append
               commit(`${value.store}/append`, res, { root: true });
             });

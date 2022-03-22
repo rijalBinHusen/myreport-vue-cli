@@ -10,7 +10,6 @@
 			:lists="collected" 
 			:keys="['nameSPV', 'warehouse', 'periode', 'date']"
 			v-slot:default="slotProp"
-			small
 			options
 			>
 				<Button href="#" value="Batal" type="link" @trig="unCollect(slotProp.prop.id)" />
@@ -73,11 +72,13 @@ export default {
 			let collect = JSON.parse(JSON.stringify(this.$store.state.Collected.lists))
 			let result = []
 			collect.forEach((val) => {
-				val.nameSPV = this.$store.getters["Name/nameId"](val.name)["name"]
-				val.warehouse = this.$store.getters["Name/nameId"](val.name)["warehouse"]
-                val.periode = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
-                val.date = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
-				result.push(val)
+                if(val) {
+                    val.nameSPV = this.$store.getters["Name/nameId"](val.name)["name"]
+                    val.warehouse = this.$store.getters["Name/nameId"](val.name)["warehouse"]
+                    val.periode = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
+                    val.date = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
+                    result.push(val)
+                }
 			})
             return result
         },

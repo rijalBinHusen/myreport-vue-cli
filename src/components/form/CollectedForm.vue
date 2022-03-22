@@ -62,9 +62,15 @@ export default {
             }
             // jika yang diminta nama dan periode
             else {
-                this.$store.dispatch("findDataByDateArrays", {
+                if(this.periode2 > this.periode1) {
+                    this.$store.dispatch("findDataByDateArrays", {
                         store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1, this.periode2)
                     })
+                } else {
+                    this.$store.dispatch("findDataByDateArrays", {
+                        store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1.getTime(), this.periode2.getTime())
+                    })
+                }
             }
             this.$store.commit("Modal/active")
         }
