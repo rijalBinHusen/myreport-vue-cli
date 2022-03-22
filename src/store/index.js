@@ -9,7 +9,9 @@ import Expor from "./modules/Expor";
 
 export default createStore({
   state: {
-    store: ["Name", "Uncollected"],
+    store: localStorage.getItem("store")
+      ? JSON.parse(localStorage.getItem("store"))
+      : [],
   },
   mutations: {},
   actions: {
@@ -77,7 +79,7 @@ export default createStore({
       let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
         obj: value.obj,
       });
-      console.log(value);
+      // console.log(value);
       if (objToSend.split) {
         objToSend.period =
           "20" +
@@ -102,20 +104,25 @@ export default createStore({
         'desc': Boolean, 
         'limit': number,
     	} */
+      let storeLists = JSON.parse(JSON.stringify(state.store));
       // iterate the store
-      state.store.forEach((val) => {
-        // call the get data functions
-        myfunction
-          .getData(
-            Object.assign(rootGetters[`${val}/store`], {
-              orderBy: "id",
-              desc: true,
-              limit: 100,
-            })
-          )
-          .then((result) =>
-            commit(`${val}/${val.toLowerCase()}`, result, { root: true })
-          );
+      storeLists.forEach((val2) => {
+        let val = val2.nameOfStore[0].toUpperCase() + val2.nameOfStore.slice(1);
+        if (val2.starter) {
+          // console.log(val);
+          // call the get data functions
+          myfunction
+            .getData(
+              Object.assign(rootGetters[`${val}/store`], {
+                orderBy: "id",
+                desc: true,
+                limit: 100,
+              })
+            )
+            .then((result) =>
+              commit(`${val}/${val.toLowerCase()}`, result, { root: true })
+            );
+        }
       });
     },
     getAllData({ commit }, value) {

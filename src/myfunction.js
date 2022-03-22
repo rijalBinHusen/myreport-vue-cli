@@ -6,7 +6,10 @@ let db = new Localbase("myreport");
 
 function storenya(store, split, period) {
   //value = {store: "namastore", split: "tahun/bulan/false", period: "202203/time()"}
-
+  let mainStore = localStorage.getItem("store")
+    ? JSON.parse(localStorage.getItem("store"))
+    : [];
+  let newStore = store;
   //-----------------------------fungsi waktu splitter---------------
   //202203
   const a001 = period ? new Date(period) : new Date();
@@ -15,19 +18,32 @@ function storenya(store, split, period) {
   const splitter = a004 + (a003 + 1 > 8 ? a004 : "0" + (a003 + 1));
 
   //-----------------------------------------------------------
-
   //jika split
   if (split) {
     //jika pisah bulan
     if (split === "bulan") {
-      return store.toLowerCase() + splitter;
+      newStore = store.toLowerCase() + splitter;
     }
     // jika pisah tahun
     else if (split === "tahun") {
-      return store.toLowerCase() + splitter.slice(0, 4);
+      newStore = store.toLowerCase() + splitter.slice(0, 4);
     }
   }
-  return store.toLowerCase();
+
+  let isOldStore = mainStore.find(
+    (val) => val.nameOfStore === newStore.toLowerCase()
+  );
+  if (!isOldStore) {
+    mainStore.push({
+      nameOfStore: newStore.toLowerCase(),
+      starter: split ? false : true,
+    });
+    localStorage.setItem("store", JSON.stringify(mainStore));
+  }
+  // console.log(isOldStore);
+  // console.log(mainStore);
+  // console.log(mainStore);
+  return newStore.toLowerCase();
 }
 
 // ---------------------- function to setup the store

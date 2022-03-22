@@ -19,13 +19,15 @@ const Expor = {
       let store = JSON.parse(JSON.stringify(rootState.store));
       // iterate, push to variable and waiting
       for (let i = 0; i < store.length; i++) {
-        dispatch("getAllData", store[i], { root: true }).then((val) => {
-          commit("append", { store: store[i], obj: val });
-          if (i === store.length - 1) {
-            // change status to true
-            commit("append", { store: "status", obj: true });
+        dispatch("getAllData", store[i].nameOfStore, { root: true }).then(
+          (val) => {
+            commit("append", { store: store[i].nameOfStore, obj: val });
+            if (i === store.length - 1) {
+              // change status to true
+              commit("append", { store: "status", obj: true });
+            }
           }
-        });
+        );
       }
     },
     // async exportDataCollect(state) {
