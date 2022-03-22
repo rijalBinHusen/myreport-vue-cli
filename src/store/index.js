@@ -169,6 +169,7 @@ export default createStore({
               })
             )
             .then((res) => {
+              console.log(res);
               // commit to module e.g 'Group/append
               commit(`${value.store}/append`, res, { root: true });
             });

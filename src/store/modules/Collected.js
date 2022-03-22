@@ -11,7 +11,11 @@ const Collect = {
     },
     // add data to
     append(state, value) {
-      state.lists.unshift(value);
+      if (Array.isArray(value)) {
+        value.forEach((val) => state.lists.push(val));
+      } else {
+        state.lists.unshift(value);
+      }
     },
     //delete lists
     delete(state, value) {
