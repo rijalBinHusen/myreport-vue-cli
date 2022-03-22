@@ -69,7 +69,23 @@ export default {
             // value = { store: "listsnames", id: 001 }
             this.$store.dispatch("delete", {store: "Uncollected", id: ev})
             
-        }
+        },
+		pesan(ev) {
+			// slice the data
+			let tanggalnya = []
+			let datanya = JSON.parse(JSON.stringify(ev))
+			datanya.uncollected.slice(0, -1).forEach((val) => {
+				tanggalnya.push(val.periode)
+			})
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name}, 
+            %0aberikut saya kirimkan daftar laporan ${ev.warehouse} yang belum dikumpulkan :
+            %0a[ ${tanggalnya.join(", ")} ]
+            %0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 3 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0aTerimakasih atas perhatianya.`
+			let link = `https://wa.me/${ev.phone}?text=${pesan}`
+			// console.log(link)
+			window.open(link)
+			// console.log(tanggalnya.join(", "))
+		},
     },
     computed: {
         lists() {
