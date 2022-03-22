@@ -8,8 +8,10 @@
 
 <script>
 	import Navbar from "../parts/Navbar.vue";
+	import Name from "./Name.vue"
+	import Uncollected from "./Uncollected.vue"
 	import Impor from "./Impor.vue"
-	import Collect from "./Collect.vue"
+	import Collected from "./Collected.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
 	
@@ -17,8 +19,10 @@
 		name: "Main",
 		components: { 
 			Navbar,
+			Name,
+			Uncollected,
 			Impor,
-			Collect,
+			Collected,
 			Report,
 			Modal,
 		},

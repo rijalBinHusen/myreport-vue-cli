@@ -3,6 +3,7 @@ const Name = {
   state: {
     lists: [],
     edit: "",
+    store: { store: "Name" },
   },
 
   mutations: {
@@ -38,11 +39,14 @@ const Name = {
         JSON.stringify(state.lists.filter((val) => val.disabled === false))
       );
     },
-	nameId: (state, getters, rootState, rootGetters) => (id) => {
-	      return JSON.parse(
-			JSON.stringify(state.lists.find((val) => val.id === id))
-		  );
-	    },
+    nameId: (state, getters, rootState, rootGetters) => (id) => {
+      return JSON.parse(
+        JSON.stringify(state.lists.find((val) => val.id === id))
+      );
+    },
+    store(state) {
+      return JSON.parse(JSON.stringify(state.store));
+    },
   },
 };
 

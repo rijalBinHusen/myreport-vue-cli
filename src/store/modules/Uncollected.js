@@ -2,6 +2,7 @@ const Uncollected = {
   namespaced: true,
   state: {
     lists: [],
+    store: { store: "Uncollected" },
   },
 
   mutations: {
@@ -19,15 +20,38 @@ const Uncollected = {
   },
   actions: {},
   getters: {
+    // all uncollected record
     uncollected(state, getters, rootState, rootGetters) {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
       let result = {};
-      state.lists.forEach((val) => {
+      JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
+        val.periode = rootGetters["dateFormat"]({
+          format: "dateMonth",
+          time: val.periode,
+        });
         result[val.name]
           ? result[val.name].push(val)
           : (result[val.name] = [val]);
       });
-      return JSON.parse(JSON.stringify(result));
+      return result;
+    },
+    // mengembalikan info store
+    store(state) {
+      return JSON.parse(JSON.stringify(state.store));
+    },
+    // mengembalikan tanggal terakhir yang sudah diinput
+    lastDate(state) {
+      let temp =
+        state.lists.length > 0
+          ? new Date(JSON.parse(JSON.stringify(state.lists[0].periode)))
+          : new Date("2022-01-01");
+      temp.setDate(temp.getDate() + 1);
+      return temp;
+    },
+    //mengembalikan record sesuai id
+    getId: (state) => (id) => {
+      let lists = JSON.parse(JSON.stringify(state.lists));
+      return lists.find((val) => val.id === id);
     },
   },
 };

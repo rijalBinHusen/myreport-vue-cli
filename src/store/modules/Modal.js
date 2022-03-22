@@ -9,8 +9,20 @@ const Modal = {
   },
   mutations: {
     active(state, val) {
-      state.active = !state.active;
-      val ? (state.more = val) : (state.form = "");
+      //jika val ada isinya, modal active, ganti form
+      if (val) {
+        state.more = val;
+        state.active = true;
+      }
+      // jika tidak, tutup modal, judul kosongi, form kosongi
+      else {
+        if (state.more.form === "Loader") {
+          setTimeout(() => {
+            state.active = false;
+          }, 1500);
+        }
+        state.active = false;
+      }
     },
   },
   actions: {},

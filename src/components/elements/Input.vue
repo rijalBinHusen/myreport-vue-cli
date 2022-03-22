@@ -1,11 +1,12 @@
 <template>
-    <div>
+    <div class=" w3-margin-top">
         <label>{{ label }}</label>
         <input 
         @change="inp($event.target.value)" 
         @keyup="inp($event.target.value)"
-        class="w3-input w3-border" 
+        class="w3-input w3-border w3-margin-top" 
         :type="type" 
+        :value="value"
         :placeholder="placeholder">
   </div>
 </template>
@@ -28,6 +29,7 @@ export default {
             type: String,
             required: true,
         },
+        value: String,
     },
     emits: ["inp"],
     methods: {
