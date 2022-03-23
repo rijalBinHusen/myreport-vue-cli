@@ -25,6 +25,8 @@ export default {
   methods: {
     //trigeer methods untuk collect data
     exportDataCollect(cond) {
+    // bring up the loader
+    this.$store.commit("Modal/active", {judul: "", form: "Loader"});
       if (cond == "start") {
         //buka loader
         // this.$store.dispatch("Modal/loading", "open");
@@ -50,9 +52,8 @@ export default {
     },
     download(fileName, contentType) {
       // tutup Loader
-    //   this.$store.dispatch("Modal/loading", "close");
-      //append time to export record
-    //   this.$store.dispatch("ExIm/exportAppend");
+      this.$store.commit("Modal/active")
+      
       var a = document.createElement("a");
       var file = new Blob(
         [JSON.stringify(this.$store.state.Expor.lists)],
