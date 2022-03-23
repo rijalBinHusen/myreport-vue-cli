@@ -2,6 +2,7 @@
 <div class="w3-container">
     <h1>Report uncollected</h1>
 			<Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
+            <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
             
             <Table v-if="lists.length > 0"
             :headers="['Nama', 'Gudang']" 
@@ -11,7 +12,7 @@
 			options
             >
 				
-				<span v-if="uncollected[slotProp.prop.id] && uncollected[slotProp.prop.id].length > 2">					
+				<span v-if="slotProp.prop.uncollected && slotProp.prop.uncollected.length > 2">					
 					<Button
 					secondary
 					value="Pesan" 
@@ -23,7 +24,7 @@
 
                 <span>
                     <Button
-                    v-for="uncl in uncollected[slotProp.prop.id]" :key="uncl.id"
+                    v-for="uncl in slotProp.prop.uncollected" :key="uncl.id"
 					primary
 					:value="uncl.periode" 
 					:datanya="uncl.id" 
@@ -78,7 +79,7 @@ export default {
 				tanggalnya.push(val.periode)
 			})
 			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name}, 
-            %0aberikut saya kirimkan daftar laporan ${ev.warehouse} yang belum dikumpulkan :
+            %0aberikut kami kirimkan daftar laporan ${ev.warehouse} yang belum dikumpulkan :
             %0a[ ${tanggalnya.join(", ")} ]
             %0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 3 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
@@ -86,6 +87,18 @@ export default {
 			window.open(link)
 			// console.log(tanggalnya.join(", "))
 		},
+        pesanSemua() {
+            let nophone = window.prompt()
+            if(nophone){
+            let result = "Berikut kami kirimkan daftar laporan yang belum dikumpulkan:%0a%0a"
+            this.lists.forEach((val) => {
+                if(val.uncollected && val.uncollected.length > 2) {
+                    result += `${val.name} : [${ val.uncollected.slice(1).map((val2) => val2.periode ).join(",") }]%0a%0a`
+                }
+            })
+            window.open(`https://wa.me/${nophone}?text=${result}`)
+            }
+        }
     },
     computed: {
         lists() {
@@ -99,9 +112,6 @@ export default {
             return result
             // return this.$store.state.Name.lists
         },
-        uncollected() {
-            return this.$store.getters["Uncollected/uncollected"]
-        }
     }
 }
 </script>
