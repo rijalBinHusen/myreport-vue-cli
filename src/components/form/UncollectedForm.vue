@@ -70,7 +70,10 @@ export default {
                             id: this.$store.state.Uncollected.lists.length > 0 
                             ? this.$store.state.Uncollected.lists[0]["id"]
                             : "unc0000",
-                            obj: Object.assign({}, this.collect),
+                            obj: {
+                                name: this.collect.name,
+                                periode: this.$store.getters["dateFormat"]({format: "time", time: this.collect.periode})
+                                },
                         })
                 }
                 //close the modeal
@@ -86,7 +89,7 @@ export default {
     computed: {
         names() {
             // ambil semua nama dari state
-            let options = Array.from(this.$store.state.Name.lists)
+            let options = JSON.parse(JSON.stringify(this.$store.state.Name.lists))
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
             options.unshift({id: "", name: "Pilih nama" })
