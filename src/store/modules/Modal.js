@@ -20,6 +20,7 @@ const Modal = {
           setTimeout(() => {
             state.active = false;
           }, 1500);
+          return;
         }
         state.active = false;
       }
