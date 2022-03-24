@@ -253,7 +253,8 @@ export default {
       return a001.getTime() - 25200000 + 86400000;
     } // hari selanjutnya pada jam 00:00
     else if (a[0] == "-1") {
-      return a001.getTime() - 25200000 - 86400000;
+      a001.setDate(a002 - 1);
+      return a001.getTime();
     } // hari sebelumnya pada jam 00:00
     else if (a[0] == "0") {
       return a001.getTime() - 25200000;

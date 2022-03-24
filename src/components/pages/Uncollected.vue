@@ -57,7 +57,7 @@ export default {
             // get record from uncollected the state
             let info = this.$store.getters["Uncollected/getId"](ev)
 
-            info.collected = new Date().getTime()
+            info.collected = this.$store.getters["dateFormat"]({format: "-1"})
 
             // append to collected store
             this.$store.dispatch("append", {
