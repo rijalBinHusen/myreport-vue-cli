@@ -13,11 +13,9 @@
 			options
 			>
             <div v-if="!slotProp.prop.shared">
-				<Button href="#" value="Batal" type="link" @trig="unCollect(slotProp.prop.id)" />
-                /
-                <Button href="#" value="Edit" type="link" @trig="edit(slotProp.prop.id)" />
-                /
-                <Button href="#" value="Share" type="link" @trig="share(slotProp.prop.id)" />
+				<Button value="Batal" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
+                <Button value="Edit" type="button" secondary small @trig="edit(slotProp.prop.id)" />
+                <Button value="Share" primary type="button" small @trig="share(slotProp.prop.id)" />
             </div>
             <div v-else>
                 Shared at {{ this.$store.getters["dateFormat"]({format: "dateMonth", time: slotProp.prop.shared }) }}
