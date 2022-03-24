@@ -4,14 +4,14 @@
 			<Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
             <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
             
-            <Table v-if="lists.length > 0"
-            :headers="['Nama', 'Gudang']" 
-            :lists="lists" 
-            :keys="['name', 'warehouse']"
-			v-slot:default="slotProp"
-			options
-            >
-				
+		<Datatable
+          :datanya="lists"
+          :heads="['Nama', 'Gudang']"
+          :keys="['name', 'warehouse']"
+          option
+          :id="'nameOftable'"
+          v-slot:default="slotProp"
+          >
 				<span v-if="slotProp.prop.uncollected && slotProp.prop.uncollected.length > 2">					
 					<Button
 					secondary
@@ -32,21 +32,20 @@
 					@trig="collect($event)" 
 					/>
                 </span>
-
-			</Table>
+        </Datatable>
 </div>
 </template>
 
 <script>
 
 import Button from "../elements/Button.vue"
-import Table from "../elements/Table.vue"
+import Datatable from "../parts/Datatable.vue"
 
 export default {
     name: "Uncollected",
     components: {
         Button,
-        Table,
+        Datatable,
     },
     methods: {
 		addPeriod() {
