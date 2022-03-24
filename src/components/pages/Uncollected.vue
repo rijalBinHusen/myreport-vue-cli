@@ -81,7 +81,7 @@ export default {
 			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name}, 
             %0aberikut kami kirimkan daftar laporan ${ev.warehouse} yang belum dikumpulkan :
             %0a[ ${tanggalnya.join(", ")} ]
-            %0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 3 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0aTerimakasih atas perhatianya.`
+            %0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
 			// console.log(link)
 			window.open(link)
@@ -90,13 +90,14 @@ export default {
         pesanSemua() {
             let nophone = window.prompt()
             if(nophone){
-            let result = "Berikut kami kirimkan daftar laporan yang belum dikumpulkan:%0a%0a"
+            let result = `Berikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
             this.lists.forEach((val) => {
                 if(val.uncollected && val.uncollected.length > 2) {
-                    result += `${val.name} : [${ val.uncollected.slice(1).map((val2) => val2.periode ).join(",") }]%0a%0a`
+                    result += `*${val.name} ${val.warehouse}* : [${ val.uncollected.slice(1).map((val2) => val2.periode ).join(", ") }]%0a%0a`
                 }
             })
             window.open(`https://wa.me/${nophone}?text=${result}`)
+            // console.log(result)
             }
         }
     },
