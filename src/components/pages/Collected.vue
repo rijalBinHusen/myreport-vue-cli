@@ -12,9 +12,16 @@
 			v-slot:default="slotProp"
 			options
 			>
+            <div v-if="!slotProp.prop.shared">
 				<Button href="#" value="Batal" type="link" @trig="unCollect(slotProp.prop.id)" />
                 /
                 <Button href="#" value="Edit" type="link" @trig="edit(slotProp.prop.id)" />
+                /
+                <Button href="#" value="Share" type="link" @trig="share(slotProp.prop.id)" />
+            </div>
+            <div v-else>
+                Shared at {{ this.$store.getters["dateFormat"]({format: "dateMonth", time: slotProp.prop.shared }) }}
+            </div>
 			</table>
 			
         </div>
@@ -66,6 +73,13 @@ export default {
 			// delete from collected
 			this.$store.dispatch("delete", { store: "Collected", id: ev })
 		},
+        share(ev){
+            let record = this.$store.getters["Collected/listsId"](ev)
+            //set shared to true with date
+            record.shared = this.$store.getters["dateFormat"]({format: "time"})
+            // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
+            this.$store.dispatch("update", { store: "Collected", obj: record })
+        }
     },
     computed: {
         collected() {

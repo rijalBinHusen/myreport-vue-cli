@@ -62,7 +62,8 @@ export default {
             this.$store.dispatch("append", {
                             store: "Collected",
                             obj: info,
-                            period: info.periode
+                            period: info.periode,
+                            shared: false
                         })
 
             // delete from uncollected store
