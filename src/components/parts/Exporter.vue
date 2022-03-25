@@ -44,7 +44,9 @@ export default {
       // status: this.$store.getters["ExIm/statusExport"]
       this.$store.state.Expor.lists.status
         ? //jika sudah
-          this.download("data.js", "text/plain")
+          this.download(`Backup myreport ${
+            this.$store.getters["dateFormat"]({format: "full"})
+          }`, "text/plain")
         : //jike belum jalankan lagi exportDataCollect
           setTimeout(() => {
             this.exportDataCollect();
@@ -62,8 +64,7 @@ export default {
         }
       );
       a.href = URL.createObjectURL(file);
-      a.download =
-        "All data absensi.js";
+      a.download = fileName;
       a.click();
       //destroy data collect
     //   this.$store.dispatch("ExIm/destroyDataCollect");
