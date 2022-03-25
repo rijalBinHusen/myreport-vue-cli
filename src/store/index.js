@@ -167,12 +167,19 @@ export default createStore({
               .findData(
                 Object.assign(rootGetters[`${value.store}/store`], {
                   period: value.date[i],
-                  obj: { periode: value.date[i] },
+                  obj: Object.assign(
+                    {
+                      periode: value.date[i],
+                    },
+                    value.criteria
+                  ),
                 })
               )
               .then((res) => {
                 // commit to module e.g 'Group/append
-                commit(`${value.store}/append`, res, { root: true });
+                if (res) {
+                  commit(`${value.store}/append`, res, { root: true });
+                }
                 //jika sudah selesai
                 if (i === value.date.length - 1) {
                   resolve();
@@ -180,20 +187,6 @@ export default createStore({
               });
           }
         });
-        // value.date.map((val) => {
-        //   myfunction
-        //     .findData(
-        //       Object.assign(rootGetters[`${value.store}/store`], {
-        //         period: val,
-        //         obj: { periode: val },
-        //       })
-        //     )
-        //     .then((res) => {
-        //       // commit to module e.g 'Group/append
-        //       commit(`${value.store}/append`, res, { root: true });
-        //     });
-        // });
-        // Promise.all(getAll).then((res) => {})
       }
     },
   },

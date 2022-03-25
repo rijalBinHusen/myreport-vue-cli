@@ -10,7 +10,7 @@
     </tr>
     <tr v-for="(list) in  lists" :key="list[keys[1]]">
 
-      <td v-for="key in keys" :key="list[key]">
+      <td v-for="(key,index) in keys" :key="list[key] + index">
           {{ list[key] }}
       </td>
       

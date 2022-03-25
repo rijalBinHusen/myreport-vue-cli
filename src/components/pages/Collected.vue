@@ -72,6 +72,7 @@ export default {
 			this.$store.dispatch("delete", { store: "Collected", id: ev })
 		},
         share(ev){
+            console.log(ev)
             let record = this.$store.getters["Collected/listsId"](ev)
             //set shared to true with date
             record.shared = this.$store.getters["dateFormat"]({format: "time"})

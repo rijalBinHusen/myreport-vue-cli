@@ -57,13 +57,13 @@ export default {
             let info = this.$store.getters["Uncollected/getId"](ev)
 
             info.collected = this.$store.getters["dateFormat"]({format: "-1"})
+            info.shared = false
 
             // append to collected store
             this.$store.dispatch("append", {
                             store: "Collected",
                             obj: info,
-                            period: info.periode,
-                            shared: false
+                            period: info.periode
                         })
 
             // delete from uncollected store

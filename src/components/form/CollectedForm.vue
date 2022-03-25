@@ -20,10 +20,10 @@
             />
 
             <label class="w3-margin-top">Dari tanggal</label>
-            <datepicker class="w3-margin-top w3-border w3-input" v-model="periode1"></datepicker>
+            <datepicker class="w3-margin-top w3-border w3-input" :upperLimit="periode2" v-model="periode1"></datepicker>
 
             <label class="w3-margin-top">Sampai tanggal</label>
-            <datepicker class="w3-margin-top w3-border w3-input" v-model="periode2"></datepicker>
+            <datepicker class="w3-margin-top w3-border w3-input" :lowerLimit="periode1" v-model="periode2"></datepicker>
         </div>
         <Button v-if="total || name" primary value="Show"  class="w3-margin-top" type="button" @trig="show" />
     </div>
@@ -51,7 +51,7 @@ export default {
             total: 0,
             periode1: new Date(),
             periode2: new Date(),
-            name: 0,
+            name: "",
         }
     },
     methods: {
@@ -61,18 +61,22 @@ export default {
             // jika yang diminta total qty
             if(this.total) {
                 this.$store.dispatch("getData", {  store: "Collected", 'limit': Number(this.total), })
+                
             }
             // jika yang diminta nama dan periode
-            else {
-                if(this.periode2 > this.periode1) {
-                    await this.$store.dispatch("findDataByDateArrays", {
-                        store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1, this.periode2)
-                    })
-                } else {
-                    await this.$store.dispatch("findDataByDateArrays", {
-                        store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1.getTime(), this.periode2.getTime())
-                    })
-                }
+            else if(this.name && this.periode2) {
+                let objToSend = {
+                        store: "Collected", 
+                        date: this.$store.getters["getDaysArray"](this.periode1, this.periode2)
+                    }
+                if(this.name !== 'semua') {
+                    if(this.name === "unshared") {
+                        objToSend.criteria = { shared: false}
+                    } else {
+                        objToSend.criteria = { name: this.name }
+                    }
+                } 
+                    await this.$store.dispatch("findDataByDateArrays", objToSend)
             }
             this.$store.commit("Modal/active")
         }
@@ -90,6 +94,7 @@ export default {
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
             options.unshift({id: "", name: "Pilih nama" })
+            options.push({id: "unshared", name: "Cari periode yang belu dishare"})
             // kembalikan agar tidak reactive
             return JSON.parse(JSON.stringify(options))
         }
