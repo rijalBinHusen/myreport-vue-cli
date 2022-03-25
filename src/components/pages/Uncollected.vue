@@ -73,17 +73,10 @@ export default {
         },
 		pesan(ev) {
 			// slice the data
-			let tanggalnya = []
 			let datanya = JSON.parse(JSON.stringify(ev))
-			datanya.uncollected.slice(0, -1).forEach((val) => {
-				tanggalnya.push(val.periode)
-			})
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu [ ${tanggalnya.join(", ")} ]%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu [ ${datanya.uncollected.slice(1).map((val2) => val2.periode ).join(", ")} ]%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-            // copy(pesan)
-			// console.log(link)
 			window.open(link)
-			// console.log(tanggalnya.join(", "))
 		},
         pesanSemua() {
             let nophone = window.prompt()
