@@ -22,10 +22,10 @@
       <tr class="w3-teal">
         <th scope="col">No</th>
         <th
-          v-for="head in heads"
+          v-for="(head, index) in heads"
           :key="head"
           @click="
-            sortDedata(head, deData.sortAsc);
+            sortDedata(keys[index], deData.sortAsc);
             deData.sortAsc = !deData.sortAsc;
           "
           scope="col"
