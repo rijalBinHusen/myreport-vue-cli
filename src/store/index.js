@@ -135,6 +135,10 @@ export default createStore({
             'limit': number,
           }
     	} */
+
+      //empty the store
+      commit(`${value.store}/${value.store.toLowerCase()}`, []);
+
       // call the get data functions
       myfunction
         .getData(
