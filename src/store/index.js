@@ -154,25 +154,45 @@ export default createStore({
         );
     },
     findDataByDateArrays({ commit, rootGetters }, value) {
-      // value = { store: nameOfStore, date: ["array", "of", "date"] }
+      // value = { store: nameOfStore, date: ["array", "of", "date"], criteria: {name: "abc", shared: false} }
 
       //empty the store
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
       if (Array.isArray(value.date)) {
-        value.date.map((val) => {
-          myfunction
-            .findData(
-              Object.assign(rootGetters[`${value.store}/store`], {
-                period: val,
-                obj: { periode: val },
-              })
-            )
-            .then((res) => {
-              // commit to module e.g 'Group/append
-              commit(`${value.store}/append`, res, { root: true });
-            });
+        // return as promise
+        return new Promise((resolve) => {
+          for (let i = 0; i < value.date.length; i++) {
+            myfunction
+              .findData(
+                Object.assign(rootGetters[`${value.store}/store`], {
+                  period: value.date[i],
+                  obj: { periode: value.date[i] },
+                })
+              )
+              .then((res) => {
+                // commit to module e.g 'Group/append
+                commit(`${value.store}/append`, res, { root: true });
+                //jika sudah selesai
+                if (i === value.date.length - 1) {
+                  resolve();
+                }
+              });
+          }
         });
+        // value.date.map((val) => {
+        //   myfunction
+        //     .findData(
+        //       Object.assign(rootGetters[`${value.store}/store`], {
+        //         period: val,
+        //         obj: { periode: val },
+        //       })
+        //     )
+        //     .then((res) => {
+        //       // commit to module e.g 'Group/append
+        //       commit(`${value.store}/append`, res, { root: true });
+        //     });
+        // });
         // Promise.all(getAll).then((res) => {})
       }
     },
@@ -189,9 +209,9 @@ export default createStore({
         dt <= new Date(end);
         dt.setDate(dt.getDate() + 1)
       ) {
-        arr.push(new Date(dt));
+        arr.push(new Date(dt).getTime());
       }
-      return arr.map((val) => val.getTime());
+      return arr;
       // toISOString().slice(0, 10));
     },
   },

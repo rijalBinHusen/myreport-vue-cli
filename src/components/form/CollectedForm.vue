@@ -55,7 +55,9 @@ export default {
         }
     },
     methods: {
-        show() {
+        async show() {
+            // bring up the loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // jika yang diminta total qty
             if(this.total) {
                 this.$store.dispatch("getData", {  store: "Collected", 'limit': Number(this.total), })
@@ -63,11 +65,11 @@ export default {
             // jika yang diminta nama dan periode
             else {
                 if(this.periode2 > this.periode1) {
-                    this.$store.dispatch("findDataByDateArrays", {
+                    await this.$store.dispatch("findDataByDateArrays", {
                         store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1, this.periode2)
                     })
                 } else {
-                    this.$store.dispatch("findDataByDateArrays", {
+                    await this.$store.dispatch("findDataByDateArrays", {
                         store: "Collected", date: this.$store.getters["getDaysArray"](this.periode1.getTime(), this.periode2.getTime())
                     })
                 }
