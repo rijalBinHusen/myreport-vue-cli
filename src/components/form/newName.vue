@@ -15,6 +15,7 @@
 <script>
 import Button from "../elements/Button.vue";
 import Input from "../elements/Input.vue"
+import { mapGetters, mapActions, mapMutations, mapState } from "vuex"
 
 export default {
     name: "newName",
@@ -33,32 +34,48 @@ export default {
         Input,
     },
     methods: {
+        ...mapActions({
+            UPDATE: "update",
+            APPEND: "append"
+        }),
+        ...mapMutations({
+            TOGGLE_modal: "Modal/active"
+        }),
         send() {
             let objToSend = {
                 store: "Name",
-                id: this.$store.state.Name.lists.length > 0 
-                    ? this.$store.state.Name.lists[0]["id"]
+                id: this.listsName.length > 0 
+                    ? this.listsName[0]["id"]
                     : "nme22030000",
                 obj: JSON.parse(JSON.stringify(this.name))
             }
             // if edit mode
             if(this.name.id) {
                 // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
-                this.$store.dispatch("update", objToSend)
+                this.UPDATE(objToSend)
             }
             else {
                 // else
-                this.$store.dispatch("append", objToSend)
+                this.APPEND(objToSend)
             }
 
-            this.$store.commit("Modal/active")
+            this.TOGGLE_modal()
             this.name = { name: "", warehouse: "" }
         }
     },
+    computed: {
+        ...mapState({
+            listsName: state => state.Name.lists,
+            _NAME_edit: state => state.Name.edit
+        }),
+        ...mapGetters({
+            GET_NAME_edit: "Name/edit"
+        })
+    },
 	mounted() {
         // if edit mode
-		if (this.$store.state.Name.edit) {
-            this.name = this.$store.getters["Name/edit"]
+		if (this._NAME_edit) {
+            this.name = this.GET_NAME_edit
         }
         // change the button submit 
 	},
