@@ -29,9 +29,17 @@ import newName from "../form/newName.vue"
 import UncollectedForm from "../form/UncollectedForm.vue"
 import CollectedForm from "../form/CollectedForm.vue"
 import Loader from "./Loader.vue"
+import ImporterForm from "../form/ImporterForm.vue"
 
 export default {
   name: "Modal",
+    components: {
+      newName,
+      UncollectedForm,
+      CollectedForm,
+      Loader,
+      ImporterForm,
+    },
   props: {
     judul: {
       type: String,
@@ -51,12 +59,6 @@ export default {
     modal() {
       return this.$store.state.Modal.active
     }
-  },
-  components: {
-    newName,
-    UncollectedForm,
-    CollectedForm,
-    Loader,
   },
 };
 </script>

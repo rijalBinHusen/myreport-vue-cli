@@ -6,8 +6,18 @@ import Collected from "./modules/Collected";
 import Name from "./modules/Name.js";
 import Uncollected from "./modules/Uncollected";
 import Expor from "./modules/Expor";
+import Impor from "./modules/Impor";
 
 export default createStore({
+  modules: {
+    Navbar,
+    Modal,
+    Collected,
+    Name,
+    Uncollected,
+    Expor,
+    Impor,
+  },
   state: {
     store: localStorage.getItem("store")
       ? JSON.parse(localStorage.getItem("store"))
@@ -193,6 +203,15 @@ export default createStore({
         });
       }
     },
+    rewriteStore({}, payload) {
+      //payload = {store: nameOfStore: obj: [Array would to wrote]}
+      myfunction.reWriteStoreWithKey(payload);
+      return myfunction.tunggu(2000);
+    },
+    emptyStore({}, payload) {
+      myfunction.deleteCollection(payload);
+      return myfunction.tunggu(2000);
+    },
   },
   getters: {
     dateFormat: () => (value) => {
@@ -211,13 +230,5 @@ export default createStore({
       return arr;
       // toISOString().slice(0, 10));
     },
-  },
-  modules: {
-    Navbar,
-    Modal,
-    Collected,
-    Name,
-    Uncollected,
-    Expor,
   },
 });

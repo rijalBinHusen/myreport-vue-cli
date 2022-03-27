@@ -89,6 +89,11 @@ export default {
       .doc({ id: value.id })
       .set(value.obj);
   },
+  reWriteStoreWithKey: function (value) {
+    // console.log(value);
+    // value = {store: nameOfStore: obj: [Array would to wrote]}
+    db.collection(value.store).set(value.obj, { keys: true });
+  },
   getData: function (deData) {
     /*deData = {
 	store: "nameStore", 
@@ -153,9 +158,13 @@ export default {
     /*value = {
 	store: "nameStore", 
 	split: "tahun/bulan/false",
-	period: "202203/time()"
+	period: "202203/time()"/
     	} */
-    db.collection(storenya(value.store, value.split, value.period)).delete();
+    if (typeof value === "object") {
+      db.collection(storenya(value.store, value.split, value.period)).delete();
+    } else {
+      db.collection(value).delete();
+    }
   },
   deleteDb: function () {
     db.delete();
@@ -166,7 +175,11 @@ export default {
 	split: "tahun/bulan/false",
 	period: "202203/time()"
     	} */
-    db.collection(storenya(value.store, value.split, value.period)).set({});
+    if (typeof value === "object") {
+      db.collection(storenya(value.store, value.split, value.period)).set({});
+    } else {
+      db.collection(value).set([{}]);
+    }
   },
   deleteDocument: function (value) {
     /*value = {
