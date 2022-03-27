@@ -35,6 +35,7 @@
 
 import Button from "../elements/Button.vue"
 import Table from "../elements/Table.vue"
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex"
 
 export default {
     name: "Name",
@@ -43,30 +44,41 @@ export default {
         Table
     },
     methods: {
+        ...mapMutations({
+            //the modal
+            TOGGLE_modal: "Modal/active",
+            NAME_edit: "Name/edit"
+        }),
+        ...mapActions({
+            UPDATE: "update"
+        }),
         tambahNama() {
             // bring up the form and the modal
-            this.$store.commit("Modal/active", {judul: "Masukkan nama baru", form: "newName"});
+            this.TOGGLE_modal({judul: "Masukkan nama baru", form: "newName"})
             // make vuex edit null
-            this.$store.commit("Name/edit", "")
+            this.NAME_edit(null)
         },
 		editName(ev) {
 			// Bring up the form and modal
-			this.$store.commit("Modal/active", {judul: "Ubah nama", form: "newName"});
+			this.TOGGLE_modal({judul: "Ubah nama", form: "newName"});
 			// add value to form
-			this.$store.commit("Name/edit", ev)
+			this.NAME_edit(ev)
 		},
         disableName(ev) {
-            this.$store.commit("Name/edit", ev)
-            let record = this.$store.getters["Name/edit"]
+            this.NAME_edit(ev)
+            let record = this.GET_NAME_edit
             // change record disabled
             record.disabled = !record.disabled
-            this.$store.dispatch("update", { store: "Name", obj: record })
+            this.UPDATE({ store: "Name", obj: record })
         },
     },
     computed: {
-        listsName() {
-            return JSON.parse(JSON.stringify(this.$store.state.Name.lists))
-        },
+            ...mapState({
+                listsName: state => state.Name.lists
+            }),
+            ...mapGetters({
+                GET_NAME_edit: "Name/edit"
+            })
     }
 }
 </script>
