@@ -5,13 +5,23 @@
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" @trig="collectedForm" />
     </div>
-			<Table v-if="collected.length > 0"
+			<!-- <Table v-if="collected.length > 0"
 			:headers="['Nama', 'Gudang', 'Periode', 'Collected']" 
 			:lists="collected" 
 			:keys="['nameSPV', 'warehouse', 'periode', 'date']"
 			v-slot:default="slotProp"
 			options
-			>
+			> -->
+
+            <Datatable
+            :datanya="collected"
+            :heads="['Nama', 'Gudang', 'Periode', 'Collected']"
+            :keys="['nameSPV', 'warehouse', 'periode', 'date']"
+            option
+            id="tableCollected"
+            v-slot:default="slotProp"
+            >
+
             <div v-if="!slotProp.prop.shared">
 				<Button value="Batal" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
                 <Button value="Edit" type="button" secondary small @trig="edit(slotProp.prop.id)" />
@@ -20,7 +30,8 @@
             <div v-else>
                 Shared at {{ this.$store.getters["dateFormat"]({format: "dateMonth", time: slotProp.prop.shared }) }}
             </div>
-			</table>
+            </Datatable>
+			<!-- </table> -->
 			
         </div>
 </template>
@@ -28,7 +39,7 @@
 <script>
 import Input from "../elements/Input.vue"
 import Button from "../elements/Button.vue"
-import Table from "../elements/Table.vue"
+import Datatable from "../parts/Datatable.vue"
 import datepicker from "vue3-datepicker"
 
 export default {
@@ -41,7 +52,7 @@ export default {
     components: {
         Input,
         Button,
-        Table,
+        Datatable,
         datepicker,
     },
     methods: {
