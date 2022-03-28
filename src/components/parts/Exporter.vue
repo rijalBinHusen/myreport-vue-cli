@@ -46,7 +46,7 @@ export default {
         ? //jika sudah
           this.download(`Backup myreport ${
             this.$store.getters["dateFormat"]({format: "full"})
-          }`, "text/plain")
+          }.js`, "text/plain")
         : //jike belum jalankan lagi exportDataCollect
           setTimeout(() => {
             this.exportDataCollect();

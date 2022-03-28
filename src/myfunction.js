@@ -268,7 +268,15 @@ export default {
     else if (a[0] == "-1") {
       a001.setDate(a002 - 1);
       return a001.getTime();
-    } // hari sebelumnya pada jam 00:00
+    } // 1 hari sebelumnya time
+    else if (a[0] == "-2") {
+      a001.setDate(a002 - 2);
+      return a001.getTime();
+    } // 2 hari sebelumnya time
+    else if (a[0] == "-3") {
+      a001.setDate(a002 - 3);
+      return a001.getTime();
+    } // 3 hari sebelumnya time
     else if (a[0] == "0") {
       return a001.getTime() - 25200000;
     } // hari yang tersebut pada jam 00:00

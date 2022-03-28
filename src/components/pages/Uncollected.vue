@@ -21,17 +21,19 @@
 					@trig="pesan(slotProp.prop)" 
 					/>
 				</span>
-
-                <span>
-                    <Button
+                    <Dropdown 
                     v-for="uncl in slotProp.prop.uncollected" :key="uncl.id"
-					primary
-					:value="uncl.periode" 
-					:datanya="uncl.id" 
-					type="button" 
-					@trig="collect($event)" 
-					/>
-                </span>
+                    :value="uncl.periode"  
+                    :lists="[
+                        { id: -1, isi: '-1 Hari'},
+                        { id: -2, isi: '-2 Hari'},
+                        { id: -3, isi: '-3 Hari'},
+                        { id: 0, isi: '0 Hari' }
+                    ]"
+                    listsKey="id"
+                    listsValue="isi"
+                    @trig="collect({val: $event, rec: uncl.id})"
+                    />
         </Datatable>
 </div>
 </template>
@@ -40,12 +42,14 @@
 
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
+import Dropdown from "../elements/Dropdown.vue"
 
 export default {
     name: "Uncollected",
     components: {
         Button,
         Datatable,
+        Dropdown
     },
     methods: {
 		addPeriod() {
@@ -54,9 +58,9 @@ export default {
 		},
         collect(ev) {
             // get record from uncollected the state
-            let info = this.$store.getters["Uncollected/getId"](ev)
+            let info = this.$store.getters["Uncollected/getId"](ev.rec)
 
-            info.collected = this.$store.getters["dateFormat"]({format: "-1"})
+            info.collected = this.$store.getters["dateFormat"]({format: ev.val})
             info.shared = false
 
             // append to collected store
@@ -68,7 +72,7 @@ export default {
 
             // delete from uncollected store
             // value = { store: "listsnames", id: 001 }
-            this.$store.dispatch("delete", {store: "Uncollected", id: ev})
+            this.$store.dispatch("delete", {store: "Uncollected", id: ev.rec})
             
         },
 		pesan(ev) {
