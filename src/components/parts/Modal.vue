@@ -30,6 +30,7 @@ import UncollectedForm from "../form/UncollectedForm.vue"
 import CollectedForm from "../form/CollectedForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "../form/ImporterForm.vue"
+import ImporReport1Form from "../form/ImportRepor1tForm.vue"
 
 export default {
   name: "Modal",
@@ -39,6 +40,7 @@ export default {
       CollectedForm,
       Loader,
       ImporterForm,
+      ImporReport1Form,
     },
   props: {
     judul: {

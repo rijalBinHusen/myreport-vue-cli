@@ -12,7 +12,8 @@
     "vue": "^3.2.13",
     "vue3-datepicker": "^0.3.2",
     "vuex": "^4.0.0",
-    "w3-css": "^4.1.0"
+    "w3-css": "^4.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
