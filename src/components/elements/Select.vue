@@ -1,5 +1,5 @@
 <template>
-    <select @change="selected($event.target.value)" class="w3-select w3-margin-top w3-margin-bottom" name="option">
+    <select @change="selected($event.target.value)" :class="classLists" name="option">
         <option 
             v-for="option in options" :key="option[value]" 
             :value="option[value]">
@@ -36,13 +36,30 @@ export default {
         text: {
             type: String,
             required: true,
-        }
+        },
+        nomargin: Boolean,
+        small: Boolean,
     },
     emits: ["selected"],
     methods: {
         selected(ev) {
             this.$emit("selected", ev)
         }
-    }
-}
+    },
+    computed: {
+
+        classLists() {    
+            let className = ["w3-select "];
+
+            if(!this.nomargin) {
+                className.push("w3-margin-top w3-margin-bottom")
+            }
+            if(this.small) {
+                className.push("w3-small")
+            }
+
+            return className.join(" ")
+        },
+    },
+};
 </script>

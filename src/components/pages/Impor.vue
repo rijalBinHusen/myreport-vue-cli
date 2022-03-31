@@ -5,21 +5,26 @@
     <p></p>
     <Importer />
     <p></p>
-    <ImporReport1 />
+    <Button primary value="Import Report" type="button" @trig="imporModal" />
 </template>
 
 <script>
 import Exporter from "../parts/Exporter.vue"
 import Importer from "../parts/Importer.vue"
-import ImporReport1 from "../parts/ImporReport1"
+import Button from "../elements/Button.vue"
+// import ImporReport1 from "../parts/ImporReport1"
 
 export default {
     name: "Impor",
     components: {
         Exporter,
         Importer,
-        ImporReport1
+        Button,
     },
-    methods: {}
+    methods: {
+        imporModal() {
+            this.$store.commit("Modal/active", {judul: "Setup import data", form: "ImporReport1Form"});
+        }
+    }
 }
 </script>

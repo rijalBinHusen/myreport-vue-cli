@@ -14,8 +14,10 @@ export default {
 		return {};
 	},
     components: {},
+	emits: ["fileSelected", "disabled"],
     methods: {
 		readExcel(e) {
+			this.$emit("disabled", true)
 			const file = e.target.files[0]
 			let info = { fileName: file.name }
 			
@@ -31,17 +33,6 @@ export default {
 					info.sheetNames = wb.SheetNames
 					info.sheets = wb.Sheets
 					
-					// const wsname = wb.SheetNames
-					
-					// const data = []
-
-					// wsname.forEach((val) => {
-					// 	const ws = wb.Sheets[val];
-					// 	data.push(XLSX.utils.sheet_to_csv(ws))
-					// })
-					
-					
-					// resolve(data)
 					resolve(info)
 				};
 				
@@ -50,7 +41,8 @@ export default {
 			
 			promise.then((d) => {
 				this.$store.commit("ImporReport1/impor", d)
-				this.$store.commit("Modal/active", {judul: "Setup import data", form: "ImporReport1Form"});
+				this.$emit("fileSelected", d.fileName)
+				this.$emit("disabled", false)
 			})
 		}
 	},
