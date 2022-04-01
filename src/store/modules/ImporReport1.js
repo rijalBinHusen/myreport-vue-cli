@@ -14,13 +14,18 @@ const ImporReport1 = {
   },
   actions: {},
   getters: {
-    sheetNames: (state) => (index) => {
-      return state.lists[index].sheetNames.map((val, ind) => {
+    sheetNamesByFileName: (state) => (fileName) => {
+      // console.log(fileName);
+      let arrSheetNames = state.lists.find((val) => val.fileName);
+      return arrSheetNames.sheetNames.map((val, ind) => {
         return {
           id: ind,
           value: val,
         };
       });
+    },
+    fileNames(state) {
+      return state.lists.map((val) => val.fileName);
     },
   },
 };

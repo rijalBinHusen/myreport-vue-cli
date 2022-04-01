@@ -7,6 +7,7 @@
             <th>Gudang</th>
             <th>Buku stock</th>
             <th>Rekap</th>
+            <th>Opsi</th>
             </tr>
             <tr v-for="(info, index) in setupImport" :key="index">
             <td>
@@ -18,7 +19,7 @@
                 </span>
             </td>
             <td>
-                <Datepicker class="w3-small" v-model="info.tanggal" />
+                <Datepicker class="w3-small w3-padding" v-model="info.tanggal" />
             </td>
             <td>
                 <Select 
@@ -42,7 +43,7 @@
                 <span v-else>
                     <Select 
                     nomargin
-                    :options="GET_SHEETNAMES(+index)" 
+                    :options="GET_SHEETNAMES(info.fileName)" 
                     value="id"
                     text="value"
                     @selected="info.bukuStock = $event"
@@ -56,12 +57,15 @@
                 <span v-else>
                     <Select 
                     nomargin
-                    :options="GET_SHEETNAMES(+index)" 
+                    :options="GET_SHEETNAMES(info.fileName)" 
                     value="id"
                     text="value"
                     @selected="info.rekap = $event"
                     />
                 </span>
+            </td>
+            <td>
+                <Button small danger value="Batal" type="button" @trig="batal(index)" />
             </td>
             </tr>
         </table>
@@ -93,21 +97,31 @@ export default {
         }
     },
     methods: {
-        tambah() {
+        tambah(ev) {
             this.setupImport.push({
-                nameFile: null,
+                fileName: ev ? ev : null,
                 tanggal: new Date,
                 gudang: null,
                 bukuStock: null,
                 rekap: null,
-            })
-            
+            })   
+        },
+        batal(ev) {
+            this.setupImport = this.setupImport.filter((val, index) => index !== ev)
         }
     },
     computed: {
         ...mapGetters({
-            GET_SHEETNAMES: "ImporReport1/sheetNames"
+            GET_SHEETNAMES: "ImporReport1/sheetNamesByFileName",
+            GET_FILESNAMES: "ImporReport1/fileNames"
         })
     },
+    mounted() {
+        if(this.GET_FILESNAMES.length > 0) {
+            this.GET_FILESNAMES.forEach((val) => {
+                this.tambah(val)
+            })
+        }
+    }
 }
 </script>

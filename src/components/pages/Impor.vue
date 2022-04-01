@@ -5,7 +5,7 @@
     <p></p>
     <Importer />
     <p></p>
-    <Button primary value="Import Report" type="button" @trig="imporModal" />
+    <Button primary value="Import base totalan" type="button" @trig="imporModal" />
 </template>
 
 <script>
