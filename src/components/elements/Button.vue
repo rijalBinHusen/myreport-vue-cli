@@ -30,6 +30,7 @@ export default {
     href: String,
     icon: String,
     small: Boolean,
+    noborder: Boolean,
   },
   emits: ["trig"],
   methods: {
@@ -40,12 +41,13 @@ export default {
   computed: {
     className() {
       let classList = [];
-      if (this.type == "button") classList.push("w3-button w3-border w3-margin-right");
+      if (this.type == "button") classList.push("w3-button w3-margin-right");
+      if (!this.noborder) classList.push("w3-border")
       if (this.small) classList.push("w3-small");
       if (this.primary) classList.push("w3-teal");
       if (this.secondary) classList.push("w3-aqua");
       if (this.danger) classList.push("w3-pink");
-      if (this.class) classList.push(this.class.split(" "));
+      if (this.class) classList.push(this.class);
 
       return classList.join(" ");
     },
