@@ -9,6 +9,7 @@ import Impor from "./modules/Impor";
 import ImporReport1 from "./modules/ImporReport1";
 import Warehouses from "./modules/Warehouses";
 import Supervisors from "./modules/Supervisors.js";
+import Backup from "./modules/Backup.js";
 
 export default createStore({
   modules: {
@@ -21,6 +22,7 @@ export default createStore({
     ImporReport1,
     Warehouses,
     Supervisors,
+    Backup,
   },
   state: {
     store: localStorage.getItem("store")

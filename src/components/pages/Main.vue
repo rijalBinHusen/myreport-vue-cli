@@ -15,6 +15,7 @@
 	import Modal from "../parts/Modal.vue"
 	import Warehouses from "./Warehouses.vue"
 	import Supervisors from "./Supervisors.vue"
+	import Backup from "./Backup.vue"
 	
 	export default {
 		name: "Main",
@@ -27,6 +28,7 @@
 			Modal,
 			Warehouses,
 			Supervisors,
+			Backup,
 		},
 		computed: {
 			activeNav() {
