@@ -18,7 +18,7 @@
             />
             <div class=" w3-center" style="margin-top:80px;">
                 <p class="">
-                    Next backup : {{ 
+                    Next backup at least : {{ 
                         _BACKUP.length > 0 
                             ? GET_DATEFORMAT({format: "full", time: _BACKUP[0].nextBackup})
                             : '' }}
@@ -70,65 +70,17 @@ export default {
             this.APPEND({
                 store: "Backup",
                 obj: {
-                id: this.GET_DATEFORMAT({format: "time"}),
+                    id: this.GET_DATEFORMAT({format: "time"}),
                 nextBackup: now.getTime(),
                 setup: value,
                 }
             });
-            this.exportDataCollect("start")
+            this.$store.dispatch("Expor/expor")
         },    
-        //trigeer methods untuk collect data
-        exportDataCollect(cond) {
-        // bring up the loader
-        this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-        if (cond == "start") {
-            //buka loader
-            // this.$store.dispatch("Modal/loading", "open");
-            //trigger methods divuex untuk collect data
-            this.$store.dispatch("Backup/backup")
-            //periksa apakah sudah tercollect atau tidak
-            this.checkDataCollect();
-        } else {
-            //cek apakah progres suda selessai atau tidak
-            this.checkDataCollect();
-        }
-        },
-        //periksa apakah collect data sudah selelsai
-        checkDataCollect() {
-        // status: this.$store.getters["ExIm/statusExport"]
-        JSON.parse(this._EXPORTBACKUP).status
-            ? //jika sudah
-            this.download(`Backup myreport ${
-                this.GET_DATEFORMAT({format: "full"})
-            }.js`, "text/plain")
-            : //jike belum jalankan lagi exportDataCollect
-            setTimeout(() => {
-                this.exportDataCollect();
-            }, 3000);
-        },
-        download(fileName, contentType) {
-        // tutup Loader
-        this.$store.commit("Modal/active")
-        
-        var a = document.createElement("a");
-        var file = new Blob(
-            [this._EXPORTBACKUP],
-            {
-            type: contentType,
-            }
-        );
-        a.href = URL.createObjectURL(file);
-        a.download = fileName;
-        a.click();
-        //destroy data collect
-        //   this.$store.dispatch("ExIm/destroyDataCollect");
-        },
-        // download(jsonData, 'json.txt', 'text/plain');
     },
     computed: {
         ...mapState({
             _BACKUP: state => JSON.parse(JSON.stringify(state.Backup.lists)),
-            _EXPORTBACKUP: state => JSON.stringify(state.Backup.backupExport)
         }),
         ...mapGetters({
             GET_DATEFORMAT: "dateFormat",

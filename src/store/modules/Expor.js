@@ -13,68 +13,38 @@ const Expor = {
   },
   actions: {
     //   expor all data
-    expor({ commit, rootState, dispatch }) {
+    async expor({ state, commit, rootState, dispatch, rootGetters }) {
+      commit("Modal/active", { judul: "", form: "Loader" }, { root: true });
       commit("replace", {});
       // get all store from state
       let store = JSON.parse(JSON.stringify(rootState.store));
       // iterate, push to variable and waiting
       for (let i = 0; i < store.length; i++) {
-        dispatch("getAllData", store[i].nameOfStore, { root: true }).then(
+        // wait until data commit to state
+        await dispatch("getAllData", store[i].nameOfStore, { root: true }).then(
           (val) => {
+            // append to state
             commit("append", { store: store[i].nameOfStore, obj: val });
             if (i === store.length - 1) {
-              // change status to true
-              commit("append", { store: "status", obj: true });
+              // create a download file
+              var a = document.createElement("a");
+              var file = new Blob([JSON.stringify(state.lists)], {
+                type: "text/plain",
+              });
+              a.href = URL.createObjectURL(file);
+              a.download =
+                "Backup myreport " +
+                rootGetters["dateFormat"]({ format: "full" });
+              setTimeout(() => {
+                a.click();
+                commit("Modal/active", null, { root: true });
+                commit("replace", {});
+              }, 3500);
             }
           }
         );
       }
     },
-    // async exportDataCollect(state) {
-    //     // set download indicator to false
-    //     state.exportDataCollect.status = false;
-    //     // find all store name in indexeddb
-    //     let divisi = mydb.getData({ store: "divisi" });
-    //     let bagian = mydb.getData({ store: "bagian" });
-    //     let level = mydb.getData({ store: "level" });
-    //     let karyawan = mydb.getData({ store: "karyawan" });
-    //     let absen = mydb.getData({
-    //       store: "absen",
-    //       orderBy: "tanggal",
-    //       desc: true,
-    //     });
-    //     let impor = mydb.getData({
-    //       store: "import",
-    //       orderBy: "time",
-    //       desc: true,
-    //       limit: 10,
-    //     });
-    //     let expor = mydb.getData({
-    //       store: "export",
-    //       orderBy: "time",
-    //       desc: true,
-    //       limit: 10,
-    //     });
-    //     state.exportDataCollect = await Promise.all([
-    //       impor,
-    //       expor,
-    //       divisi,
-    //       bagian,
-    //       level,
-    //       karyawan,
-    //       absen,
-    //     ]).then((val) => ({
-    //       import: val[0],
-    //       export: val[1],
-    //       divisi: val[2],
-    //       bagian: val[3],
-    //       level: val[4],
-    //       karyawan: val[5],
-    //       absen: val[6],
-    //       status: true,
-    //     }));
-    //     // state.statusExport = true;
-    //   },
   },
   getters: {},
 };
