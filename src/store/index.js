@@ -8,6 +8,7 @@ import Uncollected from "./modules/Uncollected";
 import Expor from "./modules/Expor";
 import Impor from "./modules/Impor";
 import ImporReport1 from "./modules/ImporReport1";
+import Warehouses from "./modules/Warehouses";
 
 export default createStore({
   modules: {
@@ -19,6 +20,7 @@ export default createStore({
     Expor,
     Impor,
     ImporReport1,
+    Warehouses,
   },
   state: {
     store: localStorage.getItem("store")

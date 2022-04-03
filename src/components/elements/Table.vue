@@ -26,6 +26,7 @@
     :headers="['Nama', 'Keterangan']" 
     :lists="[{name:1, keterangan:1}]" 
     :keys="['name', 'keterangan']"
+    options
     />
 */
 

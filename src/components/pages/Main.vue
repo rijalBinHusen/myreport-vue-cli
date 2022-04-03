@@ -14,6 +14,7 @@
 	import Collected from "./Collected.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
+	import Warehouses from "./Warehouses.vue"
 	
 	export default {
 		name: "Main",
@@ -24,6 +25,7 @@
 			Impor,
 			Collected,
 			Report,
+			Warehouses,
 			Modal,
 		},
 		computed: {

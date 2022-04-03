@@ -3,18 +3,18 @@ const Navbar = {
   state: {
     active: "",
     lists: [
-      { id: "warehouses", title: "Warehouses", group: "setting" },
-      { id: "supervisors", title: "Supervisors", group: "setting" },
-      { id: "backup", title: "Backup data", group: "setting" },
-      { id: "import", title: "Import data", group: "setting" },
-      { id: "uncollected", title: "Uncollected", group: "reports" },
-      { id: "collected", title: "Collected", group: "reports" },
-      { id: "importbase", title: "Import base report", group: "reports" },
-      { id: "base", title: "Base report", group: "reports" },
-      { id: "problem", title: "Problems report", group: "reports" },
-      { id: "cases", title: "Cases report", group: "reports" },
-      { id: "complain", title: "Complain report", group: "reports" },
-      { id: "finished", title: "Finished report", group: "reports" },
+      { id: "Warehouses", title: "Warehouses", group: "setting" },
+      { id: "Supervisors", title: "Supervisors", group: "setting" },
+      { id: "Backup", title: "Backup data", group: "setting" },
+      { id: "Import", title: "Import data", group: "setting" },
+      { id: "Uncollected", title: "Uncollected", group: "reports" },
+      { id: "Collected", title: "Collected", group: "reports" },
+      { id: "Importbase", title: "Import base report", group: "reports" },
+      { id: "Base", title: "Base report", group: "reports" },
+      { id: "Problem", title: "Problems report", group: "reports" },
+      { id: "Cases", title: "Cases report", group: "reports" },
+      { id: "Complain", title: "Complain report", group: "reports" },
+      { id: "Finished", title: "Finished report", group: "reports" },
     ],
   },
   mutations: {
@@ -29,6 +29,12 @@ const Navbar = {
     },
     navbarReports(state) {
       return state.lists.filter((val) => val.group === "reports");
+    },
+    activeTitle(state) {
+      let rec = state.lists.find((val) => val.id === state.active);
+      if (state.active) {
+        return rec.title;
+      }
     },
   },
 };

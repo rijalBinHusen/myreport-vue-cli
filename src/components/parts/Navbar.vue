@@ -1,6 +1,7 @@
 <template>
 	<div class="w3-bar w3-teal w3-center w3-border w3-padding">
 		<Button primary class="w3-left w3-xlarge" value="&#9776;" @trig="sideBarActive = !sideBarActive" type="button" />
+		<span class="w3-xxlarge w3-center">{{ activeTitle }}</span>
 		<div v-if="sideBarActive" class="w3-sidebar w3-border-teal w3-rightbar w3-bar-block w3-card w3-animate-left w3-right" style="left:0; position:fixed; top:0;"  id="leftMenu">
 				<button class=" w3-text-black w3-bar-item w3-button w3-large w3-right-align" @click="sideBarActive = !sideBarActive">&times;</button>
 				
@@ -9,8 +10,7 @@
 					v-for="nav in reports"
 					:key="nav.id"
 					noborder 
-					samll
-					class="w3-bar-item w3-text-black" 
+					:class="['w3-bar-item w3-text-black', barActive === nav.id ? 'w3-teal' : '']" 
 					:value="nav.title" 
 					type="button" 
 					:datanya="nav.id" 
@@ -22,7 +22,7 @@
 					v-for="nav in setting"
 					:key="nav.id"
 					noborder 
-					class="w3-bar-item w3-text-black" 
+					:class="['w3-bar-item w3-text-black', barActive === nav.id ? 'w3-teal' : '']" 
 					:value="nav.title" 
 					type="button" 
 					:datanya="nav.id" 
@@ -41,6 +41,7 @@
 		data() {
 			return {
 				sideBarActive: true,
+				barActive: null,
 			}
 		},
 		components: {
@@ -49,12 +50,15 @@
 		methods: {
 			toNav(nav) {
 				this.$store.commit("Navbar/toNav", nav)
+				this.barActive = nav
+				this.sideBarActive = false
 			}
 		},
 		computed: {
 			...mapGetters({
 				setting: "Navbar/navbarSettings",
-				reports: "Navbar/navbarReports"
+				reports: "Navbar/navbarReports",
+				activeTitle: "Navbar/activeTitle"
 			})
 
 		},
