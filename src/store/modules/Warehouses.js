@@ -14,6 +14,10 @@ const Warehouses = {
     append(state, value) {
       state.lists.unshift(value);
     },
+    // id record to edit
+    edit(state, value) {
+      state.edit = value;
+    },
     // update data
     update(state, value) {
       state.lists = state.lists.map((val) => {
@@ -24,6 +28,15 @@ const Warehouses = {
 
   actions: {},
   getters: {
+    edit(state) {
+      return JSON.parse(
+        JSON.stringify(
+          state.edit
+            ? state.lists.find((val) => val.id === state.edit)
+            : { id: null, name: null }
+        )
+      );
+    },
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
