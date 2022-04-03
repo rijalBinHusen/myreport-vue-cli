@@ -46,6 +46,15 @@
         type="button" 
         @trig="edit($event)" 
         />
+
+        <Button
+          :danger="slotProp.prop.disabled"
+          :primary="!slotProp.prop.disabled"
+          :value="slotProp.prop.disabled ? 'Disabled' : 'Enabled'" 
+          :datanya="slotProp.prop.id" 
+          type="button" 
+          @trig="disableName($event)" 
+        />
     </Table>
 </template>
 
@@ -105,6 +114,14 @@ export default {
       this.EDIT("null")
       this.supervisor = this.GET_EDIT
     },
+    disableName(ev) {
+            this.EDIT(ev)
+            let record = this.GET_EDIT
+            // change record disabled
+            record.disabled = !record.disabled
+            this.UPDATE({ store: "Supervisors", obj: record })
+            this.EDIT("null")
+        },
   },
   mounted() {
     this.cancel();
