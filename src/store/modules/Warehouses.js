@@ -40,6 +40,11 @@ const Warehouses = {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
+    warehouseId: (state) => (id) => {
+      return JSON.parse(
+        JSON.stringify(state.lists.find((val) => val.id === id))
+      );
+    },
   },
 };
 

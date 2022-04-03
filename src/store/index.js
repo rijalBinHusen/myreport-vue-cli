@@ -3,24 +3,24 @@ import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
 import Collected from "./modules/Collected";
-import Name from "./modules/Name.js";
 import Uncollected from "./modules/Uncollected";
 import Expor from "./modules/Expor";
 import Impor from "./modules/Impor";
 import ImporReport1 from "./modules/ImporReport1";
 import Warehouses from "./modules/Warehouses";
+import Supervisors from "./modules/Supervisors.js";
 
 export default createStore({
   modules: {
     Navbar,
     Modal,
     Collected,
-    Name,
     Uncollected,
     Expor,
     Impor,
     ImporReport1,
     Warehouses,
+    Supervisors,
   },
   state: {
     store: localStorage.getItem("store")

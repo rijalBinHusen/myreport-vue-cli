@@ -25,7 +25,6 @@
 
 <script>
 
-import newName from "../form/newName.vue"
 import UncollectedForm from "../form/UncollectedForm.vue"
 import CollectedForm from "../form/CollectedForm.vue"
 import Loader from "./Loader.vue"
@@ -35,7 +34,6 @@ import ImporReport1Form from "../form/ImportRepor1tForm.vue"
 export default {
   name: "Modal",
     components: {
-      newName,
       UncollectedForm,
       CollectedForm,
       Loader,

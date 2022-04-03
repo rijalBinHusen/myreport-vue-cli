@@ -2,7 +2,9 @@
     <select @change="selected($event.target.value)" :class="classLists" name="option">
         <option 
             v-for="option in options" :key="option[value]" 
-            :value="option[value]">
+            :value="option[value]"
+            :selected="option[value] == inselect"
+            >
         
             {{ option[text] }}
         
@@ -39,6 +41,7 @@ export default {
         },
         nomargin: Boolean,
         small: Boolean,
+        inselect: String,
     },
     emits: ["selected"],
     methods: {
