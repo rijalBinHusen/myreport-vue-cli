@@ -49,34 +49,14 @@ export default {
         }
     },
     methods: {
-    ...mapActions({
-      APPEND: "append",
-    }),
+        ...mapActions({
+        APPEND: "Backup/append",
+        }),
+
         setPeriode(value) {
-            let now = new Date();
-            if (value == "hours") {
-                now.setHours(now.getHours() + 1);
-            }
-            if (value == "day") {
-                now.setDate(now.getDate() + 1);
-            }
-            if (value == "week") {
-                now.setDate(now.getDate() + 7);
-            }
-            if (value == "month") {
-                now.setDate(1);
-                now.setMonth(now.getMonth() + 1);
-            }
-            this.APPEND({
-                store: "Backup",
-                obj: {
-                    id: this.GET_DATEFORMAT({format: "time"}),
-                nextBackup: now.getTime(),
-                setup: value,
-                }
-            });
-            this.$store.dispatch("Expor/expor")
-        },    
+            this.APPEND(value)
+        },
+
     },
     computed: {
         ...mapState({

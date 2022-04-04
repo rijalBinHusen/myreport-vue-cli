@@ -31,7 +31,7 @@ export default createStore({
   },
   mutations: {},
   actions: {
-    append({ commit, rootGetters }, value) {
+    async append({ commit, rootGetters, dispatch }, value) {
       /* value = { 
             store: "nameOfStore",
             obj: { key: 'value', obj: 'to input to store' },
@@ -54,9 +54,10 @@ export default createStore({
       commit(`${value.store}/append`, value.obj, { root: true });
 
       // insert record to indexeddb and return as promise
+      dispatch("Backup/check", {}, { root: true });
       return new Promise((resolve) => {
         myfunction.append(objToSend);
-        setTimeout(() => resolve(), 330);
+        setTimeout(() => resolve(), 130);
       });
     },
 
