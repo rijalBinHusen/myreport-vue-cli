@@ -1,5 +1,5 @@
 <template>
-  <button v-if="type === 'button'" :class="className" @click="trigger">
+  <button v-if="type === 'button'" :class="className" :style="style" @click="trigger">
     <slot></slot>
     {{ value }}
   </button>
@@ -17,6 +17,7 @@
 export default {
   name: "Button",
   props: {
+    style: Object,
     datanya: String ,
     danger: Boolean,
     primary: Boolean,

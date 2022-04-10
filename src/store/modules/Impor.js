@@ -1,11 +1,11 @@
 const Impor = {
   namespaced: true,
   state: {
-    lists: [],
+    status: false,
   },
   mutations: {
     impor(state, payload) {
-      state.lists = payload;
+      state.status = payload;
     },
   },
   actions: {},

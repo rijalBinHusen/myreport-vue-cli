@@ -15,8 +15,10 @@ const Backup = {
   },
 
   actions: {
-    append({ dispatch, state, rootGetters }, payload) {
-      let value = payload ? payload : state.lists[0].setup;
+    append({ dispatch, commit, state, rootGetters }, payload) {
+      let value = state.lists.length > 0 ? state.lists[0].setup : "hours";
+      value = payload ? payload : setup;
+
       let now = new Date();
       if (value == "hours") {
         now.setHours(now.getHours() + 1);
@@ -43,14 +45,17 @@ const Backup = {
         },
         { root: true }
       );
+      commit("Impor/impor", true, { root: true });
       dispatch("Expor/expor", {}, { root: true });
     },
     check({ dispatch, state }) {
-      let nextbackup = state.lists[0].nextBackup;
       let now = new Date().getTime();
-      if (now > nextbackup) {
+      let nextbackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
+      if (now >= nextbackup) {
         dispatch("append");
+        return;
       }
+      commit("Impor/impor", false, { root: true });
     },
   },
   getters: {

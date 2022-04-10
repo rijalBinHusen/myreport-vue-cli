@@ -9,7 +9,7 @@
 <script>
 	import Navbar from "../parts/Navbar.vue";
 	import Uncollected from "./Uncollected.vue"
-	import Impor from "./Impor.vue"
+	import ImportData from "./ImportData.vue"
 	import Collected from "./Collected.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
@@ -22,7 +22,7 @@
 		components: { 
 			Navbar,
 			Uncollected,
-			Impor,
+			ImportData,
 			Collected,
 			Report,
 			Modal,

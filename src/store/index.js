@@ -83,8 +83,11 @@ export default createStore({
 
     // to update record in indexeddb
     update({ commit, rootGetters }, value) {
-      // value = {store: 'nameOfStore', obj: {id: idOfDocument, obj: {asd: 'to append to indexeddb'} }
-      // the first letter of value.store must be capital e.g 'Group'
+      /* value = { 
+          store: 'nameOfStore', 
+          obj: {id: idOfDocument, asd: 'to append to indexeddb' }
+      }
+      // the first letter of value.store must be capital e.g 'Group' 
 
       /*value = {
         store: "nameStore",
@@ -97,14 +100,14 @@ export default createStore({
         obj: value.obj,
       });
       // console.log(value);
-      if (objToSend.split) {
-        objToSend.period =
-          "20" +
-          value.obj.id.slice(3, 5) +
-          "-" +
-          value.obj.id.slice(5, 7) +
-          "-01";
-      }
+      // if (objToSend.split) {
+      //   objToSend.period =
+      //     "20" +
+      //     value.obj.id.slice(3, 5) +
+      //     "-" +
+      //     value.obj.id.slice(5, 7) +
+      //     "-01";
+      // }
 
       // send to indexeddb
       myfunction.update(objToSend);
