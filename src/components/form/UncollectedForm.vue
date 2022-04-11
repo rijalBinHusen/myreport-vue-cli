@@ -40,7 +40,7 @@ export default {
         return {
             collect: {
                 name: "",
-                periode: this.GET_LASTDATE,
+                periode: new Date(),
             }
         }
     },
@@ -104,5 +104,8 @@ export default {
             return options
         }
     },
+    mounted() {
+        console.log(this.GET_LASTDATE)
+    }
 }
 </script>

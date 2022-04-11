@@ -21,19 +21,26 @@ const Uncollected = {
   actions: {},
   getters: {
     // all uncollected record
-    uncollected(state, getters, rootState, rootGetters) {
+    uncollectedBySpv(state, getters, rootState, rootGetters) {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
-      let result = {};
-      JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
-        val.periode = rootGetters["dateFormat"]({
-          format: "dateMonth",
-          time: val.periode,
+      if (state.lists.length > 0) {
+        let result = {};
+        // sort the lists
+        let temp = JSON.parse(JSON.stringify(state.lists)).sort(
+          (a, b) => a.periode < b.periode
+        );
+        // iterate the lists
+        temp.forEach((val) => {
+          val.periode = rootGetters["dateFormat"]({
+            format: "dateMonth",
+            time: val.periode,
+          });
+          result[val.name]
+            ? (result[val.name] += ", " + val.periode)
+            : (result[val.name] = val.periode);
         });
-        result[val.name]
-          ? result[val.name].push(val)
-          : (result[val.name] = [val]);
-      });
-      return result;
+        return result;
+      }
     },
     // mengembalikan info store
     store(state) {

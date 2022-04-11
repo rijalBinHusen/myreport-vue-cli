@@ -4,9 +4,9 @@
             <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
             
 		<Datatable
-          :datanya="lists"
-          :heads="['Nama', 'Gudang']"
-          :keys="['name', 'warehouseName']"
+          :datanya="listsByWarehouse"
+          :heads="['Gudang', 'Nama', 'Daftar report']"
+          :keys="['warehouseName', 'name', 'uncollected']"
           option
           :id="'nameOftable'"
           v-slot:default="slotProp"
@@ -20,7 +20,7 @@
 					@trig="pesan(slotProp.prop)" 
 					/>
 				</span>
-                    <Dropdown 
+                    <!-- <Dropdown 
                     v-for="uncl in slotProp.prop.uncollected" :key="uncl.id"
                     :value="uncl.periode"  
                     :lists="[
@@ -32,7 +32,7 @@
                     listsKey="id"
                     listsValue="isi"
                     @trig="collect({val: $event, rec: uncl.id})"
-                    />
+                    /> -->
         </Datatable>
 </div>
 </template>
@@ -100,13 +100,13 @@ export default {
             _SUPERVISORS: state => JSON.parse(JSON.stringify(state.Supervisors.lists))
         }),
         ...mapGetters({
-            GET_UNCOLLECTED: "Uncollected/uncollected",
+            GET_UNCOLLECTEDbySpv: "Uncollected/uncollectedBySpv",
             GET_SUPERVISORS: "Supervisors/lists"
         }),
-        lists() {
+        listsByWarehouse() {
             let result = []
             this.GET_SUPERVISORS.forEach((val) => {
-                result.push(Object.assign(val, { uncollected: this.GET_UNCOLLECTED[val.id] }))
+                result.push(Object.assign(val, { uncollected: this.GET_UNCOLLECTEDbySpv[val.id] }))
             })
             return result
         },
