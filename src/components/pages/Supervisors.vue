@@ -100,7 +100,7 @@ export default {
         else {
           this.APPEND({
             store: "Supervisors",
-            obj: Object.assign( { id: uid(3) }, this.supervisor)
+            obj: Object.assign( { id: uid(3), disabled: false }, this.supervisor)
           })
         }
       }

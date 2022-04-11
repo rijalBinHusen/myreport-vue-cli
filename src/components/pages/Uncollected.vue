@@ -1,6 +1,5 @@
 <template>
-<div class="w3-container">
-    <h1>Report uncollected</h1>
+<div class="w3-container w3-margin-top">
 			<Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
             <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
             
@@ -43,6 +42,7 @@
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
 import Dropdown from "../elements/Dropdown.vue"
+import { mapState, mapGetters } from "vuex";
 
 export default {
     name: "Uncollected",
@@ -96,13 +96,16 @@ export default {
         }
     },
     computed: {
+        ...mapState({
+            _SUPERVISORS: state => JSON.parse(JSON.stringify(state.Supervisors.lists))
+        }),
+        ...mapGetters({
+            GET_UNCOLLECTED: "Uncollected/uncollected"
+        }),
         lists() {
-            let uncollected = this.$store.getters["Uncollected/uncollected"]
-            let name = JSON.parse(JSON.stringify(this.$store.state.Name.lists))
             let result = []
-
-            name.forEach((val) => {
-                result.push(Object.assign(val, {uncollected: uncollected[val.id] }))
+            this._SUPERVISORS.forEach((val) => {
+                result.push(Object.assign(val, { uncollected: this.GET_UNCOLLECTED[val.id] }))
             })
             return result
             // return this.$store.state.Name.lists

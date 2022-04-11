@@ -52,6 +52,9 @@ const Supervisors = {
         return val;
       });
     },
+    enabled(state) {
+      return state.lists.filter((val) => val.disabled === false);
+    },
   },
 };
 

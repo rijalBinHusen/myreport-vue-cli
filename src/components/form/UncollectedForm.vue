@@ -11,7 +11,7 @@
     <Datepicker 
         class="w3-input" 
         v-model="collect.periode" 
-        :lowerLimit="this.$store.getters['Uncollected/lastDate']"
+        :lowerLimit="this.GET_LASTDATE"
         inputFormat="yyyy-MM-dd"
     />
 
@@ -31,6 +31,8 @@
 import Select from "../elements/Select.vue"
 import Button from "../elements/Button.vue"
 import Datepicker from "vue3-datepicker"
+import { mapState, mapGetters } from "vuex"
+import { uid } from "uid"
 
 export default {
     name: "UncollectedForm",
@@ -38,7 +40,7 @@ export default {
         return {
             collect: {
                 name: "",
-                periode: this.$store.getters['Uncollected/lastDate'],
+                periode: this.GET_LASTDATE,
             }
         }
     },
@@ -50,29 +52,25 @@ export default {
                 
                 if(this.collect.name === "semua") {
                     // ambil semua nama
-                    let allName = this.$store.getters["Name/enabled"]
+                    let allName = this.GET_SPVENABLE
                     // iterate semua nama satu satu
                     for(let i=0; i < allName.length; i++) {
                         // tunggu sampai append selesai
                         await this.$store.dispatch("append", {
                             store: "Uncollected",
-                            id: this.$store.state.Uncollected.lists.length > 0 
-                            ? this.$store.state.Uncollected.lists[0]["id"]
-                            : "unc0000",
-                            obj: {name: allName[i].id, periode: 
-                            this.$store.getters["dateFormat"]({format: "time", time: this.collect.periode})
+                            id: uid(3),
+                            obj: { name: allName[i].id, 
+                            periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
                             },
                         })
                     }
                 } else {
                     this.$store.dispatch("append", {
                             store: "Uncollected",
-                            id: this.$store.state.Uncollected.lists.length > 0 
-                            ? this.$store.state.Uncollected.lists[0]["id"]
-                            : "unc0000",
+                            id: uid(3),
                             obj: {
                                 name: this.collect.name,
-                                periode: this.$store.getters["dateFormat"]({format: "time", time: this.collect.periode})
+                                periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
                                 },
                         })
                 }
@@ -87,15 +85,24 @@ export default {
         Datepicker,
     },
     computed: {
+        ...mapState({
+            _SPV: state => JSON.parse(JSON.stringify(state.Supervisors.lists)),
+            _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists))
+        }),
+        ...mapGetters({
+            GET_SPVENABLE: "Supervisors/enabled",
+            GET_LASTDATE: "Uncollected/lastDate",
+            GET_DATEFORMAT: "dateFormat",
+        }),
         names() {
             // ambil semua nama dari state
-            let options = JSON.parse(JSON.stringify(this.$store.state.Name.lists))
+            let options = this._SPV
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
             options.unshift({id: "", name: "Pilih nama" })
             // kembalikan agar tidak reactive
-            return JSON.parse(JSON.stringify(options))
+            return options
         }
-    }
+    },
 }
 </script>

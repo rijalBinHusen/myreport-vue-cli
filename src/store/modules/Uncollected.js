@@ -41,10 +41,15 @@ const Uncollected = {
     },
     // mengembalikan tanggal terakhir yang sudah diinput
     lastDate(state) {
-      let temp =
-        state.lists.length > 0
-          ? new Date(JSON.parse(JSON.stringify(state.lists[0].periode)))
-          : new Date("2022-01-01");
+      let temp;
+      if (state.lists.length > 0) {
+        // extract all date
+        let number = state.lists.map((val) => val.periode);
+        // find the highest value of number
+        temp = new Date(Math.max.apply(Math, number));
+      } else {
+        temp = new Date("2022-01-01");
+      }
       temp.setDate(temp.getDate() + 1);
       return temp;
     },

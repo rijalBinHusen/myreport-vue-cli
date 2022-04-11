@@ -48,7 +48,7 @@ const Backup = {
       commit("Impor/impor", true, { root: true });
       dispatch("Expor/expor", {}, { root: true });
     },
-    check({ dispatch, state }) {
+    check({ dispatch, state, commit }) {
       let now = new Date().getTime();
       let nextbackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
       if (now >= nextbackup) {
