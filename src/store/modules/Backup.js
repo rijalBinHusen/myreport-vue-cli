@@ -12,6 +12,9 @@ const Backup = {
     backup(state, value) {
       state.lists = value;
     },
+    delete(state, value) {
+      state.lists = state.lists.filter((val) => val.id !== value);
+    },
   },
 
   actions: {
@@ -45,13 +48,22 @@ const Backup = {
         },
         { root: true }
       );
-      commit("Impor/impor", true, { root: true });
+      // if lists length > 25 delete it
+      if (state.lists.length > 25) {
+        dispatch(
+          "delete",
+          { store: "Backup", id: state.lists.slice(-1)[0].id },
+          { root: true }
+        );
+      }
       dispatch("Expor/expor", {}, { root: true });
+      commit("Impor/impor", true, { root: true });
     },
     check({ dispatch, state, commit }) {
       let now = new Date().getTime();
-      let nextbackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
-      if (now >= nextbackup) {
+      let nextBackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
+      // if now - next backup more than 20sec
+      if (now - nextBackup > 20000) {
         dispatch("append");
         return;
       }

@@ -51,7 +51,7 @@ export default {
         },
         send(val) {
             //send data to vuex
-            this.$store.commit("Impor/impor", val);
+            this.$store.commit("Impor/lists", val);
             // bring the importer form
             this.$store.commit("Modal/active", {judul: "Pilih store", form: "ImporterForm"});
         },
@@ -60,6 +60,6 @@ export default {
         ...mapState({
             _STATUS: state => state.Impor.status,
         }),
-    }
+    },
 }
 </script>

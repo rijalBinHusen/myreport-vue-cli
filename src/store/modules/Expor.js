@@ -34,7 +34,8 @@ const Expor = {
               a.href = URL.createObjectURL(file);
               a.download =
                 "Backup myreport " +
-                rootGetters["dateFormat"]({ format: "full" });
+                rootGetters["dateFormat"]({ format: "full" }) +
+                ".js";
               setTimeout(() => {
                 a.click();
                 commit("Modal/active", null, { root: true });

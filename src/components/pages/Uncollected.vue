@@ -6,7 +6,7 @@
 		<Datatable
           :datanya="lists"
           :heads="['Nama', 'Gudang']"
-          :keys="['name', 'warehouse']"
+          :keys="['name', 'warehouseName']"
           option
           :id="'nameOftable'"
           v-slot:default="slotProp"
@@ -100,16 +100,16 @@ export default {
             _SUPERVISORS: state => JSON.parse(JSON.stringify(state.Supervisors.lists))
         }),
         ...mapGetters({
-            GET_UNCOLLECTED: "Uncollected/uncollected"
+            GET_UNCOLLECTED: "Uncollected/uncollected",
+            GET_SUPERVISORS: "Supervisors/lists"
         }),
         lists() {
             let result = []
-            this._SUPERVISORS.forEach((val) => {
+            this.GET_SUPERVISORS.forEach((val) => {
                 result.push(Object.assign(val, { uncollected: this.GET_UNCOLLECTED[val.id] }))
             })
             return result
-            // return this.$store.state.Name.lists
         },
-    }
+    },
 }
 </script>

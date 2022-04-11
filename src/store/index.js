@@ -32,6 +32,8 @@ export default createStore({
   mutations: {},
   actions: {
     async append({ commit, rootGetters, dispatch }, value) {
+      // check auto backup
+      dispatch("Backup/check", {}, { root: true });
       /* value = { 
             store: "nameOfStore",
             obj: { key: 'value', obj: 'to input to store' },
@@ -54,7 +56,6 @@ export default createStore({
       commit(`${value.store}/append`, value.obj, { root: true });
 
       // insert record to indexeddb and return as promise
-      dispatch("Backup/check", {}, { root: true });
       return new Promise((resolve) => {
         myfunction.append(objToSend);
         setTimeout(() => resolve(), 130);
@@ -69,11 +70,6 @@ export default createStore({
       });
       //delete from state
       commit(`${value.store}/delete`, value.id, { root: true });
-      // if the store is split
-      if (objToSend.split) {
-        objToSend.period =
-          "20" + value.id.slice(3, 5) + "-" + value.id.slice(5, 7) + "-01";
-      }
       // delete record from indexeddb and return as promise
       return new Promise((resolve) => {
         myfunction.deleteDocument(objToSend);

@@ -33,9 +33,9 @@
     <br />
     <Table 
       v-if="GET_SUPERVISORS.length > 0"
-      :headers="['Nama', 'Phone', 'Warehouse']" 
+      :headers="['Nama', 'Warehouse']" 
       :lists="GET_SUPERVISORS" 
-      :keys="['name', 'phone', 'warehouseName']"
+      :keys="['name', 'warehouseName']"
       options
       v-slot:default="slotProp"
     >
