@@ -90,7 +90,7 @@ export default {
     computed: {
         names() {
             // ambil semua nama dari state
-            let options = Array.from(this.$store.state.Name.lists)
+            let options = Array.from(this.$store.state.Supervisors.lists)
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
             options.unshift({id: "", name: "Pilih nama" })

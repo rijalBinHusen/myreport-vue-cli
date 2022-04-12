@@ -14,9 +14,9 @@
 			> -->
 
             <Datatable
-            :datanya="collected"
+            :datanya="GET_LISTS"
             :heads="['Nama', 'Gudang', 'Periode', 'Collected']"
-            :keys="['nameSPV', 'warehouse', 'periode', 'date']"
+            :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2']"
             option
             id="tableCollected"
             v-slot:default="slotProp"
@@ -41,6 +41,7 @@ import Input from "../elements/Input.vue"
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
 import datepicker from "vue3-datepicker"
+import { mapGetters } from "vuex"
 
 export default {
     name: "Collect",
@@ -92,20 +93,9 @@ export default {
         }
     },
     computed: {
-        collected() {
-			let collect = JSON.parse(JSON.stringify(this.$store.state.Collected.lists))
-			let result = []
-			collect.forEach((val) => {
-                if(val) {
-                    val.nameSPV = this.$store.getters["Name/nameId"](val.name)["name"]
-                    val.warehouse = this.$store.getters["Name/nameId"](val.name)["warehouse"]
-                    val.periode = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
-                    val.date = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
-                    result.push(val)
-                }
-			})
-            return result
-        },
+        ...mapGetters({
+            GET_LISTS: "Collected/lists"
+        }),
     },
 }
 </script>

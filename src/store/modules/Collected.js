@@ -30,8 +30,28 @@ const Collect = {
   },
   actions: {},
   getters: {
-    lists(state) {
-      return JSON.parse(JSON.stringify(state.lists));
+    lists(state, getters, rootState, rootGetters) {
+      if (state.lists.length > 0) {
+        let rec = JSON.parse(JSON.stringify(state.lists));
+        return rec.map((val) => {
+          let spvInfo = rootGetters["Supervisors/spvId"](val.name);
+          Object.assign(val, {
+            spvName: spvInfo.name,
+            spvWarehouse: spvInfo.warehouseName,
+            periode2: rootGetters["dateFormat"](val.periode),
+            collected2: rootGetters["dateFormat"](val.collected),
+          });
+        });
+      }
+      return [
+        {
+          spvName: "No record",
+          spvWarehouse: "No record",
+          periode2: "No record",
+          collected2: "No record",
+          shared: "No record",
+        },
+      ];
     },
     listsId: (state, getters, rootState, rootGetters) => (id) => {
       return JSON.parse(

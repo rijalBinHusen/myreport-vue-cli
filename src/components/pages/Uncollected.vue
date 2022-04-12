@@ -103,8 +103,8 @@ export default {
                     result += `*${val.name} ${val.warehouseName}* : [${ val.uncollected.slice(7) }]%0a%0a`
                 }
             })
-            // window.open(`https://wa.me/${nophone}?text=${result}`)
-            console.log(result)
+            window.open(`https://wa.me/${nophone}?text=${result}`)
+            // console.log(result)
             }
         }
     },
