@@ -14,7 +14,7 @@
           :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode'] : ['Nama', 'Gudang', 'Daftar report']"
           :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2'] : ['name', 'warehouseName', 'uncollected']"
           option
-          :id="'nameOftable'"
+          id="tableUncollected"
           v-slot:default="slotProp"
           >
 				<span v-if="!viewByPeriode && slotProp.prop.uncollected && slotProp.prop.uncollected.length > 2">					
