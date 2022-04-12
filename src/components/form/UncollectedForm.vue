@@ -104,8 +104,5 @@ export default {
             return options
         }
     },
-    mounted() {
-        console.log(this.GET_LASTDATE)
-    }
 }
 </script>

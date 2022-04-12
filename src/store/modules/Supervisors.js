@@ -30,7 +30,9 @@ const Supervisors = {
   actions: {},
   getters: {
     edit(state) {
-      let rec = state.lists.find((val) => val.id === state.edit);
+      let rec = JSON.parse(JSON.stringify(state.lists)).find(
+        (val) => val.id === state.edit
+      );
       return rec && rec.name
         ? rec
         : {
@@ -54,6 +56,22 @@ const Supervisors = {
     },
     enabled(state) {
       return state.lists.filter((val) => val.disabled === false);
+    },
+    spvId: (state, getters, rootState, rootGetters) => (id) => {
+      let rec = JSON.parse(JSON.stringify(state.lists)).find(
+        (val) => val.id === id
+      );
+      return rec && rec.name
+        ? Object.assign(rec, {
+            warehouseName: rootGetters["Warehouses/warehouseId"](rec.warehouse)
+              .name,
+          })
+        : {
+            name: null,
+            phone: null,
+            warehouse: null,
+            disabled: false,
+          };
     },
   },
 };

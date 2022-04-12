@@ -2,16 +2,22 @@
 <div class="w3-container w3-margin-top">
 			<Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
             <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
-            
+            <Button 
+                class="w3-right" 
+                primary 
+                :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
+                type="button" 
+                @trig="viewByPeriode = !viewByPeriode" 
+            />
 		<Datatable
-          :datanya="listsByWarehouse"
-          :heads="['Gudang', 'Nama', 'Daftar report']"
-          :keys="['warehouseName', 'name', 'uncollected']"
+          :datanya="viewByPeriode ? listByPeriode : listsByWarehouse"
+          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode'] : ['Nama', 'Gudang', 'Daftar report']"
+          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2'] : ['name', 'warehouseName', 'uncollected']"
           option
           :id="'nameOftable'"
           v-slot:default="slotProp"
           >
-				<span v-if="slotProp.prop.uncollected && slotProp.prop.uncollected.length > 2">					
+				<span v-if="!viewByPeriode && slotProp.prop.uncollected && slotProp.prop.uncollected.length > 2">					
 					<Button
 					secondary
 					value="Pesan" 
@@ -20,9 +26,9 @@
 					@trig="pesan(slotProp.prop)" 
 					/>
 				</span>
-                    <!-- <Dropdown 
-                    v-for="uncl in slotProp.prop.uncollected" :key="uncl.id"
-                    :value="uncl.periode"  
+                <span v-if="viewByPeriode">
+                    <Dropdown
+                    value="Collect"  
                     :lists="[
                         { id: -1, isi: '-1 Hari'},
                         { id: -2, isi: '-2 Hari'},
@@ -31,8 +37,9 @@
                     ]"
                     listsKey="id"
                     listsValue="isi"
-                    @trig="collect({val: $event, rec: uncl.id})"
-                    /> -->
+                    @trig="collect({val: $event, rec: slotProp.prop.id})"
+                    />
+                </span>
         </Datatable>
 </div>
 </template>
@@ -46,6 +53,11 @@ import { mapState, mapGetters } from "vuex";
 
 export default {
     name: "Uncollected",
+    data() {
+        return {
+            viewByPeriode: false,
+        }
+    },
     components: {
         Button,
         Datatable,
@@ -77,10 +89,11 @@ export default {
         },
 		pesan(ev) {
 			// slice the data
-			let datanya = JSON.parse(JSON.stringify(ev))
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu [ ${datanya.uncollected.slice(1).map((val2) => val2.periode ).join(", ")} ]%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
+			// let datanya = JSON.parse(JSON.stringify(ev))
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu [ ${ev.uncollected.slice(7)} ]%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-			window.open(link)
+			// window.open(link)
+            console.log(link)
 		},
         pesanSemua() {
             let nophone = window.prompt()
@@ -97,11 +110,13 @@ export default {
     },
     computed: {
         ...mapState({
-            _SUPERVISORS: state => JSON.parse(JSON.stringify(state.Supervisors.lists))
+            _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists))
         }),
         ...mapGetters({
             GET_UNCOLLECTEDbySpv: "Uncollected/uncollectedBySpv",
-            GET_SUPERVISORS: "Supervisors/lists"
+            GET_SUPERVISORS: "Supervisors/lists",
+            GET_SPVID: "Supervisors/spvId",
+            GET_DATEFORMAT: "dateFormat",
         }),
         listsByWarehouse() {
             let result = []
@@ -110,6 +125,23 @@ export default {
             })
             return result
         },
+        listByPeriode() {
+            if(this._UNCOLLECTED.length > 0) {
+                let result = []
+                this._UNCOLLECTED.forEach((val) => {
+                    let spvInfo = this.GET_SPVID(val.name)
+                    result.push(
+                        Object.assign(val, { 
+                            spvName: spvInfo.name,
+                            spvPhone: spvInfo.phone,
+                            spvWarehouse: spvInfo.warehouseName,
+                            periode2: this.GET_DATEFORMAT({format: 'dateMonth', time: val.periode})
+                            })
+                    )
+                })
+                return result
+            }
+        }
     },
 }
 </script>
