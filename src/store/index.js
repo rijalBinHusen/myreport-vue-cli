@@ -10,6 +10,7 @@ import ImporReport1 from "./modules/ImporReport1";
 import Warehouses from "./modules/Warehouses";
 import Supervisors from "./modules/Supervisors.js";
 import Backup from "./modules/Backup.js";
+import BaseReportFile from "./modules/BaseReportFile";
 
 export default createStore({
   modules: {
@@ -23,6 +24,7 @@ export default createStore({
     Warehouses,
     Supervisors,
     Backup,
+    BaseReportFile,
   },
   state: {
     store: localStorage.getItem("store")

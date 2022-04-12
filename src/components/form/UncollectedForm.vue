@@ -51,19 +51,36 @@ export default {
                 this.$store.commit("Modal/active", {judul: "", form: "Loader"});
                 
                 if(this.collect.name === "semua") {
-                    // ambil semua nama
+                    // baseReportFile record
+                    this._WAREHOUSES.forEach((val) => {
+                        this.$store.dispatch("append", {
+                            store: "BaseReportFile",
+                            obj: {
+                                id: uid(3), 
+                                periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode}),
+                                warehouse: val.name,
+                                fileName: false,
+                                stock: false,
+                                clock: false,
+                            }
+                        })
+                    })
+
+                    // uncollected record, ambil semua nama
                     let allName = this.GET_SPVENABLE
                     // iterate semua nama satu satu
                     for(let i=0; i < allName.length; i++) {
                         // tunggu sampai append selesai
                         await this.$store.dispatch("append", {
                             store: "Uncollected",
-                            id: uid(3),
-                            obj: { name: allName[i].id, 
-                            periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
+                            obj: {
+                                id: uid(3), 
+                                name: allName[i].id, 
+                                periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
                             },
                         })
                     }
+                    
                 } else {
                     this.$store.dispatch("append", {
                             store: "Uncollected",
@@ -87,7 +104,8 @@ export default {
     computed: {
         ...mapState({
             _SPV: state => JSON.parse(JSON.stringify(state.Supervisors.lists)),
-            _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists))
+            _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists)),
+            _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
         }),
         ...mapGetters({
             GET_SPVENABLE: "Supervisors/enabled",
