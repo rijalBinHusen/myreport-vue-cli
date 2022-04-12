@@ -132,7 +132,7 @@ export default createStore({
               Object.assign(rootGetters[`${val}/store`], {
                 orderBy: "id",
                 desc: true,
-                limit: 100,
+                limit: 200,
               })
             )
             .then((result) =>
