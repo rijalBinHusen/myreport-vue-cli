@@ -65,9 +65,12 @@ export default {
             }
             // jika yang diminta nama dan periode
             else if(this.name && this.periode2) {
+                let dateCheck = this.periode1 === this.periode2 
+                                    ? [this.periode1] 
+                                    : this.$store.getters["getDaysArray"](this.periode1, this.periode2)
                 let objToSend = {
                         store: "Collected", 
-                        date: this.$store.getters["getDaysArray"](this.periode1, this.periode2)
+                        date: dateCheck
                     }
                 if(this.name !== 'semua') {
                     if(this.name === "unshared") {
