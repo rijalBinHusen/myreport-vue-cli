@@ -181,19 +181,7 @@ export default {
 
   data() {
     return {
-      deData: localStorage.getItem(this.id)
-        ? JSON.parse(localStorage.getItem(this.id))
-        : {
-            startRow: 0,
-            lengthRow: 5,
-            nowSort: null,
-            currentPage: 0,
-            searchInput: [],
-            searchKey: [],
-            rowLenght: 0,
-            allPages: 0,
-            sortAsc: true,
-          },
+      deData: "",
     };
   },
   computed: {
@@ -347,9 +335,40 @@ export default {
       this.deData.currentPage = 0;
       this.saveData();
     },
+    // save data to local storage with expired 60 second
     saveData() {
-      localStorage.setItem(this.id, JSON.stringify(this.deData));
+      // set ttl 60 second
+      let ttl = new Date().getTime() + 60000
+      let item = Object.assign(this.deData, { ttl: ttl })
+      localStorage.setItem(this.id, JSON.stringify(item));
     },
+    //get data from localStorage
+    getData() {
+      let result = {
+            startRow: 0,
+            lengthRow: 5,
+            nowSort: null,
+            currentPage: 0,
+            searchInput: [],
+            searchKey: [],
+            rowLenght: 0,
+            allPages: 0,
+            sortAsc: true,
+          };
+      const itemStr  = localStorage.getItem(this.id)
+      const item = JSON.parse(itemStr)
+      const now = new Date().getTime()
+
+      if(!itemStr || now > item.ttl) {
+        localStorage.removeItem(this.id)
+        return result
+      }
+
+      return item
+    }
   },
+  created() {
+    this.deData = this.getData()
+  }
 };
 </script>

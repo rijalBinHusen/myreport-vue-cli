@@ -144,7 +144,6 @@ export default {
                     )
                 })
             }
-            console.log(this.listsByWarehouse)
             return result
         }
     },
