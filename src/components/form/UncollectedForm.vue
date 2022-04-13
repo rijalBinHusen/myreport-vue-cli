@@ -58,7 +58,7 @@ export default {
                             obj: {
                                 id: uid(3), 
                                 periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode}),
-                                warehouse: val.name,
+                                warehouse: val.id,
                                 fileName: false,
                                 stock: false,
                                 clock: false,

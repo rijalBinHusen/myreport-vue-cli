@@ -2,13 +2,17 @@ const BaseReportFile = {
   namespaced: true,
   state: {
     status: false,
-    lists: {},
+    lists: [],
     store: { store: "BaseReportFile", split: "bulan" },
   },
   mutations: {
     // add data to
     append(state, value) {
-      state.lists.unshift(value);
+      if (Array.isArray(value) && value.length > 0) {
+        value.forEach((val) => state.lists.push(val));
+      } else {
+        state.lists.unshift(value);
+      }
     },
     baseReportFile(state, payload) {
       state.lists = payload;
