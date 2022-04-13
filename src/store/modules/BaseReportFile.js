@@ -14,7 +14,7 @@ const BaseReportFile = {
         state.lists.unshift(value);
       }
     },
-    baseReportFile(state, payload) {
+    basereportfile(state, payload) {
       state.lists = payload;
     },
   },

@@ -11,20 +11,18 @@
             <Datatable
             :datanya="lists"
             :heads="['Periode', 'Gudang', 'Nama file']"
-            :keys="['periode', 'warehouse', 'fileName']"
+            :keys="['periode2', 'warehouseName', 'fileName']"
             option
             id="tableImportBase"
+            v-slot:default="slotProp"
             >
 
-            <!-- <div v-if="!slotProp.prop.shared">
-            v-slot:default="slotProp"
-				<Button value="Batal" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
-                <Button value="Edit" type="button" secondary small @trig="edit(slotProp.prop.id)" />
-                <Button value="Share" primary type="button" small @trig="share(slotProp.prop.id)" />
+            <div v-if="slotProp.prop.fileName">
+                <Button value="Import file" primary type="button" small @trig="launch" />
             </div>
             <div v-else>
-                Shared at {{ this.$store.getters["dateFormat"]({format: "dateMonth", time: slotProp.prop.shared }) }}
-            </div> -->
+				<Button value="Delete" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
+            </div>
             </Datatable>
 			
         </div>
@@ -35,6 +33,7 @@ import Input from "../elements/Input.vue"
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
 import Datepicker from "vue3-datepicker"
+import { mapState, mapGetters} from "vuex"
 
 export default {
     name: "Collect",
@@ -64,24 +63,30 @@ export default {
                 }
             await this.$store.dispatch("findDataByDateArrays", objToSend)
             this.$store.commit("Modal/active")
+        },
+        launch() {
+            this.$store.commit("Modal/active", { judul: "Import file base report", form: "BaseReportFile"});
         }
     },
     computed: {
+        ...mapState({
+            _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.lists)),
+        }),
+        ...mapGetters({
+            WAREHOUSE_ID: "Warehouses/warehouseId",
+            DATEFORMAT: "dateFormat"
+        }),
         lists() {
-			let record = JSON.parse(JSON.stringify(this.$store.state.BaseReportFile.lists))
-            return record.length > 0 ? record : []
-			// let result = []
-			// collect.forEach((val) => {
-            //     if(val) {
-            //     let spvInfo = this.$store.getters["Supervisors/spvId"](val.name)
-            //         val.spvName = spvInfo.name
-            //         val.spvWarehouse = spvInfo.warehouseName
-            //         val.periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
-            //         val.collected2 = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
-            //         result.push(val)
-            //     }
-			// })
-            // return result
+			let result = []
+			this._BASEREPORT.forEach((val) => {
+                if(val) {
+                    val.warehouseName = this.WAREHOUSE_ID(val.warehouse).name
+                    val.periode2 = this.DATEFORMAT({ format: "dateMonth", time: val.periode})
+                    val.fileName = val.fileName ? val.fileName : "Not imported yet"
+                    result.push(val)
+                }
+			})
+            return result
         },
     },
 }
