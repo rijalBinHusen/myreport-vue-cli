@@ -1,6 +1,5 @@
 <template>
 <div class="">
-    <h1>Report Collected</h1>
     <div class="w3-border w3-padding w3-container">
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" @trig="collectedForm" />

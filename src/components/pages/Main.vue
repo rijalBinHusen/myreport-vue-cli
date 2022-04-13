@@ -16,6 +16,7 @@
 	import Warehouses from "./Warehouses.vue"
 	import Supervisors from "./Supervisors.vue"
 	import Backup from "./Backup.vue"
+	import Importbase from "./Importbase.vue"
 	
 	export default {
 		name: "Main",
@@ -29,6 +30,7 @@
 			Warehouses,
 			Supervisors,
 			Backup,
+			Importbase,
 		},
 		computed: {
 			activeNav() {
