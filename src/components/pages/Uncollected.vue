@@ -55,7 +55,7 @@ export default {
     name: "Uncollected",
     data() {
         return {
-            viewByPeriode: false,
+            viewByPeriode: true,
         }
     },
     components: {
@@ -121,13 +121,17 @@ export default {
         listsByWarehouse() {
             let result = []
             this.GET_SUPERVISORS.forEach((val) => {
-                result.push(Object.assign(val, { uncollected: this.GET_UNCOLLECTEDbySpv[val.id] }))
+                result.push(Object.assign(val, { 
+                    uncollected: this.GET_UNCOLLECTEDbySpv[val.id] 
+                                    ? this.GET_UNCOLLECTEDbySpv[val.id] 
+                                    : "All collected"
+                    }))
             })
             return result
         },
         listByPeriode() {
+            let result = []
             if(this._UNCOLLECTED.length > 0) {
-                let result = []
                 this._UNCOLLECTED.forEach((val) => {
                     let spvInfo = this.GET_SPVID(val.name)
                     result.push(
@@ -139,8 +143,9 @@ export default {
                             })
                     )
                 })
-                return result
             }
+            console.log(this.listsByWarehouse)
+            return result
         }
     },
 }

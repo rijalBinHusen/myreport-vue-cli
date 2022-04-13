@@ -20,7 +20,7 @@ const Backup = {
   actions: {
     append({ dispatch, commit, state, rootGetters }, payload) {
       let value = state.lists.length > 0 ? state.lists[0].setup : "hours";
-      value = payload ? payload : setup;
+      value = payload ? payload : value;
 
       let now = new Date();
       if (value == "hours") {
@@ -59,11 +59,11 @@ const Backup = {
       dispatch("Expor/expor", {}, { root: true });
       commit("Impor/impor", true, { root: true });
     },
-    check({ dispatch, state, commit }) {
+    check({ dispatch, state, commit, rootState }) {
+      let imporStatus = rootState.Impor.status;
       let now = new Date().getTime();
       let nextBackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
-      // if now - next backup more than 20sec
-      if (now - nextBackup > 20000) {
+      if (now >= nextBackup && !imporStatus) {
         dispatch("append");
         return;
       }
