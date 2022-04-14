@@ -51,34 +51,34 @@ export default {
                 this.$store.commit("Modal/active", {judul: "", form: "Loader"});
                 
                 if(this.collect.name === "semua") {
-                    // baseReportFile record
-                    this._WAREHOUSES.forEach((val) => {
-                        this.$store.dispatch("append", {
-                            store: "BaseReportFile",
-                            obj: {
-                                id: uid(3), 
-                                periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode}),
-                                warehouse: val.id,
-                                fileName: false,
-                                stock: false,
-                                clock: false,
-                            }
-                        })
-                    })
-
+                    let periodeTime = this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
                     // uncollected record, ambil semua nama
                     let allName = this.GET_SPVENABLE
                     // iterate semua nama satu satu
                     for(let i=0; i < allName.length; i++) {
-                        // tunggu sampai append selesai
+                        // uncollected record, tunggu sampai append selesai
                         await this.$store.dispatch("append", {
                             store: "Uncollected",
                             obj: {
-                                id: uid(3), 
+                                id: uid(5), 
                                 name: allName[i].id, 
-                                periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
+                                periode: periodeTime
                             },
                         })
+                        // baseReportFile record, tunggu sampai selesai
+                        if(this._WAREHOUSES[i]) {
+                            await this.$store.dispatch("append", {
+                                store: "BaseReportFile",
+                                obj: {
+                                    id: uid(5), 
+                                    periode: periodeTime,
+                                    warehouse: this._WAREHOUSES[i].id,
+                                    fileName: false,
+                                    stock: false,
+                                    clock: false,
+                                }
+                        })
+                        }
                     }
                     
                 } else {

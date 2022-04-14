@@ -35,7 +35,7 @@ export default createStore({
   actions: {
     async append({ commit, rootGetters, dispatch }, value) {
       // check auto backup
-      dispatch("Backup/check", {}, { root: true });
+      await dispatch("Backup/check", {}, { root: true });
       /* value = { 
             store: "nameOfStore",
             obj: { key: 'value', obj: 'to input to store' },
@@ -58,10 +58,9 @@ export default createStore({
       commit(`${value.store}/append`, value.obj, { root: true });
 
       // insert record to indexeddb and return as promise
-      return new Promise((resolve) => {
-        myfunction.append(objToSend);
-        setTimeout(() => resolve(), 130);
-      });
+      myfunction.append(objToSend);
+      //return promise 130 ms and then resolve
+      return myfunction.tunggu(130);
     },
 
     delete({ commit, rootGetters }, value) {

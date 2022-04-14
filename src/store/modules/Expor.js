@@ -36,11 +36,15 @@ const Expor = {
                 "Backup myreport " +
                 rootGetters["dateFormat"]({ format: "full" }) +
                 ".js";
-              setTimeout(() => {
-                a.click();
-                commit("Modal/active", null, { root: true });
-                commit("replace", {});
-              }, 3500);
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  a.click();
+                  // /close the loader
+                  commit("Modal/active", null, { root: true });
+                  commit("replace", {});
+                  resolve();
+                }, 3500);
+              });
             }
           }
         );

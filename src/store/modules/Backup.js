@@ -18,7 +18,7 @@ const Backup = {
   },
 
   actions: {
-    append({ dispatch, commit, state, rootGetters }, payload) {
+    async append({ dispatch, commit, state, rootGetters }, payload) {
       let value = state.lists.length > 0 ? state.lists[0].setup : "hours";
       value = payload ? payload : value;
 
@@ -36,7 +36,7 @@ const Backup = {
         now.setDate(1);
         now.setMonth(now.getMonth() + 1);
       }
-      dispatch(
+      await dispatch(
         "append",
         {
           store: "Backup",
@@ -56,16 +56,14 @@ const Backup = {
           { root: true }
         );
       }
-      dispatch("Expor/expor", {}, { root: true });
       commit("Impor/impor", true, { root: true });
+      return dispatch("Expor/expor", {}, { root: true });
     },
-    check({ dispatch, state, commit, rootState }) {
-      let imporStatus = rootState.Impor.status;
+    check({ dispatch, state, commit }) {
       let now = new Date().getTime();
       let nextBackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
-      if (now >= nextBackup && !imporStatus) {
-        dispatch("append");
-        return;
+      if (now - nextBackup > 20000) {
+        return dispatch("append");
       }
       commit("Impor/impor", false, { root: true });
     },
