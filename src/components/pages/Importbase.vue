@@ -8,6 +8,13 @@
         <Button primary class="w3-margin-left" value="Show" type="button" @trig="show" />
     </div>
 
+        <input
+            class="w3-hide"
+            @change.prevent="readExcel($event)"
+            type="file"
+            ref="importerBase"
+        />
+
             <Datatable
             :datanya="lists"
             :heads="['Periode', 'Gudang', 'Nama file']"
@@ -18,7 +25,7 @@
             >
 
             <div v-if="slotProp.prop.fileName">
-                <Button value="Import file" primary type="button" small @trig="launch" />
+                <Button value="Import file" :datanya="slotProp.prop.id" primary type="button" small @trig="launch($event)" />
             </div>
             <div v-else>
 				<Button value="Delete" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
@@ -34,6 +41,7 @@ import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
 import Datepicker from "vue3-datepicker"
 import { mapState, mapGetters} from "vuex"
+import * as XLSX from "xlsx";
 
 export default {
     name: "Collect",
@@ -41,6 +49,7 @@ export default {
         return {
             periode1: new Date(),
             periode2: new Date(),
+            importId: null,
         };
     },
     components: {
@@ -50,6 +59,7 @@ export default {
         Datepicker,
     },
     methods: {
+        // to show lists data
         async show() {
             // bring up the loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -64,9 +74,50 @@ export default {
             await this.$store.dispatch("findDataByDateArrays", objToSend)
             this.$store.commit("Modal/active")
         },
-        launch() {
-            this.$store.commit("Modal/active", { judul: "Import file base report", form: "BaseReportFile"});
-        }
+        // to launch file picker
+        launch(ev) {
+            this.$refs.importerBase.click();
+            this.importId = ev
+        },
+        // read file and put to the state
+        readExcel(e) {
+            // info of record
+            let infobase = this.lists.find((val) => val.id === this.importId)
+            // bring the loader up
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+			const file = e.target.files[0]
+			let info = { fileName: file.name }
+			
+			const promise = new Promise ((resolve, reject) => {
+				const fileReader = new FileReader();
+				fileReader.readAsArrayBuffer(file);
+				
+				fileReader.onload = (e) => {
+					const bufferArray = e.target.result;
+					
+					// const wb = XLSX.read(bufferArray, {type: "buffer"});
+					const wb = XLSX.read(bufferArray);
+					info.sheetNames = wb.SheetNames.map((val, index) => {
+                        return {
+                            id: index,
+                            title: val
+                        }
+                    })
+					info.sheets = wb.Sheets
+					
+					resolve(info)
+				};
+				
+				fileReader.onerror=((error) => { reject(error) })
+			})
+			
+			promise.then((d) => {
+                // send to vuex
+                this.$store.commit("BaseReportFile/importTemp", d)
+                // bring the form up
+                this.$store.commit("Modal/active", {judul: `Setup base ${infobase.warehouseName} ${infobase.periode2}`, form: "BaseReportFile"});
+			})
+		}
     },
     computed: {
         ...mapState({
@@ -74,7 +125,8 @@ export default {
         }),
         ...mapGetters({
             WAREHOUSE_ID: "Warehouses/warehouseId",
-            DATEFORMAT: "dateFormat"
+            DATEFORMAT: "dateFormat",
+            BASEID: "BaseReportFile/baseId"
         }),
         lists() {
 			let result = []

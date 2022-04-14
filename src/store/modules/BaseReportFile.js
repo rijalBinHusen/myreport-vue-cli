@@ -4,6 +4,7 @@ const BaseReportFile = {
     status: false,
     lists: [],
     store: { store: "BaseReportFile", split: "bulan" },
+    importTemp: null,
   },
   mutations: {
     // add data to
@@ -16,6 +17,9 @@ const BaseReportFile = {
     },
     basereportfile(state, payload) {
       state.lists = payload;
+    },
+    importTemp(state, payload) {
+      state.importTemp = payload;
     },
   },
   actions: {},
