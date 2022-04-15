@@ -25,11 +25,11 @@
             v-slot:default="slotProp"
             >
 
-            <div v-if="slotProp.prop.fileName">
+            <div v-if="!slotProp.prop.imported">
                 <Button value="Import file" :datanya="slotProp.prop.id" primary type="button" small @trig="launch($event)" />
             </div>
             <div v-else>
-				<Button value="Delete" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
+				<Button value="Delete imported" type="button" :datanya="slotProp.prop.id" danger small @trig="remove($event)" />
             </div>
             </Datatable>
 			
@@ -79,6 +79,49 @@ export default {
         launch(ev) {
             this.$refs.importerBase.click();
             this.importId = ev
+        },
+        // remove all data that was imported
+        async remove(ev) {
+            let sure = confirm("Apakah anda yakin akan menghapusnya?")
+            if(!sure) {
+                return;
+            }
+            // bring up the loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+
+            //delete from state
+            this.$store.commit("BaseReportStock/deleteByParam", {
+                parameter: "parent",
+                value: ev
+            })
+            //delete from idb
+            await this.$store.dispatch("deleteByParam", { 
+                store: "BaseReportStock", 
+                parameter: "parent", 
+                value: ev 
+            })
+            //delete from state
+            this.$store.commit("BaseReportClock/deleteByParam", {
+                parameter: "parent",
+                value: ev
+            })
+            //delete from idb
+            await this.$store.dispatch("deleteByParam", { 
+                store: "BaseReportClock", 
+                parameter: "parent", 
+                value: ev 
+            })
+
+            // update the baseReport file record
+            let infobase = this.BASEID(ev)
+            infobase.fileName = false
+            infobase.stock = false
+            infobase.clock = false
+            infobase.imported = false
+            this.$store.dispatch("update", {store: "BaseReportFile", obj: infobase})
+            
+            // close the loader
+            this.$store.commit("Modal/active");
         },
         // read file and put to the state
         readExcel(e) {

@@ -81,6 +81,20 @@ export default createStore({
         setTimeout(() => resolve(), 330);
       });
     },
+    // deelete by parameter
+    deleteByParam({ rootGetters }, value) {
+      // value = { store: "BaseReportFile", parameter: "parent", value: "c038" }
+      // ^ would delete all record that contain parent: c038 in BaseReportFile collection
+
+      // set obj before send
+      let objToSend = Object.assign(rootGetters[`${value.store}/store`], value);
+      // console.log(objToSend);
+      // delete record from indexeddb and return as promise
+      return new Promise((resolve) => {
+        myfunction.deleteDocumentByParam(objToSend);
+        setTimeout(() => resolve(), 2330);
+      });
+    },
 
     // to update record in indexeddb
     update({ commit, rootGetters }, value) {

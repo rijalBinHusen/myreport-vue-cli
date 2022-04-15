@@ -193,6 +193,19 @@ export default {
       .doc({ id: value.id })
       .delete();
   },
+  deleteDocumentByParam: function (value) {
+    /*value = {
+	store: "nameStore", 
+	split: "tahun/bulan/false",
+	period: "202203/time()",
+	parameter: "parent",
+  value: "c08"
+    } */
+    //keyword = {key: value}
+    db.collection(storenya(value.store, value.split, value.period))
+      .doc({ [value.parameter]: value.value })
+      .delete();
+  },
   generateId: function (id, waktu) {
     //DIV
     let masterId = id.slice(0, 3);

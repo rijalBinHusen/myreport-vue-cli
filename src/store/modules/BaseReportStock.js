@@ -13,6 +13,12 @@ const BaseReportStock = {
         state.lists.unshift(value);
       }
     },
+    deleteByParam(state, value) {
+      // value = { parameter: "parent", value: "c038" }
+      state.lists = state.lists.filter(
+        (val) => val[value.parameter] !== value.value
+      );
+    },
   },
   actions: {},
   getters: {
