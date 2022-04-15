@@ -1,6 +1,6 @@
 <template>
     <div class="w3-margin-top w3-container">
-        <Button 
+        <!-- <Button 
                 class="w3-right" 
                 primary 
                 :value="status ? 'Clock' : 'Stock'" 
@@ -12,7 +12,8 @@
           :heads="status ? ['Shift', 'Nomor DO', 'Register', 'Start', 'Finish'] : ['Shift', 'Item', 'Awal', 'In', 'Out']"
           :keys="status ? ['shift', 'noDo', 'reg', 'start', 'finish'] : ['shift', 'item', 'awal', 'in', 'out']"
           id="tableBaseReport"
-        />
+        /> -->
+        <ExcelTable />
     </div>
 </template>
 
@@ -20,10 +21,13 @@
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
 import { mapState } from "vuex"
+import ExcelTable from "../elements/ExcelTable.vue"
+
 export default {
     components: {
         Button,
         Datatable,
+        ExcelTable,
     },
     data() {
         return {
@@ -36,9 +40,6 @@ export default {
             clock: state => JSON.parse(JSON.stringify(state.BaseReportClock.lists)),
             stock: state => JSON.parse(JSON.stringify(state.BaseReportStock.lists)),
         }),
-    },
-    created() {
-        console.log(this.clock, this.stock)
     },
     name: "Base"
 }
