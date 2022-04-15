@@ -80,9 +80,9 @@ export default {
                     maka masukkan ke idb 
                 */
             //    CLOCK CHECKER
-                let clockNoBefore = clockSheet["D"+i] ? clockSheet["D"+ (i)].v : false
-                let clockNo = clockSheet["D"+ (i-1)] ? clockSheet["D"+ (i-1)].v : false
-                let clockStatus = clockNoBefore !== clockNo;
+                let clockNo = clockSheet["D"+i] ? clockSheet["D"+ (i)].v : 0
+                let clockNoBefore = clockSheet["D"+ (i-1)] ? clockSheet["D"+ (i-1)].v : false
+                let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
                     // await this.dispatch("append", { 
@@ -101,7 +101,10 @@ export default {
                     shift 1 jika E5.v > 0 atau F5.v > 0 , A+i !== false
                     masukkan ke idb
                 */
-                if( (stockSheet["E"+i] || stockSheet["F"+i]) && i > 3 ) {
+            //    Checker stock shift 1
+            let in1st = stockSheet["E"+i] ? stockSheet["E"+i].v : 0
+            let out1st = stockSheet["F"+i] ? stockSheet["F"+i] : 0
+                if(in1st > 0 || out1st > 0) {
                     this.$store.commit("BaseReportStock/append", {
                         id: this._BASEID + "01" + counter,
                         parent: this._BASEID,
@@ -116,7 +119,10 @@ export default {
                     shift 2 jika H5.v > 0 atau I5.v > 0 , A+i !== false
                     masukkan ke idb
                 */
-                if( (stockSheet["H"+i] || stockSheet["I"+i]) && i > 3 ) {
+            //    Checker stock shift 2
+            let in2nd = stockSheet["H"+i] ? stockSheet["H"+i].v : 0
+            let out2nd = stockSheet["I"+i] ? stockSheet["I"+i] : 0
+                if(in2nd > 0 || out2nd > 0) {
                     this.$store.commit("BaseReportStock/append", {
                         id: this._BASEID + "02" + counter,
                         parent: this._BASEID,
@@ -141,7 +147,7 @@ export default {
                 let out2 = stockSheet["M"+i] ? +stockSheet["M"+i].v : 0
                 let totalOut = out1 + out2
 
-                    if( (in1 || out1  || out2  || in2) && i > 3 ) {
+                    if( (in1 || out1  || out2  || in2) && i > 3 && stockSheet["A"+i] ) {
                     this.$store.commit("BaseReportStock/append", {
                         id: this._BASEID + "03" + counter,
                         parent: this._BASEID,
