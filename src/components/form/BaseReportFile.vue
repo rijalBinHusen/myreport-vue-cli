@@ -1,33 +1,181 @@
 <template>
     <div>
         <label class="w3-margin-top">Nama file</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="datanya.fileName" disabled />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="_BASEREPORT.fileName" disabled />
         <label class="w3-margin-top">Clock Sheet</label>
         <Select 
-            :options="datanya.sheetNames" 
+            :options="sheetNames" 
             value="id"
             text="title"
+            @selected="clock = $event"
         />
         <label class="w3-margin-top">Stock Sheet</label>
         <Select 
-            :options="datanya.sheetNames" 
+            :options="sheetNames" 
             value="id"
             text="title"
+            @selected="stock = $event"
+        />
+        <Button
+            primary 
+            class="w3-margin-top w3-right" 
+            value="Submit" 
+            type="button"
+            @trig="importBase"
         />
     </div>
 </template>
 
 <script>
 import Select from "../elements/Select.vue"
+import Button from "../elements/Button.vue"
+import { uid } from "uid"
+import { mapState } from "vuex"
 
 export default {
     components: {
         Select,
+        Button,
     },
-    methods: {},
+    data() {
+        return {
+            clock: null,
+            stock: null,
+        }
+    },
+    methods: {
+        async importBase() {
+            // jika clock dan stock tidak null
+            if(!this.clock || !this.stock) {
+                alert("Select sheet first!")
+                return
+            }
+            // tampilkan loader, proses data yang sudah dipilih
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            // dapatkan !ref
+            let infoRowColClock = this._BASEREPORT.sheets[this.clock]["!ref"].split(":")
+            let infoRowColStock = this._BASEREPORT.sheets[this.stock]["!ref"].split(":")
+            // dapatkan length data clock
+            let lengthRowClock = +infoRowColClock[1].match(/\d+/)[0]
+            // dapatkan length data stock
+            let lengthRowStock = +infoRowColStock[1].match(/\d+/)[0]
+            // ambil length yang paling tinggi
+            let iterateLength = lengthRowClock > lengthRowStock ? lengthRowClock : lengthRowStock
+            // masing masing sheet
+            let clockSheet = this._BASEREPORT.sheets[this.clock]
+            let stockSheet = this._BASEREPORT.sheets[this.stock]
+            // console.log("Info row col clock", infoRowColClock)
+            // console.log("Info row col stock", infoRowColStock)
+            // console.log("length row clock", lengthRowClock)
+            // console.log("length row stock", lengthRowStock)
+            // console.log("Iterate length", iterateLength)
+
+            //iterate data menggunakan for
+            for(let i = 1; i <= iterateLength; i++) {
+                let leadNumber = "0000"
+                let increment = i + ""
+                let counter = leadNumber.slice(0, increment.length) + increment
+                /* 
+                    #CLOCK jika B5.v > 0 dan D5.v !== D4.v
+                    maka masukkan ke idb 
+                */
+            //    CLOCK CHECKER
+                let clockNoBefore = clockSheet["D"+i] ? clockSheet["D"+ (i)].v : false
+                let clockNo = clockSheet["D"+ (i-1)] ? clockSheet["D"+ (i-1)].v : false
+                let clockStatus = clockNoBefore !== clockNo;
+
+               if(i > 5 && clockStatus) {
+                    // await this.dispatch("append", { 
+                    this.$store.commit( "BaseReportClock/append", {
+                        id: this._BASEID + counter,
+                        parent: this._BASEID,
+                        shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
+                        noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
+                        reg: clockSheet["F"+i] ? clockSheet["F"+i].v : 0,
+                        start: clockSheet["G"+i] ? clockSheet["G"+i].v : 0,
+                        finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0
+                    })
+                }
+                /* 
+                    #STOCK 
+                    shift 1 jika E5.v > 0 atau F5.v > 0 , A+i !== false
+                    masukkan ke idb
+                */
+                if( (stockSheet["E"+i] || stockSheet["F"+i]) && i > 3 ) {
+                    this.$store.commit("BaseReportStock/append", {
+                        id: this._BASEID + "01" + counter,
+                        parent: this._BASEID,
+                        shift: 1,
+                        item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
+                        awal: stockSheet["D"+i] ?  stockSheet["D"+i].v : 0,
+                        in:  stockSheet["E"+i] ?  stockSheet["E"+i].v : 0,
+                        out:  stockSheet["F"+i] ?  stockSheet["F"+i].v : 0
+                    })
+                }
+                /*
+                    shift 2 jika H5.v > 0 atau I5.v > 0 , A+i !== false
+                    masukkan ke idb
+                */
+                if( (stockSheet["H"+i] || stockSheet["I"+i]) && i > 3 ) {
+                    this.$store.commit("BaseReportStock/append", {
+                        id: this._BASEID + "02" + counter,
+                        parent: this._BASEID,
+                        shift: 2,
+                        item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
+                        awal: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
+                        in:  stockSheet["H"+i] ?  stockSheet["H"+i].v : 0,
+                        out:  stockSheet["I"+i] ?  stockSheet["I"+i].v : 0,
+                    })
+                }
+
+                /*
+                    shift 3 jika K5.v > 0 atau L5.v > 0  atau M5.v > 0  atau O5.v > 0 
+                    A+i !== false
+                    masukkan ke idb 
+                */
+                // number checker
+                let in1 = stockSheet["K"+i] ? +stockSheet["K"+i].v : 0
+                let in2 = stockSheet["O"+i] ? +stockSheet["O"+i].v : 0
+                let totalIn = in1 + in2
+                let out1 = stockSheet["L"+i] ? +stockSheet["L"+i].v : 0
+                let out2 = stockSheet["M"+i] ? +stockSheet["M"+i].v : 0
+                let totalOut = out1 + out2
+
+                    if( (in1 || out1  || out2  || in2) && i > 3 ) {
+                    this.$store.commit("BaseReportStock/append", {
+                        id: this._BASEID + "03" + counter,
+                        parent: this._BASEID,
+                        shift: 3,
+                        item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
+                        awal: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
+                        in:  totalIn,
+                        out: totalOut,
+                    })
+                }
+            }
+            // console.log("D10",this._BASEREPORT.sheets[this.clock]["D10"].v)
+            // console.log("D11",this._BASEREPORT.sheets[this.clock]["D11"].v)
+            // kosongkan state base report
+            this.$store.commit("BaseReportFile/baseId", null)
+            this.$store.commit("BaseReportFile/importTemp", null)
+            // sembunyikan loader
+            this.$store.commit("Modal/active");
+        }
+    },
     computed: {
-        datanya() {
-            return  JSON.parse(JSON.stringify(this.$store.state.BaseReportFile.importTemp))
+        ...mapState({
+            _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.importTemp)),
+            _BASEID: state => state.BaseReportFile.baseId,
+        }),
+        sheetNames() {
+            let result = this._BASEREPORT.sheetNames.map((val) => {
+                return {
+                    id: val,
+                    title: val
+                }
+            })
+            result.unshift({id: null, title: "Select sheet"})
+            return result
         }
     },
 }

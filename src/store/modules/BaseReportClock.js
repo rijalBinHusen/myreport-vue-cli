@@ -1,10 +1,8 @@
-const BaseReportFile = {
+const BaseReportClock = {
   namespaced: true,
   state: {
-    baseId: null,
     lists: [],
-    store: { store: "BaseReportFile", split: "bulan" },
-    importTemp: null,
+    store: { store: "BaseReportClock", split: "bulan" },
   },
   mutations: {
     // add data to
@@ -15,15 +13,6 @@ const BaseReportFile = {
         state.lists.unshift(value);
       }
     },
-    basereportfile(state, payload) {
-      state.lists = payload;
-    },
-    importTemp(state, payload) {
-      state.importTemp = payload;
-    },
-    baseId(state, payload) {
-      state.baseId = payload;
-    },
   },
   actions: {},
   getters: {
@@ -33,4 +22,4 @@ const BaseReportFile = {
   },
 };
 
-export default BaseReportFile;
+export default BaseReportClock;

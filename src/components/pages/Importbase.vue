@@ -13,6 +13,7 @@
             @change.prevent="readExcel($event)"
             type="file"
             ref="importerBase"
+            accept=".xls, .ods"
         />
 
             <Datatable
@@ -97,12 +98,7 @@ export default {
 					
 					// const wb = XLSX.read(bufferArray, {type: "buffer"});
 					const wb = XLSX.read(bufferArray);
-					info.sheetNames = wb.SheetNames.map((val, index) => {
-                        return {
-                            id: index,
-                            title: val
-                        }
-                    })
+					info.sheetNames = wb.SheetNames
 					info.sheets = wb.Sheets
 					
 					resolve(info)
@@ -112,10 +108,12 @@ export default {
 			})
 			
 			promise.then((d) => {
-                // send to vuex
+                // send data excel to vuex
                 this.$store.commit("BaseReportFile/importTemp", d)
                 // bring the form up
-                this.$store.commit("Modal/active", {judul: `Setup base ${infobase.warehouseName} ${infobase.periode2}`, form: "BaseReportFile"});
+                this.$store.commit("Modal/active", {judul: infobase.warehouseName + " " + infobase.periode2, form: "BaseReportFile"});
+                //send id baseReport to vuex
+                this.$store.commit("BaseReportFile/baseId", infobase.id)
 			})
 		}
     },

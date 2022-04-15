@@ -11,6 +11,8 @@ import Warehouses from "./modules/Warehouses";
 import Supervisors from "./modules/Supervisors.js";
 import Backup from "./modules/Backup.js";
 import BaseReportFile from "./modules/BaseReportFile";
+import BaseReportClock from "./modules/BaseReportClock";
+import BaseReportStock from "./modules/BaseReportStock";
 
 export default createStore({
   modules: {
@@ -25,6 +27,8 @@ export default createStore({
     Supervisors,
     Backup,
     BaseReportFile,
+    BaseReportClock,
+    BaseReportStock,
   },
   state: {
     store: localStorage.getItem("store")
@@ -35,7 +39,7 @@ export default createStore({
   actions: {
     async append({ commit, rootGetters, dispatch }, value) {
       // check auto backup
-      await dispatch("Backup/check", {}, { root: true });
+      // await dispatch("Backup/check", {}, { root: true });
       /* value = { 
             store: "nameOfStore",
             obj: { key: 'value', obj: 'to input to store' },
@@ -134,7 +138,7 @@ export default createStore({
         }
       });
     },
-    getAllData({ commit }, value) {
+    getAllData(value) {
       return myfunction.getData({ store: value.toLowerCase(), withKey: true });
     },
     getData({ commit, rootGetters }, value) {
