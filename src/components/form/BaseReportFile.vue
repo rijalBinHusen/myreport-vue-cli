@@ -29,8 +29,7 @@
 <script>
 import Select from "../elements/Select.vue"
 import Button from "../elements/Button.vue"
-import { uid } from "uid"
-import { mapState } from "vuex"
+import { mapState, mapGetters } from "vuex"
 
 export default {
     components: {
@@ -85,15 +84,17 @@ export default {
                 let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
-                    // await this.dispatch("append", { 
-                    this.$store.commit( "BaseReportClock/append", {
-                        id: this._BASEID + counter,
-                        parent: this._BASEID,
-                        shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
-                        noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
-                        reg: clockSheet["F"+i] ? clockSheet["F"+i].v : 0,
-                        start: clockSheet["G"+i] ? clockSheet["G"+i].v : 0,
-                        finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0
+                    await this.$store.dispatch("append", {
+                        store: "BaseReportClock",
+                        obj: {
+                            id: this._BASEID + counter,
+                            parent: this._BASEID,
+                            shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
+                            noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
+                            reg: clockSheet["F"+i] ? clockSheet["F"+i].v : 0,
+                            start: clockSheet["G"+i] ? clockSheet["G"+i].v : 0,
+                            finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0
+                        }
                     })
                 }
                 /* 
@@ -105,14 +106,17 @@ export default {
             let in1st = stockSheet["E"+i] ? stockSheet["E"+i].v : 0
             let out1st = stockSheet["F"+i] ? stockSheet["F"+i] : 0
                 if(in1st > 0 || out1st > 0) {
-                    this.$store.commit("BaseReportStock/append", {
-                        id: this._BASEID + "01" + counter,
-                        parent: this._BASEID,
-                        shift: 1,
-                        item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
-                        awal: stockSheet["D"+i] ?  stockSheet["D"+i].v : 0,
-                        in:  stockSheet["E"+i] ?  stockSheet["E"+i].v : 0,
-                        out:  stockSheet["F"+i] ?  stockSheet["F"+i].v : 0
+                    await this.$store.dispatch("append",  {
+                        store: "BaseReportStock",
+                        obj: {
+                            id: this._BASEID + "01" + counter,
+                            parent: this._BASEID,
+                            shift: 1,
+                            item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
+                            awal: stockSheet["D"+i] ?  stockSheet["D"+i].v : 0,
+                            in:  stockSheet["E"+i] ?  stockSheet["E"+i].v : 0,
+                            out:  stockSheet["F"+i] ?  stockSheet["F"+i].v : 0
+                        }
                     })
                 }
                 /*
@@ -123,14 +127,17 @@ export default {
             let in2nd = stockSheet["H"+i] ? stockSheet["H"+i].v : 0
             let out2nd = stockSheet["I"+i] ? stockSheet["I"+i] : 0
                 if(in2nd > 0 || out2nd > 0) {
-                    this.$store.commit("BaseReportStock/append", {
-                        id: this._BASEID + "02" + counter,
-                        parent: this._BASEID,
-                        shift: 2,
-                        item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
-                        awal: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
-                        in:  stockSheet["H"+i] ?  stockSheet["H"+i].v : 0,
-                        out:  stockSheet["I"+i] ?  stockSheet["I"+i].v : 0,
+                    await this.$store.dispatch("append",  {
+                        store: "BaseReportStock",
+                        obj: {
+                            id: this._BASEID + "02" + counter,
+                            parent: this._BASEID,
+                            shift: 2,
+                            item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
+                            awal: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
+                            in:  stockSheet["H"+i] ?  stockSheet["H"+i].v : 0,
+                            out:  stockSheet["I"+i] ?  stockSheet["I"+i].v : 0,
+                        }
                     })
                 }
 
@@ -148,14 +155,17 @@ export default {
                 let totalOut = out1 + out2
 
                     if( (in1 || out1  || out2  || in2) && i > 3 && stockSheet["A"+i] ) {
-                    this.$store.commit("BaseReportStock/append", {
-                        id: this._BASEID + "03" + counter,
-                        parent: this._BASEID,
-                        shift: 3,
-                        item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
-                        awal: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
-                        in:  totalIn,
-                        out: totalOut,
+                    await this.$store.dispatch("append",  {
+                        store: "BaseReportStock",
+                        obj: {
+                            id: this._BASEID + "03" + counter,
+                            parent: this._BASEID,
+                            shift: 3,
+                            item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
+                            awal: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
+                            in:  totalIn,
+                            out: totalOut,
+                        }
                     })
                 }
             }
@@ -164,14 +174,25 @@ export default {
             // kosongkan state base report
             this.$store.commit("BaseReportFile/baseId", null)
             this.$store.commit("BaseReportFile/importTemp", null)
+            // update baseReportFile record
+            let infoBaseReport = this.GET_BASEID(this._BASEID)
+            infoBaseReport.fileName = this._BASEREPORT.fileName
+            infoBaseReport.stock = this.stock
+            infoBaseReport.clock = this.clock
+            infoBaseReport.imported = true
+            this.$store.dispatch("update", { store: "BaseReportFile", obj: infoBaseReport })
             // sembunyikan loader
             this.$store.commit("Modal/active");
+
         }
     },
     computed: {
         ...mapState({
             _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.importTemp)),
             _BASEID: state => state.BaseReportFile.baseId,
+        }),
+        ...mapGetters({
+            GET_BASEID: "BaseReportFile/baseId"
         }),
         sheetNames() {
             let result = this._BASEREPORT.sheetNames.map((val) => {

@@ -15,6 +15,12 @@ const BaseReportFile = {
         state.lists.unshift(value);
       }
     },
+    // update data
+    update(state, value) {
+      state.lists = state.lists.map((val) => {
+        return val.id === value.id ? value : val;
+      });
+    },
     basereportfile(state, payload) {
       state.lists = payload;
     },
@@ -29,6 +35,11 @@ const BaseReportFile = {
   getters: {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
+    },
+    baseId: (state) => (id) => {
+      return JSON.parse(
+        JSON.stringify(state.lists.find((val) => val.id === id))
+      );
     },
   },
 };
