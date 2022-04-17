@@ -52,6 +52,14 @@ export default createStore({
         period: value.period,
       });
 
+      // check the periode
+      if (objToSend.split) {
+        if (!value.period) {
+          console.error("We need the period criteria");
+          return;
+        }
+      }
+
       // create id to the record
       if (value.id) {
         objToSend.obj.id = myfunction.generateId(value.id, true);
@@ -71,6 +79,15 @@ export default createStore({
       let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
         id: value.id,
       });
+
+      // check the periode
+      if (objToSend.split) {
+        if (!value.period) {
+          console.error("We need the period criteria");
+          return;
+        }
+      }
+
       //delete from state
       commit(`${value.store}/delete`, value.id, { root: true });
       // delete record from indexeddb and return as promise
@@ -86,6 +103,14 @@ export default createStore({
 
       // set obj before send
       let objToSend = Object.assign(rootGetters[`${value.store}/store`], value);
+
+      // check the periode
+      if (objToSend.split) {
+        if (!value.period) {
+          console.error("We need the period criteria");
+          return;
+        }
+      }
       // console.log(objToSend);
       // delete record from indexeddb and return as promise
       return new Promise((resolve) => {
@@ -113,6 +138,14 @@ export default createStore({
         obj: value.obj,
         period: value.period,
       });
+
+      // check the periode
+      if (objToSend.split) {
+        if (!value.period) {
+          console.error("We need the period criteria");
+          return;
+        }
+      }
 
       // send to indexeddb
       myfunction.update(objToSend);
