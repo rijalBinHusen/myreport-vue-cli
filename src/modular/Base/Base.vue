@@ -1,51 +1,58 @@
 <template>
     <div class="w3-margin-top w3-container">
-    <Button 
-        v-if="!periode"
-        class="w3-left" 
-        primary 
-        value="Set periode" 
-        type="button" 
-        @trig="periode = true" 
-    />
-    <PeriodePicker v-else @show="showData($event[0], $event[1])" />
         <div id="set-periode" class="w3-row w3-center">
-            <!-- Base report -->
-            <Select 
-            class="w3-col s3 w3-margin-right"
-            :options="baseReport" 
-            value="id"
-            text="title"
-            @selected="find($event)"
-            />            
-            <!-- Sheet report -->
-            <Select 
-            v-if="baseReport.length > 1"
-            class="w3-col s3 w3-margin-right"
-            :options='[
-                { id: 0, title: "Pilih sheet" }, 
-                { id: "clock", title: "Sheet clock" },
-                { id: "stock", title: "Sheet stock" },
-            ]'
-            value="id"
-            text="title"
-            @selected="sheet = $event"
-            />            
-            <!-- Shift -->
-            <Select 
-            v-if="baseReport.length > 1"
-            class="w3-col s3"
-            :options="[
-                { id:0, title: 'Pilih shift' }, 
-                { id:1, title: 'Shift 1'},
-                { id:2, title: 'Shift 2'},
-                { id:3, title: 'Shift 3'},
-            ]" 
-            value="id"
-            text="title"
-            @selected="shift = $event"
+            <PeriodePicker v-if="periode" @show="showData($event[0], $event[1])" />
+            <div v-else>
+            <Button 
+                class="w3-left w3-col s2 w3-margin-top" 
+                primary 
+                value="Set periode" 
+                type="button" 
+                @trig="periode = true" 
             />
+                <!-- Base report -->
+                <Select 
+                class="w3-col s3 w3-margin-right"
+                :options="baseReport" 
+                value="id"
+                text="title"
+                @selected="find($event)"
+                />            
+                <!-- Sheet report -->
+                <Select 
+                v-if="baseReport.length > 1"
+                class="w3-col s3 w3-margin-right"
+                :options='[
+                    { id: 0, title: "Pilih sheet" }, 
+                    { id: "clock", title: "Sheet clock" },
+                    { id: "stock", title: "Sheet stock" },
+                ]'
+                value="id"
+                text="title"
+                @selected="sheet = $event"
+                />            
+                <!-- Shift -->
+                <Select 
+                v-if="baseReport.length > 1"
+                class="w3-col s3"
+                :options="[
+                    { id:0, title: 'Pilih shift' }, 
+                    { id:1, title: 'Shift 1'},
+                    { id:2, title: 'Shift 2'},
+                    { id:3, title: 'Shift 3'},
+                ]" 
+                value="id"
+                text="title"
+                @selected="shift = $event"
+                />
+            </div>
         </div>
+        <Datatable
+          :datanya="lists"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish'] : ['Item', 'Awal', 'In', 'Out']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish'] : ['item', 'awal', 'in', 'out']"
+          id="tableBaseReport"
+        />
     </div>
 </template>
 
@@ -88,7 +95,6 @@ export default {
             }
             //tutup loader
             this.$store.commit("Modal/active")
-            console.log(baseReport.periode)
         },
         async showData(periode1, periode2) {
             // bring up the loader
@@ -109,6 +115,8 @@ export default {
     computed: {
         ...mapState({
             _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.lists)),
+            _BASECLOCK: state => JSON.parse(JSON.stringify(state.BaseReportClock.lists)),
+            _BASESTOCK: state => JSON.parse(JSON.stringify(state.BaseReportStock.lists)),
         }),
         ...mapGetters({
             WAREHOUSE_ID: "Warehouses/warehouseId",
@@ -134,11 +142,13 @@ export default {
 
             // jika stock
             if(this.sheet === "stock") {
-                return this.STOCKSHIFT(this.shift)
+                // return this.STOCKSHIFT(this.shift)
+                return this._BASESTOCK.filter((val) => val.shift == this.shift)
             }
 
             // jika clock
-            return this.CLOCKSHIFT(this.shift)
+            // return this.CLOCKSHIFT(this.shift)
+            return this._BASECLOCK.filter((val) => val.shift == this.shift)
         }
     },
     name: "Base"
