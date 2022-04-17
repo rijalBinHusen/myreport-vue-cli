@@ -5,13 +5,13 @@ import Modal from "./modules/Modal";
 import Collected from "../modular/Collected/Collected";
 import Uncollected from "../modular/Uncollected/Uncollected";
 import Expor from "./modules/Expor";
-import Impor from "./modules/Impor";
-import Warehouses from "./Warehouses";
+import Impor from "../modular/ImportData/Impor";
+import Warehouses from "../modular/Warehouses/Warehouses";
 import Supervisors from "../modular/Supervisors/Supervisors.js";
 import Backup from "../modular/Backup/Backup.js";
 import BaseReportFile from "../modular/BaseImport/BaseReportFile";
 import BaseReportClock from "../modular/Base/BaseReportClock";
-import BaseReportStock from "./modules/BaseReportStock";
+import BaseReportStock from "../modular/Base/BaseReportStock";
 
 export default createStore({
   modules: {

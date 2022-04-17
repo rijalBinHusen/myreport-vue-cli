@@ -13,11 +13,11 @@
 	import Collected from "../../modular/Collected/Collected.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
-	import Warehouses from "../../modular/warehouses/Warehouses.vue"
 	import Supervisors from "../../modular/Supervisors/Supervisors.vue"
 	import Backup from "../../modular/Backup/Backup.vue"
-	import Importbase from "../../modular/ImportBase/Importbase.vue"
+	import Importbase from "../../modular/BaseImport/Importbase.vue"
 	import Base from "../../modular/Base/Base.vue"
+	import Warehouses from "../../modular/Warehouses/Warehouses.vue"
 	
 	export default {
 		name: "Main",
