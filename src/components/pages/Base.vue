@@ -1,44 +1,45 @@
 <template>
     <div class="w3-margin-top w3-container">
-        <!-- <Button 
-                class="w3-right" 
-                primary 
-                :value="status ? 'Clock' : 'Stock'" 
-                type="button" 
-                @trig="status = !status" 
-            />
-        <Datatable
-          :datanya="status ? clock : stock"
-          :heads="status ? ['Shift', 'Nomor DO', 'Register', 'Start', 'Finish'] : ['Shift', 'Item', 'Awal', 'In', 'Out']"
-          :keys="status ? ['shift', 'noDo', 'reg', 'start', 'finish'] : ['shift', 'item', 'awal', 'in', 'out']"
-          id="tableBaseReport"
-        /> -->
-        <ExcelTable />
+    <Button 
+        v-if="!periode"
+        class="w3-left" 
+        primary 
+        value="Set periode" 
+        type="button" 
+        @trig="periode = true" 
+    />
+    <PeriodePicker v-else @show="showData($event)" />
     </div>
 </template>
 
 <script>
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
+import PeriodePicker from "../parts/PeriodePicker.vue"
+import Datepicker from "vue3-datepicker"
 import { mapState } from "vuex"
-import ExcelTable from "../elements/ExcelTable.vue"
 
 export default {
     components: {
         Button,
         Datatable,
-        ExcelTable,
+        Datepicker,
+        PeriodePicker,
     },
     data() {
         return {
-            status: true
+            periode: false, 
         }
     },
-    methods: {},
+    methods: {
+        showData(ev) {
+            this.periode = false
+            console.log(ev)
+        },
+    },
     computed: {
         ...mapState({
-            clock: state => JSON.parse(JSON.stringify(state.BaseReportClock.lists)),
-            stock: state => JSON.parse(JSON.stringify(state.BaseReportStock.lists)),
+
         }),
     },
     name: "Base"

@@ -1,13 +1,16 @@
 <template>
 <div class="">
-    <div class="w3-border w3-margin-top w3-row w3-padding w3-container">
-        <label style="font-weight:bold;" class="w3-col s2 w3-margin-top">Set from date : </label>
-        <Datepicker class="w3-col w3-input s2" v-model="periode1" />
-        <label style="font-weight:bold;" class="w3-margin-left w3-col s1 w3-margin-top">To date : </label>
-        <Datepicker class="w3-col w3-input s2" v-model="periode2" />
-        <Button primary class="w3-margin-left" value="Show" type="button" @trig="show" />
+    <div class="w3-margin-top w3-container">
+    <Button 
+        v-if="!periode"
+        class="w3-right" 
+        primary 
+        value="Set periode" 
+        type="button" 
+        @trig="periode = true" 
+    />
+    <PeriodePicker class="w3-right w3-margin-right" v-else @show="show($event[0], $event[1])" />
     </div>
-
         <input
             class="w3-hide"
             @change.prevent="readExcel($event)"
@@ -23,6 +26,7 @@
             option
             id="tableImportBase"
             v-slot:default="slotProp"
+            v-if="!periode"
             >
 
             <div v-if="!slotProp.prop.imported">
@@ -40,7 +44,7 @@
 import Input from "../elements/Input.vue"
 import Button from "../elements/Button.vue"
 import Datatable from "../parts/Datatable.vue"
-import Datepicker from "vue3-datepicker"
+import PeriodePicker from "../parts/PeriodePicker.vue"
 import { mapState, mapGetters} from "vuex"
 import * as XLSX from "xlsx";
 
@@ -48,32 +52,32 @@ export default {
     name: "Collect",
     data() {
         return {
-            periode1: new Date(),
-            periode2: new Date(),
             importId: null,
+            periode: false,
         };
     },
     components: {
         Input,
         Button,
         Datatable,
-        Datepicker,
+        PeriodePicker,
     },
     methods: {
         // to show lists data
-        async show() {
+        async show(periode1, periode2) {
             // bring up the loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // jika yang diminta total qty
-            let dateCheck = this.periode1 === this.periode2 
-                                ? [this.periode1.getTime()] 
-                                : this.$store.getters["getDaysArray"](this.periode1, this.periode2)
+            let dateCheck = periode1 === periode2 
+                                ? [periode1.getTime()] 
+                                : this.$store.getters["getDaysArray"](periode1, periode2)
             let objToSend = {
                     store: "BaseReportFile", 
                     date: dateCheck
                 }
             await this.$store.dispatch("findDataByDateArrays", objToSend)
             this.$store.commit("Modal/active")
+            this.periode = false
         },
         // to launch file picker
         launch(ev) {
