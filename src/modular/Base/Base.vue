@@ -1,8 +1,8 @@
 <template>
     <div class="w3-margin-top w3-container">
-        <div id="set-periode" class="w3-row w3-center">
+        <div id="set-periode">
             <PeriodePicker v-if="periode" @show="showData($event[0], $event[1])" />
-            <div v-else>
+            <div v-else class="w3-row w3-center">
             <Button 
                 class="w3-left w3-col s2 w3-margin-top" 
                 primary 
@@ -52,7 +52,17 @@
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish'] : ['Item', 'Awal', 'In', 'Out']"
           :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish'] : ['item', 'awal', 'in', 'out']"
           id="tableBaseReport"
-        />
+          option
+          v-slot:default="slotProp"
+        >
+            <Button 
+                value="Delete" 
+                type="button" 
+                danger 
+                small
+                @trig="remove(slotProp.prop)" 
+            />
+        </Datatable>
     </div>
 </template>
 
@@ -78,6 +88,27 @@ export default {
         }
     },
     methods: {
+        remove(ev){
+            let sure = confirm("Apakah anda yakin akan menghapusnya?")
+            if(!sure) {
+                return;
+            }
+
+            let baseReport = this.baseReport.find((val) => val.id === ev.parent)
+            let store = this.sheet === "stock" ? 'BaseReportStock' : 'BaseReportClock'
+            //delete from idb
+            this.$store.dispatch("deleteByParam", { 
+                store: store, 
+                parameter: "id", 
+                value: ev.id,
+                periode: baseReport.periode 
+            })
+            //delete from state
+            this.$store.commit(`${store}/deleteByParam`, {
+                parameter: "id",
+                value: ev.id
+            })
+        },
         async find(ev) {
             let baseReport = this.BASEID(ev)
             // store
@@ -122,8 +153,6 @@ export default {
             WAREHOUSE_ID: "Warehouses/warehouseId",
             DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId",
-            CLOCKSHIFT: "BaseReportClock/shift",
-            STOCKSHIFT: "BaseReportStock/shift",
         }),
         baseReport() {
 			let result = [{id: null, title: "Pilih base report"}]
@@ -136,19 +165,20 @@ export default {
             return result
         },
         lists() {
-            if(!this.sheet || !this.shift) {
-                return []
+            let result = []
+            
+            if(this.shift) {
+                // jika stock
+                if(this.sheet === "stock") {
+                    result = this._BASESTOCK.filter((val) => val.shift == this.shift)
+                }
+                // jika clock
+                if(this.sheet === "clock") {
+                    result = this._BASECLOCK.filter((val) => val.shift == this.shift)
+                }
             }
 
-            // jika stock
-            if(this.sheet === "stock") {
-                // return this.STOCKSHIFT(this.shift)
-                return this._BASESTOCK.filter((val) => val.shift == this.shift)
-            }
-
-            // jika clock
-            // return this.CLOCKSHIFT(this.shift)
-            return this._BASECLOCK.filter((val) => val.shift == this.shift)
+            return result
         }
     },
     name: "Base"
