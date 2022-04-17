@@ -183,7 +183,13 @@ export default createStore({
         );
     },
     findDataByDateArrays({ commit, rootGetters }, value) {
-      // value = { store: nameOfStore, date: ["array", "of", "date"], criteria: {name: "abc", shared: false} }
+      /* value = { 
+        store: nameOfStore, 
+        date: ["array", "of", "date"], 
+        criteria: {name: "abc", shared: false} 
+        dateNotCriteria: true
+      }
+      */
 
       //empty the store
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
@@ -196,12 +202,14 @@ export default createStore({
               .findData(
                 Object.assign(rootGetters[`${value.store}/store`], {
                   period: value.date[i],
-                  obj: Object.assign(
-                    {
-                      periode: value.date[i],
-                    },
-                    value.criteria
-                  ),
+                  obj: value.dateNotCriteria
+                    ? value.criteria
+                    : Object.assign(
+                        {
+                          periode: value.date[i],
+                        },
+                        value.criteria
+                      ),
                 })
               )
               .then((res) => {

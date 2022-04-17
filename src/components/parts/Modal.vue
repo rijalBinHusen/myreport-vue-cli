@@ -29,7 +29,7 @@ import UncollectedForm from "../../modular/Uncollected/UncollectedForm.vue"
 import CollectedForm from "../../modular/Collected/CollectedForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
-import BaseReportFile from "../../modular/BaseImport/BaseReportFile.vue"
+import BaseReportFile from "../../modular/BaseImport/BaseReportFileForm.vue"
 
 export default {
   name: "Modal",

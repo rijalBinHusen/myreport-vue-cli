@@ -186,5 +186,8 @@ export default {
             return result
         },
     },
+    mounted(){
+        this.$store.commit("BaseReportFile/basereportfile", [])
+    },
 }
 </script>

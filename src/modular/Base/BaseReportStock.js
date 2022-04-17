@@ -13,6 +13,9 @@ const BaseReportStock = {
         state.lists.unshift(value);
       }
     },
+    basereportstock(state, payload) {
+      state.lists = payload;
+    },
     deleteByParam(state, value) {
       // value = { parameter: "parent", value: "c038" }
       state.lists = state.lists.filter(
@@ -24,6 +27,11 @@ const BaseReportStock = {
   getters: {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
+    },
+    shift: (state) => (shift) => {
+      return JSON.parse(
+        JSON.stringify(state.lists.filter((val) => val.shift === shift))
+      );
     },
   },
 };

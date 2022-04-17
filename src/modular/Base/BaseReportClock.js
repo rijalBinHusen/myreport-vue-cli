@@ -13,6 +13,9 @@ const BaseReportClock = {
         state.lists.unshift(value);
       }
     },
+    basereportclock(state, payload) {
+      state.lists = payload;
+    },
     deleteByParam(state, value) {
       // value = { parameter: "parent", value: "c038" }
       state.lists = state.lists.filter(
@@ -25,6 +28,11 @@ const BaseReportClock = {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
+  },
+  shift: (state) => (shift) => {
+    return JSON.parse(
+      JSON.stringify(state.lists.filter((val) => val.shift === shift))
+    );
   },
 };
 
