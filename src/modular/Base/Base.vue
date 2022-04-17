@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import Button from "../elements/Button.vue"
-import Datatable from "../parts/Datatable.vue"
-import PeriodePicker from "../parts/PeriodePicker.vue"
+import Button from "../../components/elements/Button.vue"
+import Datatable from "../../components/parts/Datatable.vue"
+import PeriodePicker from "../../components/parts/PeriodePicker.vue"
 import Datepicker from "vue3-datepicker"
 import { mapState } from "vuex"
 

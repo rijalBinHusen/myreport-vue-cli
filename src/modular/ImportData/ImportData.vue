@@ -26,7 +26,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex"
-import Button from "../elements/Button.vue"
+import Button from "../../components/elements/Button.vue"
 
 export default {
     name: "Impor",

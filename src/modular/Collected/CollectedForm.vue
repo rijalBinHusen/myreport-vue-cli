@@ -31,10 +31,10 @@
 
 <script>
 
-import Select from "../elements/Select.vue"
-import Input from "../elements/Input.vue"
+import Select from "../../components/elements/Select.vue"
+import Input from "../../components/elements/Input.vue"
 import datepicker from "vue3-datepicker"
-import Button from "../elements/Button.vue"
+import Button from "../../components/elements/Button.vue"
 
 export default {
     name: "CollectedForm",

@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import Select from "../elements/Select.vue"
-import Button from "../elements/Button.vue"
+import Select from "../../components/elements/Select.vue"
+import Button from "../../components/elements/Button.vue"
 import { mapState, mapGetters } from "vuex"
 
 export default {

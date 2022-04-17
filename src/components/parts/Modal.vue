@@ -25,11 +25,11 @@
 
 <script>
 
-import UncollectedForm from "../form/UncollectedForm.vue"
-import CollectedForm from "../form/CollectedForm.vue"
+import UncollectedForm from "../../modular/Uncollected/UncollectedForm.vue"
+import CollectedForm from "../../modular/Collected/CollectedForm.vue"
 import Loader from "./Loader.vue"
-import ImporterForm from "../form/ImporterForm.vue"
-import BaseReportFile from "../form/BaseReportFile.vue"
+import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
+import BaseReportFile from "../../modular/ImportBase/BaseReportFile.vue"
 
 export default {
   name: "Modal",

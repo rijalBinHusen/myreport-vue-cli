@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import Button from "../elements/Button.vue"
+import Button from "../../components/elements/Button.vue"
 import { mapState, mapGetters, mapActions } from "vuex"
 export default {
     components: {

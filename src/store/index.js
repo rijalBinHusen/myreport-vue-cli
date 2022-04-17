@@ -2,16 +2,15 @@ import { createStore } from "vuex";
 import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
-import Collected from "./modules/Collected";
-import Uncollected from "./modules/Uncollected";
+import Collected from "../modular/Collected/Collected";
+import Uncollected from "../modular/Uncollected/Uncollected";
 import Expor from "./modules/Expor";
 import Impor from "./modules/Impor";
-import ImporReport1 from "./modules/ImporReport1";
-import Warehouses from "./modules/Warehouses";
-import Supervisors from "./modules/Supervisors.js";
-import Backup from "./modules/Backup.js";
-import BaseReportFile from "./modules/BaseReportFile";
-import BaseReportClock from "./modules/BaseReportClock";
+import Warehouses from "./Warehouses";
+import Supervisors from "../modular/Supervisors/Supervisors.js";
+import Backup from "../modular/Backup/Backup.js";
+import BaseReportFile from "../modular/BaseImport/BaseReportFile";
+import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "./modules/BaseReportStock";
 
 export default createStore({
@@ -22,7 +21,6 @@ export default createStore({
     Uncollected,
     Expor,
     Impor,
-    ImporReport1,
     Warehouses,
     Supervisors,
     Backup,

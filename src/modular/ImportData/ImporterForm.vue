@@ -10,8 +10,8 @@
 
 <script>
 import { mapState, mapActions } from "vuex"
-import Checkbox from "../elements/Checkbox.vue"
-import Button from "../elements/Button.vue"
+import Checkbox from "../../components/elements/Checkbox.vue"
+import Button from "../../components/elements/Button.vue"
 
 export default {
     name: "ImporterForm",

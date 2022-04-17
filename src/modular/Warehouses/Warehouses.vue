@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import Button from "../elements/Button.vue"
+import Button from "../../components/elements/Button.vue"
 import { uid } from "uid"
-import Table from "../elements/Table.vue"
+import Table from "../../components/elements/Table.vue"
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 
 export default {

@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import Input from "../elements/Input.vue"
-import Button from "../elements/Button.vue"
-import Datatable from "../parts/Datatable.vue"
-import PeriodePicker from "../parts/PeriodePicker.vue"
+import Input from "../../components/elements/Input.vue"
+import Button from "../../components/elements/Button.vue"
+import Datatable from "../../components/parts/Datatable.vue"
+import PeriodePicker from "../../components/parts/PeriodePicker.vue"
 import { mapState, mapGetters} from "vuex"
 import * as XLSX from "xlsx";
 

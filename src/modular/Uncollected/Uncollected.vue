@@ -46,9 +46,9 @@
 
 <script>
 
-import Button from "../elements/Button.vue"
-import Datatable from "../parts/Datatable.vue"
-import Dropdown from "../elements/Dropdown.vue"
+import Button from "../../components/elements/Button.vue"
+import Datatable from "../../components/parts/Datatable.vue"
+import Dropdown from "../../components/elements/Dropdown.vue"
 import { mapState, mapGetters } from "vuex";
 
 export default {

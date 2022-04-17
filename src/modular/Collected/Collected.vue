@@ -29,9 +29,9 @@
 </template>
 
 <script>
-import Input from "../elements/Input.vue"
-import Button from "../elements/Button.vue"
-import Datatable from "../parts/Datatable.vue"
+import Input from "../../components/elements/Input.vue"
+import Button from "../../components/elements/Button.vue"
+import Datatable from "../../components/parts/Datatable.vue"
 import datepicker from "vue3-datepicker"
 import { mapGetters } from "vuex"
 
