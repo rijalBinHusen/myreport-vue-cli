@@ -6,6 +6,7 @@
     :rowData="rowData"
     :enterMovesDown="true"
     :enterMovesDownAfterEdit="true"
+    rowSelection="multiple"
   >
   </ag-grid-vue>
 </template>
