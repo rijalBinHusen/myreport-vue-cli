@@ -98,7 +98,7 @@ export default createStore({
     },
     // deelete by parameter
     deleteByParam({ rootGetters }, value) {
-      // value = { store: "BaseReportFile", parameter: "parent", value: "c038" }
+      // value = { store: "BaseReportFile", parameter: "parent", value: "c038", period: "periodeOfrecord" }
       // ^ would delete all record that contain parent: c038 in BaseReportFile collection
 
       // set obj before send

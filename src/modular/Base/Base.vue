@@ -101,7 +101,8 @@ export default {
                 store: store, 
                 parameter: "id", 
                 value: ev.id,
-                periode: baseReport.periode 
+                periode: baseReport.periode,
+                period: baseReport.periode,
             })
             //delete from state
             this.$store.commit(`${store}/deleteByParam`, {
@@ -110,6 +111,7 @@ export default {
             })
         },
         async find(ev) {
+            // find detail about base report
             let baseReport = this.BASEID(ev)
             // store
             let store = ["BaseReportClock", "BaseReportStock"]
@@ -126,6 +128,8 @@ export default {
             }
             //tutup loader
             this.$store.commit("Modal/active")
+            // catat base id, so all component can read it
+            this.$store.commit("BaseReportFile/baseId", ev)
         },
         async showData(periode1, periode2) {
             // bring up the loader
@@ -148,6 +152,7 @@ export default {
             _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.lists)),
             _BASECLOCK: state => JSON.parse(JSON.stringify(state.BaseReportClock.lists)),
             _BASESTOCK: state => JSON.parse(JSON.stringify(state.BaseReportStock.lists)),
+            _BASEID: state => JSON.parse(JSON.stringify(state.BaseReportFile.baseId)),
         }),
         ...mapGetters({
             WAREHOUSE_ID: "Warehouses/warehouseId",

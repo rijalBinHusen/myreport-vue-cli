@@ -49,6 +49,8 @@ export default {
                 alert("Select sheet first!")
                 return
             }
+            // BASE record info
+            let infoBaseReport = this.GET_BASEID(this._BASEID)
             // tampilkan loader, proses data yang sudah dipilih
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // dapatkan !ref
@@ -94,7 +96,8 @@ export default {
                             reg: clockSheet["F"+i] ? clockSheet["F"+i].v : 0,
                             start: clockSheet["G"+i] ? clockSheet["G"+i].v : 0,
                             finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0
-                        }
+                        },
+                        period: infoBaseReport.periode
                     })
                 }
                 /* 
@@ -116,7 +119,8 @@ export default {
                             awal: stockSheet["D"+i] ?  stockSheet["D"+i].v : 0,
                             in:  stockSheet["E"+i] ?  stockSheet["E"+i].v : 0,
                             out:  stockSheet["F"+i] ?  stockSheet["F"+i].v : 0
-                        }
+                        },
+                        period: infoBaseReport.periode
                     })
                 }
                 /*
@@ -137,7 +141,8 @@ export default {
                             awal: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
                             in:  stockSheet["H"+i] ?  stockSheet["H"+i].v : 0,
                             out:  stockSheet["I"+i] ?  stockSheet["I"+i].v : 0,
-                        }
+                        },
+                        period: infoBaseReport.periode
                     })
                 }
 
@@ -165,7 +170,8 @@ export default {
                             awal: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
                             in:  totalIn,
                             out: totalOut,
-                        }
+                        },
+                        period: infoBaseReport.periode
                     })
                 }
             }
@@ -175,12 +181,15 @@ export default {
             this.$store.commit("BaseReportFile/baseId", null)
             this.$store.commit("BaseReportFile/importTemp", null)
             // update baseReportFile record
-            let infoBaseReport = this.GET_BASEID(this._BASEID)
             infoBaseReport.fileName = this._BASEREPORT.fileName
             infoBaseReport.stock = this.stock
             infoBaseReport.clock = this.clock
             infoBaseReport.imported = true
-            this.$store.dispatch("update", { store: "BaseReportFile", obj: infoBaseReport })
+            this.$store.dispatch("update",  { 
+                store: "BaseReportFile", 
+                obj: infoBaseReport,
+                period: infoBaseReport.periode
+                })
             // sembunyikan loader
             this.$store.commit("Modal/active");
 

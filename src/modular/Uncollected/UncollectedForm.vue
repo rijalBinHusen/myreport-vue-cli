@@ -64,6 +64,7 @@ export default {
                                 name: allName[i].id, 
                                 periode: periodeTime
                             },
+                            period: periodeTime
                         })
                         // baseReportFile record, tunggu sampai selesai
                         if(this._WAREHOUSES[i]) {
@@ -76,7 +77,8 @@ export default {
                                     fileName: false,
                                     stock: false,
                                     clock: false,
-                                }
+                                },
+                                period: periodeTime
                         })
                         }
                     }
