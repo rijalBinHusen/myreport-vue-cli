@@ -1,6 +1,6 @@
 <template>
   <ag-grid-vue
-    style="width: 1000px; height: 690px; margin-left: auto; margin-right: auto;"
+    style="width: 1000px; height: 700px; margin-left: auto; margin-right: auto;"
     class="ag-theme-alpine"
     :columnDefs="columnDefs"
     :rowData="rowData"
@@ -27,7 +27,7 @@ export default {
     return {
       columnDefs: [
         { headerName: "Name", field: "name", editable: true },
-        { headerName: "Email", field: "email" },
+        { headerName: "Email", field: "email", resizable: true },
         { headerName: "Phone", field: "phone" },
         { headerName: "City code", field: "city"}
       ],
