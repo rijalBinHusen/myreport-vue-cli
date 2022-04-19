@@ -95,7 +95,8 @@ export default {
                             noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
                             reg: clockSheet["F"+i] ? clockSheet["F"+i].v : 0,
                             start: clockSheet["G"+i] ? clockSheet["G"+i].v : 0,
-                            finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0
+                            finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0,
+                            break: 0,
                         },
                         period: infoBaseReport.periode
                     })
@@ -118,7 +119,10 @@ export default {
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
                             awal: stockSheet["D"+i] ?  stockSheet["D"+i].v : 0,
                             in:  stockSheet["E"+i] ?  stockSheet["E"+i].v : 0,
-                            out:  stockSheet["F"+i] ?  stockSheet["F"+i].v : 0
+                            out:  stockSheet["F"+i] ?  stockSheet["F"+i].v : 0,
+                            dateIn: "",
+                            dateOut: "",
+                            dateEnd: "",
                         },
                         period: infoBaseReport.periode
                     })
@@ -141,6 +145,9 @@ export default {
                             awal: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
                             in:  stockSheet["H"+i] ?  stockSheet["H"+i].v : 0,
                             out:  stockSheet["I"+i] ?  stockSheet["I"+i].v : 0,
+                            dateIn: "",
+                            dateOut: "",
+                            dateEnd: "",
                         },
                         period: infoBaseReport.periode
                     })
@@ -170,6 +177,9 @@ export default {
                             awal: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
                             in:  totalIn,
                             out: totalOut,
+                            dateIn: "",
+                            dateOut: "",
+                            dateEnd: "",
                         },
                         period: infoBaseReport.periode
                     })

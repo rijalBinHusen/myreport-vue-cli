@@ -90,6 +90,19 @@ export default {
             if(!sure) {
                 return;
             }
+
+            // update the baseReport file record
+            let infobase = this.BASEID(ev)
+            infobase.fileName = false
+            infobase.stock = false
+            infobase.clock = false
+            infobase.imported = false
+            this.$store.dispatch("update", {
+                store: "BaseReportFile", 
+                obj: infobase,
+                period: infobase.periode
+            })
+
             // bring up the loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
 
@@ -102,7 +115,8 @@ export default {
             await this.$store.dispatch("deleteByParam", { 
                 store: "BaseReportStock", 
                 parameter: "parent", 
-                value: ev 
+                value: ev,
+                period: infobase.periode
             })
             //delete from state
             this.$store.commit("BaseReportClock/deleteByParam", {
@@ -113,16 +127,9 @@ export default {
             await this.$store.dispatch("deleteByParam", { 
                 store: "BaseReportClock", 
                 parameter: "parent", 
-                value: ev 
+                value: ev,
+                period: infobase.periode
             })
-
-            // update the baseReport file record
-            let infobase = this.BASEID(ev)
-            infobase.fileName = false
-            infobase.stock = false
-            infobase.clock = false
-            infobase.imported = false
-            this.$store.dispatch("update", {store: "BaseReportFile", obj: infobase})
             
             // close the loader
             this.$store.commit("Modal/active");
