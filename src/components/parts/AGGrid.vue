@@ -1,4 +1,5 @@
 <template>
+<button @click="copyRow">Copy</button>
   <ag-grid-vue
     style="width: 1000px; height: 690px"
     class="ag-theme-alpine"
@@ -7,6 +8,8 @@
     :enterMovesDown="true"
     :enterMovesDownAfterEdit="true"
     rowSelection="multiple"
+    :enableRangeSelection="true"
+     @row-selected="onRowSelected"
   >
   </ag-grid-vue>
 </template>
@@ -21,7 +24,7 @@ export default {
   components: {
     AgGridVue,
   },
-  setup() {
+  data() {
     return {
       columnDefs: [
         { headerName: "Name", field: "name", editable: true },
@@ -31,6 +34,7 @@ export default {
       ],
       rowData: [
           {
+            "id": 1,
             "name": "Melodie Larsen",
             "email": "dolor.dapibus@hotmail.ca",
             "phone": "(620) 908-4668",
@@ -38,256 +42,176 @@ export default {
           },
           {
             "name": "Shaeleigh Conway",
+            "id": 2,
             "email": "lorem.auctor.quis@protonmail.com",
             "phone": "(484) 184-0810",
             "city": "15388"
           },
           {
+            "id": 3,
             "name": "Faith Michael",
             "email": "adipiscing.enim@google.ca",
             "phone": "1-237-448-3180",
             "city": "261295"
           },
           {
+            "id": 4,
             "name": "Clare Rosa",
             "email": "cum@outlook.net",
             "phone": "(468) 960-8712",
             "city": "0719"
           },
           {
+            "id": 5,
             "name": "Dawn Bridges",
             "email": "cras@protonmail.org",
             "phone": "(450) 450-7712",
             "city": "3375"
           },
           {
+            "id": 6,
             "name": "Mark Olson",
             "email": "at.pede@icloud.com",
             "phone": "1-256-654-4911",
             "city": "T7K 3Y2"
           },
           {
+            "id": 7,
             "name": "Anthony Boyd",
             "email": "nam.tempor@google.couk",
             "phone": "(718) 471-7632",
             "city": "85724-319"
           },
           {
+            "id": 8,
             "name": "Sydnee Vinson",
             "email": "convallis.in@hotmail.org",
             "phone": "(633) 378-2278",
             "city": "1101"
           },
           {
+            "id": 9,
             "name": "Sade Key",
             "email": "pede.nunc@hotmail.edu",
             "phone": "(557) 778-7476",
             "city": "2654"
           },
           {
+            "id": 10,
             "name": "Uriel Pickett",
             "email": "nunc.ut@hotmail.org",
             "phone": "1-461-363-6266",
             "city": "2975 HN"
           },
-          {
+          {"id": 11,
             "name": "Kelsie Blake",
             "email": "nunc.quisque.ornare@outlook.edu",
             "phone": "(626) 137-3358",
             "city": "2382"
           },
           {
+            "id": 12,
             "name": "Alma Reeves",
             "email": "inceptos.hymenaeos@hotmail.com",
             "phone": "(767) 397-8628",
             "city": "5667"
           },
           {
+            "id": 13,
             "name": "Imelda House",
             "email": "erat.sed@google.net",
             "phone": "1-640-793-1223",
             "city": "886953"
           },
           {
+            "id": 14,
             "name": "Lance Mckee",
             "email": "justo.eu.arcu@icloud.couk",
             "phone": "1-982-756-8823",
             "city": "13-091"
           },
           {
+            "id": 15,
             "name": "Gemma Carey",
             "email": "sollicitudin.orci@aol.couk",
             "phone": "(647) 213-2723",
             "city": "50106"
           },
           {
+            "id": 16,
             "name": "Amber Moss",
             "email": "nonummy.ac@protonmail.edu",
             "phone": "(972) 737-4138",
             "city": "762288"
           },
           {
+            "id": 17,
             "name": "Mollie Whitley",
             "email": "nec@protonmail.org",
             "phone": "(544) 707-3871",
             "city": "72548-26307"
           },
           {
+            "id": 18,
             "name": "Calista Sutton",
             "email": "vehicula.risus.nulla@aol.edu",
             "phone": "(539) 595-2744",
             "city": "88618"
           },
           {
+            "id": 19,
             "name": "Andrew Hicks",
             "email": "rutrum@aol.edu",
             "phone": "(412) 841-9716",
             "city": "302128"
           },
           {
+            "id": 20,
             "name": "Blythe Leon",
             "email": "in@hotmail.net",
             "phone": "(665) 227-1937",
             "city": "693412"
           }
         ],
+      selectedRow: [],
+      keyPress: {},
     };
   },
+  methods: {      
+    releaseKey(event) {
+      delete this.keyPress[event.key]
+    },
+
+    pressKey(event) {
+      this.keyPress[event.key] = true
+    },
+
+    onRowSelected(event) {
+      if(this.keyPress.Shift) {
+        this.selectedRow.push(event.node.data.id)
+        return
+      }
+      if(this.keyPress.Control) {
+        this.selectedRow.push(event.node.data.id)
+        return
+      }
+
+      this.selectedRow = [event.node.data.id]
+      
+    },
+    copyRow() {
+      let result = ""
+      this.selectedRow.forEach((val) => result += Object.values(this.rowData[val]).join(",")+"\n" )
+      navigator.clipboard.writeText(result);
+    },
+  },
+  mounted() {
+      window.addEventListener("keydown", this.pressKey)
+      window.addEventListener("keyup", this.releaseKey)
+  },
+  unmounted() {
+      window.removeEventListener("keydown", this.pressKey)
+      window.removeEventListener("keyup", this.releaseKey)
+  }
 };
-
-
-// import CanvasDatagrid from "canvas-datagrid"
-
-// export default {
-//   data() {
-//     return {
-//       data1: [
-//           {
-//             "name": "Melodie Larsen",
-//             "email": "dolor.dapibus@hotmail.ca",
-//             "phone": "(620) 908-4668",
-//             "city": "26722"
-//           },
-//           {
-//             "name": "Shaeleigh Conway",
-//             "email": "lorem.auctor.quis@protonmail.com",
-//             "phone": "(484) 184-0810",
-//             "city": "15388"
-//           },
-//           {
-//             "name": "Faith Michael",
-//             "email": "adipiscing.enim@google.ca",
-//             "phone": "1-237-448-3180",
-//             "city": "261295"
-//           },
-//           {
-//             "name": "Clare Rosa",
-//             "email": "cum@outlook.net",
-//             "phone": "(468) 960-8712",
-//             "city": "0719"
-//           },
-//           {
-//             "name": "Dawn Bridges",
-//             "email": "cras@protonmail.org",
-//             "phone": "(450) 450-7712",
-//             "city": "3375"
-//           },
-//           {
-//             "name": "Mark Olson",
-//             "email": "at.pede@icloud.com",
-//             "phone": "1-256-654-4911",
-//             "city": "T7K 3Y2"
-//           },
-//           {
-//             "name": "Anthony Boyd",
-//             "email": "nam.tempor@google.couk",
-//             "phone": "(718) 471-7632",
-//             "city": "85724-319"
-//           },
-//           {
-//             "name": "Sydnee Vinson",
-//             "email": "convallis.in@hotmail.org",
-//             "phone": "(633) 378-2278",
-//             "city": "1101"
-//           },
-//           {
-//             "name": "Sade Key",
-//             "email": "pede.nunc@hotmail.edu",
-//             "phone": "(557) 778-7476",
-//             "city": "2654"
-//           },
-//           {
-//             "name": "Uriel Pickett",
-//             "email": "nunc.ut@hotmail.org",
-//             "phone": "1-461-363-6266",
-//             "city": "2975 HN"
-//           },
-//           {
-//             "name": "Kelsie Blake",
-//             "email": "nunc.quisque.ornare@outlook.edu",
-//             "phone": "(626) 137-3358",
-//             "city": "2382"
-//           },
-//           {
-//             "name": "Alma Reeves",
-//             "email": "inceptos.hymenaeos@hotmail.com",
-//             "phone": "(767) 397-8628",
-//             "city": "5667"
-//           },
-//           {
-//             "name": "Imelda House",
-//             "email": "erat.sed@google.net",
-//             "phone": "1-640-793-1223",
-//             "city": "886953"
-//           },
-//           {
-//             "name": "Lance Mckee",
-//             "email": "justo.eu.arcu@icloud.couk",
-//             "phone": "1-982-756-8823",
-//             "city": "13-091"
-//           },
-//           {
-//             "name": "Gemma Carey",
-//             "email": "sollicitudin.orci@aol.couk",
-//             "phone": "(647) 213-2723",
-//             "city": "50106"
-//           },
-//           {
-//             "name": "Amber Moss",
-//             "email": "nonummy.ac@protonmail.edu",
-//             "phone": "(972) 737-4138",
-//             "city": "762288"
-//           },
-//           {
-//             "name": "Mollie Whitley",
-//             "email": "nec@protonmail.org",
-//             "phone": "(544) 707-3871",
-//             "city": "72548-26307"
-//           },
-//           {
-//             "name": "Calista Sutton",
-//             "email": "vehicula.risus.nulla@aol.edu",
-//             "phone": "(539) 595-2744",
-//             "city": "88618"
-//           },
-//           {
-//             "name": "Andrew Hicks",
-//             "email": "rutrum@aol.edu",
-//             "phone": "(412) 841-9716",
-//             "city": "302128"
-//           },
-//           {
-//             "name": "Blythe Leon",
-//             "email": "in@hotmail.net",
-//             "phone": "(665) 227-1937",
-//             "city": "693412"
-//           }
-//         ],
-//     }
-//   },
-//   components: {
-//     CanvasDatagrid
-//   },
-//   name: "CanvasDataGrid",
-// }
 </script>

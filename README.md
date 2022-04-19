@@ -1,5 +1,11 @@
 # myreport
 
+## AG-grid todo lists
+- [x] select multiple row and copy row as csv string
+- [ ] select each cell // only available in enterprise edition
+- [ ] copy each cell // only available in enterprise edition
+- [ ] filter
+
 ## Project setup
 ```
 npm install
