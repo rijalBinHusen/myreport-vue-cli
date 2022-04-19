@@ -1,7 +1,6 @@
 <template>
-<button @click="copyRow">Copy</button>
   <ag-grid-vue
-    style="width: 1000px; height: 690px"
+    style="width: 1000px; height: 690px; margin-left: auto; margin-right: auto;"
     class="ag-theme-alpine"
     :columnDefs="columnDefs"
     :rowData="rowData"
@@ -184,6 +183,11 @@ export default {
 
     pressKey(event) {
       this.keyPress[event.key] = true
+      if(this.keyPress.Control) {
+        if(event.keyCode === 67) {
+          this.copyRow()
+        }
+      }
     },
 
     onRowSelected(event) {
@@ -200,8 +204,16 @@ export default {
       
     },
     copyRow() {
+      let field = this.columnDefs.map((val) => val.field)
       let result = ""
-      this.selectedRow.forEach((val) => result += Object.values(this.rowData[val]).join(",")+"\n" )
+      this.rowData.forEach((val) => {
+        if(this.selectedRow.includes(val.id) ) {
+          field.forEach((val2) => {
+            result += val[val2]+","
+          })
+          result += "\n"
+        }
+      })
       navigator.clipboard.writeText(result);
     },
   },
