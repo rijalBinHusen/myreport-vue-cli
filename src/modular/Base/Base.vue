@@ -21,7 +21,7 @@
                 <!-- Sheet report -->
                 <Select 
                 v-if="baseReport.length > 1"
-                class="w3-col s3 w3-margin-right"
+                class="w3-col s2 w3-margin-right"
                 :options='[
                     { id: 0, title: "Pilih sheet" }, 
                     { id: "clock", title: "Sheet clock" },
@@ -34,7 +34,7 @@
                 <!-- Shift -->
                 <Select 
                 v-if="baseReport.length > 1"
-                class="w3-col s3"
+                class="w3-col s2 w3-margin-right"
                 :options="[
                     { id:0, title: 'Pilih shift' }, 
                     { id:1, title: 'Shift 1'},
@@ -45,12 +45,20 @@
                 text="title"
                 @selected="shift = $event"
                 />
+                <!-- oPEN IN EXCEL MODE -->
+                <Button 
+                    class="w3-left w3-col s2 w3-margin-top" 
+                    primary 
+                    value="Excel mode" 
+                    type="button" 
+                    @trig="periode = true" 
+                />
             </div>
         </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish'] : ['Item', 'Awal', 'In', 'Out']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish'] : ['item', 'awal', 'in', 'out']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Tanggal Akhir', 'Akhir']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'break'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'dateEnd', 'akhir']"
           id="tableBaseReport"
           option
           v-slot:default="slotProp"

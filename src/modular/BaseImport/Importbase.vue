@@ -91,17 +91,7 @@ export default {
                 return;
             }
 
-            // update the baseReport file record
             let infobase = this.BASEID(ev)
-            infobase.fileName = false
-            infobase.stock = false
-            infobase.clock = false
-            infobase.imported = false
-            this.$store.dispatch("update", {
-                store: "BaseReportFile", 
-                obj: infobase,
-                period: infobase.periode
-            })
 
             // bring up the loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -130,6 +120,18 @@ export default {
                 value: ev,
                 period: infobase.periode
             })
+
+            // update the baseReport file record
+            infobase.fileName = false
+            infobase.stock = false
+            infobase.clock = false
+            infobase.imported = false
+            this.$store.dispatch("update", {
+                store: "BaseReportFile", 
+                obj: infobase,
+                period: infobase.periode
+            })
+
             
             // close the loader
             this.$store.commit("Modal/active");

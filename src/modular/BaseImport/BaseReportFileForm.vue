@@ -93,9 +93,9 @@ export default {
                             parent: this._BASEID,
                             shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
                             noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
-                            reg: clockSheet["F"+i] ? clockSheet["F"+i].v : 0,
-                            start: clockSheet["G"+i] ? clockSheet["G"+i].v : 0,
-                            finish: clockSheet["H"+i] ? clockSheet["H"+i].v : 0,
+                            reg: clockSheet["F"+i] ? clockSheet["F"+i].w : 0,
+                            start: clockSheet["G"+i] ? clockSheet["G"+i].w : 0,
+                            finish: clockSheet["H"+i] ? clockSheet["H"+i].w : 0,
                             break: 0,
                         },
                         period: infoBaseReport.periode
@@ -123,6 +123,7 @@ export default {
                             dateIn: "",
                             dateOut: "",
                             dateEnd: "",
+                            akhir: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
                         },
                         period: infoBaseReport.periode
                     })
@@ -133,7 +134,7 @@ export default {
                 */
             //    Checker stock shift 2
             let in2nd = stockSheet["H"+i] ? stockSheet["H"+i].v : 0
-            let out2nd = stockSheet["I"+i] ? stockSheet["I"+i] : 0
+            let out2nd = stockSheet["I"+i] ? stockSheet["I"+i].v : 0
                 if(in2nd > 0 || out2nd > 0) {
                     await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
@@ -148,6 +149,7 @@ export default {
                             dateIn: "",
                             dateOut: "",
                             dateEnd: "",
+                            akhir: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
                         },
                         period: infoBaseReport.periode
                     })
@@ -161,7 +163,7 @@ export default {
                 // number checker
                 let in1 = stockSheet["K"+i] ? +stockSheet["K"+i].v : 0
                 let in2 = stockSheet["O"+i] ? +stockSheet["O"+i].v : 0
-                let totalIn = in1 + in2
+                let totalIn = in1 == in2 ? in1 : in1 + in2
                 let out1 = stockSheet["L"+i] ? +stockSheet["L"+i].v : 0
                 let out2 = stockSheet["M"+i] ? +stockSheet["M"+i].v : 0
                 let totalOut = out1 + out2
@@ -180,6 +182,7 @@ export default {
                             dateIn: "",
                             dateOut: "",
                             dateEnd: "",
+                            akhir: stockSheet["P"+i] ?  stockSheet["P"+i].v : 0,
                         },
                         period: infoBaseReport.periode
                     })
