@@ -39,7 +39,7 @@ const Baseitem = {
       return rec && rec.name
         ? rec
         : {
-            id: "",
+            kode: "",
             name: "",
           };
     },
@@ -53,7 +53,8 @@ const Baseitem = {
       return rec && rec.name
         ? rec
         : {
-            id: "Id item null",
+            id: "",
+            kode: "Id item null",
             name: "Name item null",
           };
     },
