@@ -49,14 +49,13 @@
     />
     </form>
   </div>
-    <br />
-    <br />
-    <Table 
+    <Datatable
       v-if="_BASEITEM.length > 0"
-      :headers="['Kode item', 'Nama item']" 
-      :lists="_BASEITEM" 
+      :datanya="_BASEITEM"
+      :heads="['Kode item', 'Nama item']"
       :keys="['kode', 'name']"
-      options
+      option
+      id="tableBaseFile"
       v-slot:default="slotProp"
     >
       <Button 
@@ -74,21 +73,21 @@
           type="button" 
           @trig="remove($event)" 
         />
-    </Table>
+    </Datatable>
 </template>
 
 <script>
 import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
 import { uid } from "uid"
-import Table from "../../components/elements/Table.vue"
+import Datatable from "../../components/parts/Datatable.vue"
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import * as XLSX from "xlsx";
 
 export default {
   components: {
     Button,
-    Table,
+    Datatable,
     Select
   },
   name: "Baseitem",
