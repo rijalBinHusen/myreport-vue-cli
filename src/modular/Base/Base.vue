@@ -1,5 +1,11 @@
 <template>
-    <div class="w3-margin-top w3-container">
+    <div>
+        <AGGrid
+            v-if="excelMode"
+            :columnDefs="columnDefs"
+            :rowData="lists"
+        />
+    <div v-else class="w3-margin-top w3-container">
         <div id="set-periode">
             <PeriodePicker v-if="periode" @show="showData($event[0], $event[1])" />
             <div v-else class="w3-row w3-center">
@@ -51,7 +57,7 @@
                     primary 
                     value="Excel mode" 
                     type="button" 
-                    @trig="periode = true" 
+                    @trig="excelMode = true" 
                 />
             </div>
         </div>
@@ -72,6 +78,7 @@
             />
         </Datatable>
     </div>
+    </div>
 </template>
 
 <script>
@@ -80,9 +87,11 @@ import Datatable from "../../components/parts/Datatable.vue"
 import PeriodePicker from "../../components/parts/PeriodePicker.vue"
 import Select from "../../components/elements/Select.vue"
 import { mapState, mapGetters } from "vuex"
+import AGGrid from "../../components/parts/AGGrid.vue"
 
 export default {
     components: {
+        AGGrid,
         Button,
         Datatable,
         Select,
@@ -92,7 +101,26 @@ export default {
         return {
             periode: false, 
             sheet: null,
-            shift: null
+            shift: null,
+            excelMode: false,
+            columnDefs: this.sheet === "clock"
+                            ? [
+                                { headerName: "Nomor", field: "noDo" },
+                                { headerName: "Register", field: "reg", },
+                                { headerName: "Start", field: "start", },
+                                { headerName: "Finish", field: "finish", },
+                                { headerName: "istirahat", field: "break", editable: true },
+                            ]
+                            : [
+                                { headerName: "Nama Item", field: "item", editable: true, resizable: true },
+                                { headerName: "Stock awal", field: "awal", editable: true, resizable: true }, 
+                                { headerName: "Masuk", field: "in", editable: true, resizable: true }, 
+                                { headerName: "Tanggal", field: "dateIn", editable: true, resizable: true }, 
+                                { headerName: "Keluar", field: "out", editable: true, resizable: true }, 
+                                { headerName: "Tanggal", field: "dateOut", editable: true, resizable: true }, 
+                                { headerName: "Akhir", field: "akhir", editable: true, resizable: true },
+                                { headerName: "Tanggal", field: "dateEnd", editable: true, resizable: true }, 
+                            ]
         }
     },
     methods: {
