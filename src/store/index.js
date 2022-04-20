@@ -12,9 +12,11 @@ import Backup from "../modular/Backup/Backup.js";
 import BaseReportFile from "../modular/BaseImport/BaseReportFile";
 import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "../modular/Base/BaseReportStock";
+import Baseitem from "../modular/BaseItem/Baseitem";
 
 export default createStore({
   modules: {
+    Baseitem,
     Navbar,
     Modal,
     Collected,

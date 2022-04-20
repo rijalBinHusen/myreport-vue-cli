@@ -16,6 +16,7 @@ const Navbar = {
       { id: "Complain", title: "Complain report", group: "reports" },
       { id: "Finished", title: "Finished report", group: "reports" },
       { id: "AGGrid", title: "AG grid", group: "reports" },
+      { id: "BaseItem", title: "Base item", group: "setting" },
     ],
   },
   mutations: {

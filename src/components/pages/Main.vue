@@ -19,10 +19,12 @@
 	import Base from "../../modular/Base/Base.vue"
 	import Warehouses from "../../modular/Warehouses/Warehouses.vue"
 	import AGGrid from "../parts/AGGrid.vue"
+	import BaseItem from "../../modular/BaseItem/BaseItem.vue"
 	
 	export default {
 		name: "Main",
 		components: {
+			BaseItem,
 			AGGrid, 
 			Navbar,
 			Uncollected,
