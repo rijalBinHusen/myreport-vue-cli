@@ -30,10 +30,12 @@ import CollectedForm from "../../modular/Collected/CollectedForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
 import BaseReportFile from "../../modular/BaseImport/BaseReportFileForm.vue"
+import AGGridForm from "./AGGridForm.vue";
 
 export default {
   name: "Modal",
     components: {
+      AGGridForm,
       UncollectedForm,
       CollectedForm,
       Loader,

@@ -15,6 +15,7 @@ const Navbar = {
       { id: "Cases", title: "Cases report", group: "reports" },
       { id: "Complain", title: "Complain report", group: "reports" },
       { id: "Finished", title: "Finished report", group: "reports" },
+      { id: "AGGrid", title: "AG grid", group: "reports" },
       { id: "BaseItem", title: "Base item", group: "setting" },
     ],
   },
@@ -31,11 +32,12 @@ const Navbar = {
     navbarReports(state) {
       return state.lists.filter((val) => val.group === "reports");
     },
-    activeTitle(state) {
+    active(state) {
       let rec = state.lists.find((val) => val.id === state.active);
       if (state.active) {
-        return rec.title;
+        return rec;
       }
+      return { id: "kosong", title: "Welcome" };
     },
   },
 };
