@@ -220,6 +220,7 @@ export default {
       columnDefs: [],
       columnShow: [],
       tableName: "Test",
+      style: "",
     };
   },
   emits: ["exit"],
@@ -253,17 +254,27 @@ export default {
       //if item is exists
       if(tableInfo) {
         // column defs
-        this.columnDefs = tableInfo
+        this.columnDefs = tableInfo.column
         //notes that column is showed
-        this.columnShow = tableInfo.map((val) => val.headerName)
+        this.columnShow = tableInfo.column.map((val) => val.headerName)
+        // ag grid width
+        this.width = tableInfo.width
         return
       }
       // else
+      //show all column original
       this.columnShow = this.originColumn.map((val) => val.headerName)
+      // original column as column defsinition
       this.columnDefs = this.originColumn
+      // agg grid set width default
+      this.width = 1000;
     },
     saveTableInfo() {
-      localStorage.setItem(this.tableName, JSON.stringify(this.columnDefs))
+      localStorage.setItem(this.tableName, JSON.stringify({
+          column: this.columnDefs,
+          width: this.width,
+        })
+      )
     },
     exit() {
       	this.$store.commit("Navbar/toNav", "")
@@ -313,6 +324,11 @@ export default {
       })
       navigator.clipboard.writeText(result);
     },
+  },
+  watch: {
+    width() {
+      this.saveTableInfo()
+    }
   },
   mounted() {
     //set tableInfo
