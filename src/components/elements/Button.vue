@@ -43,7 +43,7 @@ export default {
     className() {
       let classList = [];
       if (this.type == "button") classList.push("w3-button w3-margin-right");
-      if (!this.noborder) classList.push("w3-border")
+      if (!this.noborder) classList.push("w3-round")
       if (this.small) classList.push("w3-small");
       if (this.primary) classList.push("w3-teal");
       if (this.secondary) classList.push("w3-aqua");

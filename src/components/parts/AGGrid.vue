@@ -2,10 +2,28 @@
 <div>
   <Button primary value="Files" type="button" @trig="launchForm" />
   <Button primary value="Delete row" type="button" />
-  <Button primary value="Copy row" type="button" />
+  <Button primary value="Copy row" type="button" @trig="copyRow" />
+  <span class="w3-dropdown-hover">
   <Button primary value="Show column" type="button" />
+    <span class="w3-small w3-dropdown-content w3-bar-block w3-border">
+      <label
+        class="w3-bar-item w3-button w3-hover-pale-blue"
+        v-for="col in originColumn"
+        :key="col.headerName"
+      >
+        <input
+          type="checkbox"
+          :value="col.headerName"
+          :checked="columnShow.includes(col.headerName)"
+          @click="toggleColumn(col.headerName)"
+        />
+        {{ col.headerName }}
+      </label>
+    </span>
+  </span>
   <Button primary value="-" type="button"  @trig="width = width - 10" />
   <span class="w3-margin-right">Width</span>
+  <input type="number" step="10" v-model="width" class="w3-button" style="width:100px;"  />
   <Button primary value="+" type="button" @trig="width = width + 10" />
   <Button primary value="Enable filter" type="button" />
   <Button primary value="Column width" type="button" />  
@@ -50,7 +68,7 @@ export default {
     return {
       width: 1000,
       height: 700,
-      columnDefs: [
+      originColumn: [
         { headerName: "Name", field: "name", editable: true },
         { headerName: "Email", field: "email", resizable: true },
         { headerName: "Phone", field: "phone" },
@@ -199,10 +217,54 @@ export default {
         ],
       selectedRow: [],
       keyPress: {},
+      columnDefs: [],
+      columnShow: [],
+      tableName: "Test",
     };
   },
   emits: ["exit"],
   methods: {      
+    toggleColumn(ev) {
+      // this.columnShow = []
+      //hiden column
+      if(this.columnShow.includes(ev)) {
+        // find the index of column
+        this.columnDefs = this.originColumn.filter((val) => {
+          if(val.headerName !== ev && this.columnShow.includes(val.headerName)) {
+          return val
+          }
+        })
+      } else {
+        //show the column
+        //column defs
+        this.columnDefs = this.originColumn.filter((val) => {
+          if(val.headerName === ev || this.columnShow.includes(val.headerName)) {
+            return val
+          }
+        })
+      }
+      this.columnShow = this.columnDefs.map((val) => val.headerName)
+      // save table info to localStorage
+      this.saveTableInfo()
+    },
+    getTableInfo() {
+      //get item from localstorage
+      let tableInfo = JSON.parse(localStorage.getItem(this.tableName))
+      //if item is exists
+      if(tableInfo) {
+        // column defs
+        this.columnDefs = tableInfo
+        //notes that column is showed
+        this.columnShow = tableInfo.map((val) => val.headerName)
+        return
+      }
+      // else
+      this.columnShow = this.originColumn.map((val) => val.headerName)
+      this.columnDefs = this.originColumn
+    },
+    saveTableInfo() {
+      localStorage.setItem(this.tableName, JSON.stringify(this.columnDefs))
+    },
     exit() {
       	this.$store.commit("Navbar/toNav", "")
     },
@@ -236,6 +298,9 @@ export default {
       
     },
     copyRow() {
+      if(this.selectedRow.length < 1) {
+        return
+      }
       let field = this.columnDefs.map((val) => val.field)
       let result = ""
       this.rowData.forEach((val) => {
@@ -250,10 +315,14 @@ export default {
     },
   },
   mounted() {
+    //set tableInfo
+    this.getTableInfo()
+    // add listen event
       window.addEventListener("keydown", this.pressKey)
       window.addEventListener("keyup", this.releaseKey)
   },
   unmounted() {
+    //remove listen event
       window.removeEventListener("keydown", this.pressKey)
       window.removeEventListener("keyup", this.releaseKey)
   }
