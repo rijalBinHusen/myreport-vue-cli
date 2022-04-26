@@ -27,7 +27,7 @@
   <input type="number" step="10" v-model="width" class="w3-white w3-margin-right w3-bar-item" style="width:100px;"  />
   <Button class="w3-bar-item w3-white" small primary value="+" type="button" @trig="width = width + 10" />
   <Button class="w3-bar-item" small primary value="Export" type="button" />
-  <Button v-if="edited.length > 0" class="w3-bar-item" small primary value="Save" type="button" />
+  <Button v-if="edited.length > 0" class="w3-bar-item" small primary value="Save" @trig="saveChanged" type="button" />
   <Button v-else class="w3-bar-item" small danger value="Exit" type="button" @trig="exit" />
   </div>
   <ag-grid-vue
@@ -99,8 +99,12 @@ export default {
       required: true,
     }
   },
-  emits: ["exit", "removeRow"],
+  emits: ["exit", "removeRow", "save"],
   methods: {
+    saveChanged() {
+      this.$emit("save", this.edited)
+      // this.edited = []
+    },
     cellChanged(ev) {
       // periksa dulu apakah sudah ada didalam edited
       let isEdited = this.edited.findIndex((val) => val.id === ev.data.id)

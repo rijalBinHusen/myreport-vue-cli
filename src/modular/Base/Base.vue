@@ -6,6 +6,7 @@
             :rowData="lists"
             :tableName="tableName"
             @exit="excelMode = false"
+            @save="save($event)"
         />
     <div v-else class="w3-margin-top w3-container">
         <div id="set-periode">
@@ -24,7 +25,7 @@
                 :options="baseReport" 
                 value="id"
                 text="title"
-                :inselect="base"
+                :inselect="base ? base.id : null"
                 @selected="find($event)"
                 />            
                 <!-- Sheet report -->
@@ -132,6 +133,20 @@ export default {
         }
     },
     methods: {
+        save(ev) {
+            // tampilkan loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            ev.forEach((val) => {
+                this.$store.dispatch("update",  { 
+                store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
+                obj: val,
+                period: this.base.periode
+                })
+            })
+            // tutup loader
+            this.$store.commit("Modal/active")
+
+        },
         remove(ev){
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
             if(!sure) {
@@ -155,9 +170,9 @@ export default {
             })
         },
         async find(ev) {
-            this.base = ev
             // find detail about base report
-            let baseReport = this.BASEID(ev)
+            this.base = this.BASEID(ev)
+            console.log(this.base)
             // store
             let store = ["BaseReportClock", "BaseReportStock"]
             // buka loader
@@ -166,7 +181,7 @@ export default {
             for(let i = 0; i < store.length; i++) {
                 await this.$store.dispatch("findDataByDateArrays", {
                     store: store[i],
-                    date: [baseReport.periode],
+                    date: [this.base.periode],
                     criteria: { parent: ev },
                     dateNotCriteria: true,
                 })
