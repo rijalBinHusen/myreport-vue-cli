@@ -2,8 +2,10 @@
     <div>
         <AGGrid
             v-if="excelMode"
-            :columnDefs="columnDefs"
+            :originColumn="originColumn"
             :rowData="lists"
+            :tableName="tableName"
+            @exit="excelMode = false"
         />
     <div v-else class="w3-margin-top w3-container">
         <div id="set-periode">
@@ -22,6 +24,7 @@
                 :options="baseReport" 
                 value="id"
                 text="title"
+                :inselect="base"
                 @selected="find($event)"
                 />            
                 <!-- Sheet report -->
@@ -35,6 +38,7 @@
                 ]'
                 value="id"
                 text="title"
+                :inselect="sheet"
                 @selected="sheet = $event"
                 />            
                 <!-- Shift -->
@@ -49,6 +53,7 @@
                 ]" 
                 value="id"
                 text="title"
+                :inselect="shift"
                 @selected="shift = $event"
                 />
                 <!-- oPEN IN EXCEL MODE -->
@@ -103,7 +108,7 @@ export default {
             sheet: null,
             shift: null,
             excelMode: false,
-            columnDefs: this.sheet === "clock"
+            originColumn: this.sheet === "clock"
                             ? [
                                 { headerName: "Nomor", field: "noDo" },
                                 { headerName: "Register", field: "reg", },
@@ -113,14 +118,17 @@ export default {
                             ]
                             : [
                                 { headerName: "Nama Item", field: "item", editable: true, resizable: true },
-                                { headerName: "Stock awal", field: "awal", editable: true, resizable: true }, 
-                                { headerName: "Masuk", field: "in", editable: true, resizable: true }, 
-                                { headerName: "Tanggal", field: "dateIn", editable: true, resizable: true }, 
-                                { headerName: "Keluar", field: "out", editable: true, resizable: true }, 
-                                { headerName: "Tanggal", field: "dateOut", editable: true, resizable: true }, 
-                                { headerName: "Akhir", field: "akhir", editable: true, resizable: true },
-                                { headerName: "Tanggal", field: "dateEnd", editable: true, resizable: true }, 
-                            ]
+                                { headerName: "Stock awal", field: "awal", editable: true, resizable: true, type: 'valueColumn' }, 
+                                { headerName: "Masuk", field: "in", editable: true, resizable: true, type: 'valueColumn' }, 
+                                { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true }, 
+                                { headerName: "Keluar", field: "out", editable: true, resizable: true, type: 'valueColumn' }, 
+                                { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true }, 
+                                // { headerName: "Akhir", field: "akhir", editable: true, resizable: true },
+                                { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal' },
+                                { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true }, 
+                            ],
+            tableName: this.sheet === "clock" ? "ExcelClock" : "excelStock",
+            base: null
         }
     },
     methods: {
@@ -147,6 +155,7 @@ export default {
             })
         },
         async find(ev) {
+            this.base = ev
             // find detail about base report
             let baseReport = this.BASEID(ev)
             // store
