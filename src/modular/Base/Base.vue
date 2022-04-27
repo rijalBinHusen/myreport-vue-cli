@@ -59,6 +59,7 @@
                 />
                 <!-- oPEN IN EXCEL MODE -->
                 <Button 
+                    v-if="lists.length > 0"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Excel mode" 
@@ -198,6 +199,7 @@ export default {
             WAREHOUSE_ID: "Warehouses/warehouseId",
             DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId",
+            BASEITEMKODE: "Baseitem/baseItemKode",
         }),
         baseReport() {
 			let result = [{id: null, title: "Pilih base report"}]
@@ -217,7 +219,8 @@ export default {
                 if(this.sheet === "stock") {
                     // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
                     result = this._BASESTOCK.filter((val) => {
-                        if(val.shift == this.shift) {        
+                        if(val.shift == this.shift) {   
+                            val.namaItem = this.BASEITEMKODE(val.item).name
                             return val
                         }
                     })
@@ -240,7 +243,8 @@ export default {
                                 { headerName: "istirahat", field: "break", editable: true },
                             ]
                             : [
-                                { headerName: "Nama Item", field: "item", editable: true, resizable: true },
+                                { headerName: "Kode Item", field: "item", editable: true, resizable: true },
+                                { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 500 },
                                 { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
                                 { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
                                 { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100 }, 
@@ -255,6 +259,9 @@ export default {
             tableName() {
               return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
             },
+    },
+    mounted() {
+        this.$store.dispatch("getData", {store: "Baseitem"})
     },
     name: "Base"
 }

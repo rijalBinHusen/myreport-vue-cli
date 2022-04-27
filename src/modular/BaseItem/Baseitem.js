@@ -46,16 +46,15 @@ const Baseitem = {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
-    baseItemId: (state, getters, rootState, rootGetters) => (id) => {
+    baseItemKode: (state, getters, rootState, rootGetters) => (kode) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(
-        (val) => val.id === id
+        (val) => val.kode === kode
       );
       return rec && rec.name
         ? rec
         : {
-            id: "",
-            kode: "Id item null",
-            name: "Name item null",
+            id: "No item",
+            name: "No item name",
           };
     },
   },
