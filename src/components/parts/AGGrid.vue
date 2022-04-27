@@ -103,7 +103,7 @@ export default {
   methods: {
     saveChanged() {
       this.$emit("save", this.edited)
-      // this.edited = []
+      this.edited = []
     },
     cellChanged(ev) {
       // periksa dulu apakah sudah ada didalam edited

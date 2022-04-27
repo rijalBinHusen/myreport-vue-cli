@@ -16,6 +16,12 @@ const BaseReportStock = {
     basereportstock(state, payload) {
       state.lists = payload;
     },
+    // update data
+    update(state, value) {
+      state.lists = state.lists.map((val) => {
+        return val.id === value.id ? value : val;
+      });
+    },
     deleteByParam(state, value) {
       // value = { parameter: "parent", value: "c038" }
       state.lists = state.lists.filter(

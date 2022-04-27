@@ -124,8 +124,8 @@ export default {
                                 { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true }, 
                                 { headerName: "Keluar", field: "out", editable: true, resizable: true, type: 'valueColumn' }, 
                                 { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true }, 
-                                // { headerName: "Akhir", field: "akhir", editable: true, resizable: true },
                                 { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal' },
+                                { headerName: "Real stock", field: "akhir", editable: true, resizable: true },
                                 { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true }, 
                             ],
             tableName: this.sheet === "clock" ? "ExcelClock" : "excelStock",
@@ -137,6 +137,14 @@ export default {
             // tampilkan loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             ev.forEach((val) => {
+                // jika keluar ada tanggalnya dan end date kosong dan akhir > 0 maka end date dikasi tanggal
+                if(val.dateOut && !val.dateEnd && val.akhir > 0) {
+                    val.dateEnd = val.dateOut
+                } 
+                // jika keluar ada tanggalnya dan akhir == 0
+                else if (val.dateOut && val.akhir == 0) {
+                    val.dateEnd = "-"
+                }
                 this.$store.dispatch("update",  { 
                 store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
                 obj: val,
