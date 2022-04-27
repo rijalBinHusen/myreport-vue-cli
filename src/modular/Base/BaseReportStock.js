@@ -22,6 +22,10 @@ const BaseReportStock = {
         return val.id === value.id ? value : val;
       });
     },
+    delete(state, value) {
+      // value = { parameter: "parent", value: "c038" }
+      state.lists = state.lists.filter((val) => val.id !== value);
+    },
     deleteByParam(state, value) {
       // value = { parameter: "parent", value: "c038" }
       state.lists = state.lists.filter(

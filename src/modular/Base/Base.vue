@@ -7,6 +7,7 @@
             :tableName="tableName"
             @exit="excelMode = false"
             @save="save($event)"
+            @removeRow="remove($event)"
         />
     <div v-else class="w3-margin-top w3-container">
         <div id="set-periode">
@@ -69,8 +70,8 @@
         </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Tanggal Akhir', 'Akhir']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'break'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'dateEnd', 'akhir']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'break'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'akhir', 'dateEnd']"
           id="tableBaseReport"
           option
           v-slot:default="slotProp"
@@ -80,7 +81,7 @@
                 type="button" 
                 danger 
                 small
-                @trig="remove(slotProp.prop)" 
+                @trig="remove([slotProp.prop.id])" 
             />
         </Datatable>
     </div>
@@ -119,14 +120,15 @@ export default {
                             ]
                             : [
                                 { headerName: "Nama Item", field: "item", editable: true, resizable: true },
-                                { headerName: "Stock awal", field: "awal", editable: true, resizable: true, type: 'valueColumn' }, 
-                                { headerName: "Masuk", field: "in", editable: true, resizable: true, type: 'valueColumn' }, 
+                                { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
+                                { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
                                 { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true }, 
-                                { headerName: "Keluar", field: "out", editable: true, resizable: true, type: 'valueColumn' }, 
+                                { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
                                 { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true }, 
-                                { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal' },
-                                { headerName: "Real stock", field: "akhir", editable: true, resizable: true },
+                                { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
+                                { headerName: "Real stock", field: "akhir", editable: true, resizable: true, width: 100 },
                                 { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true }, 
+                                { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.akhir - ((+data.in) - (+data.out) + data.awal)'}, 
                             ],
             tableName: this.sheet === "clock" ? "ExcelClock" : "excelStock",
             base: null
@@ -156,31 +158,25 @@ export default {
 
         },
         remove(ev){
+            console.log(ev)
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
             if(!sure) {
                 return;
             }
-
-            let baseReport = this.baseReport.find((val) => val.id === ev.parent)
             let store = this.sheet === "stock" ? 'BaseReportStock' : 'BaseReportClock'
             //delete from idb
-            this.$store.dispatch("deleteByParam", { 
-                store: store, 
-                parameter: "id", 
-                value: ev.id,
-                periode: baseReport.periode,
-                period: baseReport.periode,
-            })
-            //delete from state
-            this.$store.commit(`${store}/deleteByParam`, {
-                parameter: "id",
-                value: ev.id
+            ev.forEach((val, index) => {
+                console.log(val)
+                this.$store.dispatch("delete", { 
+                    store: store, 
+                    id: val,
+                    period: this.base.periode,
+                })
             })
         },
         async find(ev) {
             // find detail about base report
             this.base = this.BASEID(ev)
-            console.log(this.base)
             // store
             let store = ["BaseReportClock", "BaseReportStock"]
             // buka loader
