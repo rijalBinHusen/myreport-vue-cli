@@ -70,8 +70,8 @@
         </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'break'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'akhir', 'dateEnd']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Real', 'Tanggal Akhir']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'break'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'real', 'dateEnd']"
           id="tableBaseReport"
           option
           v-slot:default="slotProp"
@@ -126,9 +126,9 @@ export default {
                                 { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
                                 { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true }, 
                                 { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
-                                { headerName: "Real stock", field: "akhir", editable: true, resizable: true, width: 100 },
+                                { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
                                 { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true }, 
-                                { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.akhir - ((+data.in) - (+data.out) + data.awal)'}, 
+                                { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
                             ],
             tableName: this.sheet === "clock" ? "ExcelClock" : "excelStock",
             base: null
@@ -144,7 +144,7 @@ export default {
                     val.dateEnd = val.dateOut
                 } 
                 // jika keluar ada tanggalnya dan akhir == 0
-                else if (val.dateOut && val.akhir == 0) {
+                else if (val.dateOut && val.real == 0) {
                     val.dateEnd = "-"
                 }
                 this.$store.dispatch("update",  { 
@@ -239,7 +239,12 @@ export default {
             if(this.shift) {
                 // jika stock
                 if(this.sheet === "stock") {
-                    result = this._BASESTOCK.filter((val) => val.shift == this.shift)
+                    // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
+                    result = this._BASESTOCK.filter((val) => {
+                        if(val.shift == this.shift) {        
+                            return val
+                        }
+                    })
                 }
                 // jika clock
                 if(this.sheet === "clock") {

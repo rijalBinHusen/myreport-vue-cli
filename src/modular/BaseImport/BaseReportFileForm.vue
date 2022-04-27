@@ -123,7 +123,7 @@ export default {
                             dateIn: "",
                             dateOut: "",
                             dateEnd: "",
-                            akhir: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
+                            real: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
                         },
                         period: infoBaseReport.periode
                     })
@@ -149,7 +149,7 @@ export default {
                             dateIn: "",
                             dateOut: "",
                             dateEnd: "",
-                            akhir: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
+                            real: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
                         },
                         period: infoBaseReport.periode
                     })
@@ -182,7 +182,7 @@ export default {
                             dateIn: "",
                             dateOut: "",
                             dateEnd: "",
-                            akhir: stockSheet["P"+i] ?  stockSheet["P"+i].v : 0,
+                            real: stockSheet["P"+i] ?  stockSheet["P"+i].v : 0,
                         },
                         period: infoBaseReport.periode
                     })

@@ -118,7 +118,8 @@ export default {
     },
     removeRow() {
       // send id that row selected [1,4,5,6,7]
-      this.$emit("removeRow", this.selectedRow)
+      let arrId = this.selectedRow.map((val) => val.id)
+      this.$emit("removeRow", arrId)
       this.selectedRow = []
     },   
     toggleColumn(ev) {
@@ -193,15 +194,15 @@ export default {
 
     onRowSelected(event) {
       if(this.keyPress.Shift) {
-        this.selectedRow.push(event.node.data.id)
+        this.selectedRow.push(event.node.data)
         return
       }
       if(this.keyPress.Control) {
-        this.selectedRow.push(event.node.data.id)
+        this.selectedRow.push(event.node.data)
         return
       }
 
-      this.selectedRow = [event.node.data.id]
+      this.selectedRow = [event.node.data]
       
     },
     copyRow() {
@@ -210,13 +211,11 @@ export default {
       }
       let field = this.columnDefs.map((val) => val.field)
       let result = ""
-      this.rowData.forEach((val) => {
-        if(this.selectedRow.includes(val.id) ) {
-          field.forEach((val2) => {
-            result += val[val2]+","
-          })
-          result += "\n"
-        }
+      this.selectedRow.forEach((val) => {
+        field.forEach((val2) => {
+          result += val[val2]+ ","
+        })
+        result += "\n"
       })
       navigator.clipboard.writeText(result);
     },
