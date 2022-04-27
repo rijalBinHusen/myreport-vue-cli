@@ -1,11 +1,9 @@
 <template>
 <div>
   <div class="w3-padding w3-teal w3-center w3-margin-bottom">
-  <Button class="w3-bar-item" small primary value="Files" type="button" @trig="launchForm" />
-  <Button class="w3-bar-item" small primary value="Delete row" @trig="removeRow" type="button" />
-  <Button class="w3-bar-item" small primary value="Copy row" type="button" @trig="copyRow" />
+  <Button class="w3-bar-item" small primary value="Export" type="button" />
   <span class="w3-dropdown-hover">
-  <Button  class="w3-bar-item" small primary value="Show column" type="button" />
+  <Button  class="w3-bar-item w3-margin-right" small primary value="Show column" type="button" />
     <span class="w3-small w3-dropdown-content w3-bar-block w3-border">
       <label
         class="w3-bar-item w3-button w3-hover-pale-blue"
@@ -26,7 +24,6 @@
   <span class="w3-margin-right w3-bar-item">Width</span>
   <input type="number" step="10" v-model="width" class="w3-white w3-margin-right w3-bar-item" style="width:100px;"  />
   <Button class="w3-bar-item w3-white" small primary value="+" type="button" @trig="width = width + 10" />
-  <Button class="w3-bar-item" small primary value="Export" type="button" />
   <Button v-if="edited.length > 0" class="w3-bar-item" small primary value="Save" @trig="saveChanged" type="button" />
   <Button v-else class="w3-bar-item" small danger value="Exit" type="button" @trig="exit" />
   </div>
@@ -44,10 +41,7 @@
     :rowData="rowData"
     :enterMovesDown="true"
     :enterMovesDownAfterEdit="true"
-    rowSelection="multiple"
-    :enableRangeSelection="true"
     :columnTypes="columnTypes"
-     @row-selected="onRowSelected"
      @cellValueChanged="cellChanged"
   >
   </ag-grid-vue>
@@ -99,7 +93,7 @@ export default {
       required: true,
     }
   },
-  emits: ["exit", "removeRow", "save"],
+  emits: ["exit", "save"],
   methods: {
     saveChanged() {
       this.$emit("save", this.edited)
@@ -181,43 +175,6 @@ export default {
     },
     releaseKey(event) {
       delete this.keyPress[event.key]
-    },
-
-    pressKey(event) {
-      this.keyPress[event.key] = true
-      if(this.keyPress.Control) {
-        if(event.keyCode === 67) {
-          this.copyRow()
-        }
-      }
-    },
-
-    onRowSelected(event) {
-      if(this.keyPress.Shift) {
-        this.selectedRow.push(event.node.data)
-        return
-      }
-      if(this.keyPress.Control) {
-        this.selectedRow.push(event.node.data)
-        return
-      }
-
-      this.selectedRow = [event.node.data]
-      
-    },
-    copyRow() {
-      if(this.selectedRow.length < 1) {
-        return
-      }
-      let field = this.columnDefs.map((val) => val.field)
-      let result = ""
-      this.selectedRow.forEach((val) => {
-        field.forEach((val2) => {
-          result += val[val2]+ ","
-        })
-        result += "\n"
-      })
-      navigator.clipboard.writeText(result);
     },
   },
   watch: {
