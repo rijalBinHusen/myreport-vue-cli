@@ -7,7 +7,6 @@
             :tableName="tableName"
             @exit="excelMode = false"
             @save="save($event)"
-            @removeRow="remove($event)"
         />
     <div v-else class="w3-margin-top w3-container">
         <div id="set-periode">
@@ -110,27 +109,6 @@ export default {
             sheet: null,
             shift: null,
             excelMode: false,
-            originColumn: this.sheet === "clock"
-                            ? [
-                                { headerName: "Nomor", field: "noDo" },
-                                { headerName: "Register", field: "reg", },
-                                { headerName: "Start", field: "start", },
-                                { headerName: "Finish", field: "finish", },
-                                { headerName: "istirahat", field: "break", editable: true },
-                            ]
-                            : [
-                                { headerName: "Nama Item", field: "item", editable: true, resizable: true },
-                                { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
-                                { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true }, 
-                                { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true }, 
-                                { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
-                                { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
-                                { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true }, 
-                                { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
-                            ],
-            tableName: this.sheet === "clock" ? "ExcelClock" : "excelStock",
             base: null
         }
     },
@@ -140,11 +118,11 @@ export default {
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             ev.forEach((val) => {
                 // jika keluar ada tanggalnya dan end date kosong dan akhir > 0 maka end date dikasi tanggal
-                if(val.dateOut && !val.dateEnd && val.akhir > 0) {
+                if(val.dateOut && !val.dateEnd && +val.real > 0) {
                     val.dateEnd = val.dateOut
                 } 
                 // jika keluar ada tanggalnya dan akhir == 0
-                else if (val.dateOut && val.real == 0) {
+                else if (val.dateOut && +val.real == 0) {
                     val.dateEnd = "-"
                 }
                 this.$store.dispatch("update",  { 
@@ -158,15 +136,13 @@ export default {
 
         },
         remove(ev){
-            console.log(ev)
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
             if(!sure) {
                 return;
             }
             let store = this.sheet === "stock" ? 'BaseReportStock' : 'BaseReportClock'
             //delete from idb
-            ev.forEach((val, index) => {
-                console.log(val)
+            ev.forEach((val) => {
                 this.$store.dispatch("delete", { 
                     store: store, 
                     id: val,
@@ -253,7 +229,32 @@ export default {
             }
 
             return result
-        }
+        },
+        originColumn() {
+            return this.sheet === "clock"
+                            ? [
+                                { headerName: "Nomor", field: "noDo" },
+                                { headerName: "Register", field: "reg", },
+                                { headerName: "Start", field: "start", },
+                                { headerName: "Finish", field: "finish", },
+                                { headerName: "istirahat", field: "break", editable: true },
+                            ]
+                            : [
+                                { headerName: "Nama Item", field: "item", editable: true, resizable: true },
+                                { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
+                                { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
+                                { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100 }, 
+                                { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
+                                { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100 }, 
+                                { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
+                                { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
+                                { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100 }, 
+                                { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
+                            ];
+            },
+            tableName() {
+              return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
+            },
     },
     name: "Base"
 }
