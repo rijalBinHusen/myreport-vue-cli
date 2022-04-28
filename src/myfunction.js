@@ -299,5 +299,8 @@ export default {
     else if (a[0] === "yearMonth") {
       return a004 + (a003 + 1 > 9 ? a003 : "0" + (a003 + 1));
     } //dapatkan tahun bulan, yyyym
+    else if (a[0] === "ymdTime") {
+      return new Date(a004 + "/" + (a003 + 1) + "/" + a002).getTime();
+    }
   },
 };

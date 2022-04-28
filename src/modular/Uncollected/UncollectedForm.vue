@@ -12,7 +12,7 @@
         class="w3-input" 
         v-model="collect.periode" 
         :lowerLimit="this.GET_LASTDATE"
-        inputFormat="yyyy-MM-dd"
+        DateFormat="yyyy-MM-dd"
     />
 
     <Button
@@ -50,46 +50,49 @@ export default {
                 // bring up the loader
                 this.$store.commit("Modal/active", {judul: "", form: "Loader"});
                 
+                let periodeTime = this.GET_DATEFORMAT({format: "ymdTime", time: this.collect.periode})
+                let warehouseInputed = []
                 if(this.collect.name === "semua") {
-                    let periodeTime = this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
                     // uncollected record, ambil semua nama
                     let allName = this.GET_SPVENABLE
                     // iterate semua nama satu satu
                     for(let i=0; i < allName.length; i++) {
+                        let uidN = uid(5)
                         // uncollected record, tunggu sampai append selesai
                         await this.$store.dispatch("append", {
                             store: "Uncollected",
                             obj: {
-                                id: uid(5), 
+                                id: uidN, 
                                 name: allName[i].id, 
                                 periode: periodeTime
                             },
                             period: periodeTime
                         })
                         // baseReportFile record, tunggu sampai selesai
-                        if(this._WAREHOUSES[i]) {
+                        if(!warehouseInputed.includes(allName[i].warehouse)) {
+                            warehouseInputed.push(allName[i].warehouse)
                             await this.$store.dispatch("append", {
                                 store: "BaseReportFile",
-                                obj: {
-                                    id: uid(5), 
-                                    periode: periodeTime,
-                                    warehouse: this._WAREHOUSES[i].id,
-                                    fileName: false,
-                                    stock: false,
-                                    clock: false,
-                                },
-                                period: periodeTime
-                        })
+                            obj: {
+                                id: uidN, 
+                                periode: periodeTime,
+                                warehouse: allName[i].warehouse,
+                                fileName: false,
+                                stock: false,
+                                clock: false,
+                            },
+                            period: periodeTime
+                            })
                         }
                     }
                     
                 } else {
                     this.$store.dispatch("append", {
                             store: "Uncollected",
-                            id: uid(3),
+                            id: uid(5),
                             obj: {
                                 name: this.collect.name,
-                                periode: this.GET_DATEFORMAT({format: "time", time: this.collect.periode})
+                                periode: periodeTime,
                                 },
                         })
                 }
@@ -116,7 +119,7 @@ export default {
         }),
         names() {
             // ambil semua nama dari state
-            let options = this._SPV
+            let options = this.GET_SPVENABLE
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
             options.unshift({id: "", name: "Pilih nama" })

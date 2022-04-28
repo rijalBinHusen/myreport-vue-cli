@@ -9,9 +9,9 @@
             @save="save($event)"
         />
     <div v-else class="w3-margin-top w3-container">
-        <div id="set-periode">
+        <div v-if="!BaseFinishForm">
             <PeriodePicker v-if="periode" @show="showData($event[0], $event[1])" />
-            <div v-else class="w3-row w3-center">
+            <div id="set-periode" v-else class="w3-row w3-center">
             <Button 
                 class="w3-left w3-col s2 w3-margin-top" 
                 primary 
@@ -31,11 +31,11 @@
                 <!-- Sheet report -->
                 <Select 
                 v-if="baseReport.length > 1"
-                class="w3-col s2 w3-margin-right"
+                class="w3-col s1 w3-margin-right"
                 :options='[
                     { id: 0, title: "Pilih sheet" }, 
-                    { id: "clock", title: "Sheet clock" },
-                    { id: "stock", title: "Sheet stock" },
+                    { id: "clock", title: "Clock" },
+                    { id: "stock", title: "Stock" },
                 ]'
                 value="id"
                 text="title"
@@ -45,7 +45,7 @@
                 <!-- Shift -->
                 <Select 
                 v-if="baseReport.length > 1"
-                class="w3-col s2 w3-margin-right"
+                class="w3-col s1 w3-margin-right"
                 :options="[
                     { id:0, title: 'Pilih shift' }, 
                     { id:1, title: 'Shift 1'},
@@ -66,8 +66,16 @@
                     type="button" 
                     @trig="excelMode = true" 
                 />
+                <!-- MArk as finished -->
+                <Button 
+                    v-if="lists.length > 0"
+                    class="w3-left w3-col s2 w3-margin-top" 
+                    primary 
+                    value="Mark as finished" 
+                    type="button" 
+                    @trig="BaseFinishForm = true"
+                />
             </div>
-        </div>
         <Datatable
           :datanya="lists"
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Real', 'Tanggal Akhir']"
@@ -84,6 +92,12 @@
                 @trig="remove([slotProp.prop.id])" 
             />
         </Datatable>
+        </div>
+        <BaseFinishForm 
+            v-else 
+            :base="base" 
+            :shift="shift"
+        />
     </div>
     </div>
 </template>
@@ -95,6 +109,7 @@ import PeriodePicker from "../../components/parts/PeriodePicker.vue"
 import Select from "../../components/elements/Select.vue"
 import { mapState, mapGetters } from "vuex"
 import AGGrid from "../../components/parts/AGGrid.vue"
+import BaseFinishForm from "./BaseFinishForm.vue"
 
 export default {
     components: {
@@ -103,6 +118,7 @@ export default {
         Datatable,
         Select,
         PeriodePicker,
+        BaseFinishForm,
     },
     data() {
         return {
@@ -110,7 +126,8 @@ export default {
             sheet: null,
             shift: null,
             excelMode: false,
-            base: null
+            base: null,
+            BaseFinishForm: null,
         }
     },
     methods: {
@@ -119,12 +136,15 @@ export default {
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             ev.forEach((val) => {
                 // jika keluar ada tanggalnya dan end date kosong dan akhir > 0 maka end date dikasi tanggal
-                if(val.dateOut && !val.dateEnd && +val.real > 0) {
+                if(this.sheet === "stock") {
+                    if(val.dateOut && !val.dateEnd && +val.real > 0) {
                     val.dateEnd = val.dateOut
-                } 
-                // jika keluar ada tanggalnya dan akhir == 0
-                else if (val.dateOut && +val.real == 0) {
-                    val.dateEnd = "-"
+                    } 
+                    // jika keluar ada tanggalnya dan akhir == 0
+                    else if (val.dateOut && +val.real == 0) {
+                        val.dateEnd = "-"
+                    }
+                delete val.namaItem
                 }
                 this.$store.dispatch("update",  { 
                 store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
@@ -153,7 +173,7 @@ export default {
         },
         async find(ev) {
             // find detail about base report
-            this.base = this.BASEID(ev)
+            this.base = this.baseReport.find((val) => val.id === ev)
             // store
             let store = ["BaseReportClock", "BaseReportStock"]
             // buka loader
@@ -244,7 +264,7 @@ export default {
                             ]
                             : [
                                 { headerName: "Kode Item", field: "item", editable: true, resizable: true },
-                                { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 500 },
+                                { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 300 },
                                 { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
                                 { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
                                 { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100 }, 
@@ -256,9 +276,9 @@ export default {
                                 { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
                             ];
             },
-            tableName() {
-              return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
-            },
+        tableName() {
+            return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
+        },
     },
     mounted() {
         this.$store.dispatch("getData", {store: "Baseitem"})

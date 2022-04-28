@@ -271,7 +271,7 @@ export default createStore({
         dt <= new Date(end);
         dt.setDate(dt.getDate() + 1)
       ) {
-        arr.push(new Date(dt).getTime());
+        arr.push(myfunction.dateFormat(["ymdTime", dt]));
       }
       return arr;
       // toISOString().slice(0, 10));
