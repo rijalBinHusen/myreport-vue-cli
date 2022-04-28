@@ -19,11 +19,13 @@
 	import Base from "../../modular/Base/Base.vue"
 	import Warehouses from "../../modular/Warehouses/Warehouses.vue"
 	import AGGrid from "../parts/AGGrid.vue"
+	import Headspv from "../../modular/Headspv/Headspv.vue"
 	import BaseItem from "../../modular/BaseItem/BaseItem.vue"
 	
 	export default {
 		name: "Main",
 		components: {
+			Headspv,
 			BaseItem,
 			AGGrid, 
 			Navbar,

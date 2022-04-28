@@ -13,9 +13,11 @@ import BaseReportFile from "../modular/BaseImport/BaseReportFile";
 import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "../modular/Base/BaseReportStock";
 import Baseitem from "../modular/BaseItem/Baseitem";
+import Headspv from "../modular/Headspv/Headspv";
 
 export default createStore({
   modules: {
+    Headspv,
     Baseitem,
     Navbar,
     Modal,

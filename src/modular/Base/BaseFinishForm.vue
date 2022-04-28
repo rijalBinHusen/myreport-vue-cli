@@ -2,12 +2,21 @@
     <div>
         <label class="w3-margin-top">Nama gudang</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="base.title + ' / Shift ' + shift" disabled />
+        <!-- Supervisors -->
         <label>Pilih nama supervisors</label>
         <Select 
         :options="names" 
         value="id"
         text="name"
         @selected="name = $event"
+        />
+        <!-- Head spv -->
+        <label>Pilih nama kabag</label>
+        <Select 
+            :options="headspv" 
+            value="id"
+            text="name"
+            @selected="headSpv = $event"
         />
         <label class="w3-margin-top">Nama report</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="nameReport" disabled />
@@ -27,7 +36,8 @@ export default {
     data() {
         return {
             name: null,
-            nameReport: null
+            nameReport: null,
+            headSpv: null,
         }
     },
     methods: {},
@@ -45,6 +55,14 @@ export default {
         names() {
             // ambil semua nama dari state
             let options = this.$store.getters["Supervisors/enabled"].filter((val) => val.warehouse === this.base.warehouse)
+            // tambahkan option lain
+            options.unshift({id: "", name: "Pilih nama" })
+            // kembalikan agar tidak reactive
+            return options
+        },        
+        headspv() {
+            // ambil semua nama dari state
+            let options = this.$store.getters["Headspv/enabled"]
             // tambahkan option lain
             options.unshift({id: "", name: "Pilih nama" })
             // kembalikan agar tidak reactive
