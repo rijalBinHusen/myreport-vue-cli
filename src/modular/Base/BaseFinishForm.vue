@@ -18,8 +18,43 @@
             text="name"
             @selected="headSpv = $event"
         />
-        <label class="w3-margin-top">Nama report</label>
+        <label class="w3-margin-top">Nama collected report</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="nameReport" disabled />
+        <div class="w3-row">
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Total do</label>
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalDo" />
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Total kendaraan</label>
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalKendaraan" />
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Total waktu</label>
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalWaktu" />
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Standart waktu</label>
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="standartWaktu / 10" disabled />
+            </div>
+        </div>
+        <Button 
+            value="Exit" 
+            class="w3-right"
+            type="button" 
+            danger 
+            small
+            @trig="this.$emit('exit')" 
+        />
+        <Button 
+            v-if="name && nameReport && headSpv"
+            value="Save" 
+            class="w3-right"
+            type="button" 
+            primary
+            small
+            @trig="save" 
+        />
     </div>
 </template>
 
@@ -27,6 +62,7 @@
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
 import myfunction from "../../myfunction"
+import { uid } from "uid"
 
 export default {
     components: {
@@ -38,9 +74,11 @@ export default {
             name: null,
             nameReport: null,
             headSpv: null,
+            collected: null,
         }
     },
     methods: {},
+    emits: ["exit", "finished"],
     props: {
         base: {
             type: Object,
@@ -49,7 +87,38 @@ export default {
         shift: {
             type: String,
             required: true,
+        },
+        totalDo: {
+            type: Number,
+            required: true,
+        },
+        totalKendaraan: {
+            type: Number,
+            required: true,
+        },
+        totalWaktu: {
+            type: Number,
+            required: true,
+        },
+        standartWaktu: {
+            type: Number,
+            required: true,
         }
+    },
+    methods: {
+        save() {
+            this.$emit("finished", {
+                id: uid(4),
+                collectedReport: this.collected.id,
+                baseReportFile: this.base.id,
+                shift: this.shift,
+                headSpv: this.headSpv,
+                totalDO: this.totalDo,
+                totalKendaraan: this.totalKendaraan,
+                totalWaktu: this.totalWaktu,
+                standartWaktu: this.standartWaktu
+            })
+        },
     },
     computed: {
         names() {
@@ -87,6 +156,7 @@ export default {
                     this.nameReport = "Not found"
                     return
                 }
+                this.collected = result[0]
                 // periode
                 this.nameReport = this.$store.getters["dateFormat"]({format: 'dateMonth', time: result[0].periode})
                 //dapatkan info supervisors

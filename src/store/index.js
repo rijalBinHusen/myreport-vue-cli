@@ -14,9 +14,13 @@ import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "../modular/Base/BaseReportStock";
 import Baseitem from "../modular/BaseItem/Baseitem";
 import Headspv from "../modular/Headspv/Headspv";
+import Finished from "../modular/Finished/Finished";
+import FinishedStock from "../modular/Finished/FinishedStock";
 
 export default createStore({
   modules: {
+    Finished,
+    FinishedStock,
     Headspv,
     Baseitem,
     Navbar,

@@ -68,7 +68,7 @@
                 />
                 <!-- MArk as finished -->
                 <Button 
-                    v-if="lists.length > 0"
+                    v-if="base && sheet && shift && lists.length > 0"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
@@ -97,6 +97,12 @@
             v-else 
             :base="base" 
             :shift="shift"
+            :totalDo="totalDo"
+            :totalWaktu="totalWaktu"
+            :totalKendaraan="totalKendaraan"
+            :standartWaktu="standartWaktu"
+            @exit="BaseFinishForm = false"
+            @finished="markAsFinished($event)"
         />
     </div>
     </div>
@@ -128,9 +134,46 @@ export default {
             excelMode: false,
             base: null,
             BaseFinishForm: null,
+            totalDo: 0,
+            totalKendaraan: 0,
+            totalWaktu: 0,
+            standartWaktu: 0,
         }
     },
     methods: {
+        async markAsFinished(ev) {
+            // buka loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            // baseReportStockLists
+            let baseReportStockLists = this._BASESTOCK.filter((val) => val.shift == this.shift)
+            // masukkan ke database finished report
+            this.$store.dispatch("append", {
+                store: "Finished",
+                obj: ev,
+                period: this.base.periode
+            })
+            console.log(baseReportStockLists)
+            console.log(baseReportStockLists.length)
+            // iterate lists
+            for(let i =0; i < baseReportStockLists.length; i++) {
+                // console.log(this.lists[i].id)
+                // console.log(i)
+                // tunggu pindah ke finishedStock
+                await this.$store.dispatch("append",{
+                    store: "FinishedStock",
+                    obj: baseReportStockLists[i],
+                    period: this.base.periode
+                })
+                // tunggu hapus dari baseReportStock
+                await this.$store.dispatch("delete",{
+                    store: "BaseReportStock",
+                    id: baseReportStockLists[i].id,
+                    period: this.base.periode
+                })
+            }
+            // tutup loader
+            this.$store.commit("Modal/active");
+        },
         save(ev) {
             // tampilkan loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -172,6 +215,9 @@ export default {
             })
         },
         async find(ev) {
+            if(!ev) {
+                return
+            }
             // find detail about base report
             this.base = this.baseReport.find((val) => val.id === ev)
             // store
@@ -220,6 +266,7 @@ export default {
             DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId",
             BASEITEMKODE: "Baseitem/baseItemKode",
+            GETTIME: "dateFormat",
         }),
         baseReport() {
 			let result = [{id: null, title: "Pilih base report"}]
@@ -240,6 +287,7 @@ export default {
                     // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
                     result = this._BASESTOCK.filter((val) => {
                         if(val.shift == this.shift) {   
+                            this.standartWaktu += +val.out
                             val.namaItem = this.BASEITEMKODE(val.item).name
                             return val
                         }
@@ -278,6 +326,31 @@ export default {
             },
         tableName() {
             return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
+        },
+    },
+    watch: {
+        // total waktu, total kendaraan, total do
+        shift(newVal, oldVal) {
+            if(newVal === oldVal) {
+                return
+            }
+            this.totalWaktu = 0;
+            this.totalDo = 0
+            this.totalKendaraan = 0
+            this._BASECLOCK.filter((val) => {
+                if(val.shift == this.shift){
+                    this.totalDo += 1
+                    this.totalKendaraan += 1
+                    // start
+                    let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
+                    //finish
+                    let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
+                    // finish - start
+                    let total = finish - start
+                    // jaddikan menit, masukan total waktu
+                    this.totalWaktu += (total / 1000) / 60
+                }
+            })
         },
     },
     mounted() {

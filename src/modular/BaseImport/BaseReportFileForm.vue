@@ -75,7 +75,7 @@ export default {
             for(let i = 1; i <= iterateLength; i++) {
                 let leadNumber = "0000"
                 let increment = i + ""
-                let counter = leadNumber.slice(0, increment.length) + increment
+                let counter = leadNumber.slice(increment.length) + increment
                 /* 
                     #CLOCK jika B5.v > 0 dan D5.v !== D4.v
                     maka masukkan ke idb 
