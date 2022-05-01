@@ -9,7 +9,12 @@
         type="button" 
         @trig="periode = true" 
     />
-    <PeriodePicker class="w3-right w3-margin-right" v-else @show="show($event[0], $event[1])" />
+    <PeriodePicker 
+        v-else 
+        class="w3-right w3-margin-right" 
+        @show="show($event[0], $event[1])" 
+        @exit="periode = false"
+    />
     </div>
         <input
             class="w3-hide"

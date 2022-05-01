@@ -96,7 +96,7 @@ export default {
                             reg: clockSheet["F"+i] ? clockSheet["F"+i].w : 0,
                             start: clockSheet["G"+i] ? clockSheet["G"+i].w : 0,
                             finish: clockSheet["H"+i] ? clockSheet["H"+i].w : 0,
-                            break: 0,
+                            rehat: 0,
                         },
                         period: infoBaseReport.periode
                     })

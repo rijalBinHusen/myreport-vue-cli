@@ -3,7 +3,10 @@
         style="width:250px; height:100%;" 
         class="w3-border w3-margin-top w3-padding"
     >
-        <h3>Set periode</h3>
+    <div class="w3-row">
+        <h3 class="w3-left">Set periode</h3>
+        <Button class="w3-right" :nomargin="true" value="&times;" type="button" @trig="$emit('exit')"/>
+    </div>
         <br />
         <label style="font-weight:bold;" class="w3-margin-top">Start from date : </label>
         <Datepicker class="w3-input w3-margin-bottom" v-model="periode1" />
@@ -32,7 +35,7 @@ export default {
             periode2: new Date(),
         }
     },
-    emits: ["show"],
+    emits: ["show", "exit"],
     methods: {
         show() {
             this.$emit("show", [this.periode1, this.periode2])

@@ -55,7 +55,9 @@ const Supervisors = {
       });
     },
     enabled(state) {
-      return state.lists.filter((val) => val.disabled === false);
+      return JSON.parse(
+        JSON.stringify(state.lists.filter((val) => val.disabled === false))
+      );
     },
     spvId: (state, getters, rootState, rootGetters) => (id) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(

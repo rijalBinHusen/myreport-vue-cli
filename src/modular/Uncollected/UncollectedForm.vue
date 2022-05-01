@@ -55,7 +55,8 @@ export default {
                 if(this.collect.name === "semua") {
                     // uncollected record, ambil semua nama
                     let allName = this.GET_SPVENABLE
-                    // iterate semua nama satu satu
+                    // console.log(allName)
+                    //// iterate semua nama satu satu
                     for(let i=0; i < allName.length; i++) {
                         let uidN = uid(5)
                         // uncollected record, tunggu sampai append selesai
@@ -119,7 +120,7 @@ export default {
         }),
         names() {
             // ambil semua nama dari state
-            let options = this.GET_SPVENABLE
+            let options = Array.from(this.GET_SPVENABLE)
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
             options.unshift({id: "", name: "Pilih nama" })

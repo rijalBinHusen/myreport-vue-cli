@@ -10,7 +10,7 @@
 					v-for="nav in reports"
 					:key="nav.id"
 					noborder 
-					:class="['w3-bar-item w3-text-black', active.title === nav.id ? 'w3-teal' : '']" 
+					:class="['w3-bar-item w3-text-black', active.id === nav.id ? 'w3-teal' : '']" 
 					:value="nav.title" 
 					type="button" 
 					:datanya="nav.id" 
@@ -22,7 +22,7 @@
 					v-for="nav in setting"
 					:key="nav.id"
 					noborder 
-					:class="['w3-bar-item w3-text-black', active.title === nav.id ? 'w3-teal' : '']" 
+					:class="['w3-bar-item w3-text-black', active.id === nav.id ? 'w3-teal' : '']" 
 					:value="nav.title" 
 					type="button" 
 					:datanya="nav.id" 

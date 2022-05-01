@@ -32,6 +32,7 @@ export default {
     icon: String,
     small: Boolean,
     noborder: Boolean,
+    nomargin: Boolean,
   },
   emits: ["trig"],
   methods: {
@@ -42,7 +43,8 @@ export default {
   computed: {
     className() {
       let classList = [];
-      if (this.type == "button") classList.push("w3-button w3-margin-right");
+      if (this.type == "button") classList.push("w3-button");
+      if (!this.nomargin) classList.push(" w3-margin-right")
       if (!this.noborder) classList.push("w3-round")
       if (this.small) classList.push("w3-small");
       if (this.primary) classList.push("w3-teal");

@@ -1,6 +1,7 @@
 <template>
 <div>
   <div class="w3-padding w3-teal w3-center w3-margin-bottom">
+    <slot></slot>
   <Button class="w3-bar-item" small primary value="Export" type="button" />
   <span class="w3-dropdown-hover">
   <Button  class="w3-bar-item w3-margin-right" small primary value="Show column" type="button" />

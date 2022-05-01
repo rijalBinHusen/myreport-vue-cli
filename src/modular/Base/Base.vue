@@ -7,13 +7,15 @@
             :tableName="tableName"
             @exit="excelMode = false"
             @save="save($event)"
-        />
+        >
+            <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
+        </AGGrid>
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
-            <PeriodePicker v-if="periode" @show="showData($event[0], $event[1])" />
+            <PeriodePicker v-if="periode" @exit="periode = false" @show="showData($event[0], $event[1])" />
             <div id="set-periode" v-else class="w3-row w3-center">
             <Button 
-                class="w3-left w3-col s2 w3-margin-top" 
+                class="w3-left w3-col s2 w3-margin-top w3-margin-right" 
                 primary 
                 value="Set periode" 
                 type="button" 
@@ -60,7 +62,7 @@
                 <!-- oPEN IN EXCEL MODE -->
                 <Button 
                     v-if="lists.length > 0"
-                    class="w3-left w3-col s2 w3-margin-top" 
+                    class="w3-left w3-col s2 w3-margin-top w3-margin-right " 
                     primary 
                     value="Excel mode" 
                     type="button" 
@@ -79,7 +81,7 @@
         <Datatable
           :datanya="lists"
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Real', 'Tanggal Akhir']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'break'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'real', 'dateEnd']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'real', 'dateEnd']"
           id="tableBaseReport"
           option
           v-slot:default="slotProp"
@@ -141,6 +143,17 @@ export default {
         }
     },
     methods: {
+        launchForm() {
+            // jika clock jika stock
+            let form = this.sheet === "clock" ? "BaseClockForm" : "BaseStockForm"
+            // launch modal dan form
+            this.$store.commit("Modal/active", {
+                judul: `Tambah data report ${this.sheet}`, 
+                form: form,
+                addOn: { parent: this.base.id, shift: this.shift},
+                period: this.base.periode
+            });
+        },
         async markAsFinished(ev) {
             // buka loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -152,8 +165,6 @@ export default {
                 obj: ev,
                 period: this.base.periode
             })
-            console.log(baseReportStockLists)
-            console.log(baseReportStockLists.length)
             // iterate lists
             for(let i =0; i < baseReportStockLists.length; i++) {
                 // console.log(this.lists[i].id)
@@ -214,7 +225,8 @@ export default {
                 })
             })
         },
-        async find(ev) {
+        async find(ev) {    
+            console.log(Boolean(+ev))
             if(!ev) {
                 return
             }
@@ -269,7 +281,7 @@ export default {
             GETTIME: "dateFormat",
         }),
         baseReport() {
-			let result = [{id: null, title: "Pilih base report"}]
+			let result = [{id: false, title: "Pilih base report"}]
 			this._BASEREPORT.forEach((val) => {
                 if(val.imported) {
                     val.title = this.DATEFORMAT({ format: "dateMonth", time: val.periode}) + " " +this.WAREHOUSE_ID(val.warehouse).name 
@@ -304,11 +316,11 @@ export default {
         originColumn() {
             return this.sheet === "clock"
                             ? [
-                                { headerName: "Nomor", field: "noDo" },
-                                { headerName: "Register", field: "reg", },
-                                { headerName: "Start", field: "start", },
-                                { headerName: "Finish", field: "finish", },
-                                { headerName: "istirahat", field: "break", editable: true },
+                                { headerName: "Nomor", field: "noDo", width: 100 },
+                                { headerName: "Register", field: "reg", width: 100 },
+                                { headerName: "Start", field: "start", width: 100 },
+                                { headerName: "Finish", field: "finish", width: 100 },
+                                { headerName: "istirahat", field: "rehat", editable: true, width: 100 },
                             ]
                             : [
                                 { headerName: "Kode Item", field: "item", editable: true, resizable: true },
@@ -326,6 +338,9 @@ export default {
             },
         tableName() {
             return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
+        },
+        fromAdd() {
+            return this.sheet === "clock" ? "BaseReportClockForm" : "BaseReportStockForm";
         },
     },
     watch: {
