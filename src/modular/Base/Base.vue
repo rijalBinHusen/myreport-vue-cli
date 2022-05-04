@@ -70,7 +70,7 @@
                 />
                 <!-- MArk as finished -->
                 <Button 
-                    v-if="base && sheet && shift && lists.length > 0"
+                    v-if="base && sheet === 'stock' && shift && lists.length > 0"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
@@ -226,8 +226,8 @@ export default {
             })
         },
         async find(ev) {    
-            console.log(Boolean(+ev))
             if(!ev) {
+                this.base = ev
                 return
             }
             // find detail about base report
@@ -281,7 +281,7 @@ export default {
             GETTIME: "dateFormat",
         }),
         baseReport() {
-			let result = [{id: false, title: "Pilih base report"}]
+			let result = [{id: "", title: "Pilih base report"}]
 			this._BASEREPORT.forEach((val) => {
                 if(val.imported) {
                     val.title = this.DATEFORMAT({ format: "dateMonth", time: val.periode}) + " " +this.WAREHOUSE_ID(val.warehouse).name 

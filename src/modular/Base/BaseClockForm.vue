@@ -5,7 +5,7 @@
             <Input label="Masukkan Jam register" placeholder="Register" type="text" @inp="clock.reg = $event" />
             <Input label="Masukkan Jam mulai" placeholder="Start" type="text" @inp="clock.start = $event" />
             <Input label="Masukkan Jam selesai" placeholder="Finish" type="text" @inp="clock.finish = $event" />
-            <Input label="Masukkan Jumlah istirahat" placeholder="break" type="text" @inp="clock.rehat = $event" />
+            <Input label="Masukkan Jumlah istirahat" placeholder="break" type="number" @inp="clock.rehat = +$event" />
             <Button 
                 value="Submit" 
                 class="w3-right w3-margin-top"
@@ -31,6 +31,7 @@ export default {
                         obj: objToSend,
                         period: this.$store.state.Modal.more.period
                     })
+            this.$store.commit("Modal/active");
         }
     },
     data() {
