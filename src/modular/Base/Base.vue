@@ -170,9 +170,13 @@ export default {
                 // console.log(this.lists[i].id)
                 // console.log(i)
                 // tunggu pindah ke finishedStock
+                let objStock = baseReportStockLists[i]
+                delete objStock.shift
+                delete objStock.parent
+                objStock.parent = ev.id
                 await this.$store.dispatch("append",{
                     store: "FinishedStock",
-                    obj: baseReportStockLists[i],
+                    obj: objStock,
                     period: this.base.periode
                 })
                 // tunggu hapus dari baseReportStock
@@ -360,6 +364,10 @@ export default {
                     let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
                     //finish
                     let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
+                    // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
+                    if( finish < start) {
+                        finish + 86400000
+                    } 
                     // finish - start
                     let total = finish - start
                     // jaddikan menit, masukan total waktu
