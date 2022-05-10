@@ -53,7 +53,7 @@ const Baseitem = {
       return rec && rec.name
         ? rec
         : {
-            id: "No item",
+            id: "",
             name: "No item name",
           };
     },
