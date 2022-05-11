@@ -365,11 +365,8 @@ export default {
                     //finish
                     let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
                     // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
-                    if( finish < start) {
-                        finish + 86400000
-                    } 
                     // finish - start
-                    let total = finish - start
+                    let total = finish < start ? (finish + 86400000) - start : finish - start
                     // jaddikan menit, masukan total waktu
                     this.totalWaktu += (total / 1000) / 60
                 }

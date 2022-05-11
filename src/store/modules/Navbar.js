@@ -11,7 +11,7 @@ const Navbar = {
       { id: "Collected", title: "Collected report", group: "reports" },
       { id: "Importbase", title: "Import base report", group: "reports" },
       { id: "Base", title: "Base report", group: "reports" },
-      { id: "Problem", title: "Problems report", group: "reports" },
+      { id: "ProblemReport", title: "Problems report", group: "reports" },
       { id: "Cases", title: "Cases report", group: "reports" },
       { id: "Complain", title: "Complain report", group: "reports" },
       { id: "Finished", title: "Finished report", group: "reports" },

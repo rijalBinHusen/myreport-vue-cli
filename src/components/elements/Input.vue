@@ -1,5 +1,5 @@
 <template>
-    <div class=" w3-margin-top">
+    <div :class="className">
         <label>{{ label }}</label>
         <input 
         @change="inp($event.target.value)" 
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-// <Input label="Masukkan nama" placeholder="nama baru" />
+// <Input label="Masukkan nama" placeholder="nama baru" class="w3-col s3" />
 
 export default {
     name: "Input",
@@ -30,12 +30,18 @@ export default {
             required: true,
         },
         value: String,
+        class: String,
     },
     emits: ["inp"],
     methods: {
         inp(ev) {
             this.$emit("inp", ev)
         }
-    }
+    },
+    computed: {
+        className() {
+            return this.class
+        }
+    },
 }
 </script>
