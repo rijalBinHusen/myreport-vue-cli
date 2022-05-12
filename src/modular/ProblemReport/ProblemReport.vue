@@ -9,9 +9,18 @@
                 :keys="['warehouse', 'item', 'masalah', 'tanggalMulai', 'status']"
                 option
                 id="problemReport"
-            />
+                v-slot:default="slotProp"
+            >
+                <Button 
+                    primary 
+                    value="Edit" 
+                    :datanya="slotProp.prop.id" 
+                    type="button" 
+                    @trig="edit($event)" 
+                />
+            </Datatable>
         </div>
-        <ProblemReportForm v-else @exit="form = false" />
+        <ProblemReportForm :id="editId" v-else @exit="form = false; editId = ''" />
      </div>
 </template>
 
@@ -26,15 +35,21 @@ export default {
         Datatable,
         ProblemReportForm,
     },
+    methods: {
+        edit(ev) {
+            this.editId = ev
+            this.form = true
+        }
+    },
     computed: {
         lists() {
             return this.$store.getters["Problem/lists"]
-
         }
     },
     data() {
         return {
             form: false,
+            editId: "",
         }
     },
     name: "ProblemReport"

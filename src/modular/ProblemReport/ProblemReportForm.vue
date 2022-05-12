@@ -40,7 +40,7 @@
                 <!-- Nama item -->
                 <div class="w3-col s3 w3-padding">
                     <label for="namaItem">Masukkan Item</label>
-                    <InputItem @chose="problem.item = $event" placeholder="Kode item" class="w3-input w3-border w3-margin-top" />
+                    <InputItem @chose="problem.item = $event" :value="problem.item" placeholder="Kode item" class="w3-input w3-border w3-margin-top" />
                 </div>
             </div>
             <!-- Baris 2 -->
@@ -71,7 +71,7 @@
                 </div>
                 <!-- Nama PIC solusi jangka penddek -->
                 <div class="w3-col s3 w3-padding">
-                    <Input label="PIC jangka pendek" placeholder="Nama PIC" type="text" @inp="problem.pic = $event" />
+                    <Input label="PIC jangka pendek" :value="problem.pic" placeholder="Nama PIC" type="text" @inp="problem.pic = $event" />
                 </div>
 
                 <!-- Nama head spv -->
@@ -97,7 +97,7 @@
 
                 <!-- PIC jangka panjang -->
                 <div class="w3-col s3 w3-padding">
-                    <Input label="PIC Jangka panjang" placeholder="nama PIC" type="text" @inp="problem.picPanjang = $event" />
+                    <Input label="PIC Jangka panjang" :value="problem.picPanjang" placeholder="nama PIC" type="text" @inp="problem.picPanjang = $event" />
                 </div>
 
                 <!-- Tanggal masalah selesai -->
@@ -152,7 +152,7 @@
                     <textarea v-model="problem.solusiPanjang" id="solusiPanjang" style="width:100%; height:100%;"></textarea>
                 </div>
             </div>
-            <Button primary value="Submit" class="w3-right" type="button"/>
+            <Button primary :value="id ? 'Update' : 'Submit'" class="w3-right" type="button"/>
             <Button danger value="Exit" class="w3-right" type="button" @trig="$emit('exit')"/>
         </form>
     </div>
@@ -196,12 +196,13 @@ export default {
     },
     computed: {
         ...mapState({
-        _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists))
+            _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists))
         }),        
         ...mapGetters({
             GET_SPVENABLE: "Supervisors/enabled",
             GET_DATEFORMAT: "dateFormat",
-            GET_HEADSPVENABLE: "Headspv/enabled"
+            GET_HEADSPVENABLE: "Headspv/enabled",
+            GET_PROBLEMID: "Problem/problemId"
         }),
         names() {
             // ambil semua nama dari state
@@ -234,11 +235,18 @@ export default {
             UPDATE: "update"
         }),
         send() {
+            this.$emit("exit")
+            if(this.id) {
+                this.UPDATE({
+                store: "Problem",
+                obj: this.problem
+                })
+                return
+            }
             this.APPEND({
                 store: "Problem",
                 obj: Object.assign( { id: uid(3) }, this.problem)
             })
-            this.$emit("exit")
         }
     },
     components: {
@@ -275,12 +283,20 @@ export default {
         },
     },
     created() {
-            this.tanggalMulaiModel =  new Date();
-            this.dlModel = new Date();
-            this.dlPanjangModel = new Date();
-            this.tanggalSelesaiModel = new Date();
+        this.tanggalMulaiModel =  new Date();
+        this.dlModel = new Date();
+        this.dlPanjangModel = new Date();
+        this.tanggalSelesaiModel = new Date();
+        if(this.id) {
+            this.problem = this.GET_PROBLEMID(this.id)
+            this.tanggalMulaiModel = new Date(this.problem.tanggalMulai)
+            this.dlModel = new Date(this.problem.dl)
+            this.dlPanjangModel = new Date(this.problem.dlPanjang)
+            this.tanggalSelesaiModel = new Date(this.problem.tanggalSelesai)
+        }
     },
     emits: ["exit"],
+    props: ["id"],
     name: "ProblemReportForm"
 }
 </script>

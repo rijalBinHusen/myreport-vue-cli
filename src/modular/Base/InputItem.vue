@@ -1,6 +1,6 @@
 <template>
 <!-- Input text -->
-<input type="text" :placeholder="placeholder" @change="chose($event.target.value)" :class="className" list="item" />
+<input type="text" :placeholder="placeholder" :value="value" @change="chose($event.target.value)" :class="className" list="item" />
 
 <datalist id="item">
     <option v-for="list in lists" :key="list.kode" :value="list.kode + ' * ' + list.name" />
@@ -32,6 +32,7 @@ export default {
     props: {
         class: String,
         placeholder: String,
+        value: String,
     },
     name: "InputItem",
 }
