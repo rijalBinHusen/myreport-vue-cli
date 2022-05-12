@@ -11,7 +11,7 @@
                 id="problemReport"
             />
         </div>
-        <ProblemReportForm v-else />
+        <ProblemReportForm v-else @exit="form = false" />
      </div>
 </template>
 
@@ -28,7 +28,8 @@ export default {
     },
     computed: {
         lists() {
-            return []
+            return this.$store.getters["Problem/lists"]
+
         }
     },
     data() {

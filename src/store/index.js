@@ -16,9 +16,11 @@ import Baseitem from "../modular/BaseItem/Baseitem";
 import Headspv from "../modular/Headspv/Headspv";
 import Finished from "../modular/Finished/Finished";
 import FinishedStock from "../modular/Finished/FinishedStock";
+import Problem from "../modular/ProblemReport/ProblemReport";
 
 export default createStore({
   modules: {
+    Problem,
     Finished,
     FinishedStock,
     Headspv,
