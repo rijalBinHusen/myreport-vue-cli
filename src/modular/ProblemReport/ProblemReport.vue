@@ -1,17 +1,17 @@
 <template>
     <div>
         <div v-if="!form">
-            <h2 class="w3-center">Daftar Masalah</h2>
-            <Button primary value="Tambah" class="w3-right" type="button" @trig="form = true"/>
+            <Button primary value="Tambah" class="w3-right w3-margin-top" type="button" @trig="form = true"/>
             <Datatable
                 :datanya="lists"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Status']"
-                :keys="['warehouse', 'item', 'masalah', 'tanggalMulai', 'status']"
+                :keys="['namaGudang', 'namaItem', 'masalah', 'tanggalMulai', 'status']"
                 option
                 id="problemReport"
                 v-slot:default="slotProp"
             >
                 <Button 
+                    small
                     primary 
                     value="Edit" 
                     :datanya="slotProp.prop.id" 

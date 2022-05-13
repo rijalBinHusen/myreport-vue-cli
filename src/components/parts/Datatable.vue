@@ -2,9 +2,8 @@
   <div>
     <!-- pagination length & form -->
     <div class="w3-row">
-      <nav class="w3-left">
-        <h3>Show entries</h3>
-        <select class="w3-select" @change="changeRow($event.target.value)">
+        <p class="w3-col s1 w3-left">Show entries: </p>
+        <select class="w3-select w3-col s1 w3-left w3-center" @change="changeRow($event.target.value)">
           <option :selected="deData.lengthRow == 5" value="5">5</option>
           <option :selected="deData.lengthRow == 10" value="10">10</option>
           <option :selected="deData.lengthRow == 20" value="20">20</option>
@@ -12,7 +11,6 @@
           <option :selected="deData.lengthRow == 40" value="40">40</option>
           <option :selected="deData.lengthRow == 50" value="50">50</option>
         </select>
-      </nav>
     </div>
     <!-- End of pagination length -->
 

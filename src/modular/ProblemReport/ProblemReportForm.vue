@@ -89,6 +89,7 @@
 
             </div>
             <!-- Baris 5 -->
+            <div class="w3-row">
                 <!-- Deadline jangka panjang -->
                 <div class="w3-col s3 w3-padding">
                     <label for="dlPanjang" class="w3-margin-top">Dead line jangka panjang: </label>
@@ -124,6 +125,7 @@
                         @selected="problem.shiftSelesai = $event"
                     />
                 </div>
+            </div>
             <!-- Baris 3 -->
             <div class="w3-row">
                 <!-- Textarea masalah -->

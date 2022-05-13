@@ -29,13 +29,20 @@ const Problem = {
     },
     lists(state, getters, rootState, rootGetters) {
       // let rec =
-      return JSON.parse(JSON.stringify(state.lists));
-      // return rec.map((val) => {
-      //   val.warehouseName = rootGetters["Warehouses/warehouseId"](
-      //     val.warehouse
-      //   ).name;
-      //   return val;
-      // });
+      if (state.lists.length < 1) {
+        return [];
+      }
+      return state.lists.map((val) => ({
+        id: val.id,
+        namaGudang: rootGetters["Warehouses/warehouseId"](val.warehouse).name,
+        namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
+        masalah: val.masalah,
+        tanggalMulai: rootGetters["dateFormat"]({
+          format: "dateMonth",
+          time: val.tanggalMulai,
+        }),
+        status: val.tanggalMulai == val.tanggalSelesai ? "Progress" : "Closed",
+      }));
     },
     problemId: (state, getters, rootState, rootGetters) => (id) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(
