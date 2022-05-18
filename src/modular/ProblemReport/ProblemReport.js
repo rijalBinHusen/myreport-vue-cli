@@ -49,17 +49,6 @@ const Problem = {
         (val) => val.id === id
       );
       return rec;
-      //  && rec.name
-      //   ? Object.assign(rec, {
-      //       warehouseName: rootGetters["Warehouses/warehouseId"](rec.warehouse)
-      //         .name,
-      //     })
-      //   : {
-      //       name: null,
-      //       phone: null,
-      //       warehouse: null,
-      //       disabled: false,
-      //     };
     },
   },
 };

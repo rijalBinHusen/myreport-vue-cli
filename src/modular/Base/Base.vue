@@ -80,8 +80,8 @@
             </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Real', 'Tanggal Akhir']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['item', 'awal', 'in', 'dateIn', 'out', 'dateOut', 'real', 'dateEnd']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih']"
           id="tableBaseReport"
           option
           v-slot:default="slotProp"
@@ -300,11 +300,13 @@ export default {
             if(this.shift) {
                 // jika stock
                 if(this.sheet === "stock") {
+                    this.standartWaktu = 0
                     // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
                     result = this._BASESTOCK.filter((val) => {
                         if(val.shift == this.shift) {   
                             this.standartWaktu += +val.out
                             val.namaItem = this.BASEITEMKODE(val.item).name
+                            val.selisih = val.real - (val.awal + val.in - val.out)
                             return val
                         }
                     })
@@ -353,6 +355,7 @@ export default {
             if(newVal === oldVal) {
                 return
             }
+            console.log(this.base)
             this.totalWaktu = 0;
             this.totalDo = 0
             this.totalKendaraan = 0
@@ -368,7 +371,7 @@ export default {
                     // finish - start
                     let total = finish < start ? (finish + 86400000) - start : finish - start
                     // jaddikan menit, masukan total waktu
-                    this.totalWaktu += (total / 1000) / 60
+                    this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
                 }
             })
         },
