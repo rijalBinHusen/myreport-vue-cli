@@ -2,67 +2,11 @@ import Localbase from "localbase";
 
 // initiate new db
 let db = new Localbase("myreport");
-// ---------------------- function to setup the store
-
-function storenya(store, split, period) {
-  //value = {store: "namastore", split: "tahun/bulan/false", period: "202203/time()"}
-  let mainStore = localStorage.getItem("store")
-    ? JSON.parse(localStorage.getItem("store"))
-    : [];
-  let newStore = store;
-  //-----------------------------fungsi waktu splitter---------------
-  //202203
-  const a001 = period ? new Date(period) : new Date();
-  const a003 = a001.getMonth();
-  const a004 = a001.getFullYear();
-  const splitter = a004 + (a003 + 1 > 8 ? a004 : "0" + (a003 + 1));
-
-  //-----------------------------------------------------------
-  //jika split
-  if (split) {
-    //jika pisah bulan
-    if (split === "bulan") {
-      newStore = store.toLowerCase() + splitter;
-    }
-    // jika pisah tahun
-    else if (split === "tahun") {
-      newStore = store.toLowerCase() + splitter.slice(0, 4);
-    }
-  }
-
-  let isOldStore = mainStore.find(
-    (val) => val.nameOfStore === newStore.toLowerCase()
-  );
-  if (!isOldStore) {
-    mainStore.push({
-      nameOfStore: newStore.toLowerCase(),
-      starter: split ? false : true,
-    });
-    localStorage.setItem("store", JSON.stringify(mainStore));
-  }
-  // console.log(isOldStore);
-  // console.log(mainStore);
-  // console.log(mainStore);
-  return newStore.toLowerCase();
-}
-
-// ---------------------- function to setup the store
-
-// crud function to indexeddb
 
 export default {
   append: function (value) {
-    /*value = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()"
-	obj: {key: 'value', obj: 'to input to store'}, 
-    } */
-
-    //{store: "namastore", split: "tahun/bulan/false", period: "202203/time()"}
-    db.collection(storenya(value.store, value.split, value.period)).add(
-      value.obj
-    );
+    //{store: "namastore", obj: {obj: toInput } }
+    db.collection(value.store).add(value.obj);
   },
   update: function (value) {
     /*value = {
@@ -95,16 +39,7 @@ export default {
     db.collection(value.store).set(value.obj, { keys: true });
   },
   getData: function (deData) {
-    /*deData = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()"
-	'orderBy': keyData, 
-	'desc': Boolean, 
-	'limit': number, 
-	withKey: true
-    	} */
-    let store = storenya(deData.store, deData.split, deData.period);
+    let store = deData.store;
 
     //limit order desc
     if (deData.limit && deData.orderBy && deData.desc) {

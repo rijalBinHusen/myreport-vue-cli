@@ -28,7 +28,7 @@
                 </p>
                 <ul v-if="_BACKUP.length > 0" class="w3-ul w3-center">
                     <li v-for="list in _BACKUP" :key="list.id">
-                        {{ GET_DATEFORMAT({format: "full", time: list.id}) +" Backup success"}}
+                        {{ list.time ? GET_DATEFORMAT({format: "full", time: list.time}) +" Backup success" : "Not backup yet"}}
                     </li>
                 </ul>
             </div>

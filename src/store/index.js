@@ -39,46 +39,23 @@ export default createStore({
     BaseReportStock,
   },
   state: {
-    store: localStorage.getItem("store")
-      ? JSON.parse(localStorage.getItem("store"))
-      : [],
+    store: ["Warehouses", "Backup", "Supervisors"],
   },
   mutations: {},
   actions: {
     async append({ commit, rootGetters, dispatch }, value) {
       // check auto backup
       // await dispatch("Backup/check", {}, { root: true });
-      /* value = { 
-            store: "nameOfStore",
-            obj: { key: 'value', obj: 'to input to store' },
-            id: "id" //optional,
-		        period: "202203/time()"
-          } 
-       the first letter of value.store must be capital e.g 'Group'
-       */
-
-      let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
-        obj: value.obj,
-        period: value.period,
-      });
-
-      // check the periode
-      if (objToSend.split) {
-        if (!value.period) {
-          console.error("We need the period criteria");
-          return;
-        }
-      }
 
       // create id to the record
-      if (value.id) {
-        objToSend.obj.id = myfunction.generateId(value.id, true);
+      if (value.obj.id) {
+        value.obj.id = myfunction.generateId(value.obj.id, true);
       }
       // commit to module e.g 'Group/append
       commit(`${value.store}/append`, value.obj, { root: true });
 
       // insert record to indexeddb and return as promise
-      myfunction.append(objToSend);
+      myfunction.append({ store: value.store.toLowerCase(), obj: value.obj });
       //return promise 130 ms and then resolve
       return myfunction.tunggu(130);
     },
@@ -164,36 +141,23 @@ export default createStore({
     },
 
     getStart({ commit, state, rootGetters }) {
-      /*deData = {
-        store: "nameStore", 
-        split: "tahun/bulan/false",
-        period: "202203/time()"
-        'orderBy': keyData, 
-        'desc': Boolean, 
-        'limit': number,
-    	} */
-      let storeLists = JSON.parse(JSON.stringify(state.store));
       // iterate the store
-      storeLists.forEach((val2) => {
-        let val = val2.nameOfStore[0].toUpperCase() + val2.nameOfStore.slice(1);
-        if (val2.starter) {
-          // console.log(val);
-          // call the get data functions
-          myfunction
-            .getData(
-              Object.assign(rootGetters[`${val}/store`], {
-                orderBy: "id",
-                desc: true,
-                limit: 200,
-              })
-            )
-            .then((result) =>
-              commit(`${val}/${val.toLowerCase()}`, result, { root: true })
-            );
-        }
+      state.store.forEach((val) => {
+        myfunction
+          .getData({
+            store: val.toLowerCase(),
+            orderBy: "id",
+            desc: true,
+            limit: 200,
+          })
+          .then((result) => {
+            if (result.length > 0) {
+              commit(`${val}/${val.toLowerCase()}`, result, { root: true });
+            }
+          });
       });
     },
-    getAllData(value) {
+    getAllData({}, value) {
       return myfunction.getData({ store: value.toLowerCase(), withKey: true });
     },
     getData({ commit, rootGetters }, value) {

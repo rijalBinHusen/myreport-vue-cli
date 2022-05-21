@@ -1,8 +1,14 @@
 const Backup = {
   namespaced: true,
   state: {
-    lists: [],
-    store: { store: "Backup" },
+    lists: [
+      {
+        id: "BUP22050001",
+        time: "",
+        setup: "hours",
+        nextBackup: new Date().getTime() + 3600000,
+      },
+    ],
   },
 
   mutations: {
@@ -41,7 +47,8 @@ const Backup = {
         {
           store: "Backup",
           obj: {
-            id: rootGetters["dateFormat"]({ format: "time" }),
+            id: state.lists[0].id,
+            time: new Date().getTime(),
             nextBackup: now.getTime(),
             setup: value,
           },
@@ -68,11 +75,7 @@ const Backup = {
       commit("Impor/impor", false, { root: true });
     },
   },
-  getters: {
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
-  },
+  getters: {},
 };
 
 export default Backup;

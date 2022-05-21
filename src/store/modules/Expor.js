@@ -17,15 +17,15 @@ const Expor = {
       commit("Modal/active", { judul: "", form: "Loader" }, { root: true });
       commit("replace", {});
       // get all store from state
-      let store = JSON.parse(JSON.stringify(rootState.store));
+      let storeName = JSON.parse(JSON.stringify(rootState.store));
       // iterate, push to variable and waiting
-      for (let i = 0; i < store.length; i++) {
+      for (let i = 0; i < storeName.length; i++) {
         // wait until data commit to state
-        await dispatch("getAllData", store[i].nameOfStore, { root: true }).then(
+        await dispatch("getAllData", storeName[i], { root: true }).then(
           (val) => {
-            // append to state
-            commit("append", { store: store[i].nameOfStore, obj: val });
-            if (i === store.length - 1) {
+            // append to state this state
+            commit("append", { store: storeName[i], obj: val });
+            if (i === storeName.length - 1) {
               // create a download file
               var a = document.createElement("a");
               var file = new Blob([JSON.stringify(state.lists)], {
