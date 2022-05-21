@@ -19,11 +19,11 @@
     <Button 
       primary 
       class="w3-left w3-large w3-margin-left" 
-      :value="_EDITSTATUS ? 'Update' : 'Add'" 
+      :value="editId ? 'Update' : 'Add'" 
       type="button"
     />
     <Button 
-      v-if="_EDITSTATUS"
+      v-if="editId"
       danger 
       class="w3-left w3-large" 
       value="Cancel" 
@@ -32,7 +32,7 @@
     />
 
     <Button 
-      v-if="!_EDITSTATUS"
+      v-if="!editId"
       primary
       class="w3-left w3-large" 
       value="Import" 
@@ -79,9 +79,8 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
-import { uid } from "uid"
 import Datatable from "../../components/parts/Datatable.vue"
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import * as XLSX from "xlsx";
 
 export default {
@@ -93,7 +92,8 @@ export default {
   name: "Baseitem",
   data() {
     return {
-      Baseitem: {}
+      Baseitem: {},
+      editId: "",
     }
   },
   methods: {
@@ -101,40 +101,37 @@ export default {
       APPEND: "append",
       UPDATE: "update"
     }),
-    ...mapMutations({
-      EDIT: "Baseitem/edit"
-    }),
 
     send() {
       if(this.Baseitem.name) {
         // if update
-          if(this._EDITSTATUS) {
-            this.UPDATE({
+        let record = {
               store: "Baseitem",
-              obj: this.Baseitem
-            })
-          }
+              obj: { ...this.Baseitem }
+            }
+
+        if(this.editId) { this.UPDATE(Object.assign({ criteria: { id: this.editId } }, record )) }
 
         // else
         else {
-          this.APPEND({
-            store: "Baseitem",
-            obj: Object.assign( { id: uid(6) }, this.Baseitem)
-          })
+          record.obj.id = this._BASEITEM[0] ? this._BASEITEM[0].id : "ITM22050000"
+          this.APPEND(record)
         }
       }
       this.cancel()
     },
     edit(ev) {
-      this.EDIT(ev)
-      this.Baseitem = this.GET_EDIT
+      this.editId = ev
+      this.Baseitem = { ...this.GET_BASEITEMID(ev) }
     },
     cancel() {
-      this.EDIT(null)
-      this.Baseitem = this.GET_EDIT
+      this.editId = ""
+      this.Baseitem = {}
     },
     remove(ev) {
-      this.$store.dispatch("delete", {store: "Baseitem", id: ev})
+      let confirm = window.confirm(`Apakah anda yakin akan menghapus item tersebut?`)
+      if(!confirm) { return }
+      this.$store.dispatch("delete", { store: "Baseitem", criteria: { id: ev } })
     },        
     // to launch file picker
     launch() {
@@ -172,7 +169,7 @@ export default {
           if(d.sheet["A"+i]) {
             await this.APPEND({
               store: "Baseitem",
-              obj: { id: uid(6), kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v },
+              obj: { id: this._BASEITEM[0] ? this._BASEITEM[0].id : "ITM22050000", kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v },
             })
           }
         }
@@ -186,12 +183,10 @@ export default {
   },
   computed: {
     ...mapState({
-      _BASEITEM: state => JSON.parse(JSON.stringify(state.Baseitem.lists)),
-      _EDITSTATUS: state => JSON.parse(JSON.stringify(state.Baseitem.edit)),
+      _BASEITEM: state => [ ...state.Baseitem.lists ],
     }),
     ...mapGetters({
-      GET_EDIT: "Baseitem/edit",
-      GET_BASEITEM: "Baseitem/lists"
+      GET_BASEITEMID: "Baseitem/baseItemId",
     }),
   }
 };

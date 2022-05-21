@@ -2,8 +2,6 @@ const Baseitem = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "Baseitem" },
-    edit: "",
   },
 
   mutations: {
@@ -15,10 +13,6 @@ const Baseitem = {
     append(state, value) {
       state.lists.unshift(value);
     },
-    // id record to edit
-    edit(state, value) {
-      state.edit = value;
-    },
     // update data
     update(state, value) {
       state.lists = state.lists.map((val) => {
@@ -26,30 +20,21 @@ const Baseitem = {
       });
     },
     delete(state, value) {
-      state.lists = state.lists.filter((val) => val.id !== value);
+      let keyCriteria = Object.keys(value.criteria)[0];
+      let valueCriteria = Object.values(value.criteria)[0];
+      state.lists = state.lists.filter(
+        (val) => val[keyCriteria] !== valueCriteria
+      );
     },
   },
 
   actions: {},
   getters: {
-    edit(state) {
-      let rec = JSON.parse(JSON.stringify(state.lists)).find(
-        (val) => val.id === state.edit
-      );
-      return rec && rec.name
-        ? rec
-        : {
-            kode: "",
-            name: "",
-          };
-    },
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
+    baseItemId: (state, getters, rootState, rootGetters) => (id) => {
+      return [...state.lists].find((val) => val.id === id);
     },
     baseItemKode: (state, getters, rootState, rootGetters) => (kode) => {
-      let rec = JSON.parse(JSON.stringify(state.lists)).find(
-        (val) => val.kode === kode
-      );
+      let rec = [...state.lists].find((val) => val.kode === kode);
       return rec && rec.name
         ? rec
         : {

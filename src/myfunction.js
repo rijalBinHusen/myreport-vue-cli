@@ -112,16 +112,7 @@ export default {
     }
   },
   deleteDocument: function (value) {
-    /*value = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()"
-	id: idData
-    } */
-    //keyword = {key: value}
-    db.collection(storenya(value.store, value.split, value.period))
-      .doc({ id: value.id })
-      .delete();
+    db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
   },
   deleteDocumentByParam: function (value) {
     /*value = {

@@ -39,7 +39,7 @@ export default createStore({
     BaseReportStock,
   },
   state: {
-    store: ["Warehouses", "Backup", "Supervisors", "Headspv"],
+    store: ["Warehouses", "Backup", "Supervisors", "Headspv", "Baseitem"],
   },
   mutations: {},
   actions: {
@@ -61,25 +61,10 @@ export default createStore({
     },
 
     delete({ commit, rootGetters }, value) {
-      // value = { store: "listsnames", id: 001 }
-
-      let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
-        id: value.id,
-      });
-
-      // check the periode
-      if (objToSend.split) {
-        if (!value.period) {
-          console.error("We need the period criteria");
-          return;
-        }
-      }
-
-      //delete from state
-      commit(`${value.store}/delete`, value.id, { root: true });
+      commit(`${value.store}/delete`, value, { root: true });
       // delete record from indexeddb and return as promise
       return new Promise((resolve) => {
-        myfunction.deleteDocument(objToSend);
+        myfunction.deleteDocument(value);
         setTimeout(() => resolve(), 330);
       });
     },
