@@ -55,7 +55,7 @@ export default createStore({
       commit(`${value.store}/append`, value.obj, { root: true });
 
       // insert record to indexeddb and return as promise
-      myfunction.append({ store: value.store.toLowerCase(), obj: value.obj });
+      myfunction.append(value);
       //return promise 130 ms and then resolve
       return myfunction.tunggu(130);
     },
@@ -108,34 +108,8 @@ export default createStore({
 
     // to update record in indexeddb
     update({ commit, rootGetters }, value) {
-      /* value = { 
-          store: 'nameOfStore', 
-          obj: {id: idOfDocument, asd: 'to append to indexeddb' }
-      }
-      // the first letter of value.store must be capital e.g 'Group' 
-
-      /*value = {
-        store: "nameStore",
-        split: "tahun/bulan/false",
-        period: "202203/time()"
-        obj: {id: 'iddata', key: 'value', obj: 'value to update'}, 
-    } */
-
-      let objToSend = Object.assign(rootGetters[`${value.store}/store`], {
-        obj: value.obj,
-        period: value.period,
-      });
-
-      // check the periode
-      if (objToSend.split) {
-        if (!value.period) {
-          console.error("We need the period criteria");
-          return;
-        }
-      }
-
-      // send to indexeddb
-      myfunction.update(objToSend);
+      // update indexeddb
+      myfunction.update(value);
       // send to module
       commit(`${value.store}/update`, value.obj, { root: true });
     },

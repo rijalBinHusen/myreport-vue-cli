@@ -2,7 +2,6 @@ const Warehouses = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "Warehouses" },
   },
 
   mutations: {
@@ -28,21 +27,9 @@ const Warehouses = {
 
   actions: {},
   getters: {
-    edit(state) {
-      return JSON.parse(
-        JSON.stringify(
-          state.edit
-            ? state.lists.find((val) => val.id === state.edit)
-            : { id: null, name: null }
-        )
-      );
-    },
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
     warehouseId: (state) => (id) => {
-      return JSON.parse(
-        JSON.stringify(state.lists.find((val) => val.id === id))
+      return JSON.parse(JSON.stringify(state.lists)).find(
+        (val) => val.id === id
       );
     },
   },

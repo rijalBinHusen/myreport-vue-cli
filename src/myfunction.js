@@ -6,17 +6,12 @@ let db = new Localbase("myreport");
 export default {
   append: function (value) {
     //{store: "namastore", obj: {obj: toInput } }
-    db.collection(value.store).add(value.obj);
+    db.collection(value.store.toLowerCase()).add(value.obj);
   },
   update: function (value) {
-    /*value = {
-		store: "nameStore",
-		split: "tahun/bulan/false",
-		period: "202203/time()"
-		obj: {id: 'iddata', key: 'value', obj: 'value to update'}, 
-    } */
-    db.collection(storenya(value.store, value.split, value.period))
-      .doc({ id: value.obj.id })
+    // { criteria: {id: 001}, obj: { obj: objtoupdate } }
+    db.collection(value.store.toLowerCase())
+      .doc(value.criteria)
       .update(value.obj);
   },
   reWrite: function (value) {

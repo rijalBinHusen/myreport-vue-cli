@@ -1,23 +1,23 @@
 <template>
   <div class="w3-center w3-margin-top w3-row">
     <form class="margin-bottom" @submit.prevent="send">
-    <p class="w3-col s4 w3-right-align w3-margin-right">Add new warehouses : </p>
-    <input v-model="warehouse" class="w3-col s4 w3-input w3-large" type="text" placeholder="Warehouse name" />
-    <Button 
-      primary 
-      class="w3-left w3-large w3-margin-left" 
-      :value="GET_EDIT.id ? 'Update' : 'Add'" 
-      type="button" 
-      @trig="send" 
-    />
-    <Button 
-      v-if="GET_EDIT.id"
-      danger 
-      class="w3-left w3-large" 
-      value="Cancel" 
-      type="button" 
-      @trig="cancel" 
-    />
+      <p class="w3-col s4 w3-right-align w3-margin-right">Add new warehouses : </p>
+      <input v-model="warehouse" class="w3-col s4 w3-input w3-large" type="text" placeholder="Warehouse name" />
+      <Button 
+        primary 
+        class="w3-left w3-large w3-margin-left" 
+        :value="editId ? 'Update' : 'Add'" 
+        type="button" 
+        @trig="send" 
+      />
+      <Button 
+        v-if="editId"
+        danger 
+        class="w3-left w3-large" 
+        value="Cancel" 
+        type="button" 
+        @trig="cancel" 
+      />
     </form>
   </div>
     <br />
@@ -42,15 +42,15 @@
 
 <script>
 import Button from "../../components/elements/Button.vue"
-import { uid } from "uid"
 import Table from "../../components/elements/Table.vue"
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Warehouses",
   data() {
     return {
-      warehouse: ""
+      warehouse: "",
+      editId: "",
     }
   },
   components: {
@@ -62,55 +62,39 @@ export default {
       APPEND: "append",
       UPDATE: "update"
     }),
-    ...mapMutations({
-      EDIT: "Warehouses/edit"
-    }),
 
     send() {
       if(this.warehouse) {
-        // if update
-          if(this.GET_EDIT.id) {
-            this.UPDATE({
+        let record = {
               store: "Warehouses",
               obj: {
-                id: this.GET_EDIT.id,
+                id: this.editId ? this.editId : this._WAREHOUSES[0] ? this._WAREHOUSES[0].id : "WHS22050000",
                 name: this.warehouse
-              }
-            })
-          }
-
+              }}
+        this.editId ? record.criteria = { id: this.editId } : false
+        // if update
+        if(this.editId) { this.UPDATE(record) }
         // else
-        else {
-
-          this.APPEND({
-            store: "Warehouses",
-            obj: {
-              id: uid(3),
-              name: this.warehouse
-            }
-        })
-        }
-      this.warehouse = ""
+        else { this.APPEND(record) }
+        this.warehouse = ""
+        this.editId = ""
       }
     },
     edit(ev) {
-      this.EDIT(ev)
-      this.warehouse = this.GET_EDIT.name
+      this.editId = ev
+      this.warehouse = this.GET_WAREHOUSEID(ev).name
     },
     cancel() {
-      this.EDIT("")
+      this.editId = ""
       this.warehouse = ""
     },
-    update() {
-
-    }
   },
   computed: {
     ...mapState({
-      _WAREHOUSES: state => state.Warehouses.lists
+      _WAREHOUSES: state => Array.from(state.Warehouses.lists)
     }),
     ...mapGetters({
-      GET_EDIT: "Warehouses/edit"
+      GET_WAREHOUSEID: "Warehouses/warehouseId"
     })
   },
 };
