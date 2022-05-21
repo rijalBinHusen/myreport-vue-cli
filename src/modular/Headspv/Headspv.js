@@ -2,8 +2,6 @@ const Headspv = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "Headspv" },
-    edit: "",
   },
 
   mutations: {
@@ -15,10 +13,6 @@ const Headspv = {
     append(state, value) {
       state.lists.unshift(value);
     },
-    // id record to edit
-    edit(state, value) {
-      state.edit = value;
-    },
     // update data
     update(state, value) {
       state.lists = state.lists.map((val) => {
@@ -29,20 +23,6 @@ const Headspv = {
 
   actions: {},
   getters: {
-    edit(state) {
-      let rec = JSON.parse(JSON.stringify(state.lists)).find(
-        (val) => val.id === state.edit
-      );
-      return rec && rec.name
-        ? rec
-        : {
-            name: null,
-            phone: null,
-          };
-    },
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
     enabled(state) {
       return state.lists.filter((val) => val.disabled === false);
     },
@@ -53,8 +33,8 @@ const Headspv = {
       return rec && rec.name
         ? rec
         : {
-            name: null,
-            phone: null,
+            name: "Not found",
+            phone: "Not found",
           };
     },
   },

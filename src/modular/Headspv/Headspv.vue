@@ -7,11 +7,11 @@
     <Button 
       primary 
       class="w3-left w3-large w3-margin-left" 
-      :value="GET_EDIT.id ? 'Update' : 'Add'" 
+      :value="editId ? 'Update' : 'Add'" 
       type="button"
     />
     <Button 
-      v-if="GET_EDIT.id"
+      v-if="editId"
       danger 
       class="w3-left w3-large" 
       value="Cancel" 
@@ -52,9 +52,8 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
-import { uid } from "uid"
 import Table from "../../components/elements/Table.vue"
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -65,7 +64,8 @@ export default {
   name: "Headspv",
   data() {
     return {
-      head: {}
+      head: {},
+      editId: "",
     }
   },
   methods: {
@@ -73,45 +73,37 @@ export default {
       APPEND: "append",
       UPDATE: "update"
     }),
-    ...mapMutations({
-      EDIT: "Headspv/edit"
-    }),
 
     send() {
       if(this.head.name) {
+        let record = {
+          store: "Headspv",
+          obj: { ...this.head }
+        }
         // if update
-          if(this.GET_EDIT.id) {
-            this.UPDATE({
-              store: "Headspv",
-              obj: this.head
-            })
-          }
+          if(this.editId) {this.UPDATE(Object.assign({ criteria: { id: this.editId } }, record )) }
 
         // else
         else {
-          this.APPEND({
-            store: "Headspv",
-            obj: Object.assign( { id: uid(3), disabled: false }, this.head)
-          })
+          record.obj.id = this._HEADSPV[0] ? this._HEADSPV[0].id : "HSP22050000"
+          this.APPEND(record)
         }
       }
       this.cancel()
     },
     edit(ev) {
-      this.EDIT(ev)
-      this.head = this.GET_EDIT
+      this.editId = ev
+      this.head = this.GET_HEADID(ev)
     },
     cancel() {
-      this.EDIT("null")
-      this.head = this.GET_EDIT
+      this.editId = ""
+      this.head = {}
     },
     disableName(ev) {
-            this.EDIT(ev)
-            let record = this.GET_EDIT
+            let record = this.GET_HEADID(ev)
             // change record disabled
             record.disabled = !record.disabled
-            this.UPDATE({ store: "Headspv", obj: record })
-            this.EDIT("null")
+            this.UPDATE({ store: "Headspv", obj: record, criteria: { id: ev } })
         },
   },
   mounted() {
@@ -119,10 +111,10 @@ export default {
   },
   computed: {
     ...mapState({
-      _HEADSPV: state => JSON.parse(JSON.stringify(state.Headspv.lists))
+      _HEADSPV: state => [...state.Headspv.lists]
     }),
     ...mapGetters({
-      GET_EDIT: "Headspv/edit",
+      GET_HEADID: "Headspv/headId",
     }),
   },
 };

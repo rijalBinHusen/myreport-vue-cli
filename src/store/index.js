@@ -39,7 +39,7 @@ export default createStore({
     BaseReportStock,
   },
   state: {
-    store: ["Warehouses", "Backup", "Supervisors"],
+    store: ["Warehouses", "Backup", "Supervisors", "Headspv"],
   },
   mutations: {},
   actions: {
@@ -197,8 +197,7 @@ export default createStore({
     },
     rewriteStore({}, payload) {
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
-      myfunction.reWriteStoreWithKey(payload);
-      return myfunction.tunggu(2000);
+      return myfunction.reWriteStoreWithKey(payload);
     },
     emptyStore({}, payload) {
       myfunction.deleteCollection(payload);

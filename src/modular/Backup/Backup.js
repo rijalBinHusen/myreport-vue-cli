@@ -69,7 +69,7 @@ const Backup = {
     check({ dispatch, state, commit }) {
       let now = new Date().getTime();
       let nextBackup = state.lists.length > 0 ? state.lists[0].nextBackup : now;
-      if (now - nextBackup > 20000) {
+      if (now > nextBackup) {
         return dispatch("append");
       }
       commit("Impor/impor", false, { root: true });
