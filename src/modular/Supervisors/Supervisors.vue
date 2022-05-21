@@ -2,12 +2,12 @@
   <div class="w3-center w3-margin-top w3-row">
     <form ref="spvForm" class="margin-bottom" @submit.prevent="send">
     <p class="w3-col s2 w3-right-align w3-margin-right">Add new supervisor : </p>
-    <input v-model="supervisor.name" class="w3-col s2 w3-input w3-large w3-margin-right" type="text" placeholder="Supervisor name" />
-    <input v-model="supervisor.phone" class="w3-col s2 w3-input w3-large w3-margin-right" type="text" placeholder="Phone" />
+    <input v-model="supervisor.name" class=" w3-round-large w3-col s2 w3-input w3-large w3-margin-right" type="text" placeholder="Supervisor name" />
+    <input v-model="supervisor.phone" class="w3-round-large w3-col s2 w3-input w3-large w3-margin-right" type="text" placeholder="Phone" />
     <Select 
     nomargin
     :options="warehouses" 
-    class="w3-col s3"
+    class="w3-col s2"
     value="id"
     text="name"
     :inselect="supervisor.warehouse"
@@ -16,11 +16,11 @@
     <Button 
       primary 
       class="w3-left w3-large w3-margin-left" 
-      :value="GET_EDIT.id ? 'Update' : 'Add'" 
+      :value="editId ? 'Update' : 'Add'" 
       type="button"
     />
     <Button 
-      v-if="GET_EDIT.id"
+      v-if="editId"
       danger 
       class="w3-left w3-large" 
       value="Cancel" 
@@ -63,7 +63,7 @@ import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
 import { uid } from "uid"
 import Table from "../../components/elements/Table.vue"
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -74,7 +74,8 @@ export default {
   name: "Supervisors",
   data() {
     return {
-      supervisor: {}
+      supervisor: {},
+      editId: "",
     }
   },
   methods: {
@@ -82,60 +83,53 @@ export default {
       APPEND: "append",
       UPDATE: "update"
     }),
-    ...mapMutations({
-      EDIT: "Supervisors/edit"
-    }),
 
     send() {
       if(this.supervisor.name) {
-        // if update
-          if(this.GET_EDIT.id) {
-            this.UPDATE({
-              store: "Supervisors",
-              obj: this.supervisor
-            })
+        let record = {
+          store: "Supervisors",
+              obj: { ...this.supervisor }
           }
-
+        
+        // if update 
+        if(this.editId) { this.UPDATE(Object.assign({ criteria: { id: this.editId } }, record )) }
         // else
         else {
-          this.APPEND({
-            store: "Supervisors",
-            obj: Object.assign( { id: uid(3), disabled: false }, this.supervisor)
-          })
+          record.obj.id = this.GET_SUPERVISORS[0] ? this.GET_SUPERVISORS[0].id : "SPV22050000"
+          this.APPEND(record)
         }
       }
       this.cancel()
     },
     edit(ev) {
-      this.EDIT(ev)
-      this.supervisor = this.GET_EDIT
+      this.editId = ev
+      this.supervisor = this.GET_SUPERVISORID(ev)
     },
     cancel() {
-      this.EDIT("null")
-      this.supervisor = this.GET_EDIT
+      this.editId = ""
+      this.supervisor = {
+        name: "",
+        phone: "",
+        warehouse: "",
+      }
     },
     disableName(ev) {
-            this.EDIT(ev)
-            let record = this.GET_EDIT
+            let record = this.GET_SUPERVISORID(ev)
             // change record disabled
             record.disabled = !record.disabled
-            this.UPDATE({ store: "Supervisors", obj: record })
-            this.EDIT("null")
+            this.UPDATE({ store: "Supervisors", obj: record, criteria: { id: ev } })
         },
   },
   mounted() {
     this.cancel();
   },
   computed: {
-    ...mapState({
-      _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists))
-    }),
     ...mapGetters({
-      GET_EDIT: "Supervisors/edit",
+      GET_SUPERVISORID: "Supervisors/spvId",
       GET_SUPERVISORS: "Supervisors/lists"
     }),
     warehouses() {
-      let rec = this._WAREHOUSES
+      let rec = this.$store.state.Warehouses.lists.map((val) => (val))
       rec.unshift({
         id: "",
         name: "Select warehouse"

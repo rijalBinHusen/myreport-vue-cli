@@ -2,8 +2,6 @@ const Supervisors = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "Supervisors" },
-    edit: "",
   },
 
   mutations: {
@@ -15,10 +13,6 @@ const Supervisors = {
     append(state, value) {
       state.lists.unshift(value);
     },
-    // id record to edit
-    edit(state, value) {
-      state.edit = value;
-    },
     // update data
     update(state, value) {
       state.lists = state.lists.map((val) => {
@@ -29,22 +23,6 @@ const Supervisors = {
 
   actions: {},
   getters: {
-    edit(state) {
-      let rec = JSON.parse(JSON.stringify(state.lists)).find(
-        (val) => val.id === state.edit
-      );
-      return rec && rec.name
-        ? rec
-        : {
-            name: null,
-            phone: null,
-            warehouse: null,
-            disabled: false,
-          };
-    },
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
     lists(state, getters, rootState, rootGetters) {
       let rec = JSON.parse(JSON.stringify(state.lists));
       return rec.map((val) => {

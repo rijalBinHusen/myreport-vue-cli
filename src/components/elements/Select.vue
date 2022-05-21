@@ -52,7 +52,7 @@ export default {
     computed: {
 
         classLists() {    
-            let className = ["w3-select "];
+            let className = ["w3-select w3-round-large"];
 
             if(!this.nomargin) {
                 className.push("w3-margin-top w3-margin-bottom")

@@ -13,10 +13,6 @@ const Warehouses = {
     append(state, value) {
       state.lists.unshift(value);
     },
-    // id record to edit
-    edit(state, value) {
-      state.edit = value;
-    },
     // update data
     update(state, value) {
       state.lists = state.lists.map((val) => {
