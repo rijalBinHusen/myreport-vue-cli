@@ -4,7 +4,7 @@
       <th v-for="header in headers" :key="header">
           {{ header }}
         </th>
-
+      <slot name="th"></slot>
       <th v-if="options">Options</th>
       
     </tr>
@@ -13,7 +13,7 @@
       <td v-for="(key,index) in keys" :key="list[key] + index">
           {{ list[key] }}
       </td>
-      
+      <slot name="td" :obj="list" :id="list.id"></slot>
       <td v-if="options">
           <slot :prop="list"></slot>
       </td>

@@ -37,8 +37,19 @@
       :lists="GET_SUPERVISORS" 
       :keys="['name', 'warehouseName']"
       options
-      v-slot:default="slotProp"
     >
+      <template #th>
+          <th>Shift</th>
+      </template>
+
+      <template #td="{ obj }">
+        <td>
+          <input type="number" min="1" class="w3-round w3-border" style="width:60px" max="3" :value="obj.shift ? obj.shift : 1" @change="changeShift(obj.id, $event.target.value)" >
+          <!-- {{ obj }} -->
+        </td>
+      </template>
+
+      <template v-slot:default="slotProp">
       <Button 
         primary 
         value="Edit" 
@@ -55,6 +66,7 @@
           type="button" 
           @trig="disableName($event)" 
         />
+      </template>
     </Table>
 </template>
 
@@ -84,6 +96,11 @@ export default {
       UPDATE: "update"
     }),
 
+    changeShift(id, shift) {
+      let record = this.GET_SUPERVISORID(id)
+      record.shift = shift
+      this.UPDATE({ store: "Supervisors", obj: record, criteria: { id: id } })
+    },
     send() {
       if(this.supervisor.name) {
         let record = {
@@ -97,6 +114,7 @@ export default {
         else {
           record.obj.id = this.GET_SUPERVISORS[0] ? this.GET_SUPERVISORS[0].id : "SPV22050000"
           record.obj.disabled = false
+          record.obj.shift = 3
           this.APPEND(record)
         }
       }
