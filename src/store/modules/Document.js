@@ -38,8 +38,8 @@ const Uncollected = {
             time: val.periode,
           });
           result[val.name]
-            ? (result[val.name] += ", " + val.periode)
-            : (result[val.name] = val.periode);
+            ? result[val.name].push(val.periode)
+            : (result[val.name] = [val.periode]);
         });
         return result;
       }

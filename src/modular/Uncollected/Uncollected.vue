@@ -17,7 +17,7 @@
           id="tableUncollected"
           #default="{ prop }"
           >
-				<span v-if="!viewByPeriode && prop.uncollected && prop.uncollected.length > 2">					
+				<span v-if="!viewByPeriode && prop.total > 2">					
                     {{prop.uncollected}}
 					<Button
 					secondary
@@ -124,9 +124,7 @@ export default {
             let result = []
             this.GET_SUPERVISORS.forEach((val) => {
                 result.push(Object.assign(val, { 
-                    uncollected: this.GET_UNCOLLECTEDBYSPV[val.id] 
-                                    ? this.GET_UNCOLLECTEDBYSPV[val.id] 
-                                    : "All collected"
+                    uncollected: this.GET_UNCOLLECTEDBYSPV[val.id].join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
                     }))
             })
             return result
