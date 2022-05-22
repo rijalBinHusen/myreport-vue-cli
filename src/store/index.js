@@ -3,7 +3,6 @@ import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
 import Collected from "../modular/Collected/Collected";
-import Uncollected from "../modular/Uncollected/Uncollected";
 import Expor from "./modules/Expor";
 import Impor from "../modular/ImportData/Impor";
 import Warehouses from "../modular/Warehouses/Warehouses";
@@ -17,9 +16,11 @@ import Headspv from "../modular/Headspv/Headspv";
 import Finished from "../modular/Finished/Finished";
 import FinishedStock from "../modular/Finished/FinishedStock";
 import Problem from "../modular/ProblemReport/ProblemReport";
+import Document from "./modules/Document";
 
 export default createStore({
   modules: {
+    Document,
     Problem,
     Finished,
     FinishedStock,
@@ -28,7 +29,6 @@ export default createStore({
     Navbar,
     Modal,
     Collected,
-    Uncollected,
     Expor,
     Impor,
     Warehouses,
@@ -39,7 +39,14 @@ export default createStore({
     BaseReportStock,
   },
   state: {
-    store: ["Warehouses", "Backup", "Supervisors", "Headspv", "Baseitem"],
+    store: [
+      "Warehouses",
+      "Backup",
+      "Supervisors",
+      "Headspv",
+      "Baseitem",
+      "Document",
+    ],
   },
   mutations: {},
   actions: {

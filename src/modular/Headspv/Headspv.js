@@ -37,6 +37,15 @@ const Headspv = {
             phone: "Not found",
           };
     },
+    shift: (state, getters, rootState, rootGetters) => (shift) => {
+      let rec = [...state.lists].find((val) => val.shift == shift);
+      return rec && rec.name
+        ? rec
+        : {
+            name: "Vacant",
+            phone: "Not found",
+          };
+    },
   },
 };
 

@@ -15,15 +15,16 @@
           :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2'] : ['name', 'warehouseName', 'uncollected']"
           option
           id="tableUncollected"
-          v-slot:default="slotProp"
+          #default="{ prop }"
           >
-				<span v-if="!viewByPeriode && slotProp.prop.uncollected && slotProp.prop.uncollected.length > 2">					
+				<span v-if="!viewByPeriode && prop.uncollected && prop.uncollected.length > 2">					
+                    {{prop.uncollected}}
 					<Button
 					secondary
 					value="Pesan" 
 					datanya="tes" 
 					type="button" 
-					@trig="pesan(slotProp.prop)" 
+					@trig="pesan(prop)" 
 					/>
 				</span>
                 <span v-if="viewByPeriode">
@@ -37,7 +38,7 @@
                     ]"
                     listsKey="id"
                     listsValue="isi"
-                    @trig="collect({val: $event, rec: slotProp.prop.id})"
+                    @trig="collect({val: $event, rec: prop.id})"
                     />
                 </span>
         </Datatable>
@@ -113,7 +114,8 @@ export default {
             _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists))
         }),
         ...mapGetters({
-            GET_UNCOLLECTEDbySpv: "Uncollected/uncollectedBySpv",
+            GET_UNCOLLECTED: "Document/uncollected",
+            GET_UNCOLLECTEDBYSPV: "Document/uncollectedBySpv",
             GET_SUPERVISORS: "Supervisors/lists",
             GET_SPVID: "Supervisors/spvId",
             GET_DATEFORMAT: "dateFormat",
@@ -122,8 +124,8 @@ export default {
             let result = []
             this.GET_SUPERVISORS.forEach((val) => {
                 result.push(Object.assign(val, { 
-                    uncollected: this.GET_UNCOLLECTEDbySpv[val.id] 
-                                    ? this.GET_UNCOLLECTEDbySpv[val.id] 
+                    uncollected: this.GET_UNCOLLECTEDBYSPV[val.id] 
+                                    ? this.GET_UNCOLLECTEDBYSPV[val.id] 
                                     : "All collected"
                     }))
             })
@@ -131,8 +133,8 @@ export default {
         },
         listByPeriode() {
             let result = []
-            if(this._UNCOLLECTED.length > 0) {
-                this._UNCOLLECTED.forEach((val) => {
+            if(this.GET_UNCOLLECTED.length > 0) {
+                this.GET_UNCOLLECTED.forEach((val) => {
                     let spvInfo = this.GET_SPVID(val.name)
                     result.push(
                         Object.assign(val, { 

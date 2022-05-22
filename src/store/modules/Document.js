@@ -2,12 +2,11 @@ const Uncollected = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "Uncollected" },
   },
 
   mutations: {
     // new data from localbase
-    uncollected(state, value) {
+    document(state, value) {
       state.lists = value;
     },
     // add data to
@@ -20,6 +19,9 @@ const Uncollected = {
   },
   actions: {},
   getters: {
+    uncollected(state) {
+      return state.lists.filter((val) => val.status === false);
+    },
     // all uncollected record
     uncollectedBySpv(state, getters, rootState, rootGetters) {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
@@ -41,10 +43,6 @@ const Uncollected = {
         });
         return result;
       }
-    },
-    // mengembalikan info store
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
     },
     // mengembalikan tanggal terakhir yang sudah diinput
     lastDate(state) {

@@ -12,6 +12,7 @@
         <Input 
             v-for="name in GET_HEADENABLE" :key="name.id" 
             :label="name.name.split(' ')[0]" placeholder="Shift" class="w3-row w3-padding" type="number"
+            :value="name.shift+''" @inp="changeShift('Headspv', name.id, $event)"
         />
     </div>
     <div v-for="(names2, index) in names" :key="index" class="w3-col s2 w3-round-large w3-topbar w3-bottombar w3-padding-small w3-margin-right">
@@ -19,17 +20,19 @@
         <Input 
             v-for="name in names2" :key="name.id" 
             :label="name.name.split(' ')[0]" placeholder="Shift" class="w3-row w3-padding" type="number"
+            :value="name.shift+''" @inp="changeShift('Supervisors', name.id, $event)"
         />
     </div>
 
-    <Button
-    primary 
-    v-if="collect.name && collect.periode"
-    class="w3-margin-top" 
-    value="Tambah" 
-    type="button"
-   />
-
+    <div class="w3-row">
+        <Button
+            primary 
+            v-if="collect.periode"
+            class="w3-margin-top w3-right" 
+            value="Tambah" 
+            type="button"
+        />
+    </div>
 </form>
 
 </template>
@@ -46,63 +49,56 @@ export default {
     data() {
         return {
             collect: {
-                name: "",
                 periode: new Date(),
             }
         }
     },
     methods: {
+        changeShift(store, id, shift) {
+            let record = store == 'Supervisors' ? this.GET_SUPERVISORID(id) : this.GET_HEADID(id)
+            record.shift = shift
+            this.$store.dispatch("update", { store: store, obj: record, criteria: { id: id } })
+        },
         async send(){
-            if(this.collect.name) {
+            if(this.collect.periode) {
                 // bring up the loader
-                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+                // this.$store.commit("Modal/active", {judul: "", form: "Loader"});
                 
                 let periodeTime = this.GET_DATEFORMAT({format: "ymdTime", time: this.collect.periode})
-                let warehouseInputed = []
-                if(this.collect.name === "semua") {
-                    // uncollected record, ambil semua nama
-                    let allName = this.GET_SPVENABLE
-                    // console.log(allName)
-                    //// iterate semua nama satu satu
-                    for(let i=0; i < allName.length; i++) {
-                        let uidN = uid(5)
-                        // uncollected record, tunggu sampai append selesai
-                        await this.$store.dispatch("append", {
-                            store: "Uncollected",
-                            obj: {
-                                id: uidN, 
-                                name: allName[i].id, 
-                                periode: periodeTime
-                            },
-                            period: periodeTime
-                        })
-                        // baseReportFile record, tunggu sampai selesai
-                        if(!warehouseInputed.includes(allName[i].warehouse)) {
-                            warehouseInputed.push(allName[i].warehouse)
-                            await this.$store.dispatch("append", {
-                                store: "BaseReportFile",
-                            obj: {
-                                id: uidN, 
-                                periode: periodeTime,
-                                warehouse: allName[i].warehouse,
-                                fileName: false,
-                                stock: false,
-                                clock: false,
-                            },
-                            period: periodeTime
-                            })
-                        }
-                    }
-                    
-                } else {
-                    this.$store.dispatch("append", {
-                            store: "Uncollected",
-                            id: uid(5),
-                            obj: {
-                                name: this.collect.name,
-                                periode: periodeTime,
-                                },
-                        })
+                // let warehouseInputed = []
+                // uncollected record, ambil semua nama
+                let allName = this.GET_SPVENABLE
+                // console.log(allName)
+                //// iterate semua nama satu satu
+                for(let i=0; i < allName.length; i++) {
+                    // uncollected record, tunggu sampai append selesai
+                    await this.$store.dispatch("append", {
+                        store: "Document",
+                        obj: {
+                            id: this._UNCOLLECTED[0] ? this._UNCOLLECTED[0].id : "UNC22050000", 
+                            name: allName[i].id, 
+                            periode: periodeTime,
+                            shift: allName[i].shift,
+                            head: allName[i].shift == 3 ? this.GET_HEADSHIFT(2).id : this.GET_HEADSHIFT(allName[i].shift).id,
+                            status: false,
+                        },
+                    })
+                    // baseReportFile record, tunggu sampai selesai
+                    // if(!warehouseInputed.includes(allName[i].warehouse)) {
+                    //     warehouseInputed.push(allName[i].warehouse)
+                    //     await this.$store.dispatch("append", {
+                    //         store: "BaseReportFile",
+                    //     obj: {
+                    //         id: uidN, 
+                    //         periode: periodeTime,
+                    //         warehouse: allName[i].warehouse,
+                    //         fileName: false,
+                    //         stock: false,
+                    //         clock: false,
+                    //     },
+                    //     period: periodeTime
+                    //     })
+                    // }
                 }
                 //close the modeal
                 this.$store.commit("Modal/active")
@@ -126,11 +122,13 @@ export default {
             GET_SPVENABLE: "Supervisors/enabled",
             GET_LASTDATE: "Uncollected/lastDate",
             GET_DATEFORMAT: "dateFormat",
+            GET_SUPERVISORID: "Supervisors/spvId",
+            GET_HEADID: "Headspv/headId",
+            GET_HEADSHIFT: "Headspv/shift",
         }),
         names() {
             let result = []
             let groupLength = Math.ceil(this.GET_SPVENABLE.length / 3) * 3
-            console.log(groupLength)
             for (let i = 0; i < groupLength; i += 3) {
                 result.push(this.GET_SPVENABLE.slice(i, i+3))
             }
