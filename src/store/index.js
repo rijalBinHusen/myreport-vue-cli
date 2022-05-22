@@ -138,11 +138,15 @@ export default createStore({
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
       // call the get data functions
-      myfunction.findData(value).then((result) =>
-        commit(`${value.store}/${value.store.toLowerCase()}`, result, {
-          root: true,
-        })
-      );
+      myfunction.findData(value).then((result) => {
+        commit(
+          `${value.store}/${value.store.toLowerCase()}`,
+          result ? result : [],
+          {
+            root: true,
+          }
+        );
+      });
     },
     findDataByDateArrays({ commit, rootGetters }, value) {
       /* value = { 

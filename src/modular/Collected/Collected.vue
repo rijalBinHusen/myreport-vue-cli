@@ -11,17 +11,23 @@
             :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2']"
             option
             id="tableCollected"
-            v-slot:default="slotProp"
+            v-slot:default="{ prop }"
             >
 
-            <div v-if="!slotProp.prop.shared">
-				<Button value="Batal" type="button" danger small @trig="unCollect(slotProp.prop.id)" />
-                <Button value="Edit" type="button" secondary small @trig="edit(slotProp.prop.id)" />
-                <Button value="Share" primary type="button" small @trig="share(slotProp.prop.id)" />
-            </div>
-            <div v-else>
-                Shared at {{ this.$store.getters["dateFormat"]({format: "dateMonth", time: slotProp.prop.shared }) }}
-            </div>
+				<Button value="Batal" type="button" danger small @trig="unCollect(prop.id)" />
+                <Button value="Edit" type="button" secondary small @trig="edit(prop.id)" />
+                <Dropdown
+                    value="Approval"  
+                    :lists="[
+                        { id: -1, isi: '-1 Hari'},
+                        { id: -2, isi: '-2 Hari'},
+                        { id: -3, isi: '-3 Hari'},
+                        { id: 0, isi: '0 Hari' }
+                    ]"
+                    listsKey="id"
+                    listsValue="isi"
+                    @trig="approval({val: $event, rec: prop.id})"
+                    />
             </Datatable>
 			<!-- </table> -->
 			
@@ -33,7 +39,7 @@ import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import datepicker from "vue3-datepicker"
-import { mapGetters } from "vuex"
+import Dropdown from "../../components/elements/Dropdown.vue"
 
 export default {
     name: "Collect",
@@ -43,6 +49,7 @@ export default {
         };
     },
     components: {
+        Dropdown,
         Input,
         Button,
         Datatable,
@@ -86,7 +93,7 @@ export default {
     },
     computed: {
         collected() {
-			let collect = JSON.parse(JSON.stringify(this.$store.state.Collected.lists))
+			let collect = this.$store.getters["Document/collected"]
 			let result = []
 			collect.forEach((val) => {
                 if(val) {
@@ -101,5 +108,8 @@ export default {
             return result
         },
     },
+    mounted() {
+        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 1 }})
+    }
 }
 </script>

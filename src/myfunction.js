@@ -73,7 +73,6 @@ export default {
     return db.collection(store).get();
   },
   findData: function (value) {
-    console.log(value);
     return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
   },
   deleteCollection: function (value) {

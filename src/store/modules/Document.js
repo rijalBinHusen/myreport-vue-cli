@@ -23,8 +23,15 @@ const Uncollected = {
   actions: {},
   getters: {
     uncollected(state) {
+      return state.lists.length > 0
+        ? JSON.parse(JSON.stringify(state.lists)).filter(
+            (val) => val.status === 0
+          )
+        : [];
+    },
+    collected(state) {
       return JSON.parse(JSON.stringify(state.lists)).filter(
-        (val) => val.status === 0
+        (val) => val.status === 1
       );
     },
     // all uncollected record
