@@ -6,6 +6,7 @@ const Navbar = {
       { id: "Warehouses", title: "Warehouses", group: "setting" },
       { id: "Uncollected", title: "Uncollected report", group: "reports" },
       { id: "Collected", title: "Collected report", group: "reports" },
+      { id: "Approval", title: "Approval report", group: "reports" },
       { id: "Importbase", title: "Import base report", group: "reports" },
       { id: "Supervisors", title: "Supervisors", group: "setting" },
       { id: "Base", title: "Base report", group: "reports" },

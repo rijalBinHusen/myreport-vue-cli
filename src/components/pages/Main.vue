@@ -11,6 +11,7 @@
 	import Uncollected from "../../modular/Uncollected/Uncollected.vue"
 	import ImportData from "../../modular/ImportData/ImportData.vue"
 	import Collected from "../../modular/Collected/Collected.vue"
+	import Approval from "../../modular/Approval/Approval.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
 	import Supervisors from "../../modular/Supervisors/Supervisors.vue"
@@ -25,6 +26,7 @@
 	export default {
 		name: "Main",
 		components: {
+			Approval,
 			ProblemReport,
 			Headspv,
 			BaseItem,

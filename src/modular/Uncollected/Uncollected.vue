@@ -114,9 +114,12 @@ export default {
         listsByWarehouse() {
             let result = []
             this.GET_SUPERVISORS.forEach((val) => {
-                result.push(Object.assign(val, { 
-                    uncollected: this.GET_UNCOLLECTEDBYSPV[val.id].join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
+                if(this.GET_UNCOLLECTEDBYSPV[val.id]) {
+
+                    result.push(Object.assign(val, { 
+                        uncollected: this.GET_UNCOLLECTEDBYSPV[val.id].join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
                     }))
+                }
             })
             return result
         },

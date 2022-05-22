@@ -26,7 +26,7 @@
 <script>
 
 import UncollectedForm from "../../modular/Uncollected/UncollectedForm.vue"
-import CollectedForm from "../../modular/Collected/CollectedForm.vue"
+import ApprovalForm from "../../modular/Approval/ApprovalForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
 import BaseReportFile from "../../modular/BaseImport/BaseReportFileForm.vue"
@@ -39,7 +39,7 @@ export default {
       BaseStockForm,
       BaseClockForm,
       UncollectedForm,
-      CollectedForm,
+      ApprovalForm,
       Loader,
       ImporterForm,
       BaseReportFile,

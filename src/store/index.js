@@ -148,48 +148,27 @@ export default createStore({
         );
       });
     },
-    findDataByDateArrays({ commit, rootGetters }, value) {
-      /* value = { 
-        store: nameOfStore, 
-        date: ["array", "of", "date"], 
-        criteria: {name: "abc", shared: false} 
-        dateNotCriteria: true
-      }
-      */
-
+    async findDataByDateArrays({ commit, rootGetters }, value) {
       //empty the store
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
       if (Array.isArray(value.date)) {
         // return as promise
-        return new Promise((resolve) => {
-          for (let i = 0; i < value.date.length; i++) {
-            myfunction
-              .findData(
-                Object.assign(rootGetters[`${value.store}/store`], {
-                  period: value.date[i],
-                  obj: value.dateNotCriteria
-                    ? value.criteria
-                    : Object.assign(
-                        {
-                          periode: value.date[i],
-                        },
-                        value.criteria
-                      ),
-                })
-              )
-              .then((res) => {
-                // commit to module e.g 'Group/append
-                if (res) {
-                  commit(`${value.store}/append`, res, { root: true });
-                }
-                //jika sudah selesai
-                if (i === value.date.length - 1) {
-                  resolve();
-                }
-              });
+        for (let i = 0; i < value.date.length; i++) {
+          let criteria = Object.assign({}, value);
+          delete criteria.date;
+          delete criteria.dateNotCriteria;
+
+          value.dateNotCriteria
+            ? false
+            : (criteria.criteria.periode = value.date[i]);
+
+          let res = await myfunction.findData(criteria);
+          // commit to module e.g 'Group/append
+          if (res) {
+            commit(`${value.store}/append`, res, { root: true });
           }
-        });
+        }
       }
     },
     rewriteStore({}, payload) {

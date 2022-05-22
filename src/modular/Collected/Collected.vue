@@ -1,9 +1,5 @@
 <template>
 <div class="">
-    <div class="w3-border w3-padding w3-container">
-        <label>Set record to show : </label>
-        <Button primary value="Set" type="button" @trig="collectedForm" />
-    </div>
 
             <Datatable
             :datanya="collected"
@@ -24,6 +20,7 @@
                         { id: -3, isi: '-3 Hari'},
                         { id: 0, isi: '0 Hari' }
                     ]"
+                    class="w3-small"
                     listsKey="id"
                     listsValue="isi"
                     @trig="approval({val: $event, rec: prop.id})"
@@ -35,10 +32,8 @@
 </template>
 
 <script>
-import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import datepicker from "vue3-datepicker"
 import Dropdown from "../../components/elements/Dropdown.vue"
 
 export default {
@@ -50,46 +45,53 @@ export default {
     },
     components: {
         Dropdown,
-        Input,
         Button,
         Datatable,
-        datepicker,
     },
     methods: {
-        collectedForm() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "CollectedForm"});
-        },
         edit(ev) {
             // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
             //this.$store.dispatch("update", objToSend)
             // ev.collected = window.prompt()
             
-            let rec = this.$store.getters["Collected/listsId"](ev)
-            rec.collected = window.prompt()
-            if(rec.collected) {
-                this.$store.dispatch("update", {store: "Collected", obj: rec})
+            // let rec = this.$store.getters["Collected/listsId"](ev)
+            let info = this.$store.getters["Document/getId"](ev)
+            info.collected = window.prompt()
+            if(info.collected) {
+                this.$store.dispatch("update", {
+                            store: "Document",
+                            obj: info,
+                            criteria: {id: ev }
+                        })
             }
+            
+        },
+        approval(ev) {
+            // get record from uncollected the state
+            let info = this.$store.getters["Document/getId"](ev.rec)
+            info.approval = this.$store.getters["dateFormat"]({format: ev.val})
+            info.status = 2
+            // console.log(info)
+            this.$store.dispatch("update", {
+                            store: "Document",
+                            obj: info,
+                            criteria: {id: ev.rec }
+                        })
+
         },
 		unCollect(ev) {
-            let record = this.$store.getters["Collected/listsId"](ev)
-			// remove date collect
-			delete record.collected
-			// append to uncollected
-			this.$store.dispatch("append", {
-			    store: "Uncollected",
-			    obj: record
-			})
-			// delete from collected
-			this.$store.dispatch("delete", { store: "Collected", id: ev })
+
+            // get record from uncollected the state
+            let info = this.$store.getters["Document/getId"](ev)
+            info.collected = false
+            info.status = 0
+            // console.log(info)
+            this.$store.dispatch("update", {
+                            store: "Document",
+                            obj: info,
+                            criteria: { id: ev }
+                        })
 		},
-        share(ev){
-            // console.log(ev)
-            let record = this.$store.getters["Collected/listsId"](ev)
-            //set shared to true with date
-            record.shared = this.$store.getters["dateFormat"]({format: "time"})
-            // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
-            this.$store.dispatch("update", { store: "Collected", obj: record, period: record.periode })
-        }
     },
     computed: {
         collected() {

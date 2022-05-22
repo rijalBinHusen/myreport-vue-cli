@@ -11,6 +11,10 @@ const Uncollected = {
     },
     // add data to
     append(state, value) {
+      if (Array.isArray(value)) {
+        value.forEach((val) => state.lists.push(val));
+        return;
+      }
       state.lists.push(value);
     },
     // update data
@@ -32,6 +36,11 @@ const Uncollected = {
     collected(state) {
       return JSON.parse(JSON.stringify(state.lists)).filter(
         (val) => val.status === 1
+      );
+    },
+    approval(state) {
+      return JSON.parse(JSON.stringify(state.lists)).filter(
+        (val) => val.status === 2
       );
     },
     // all uncollected record
