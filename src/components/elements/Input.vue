@@ -4,7 +4,7 @@
         <input 
         @change="inp($event.target.value)" 
         @keyup="inp($event.target.value)"
-        class="w3-input w3-border w3-margin-top" 
+        class="w3-input w3-border w3-padding w3-round-large" 
         :type="type" 
         :value="value"
         :placeholder="placeholder">

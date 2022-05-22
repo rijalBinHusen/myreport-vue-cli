@@ -86,6 +86,7 @@ export default {
         // else
         else {
           record.obj.id = this._HEADSPV[0] ? this._HEADSPV[0].id : "HSP22050000"
+          record.obj.disabled = false
           this.APPEND(record)
         }
       }

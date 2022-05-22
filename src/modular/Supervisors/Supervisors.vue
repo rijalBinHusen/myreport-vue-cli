@@ -96,6 +96,7 @@ export default {
         // else
         else {
           record.obj.id = this.GET_SUPERVISORS[0] ? this.GET_SUPERVISORS[0].id : "SPV22050000"
+          record.obj.disabled = false
           this.APPEND(record)
         }
       }
