@@ -73,16 +73,8 @@ export default {
     return db.collection(store).get();
   },
   findData: function (value) {
-    /*value = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()"
-	obj: {key: value}
-    	} */
-    return db
-      .collection(storenya(value.store, value.split, value.period))
-      .doc(value.obj)
-      .get();
+    console.log(value);
+    return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
   },
   deleteCollection: function (value) {
     /*value = {

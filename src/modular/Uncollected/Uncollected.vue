@@ -17,8 +17,7 @@
           id="tableUncollected"
           #default="{ prop }"
           >
-				<span v-if="!viewByPeriode && prop.total > 2">					
-                    {{prop.uncollected}}
+				<span v-if="!viewByPeriode && prop.total > 2">
 					<Button
 					secondary
 					value="Pesan" 
@@ -50,7 +49,7 @@
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
     name: "Uncollected",
@@ -71,21 +70,16 @@ export default {
 		},
         collect(ev) {
             // get record from uncollected the state
-            let info = this.$store.getters["Uncollected/getId"](ev.rec)
-
+            let info = this.$store.getters["Document/getId"](ev.rec)
             info.collected = this.$store.getters["dateFormat"]({format: ev.val})
             info.shared = false
-
-            // append to collected store
-            this.$store.dispatch("append", {
-                            store: "Collected",
+            info.status = 1
+                // console.log(info)
+            this.$store.dispatch("update", {
+                            store: "Document",
                             obj: info,
-                            period: info.periode
+                            criteria: {id: ev.rec }
                         })
-
-            // delete from uncollected store
-            // value = { store: "listsnames", id: 001 }
-            this.$store.dispatch("delete", {store: "Uncollected", id: ev.rec})
             
         },
 		pesan(ev) {
@@ -110,9 +104,6 @@ export default {
         }
     },
     computed: {
-        ...mapState({
-            _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists))
-        }),
         ...mapGetters({
             GET_UNCOLLECTED: "Document/uncollected",
             GET_UNCOLLECTEDBYSPV: "Document/uncollectedBySpv",
@@ -147,5 +138,8 @@ export default {
             return result
         }
     },
+    mounted() {
+        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 0 }})
+    }
 }
 </script>

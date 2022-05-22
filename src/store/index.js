@@ -126,10 +126,11 @@ export default createStore({
     getAllData({}, value) {
       return myfunction.getData({ store: value.toLowerCase(), withKey: true });
     },
-    getData({ commit, rootGetters }, value) {
+    getDataByCriteria({ commit, rootGetters }, value) {
       // the first letter of value.store must be capital e.g 'Group'
       /*value = { 
             store: "nameOfStore",
+            criteria: { status: 0 }
           }
     	} */
 
@@ -137,7 +138,7 @@ export default createStore({
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
       // call the get data functions
-      myfunction.getData(rootGetters[`${value.store}/store`]).then((result) =>
+      myfunction.findData(value).then((result) =>
         commit(`${value.store}/${value.store.toLowerCase()}`, result, {
           root: true,
         })

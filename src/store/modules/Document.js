@@ -13,14 +13,19 @@ const Uncollected = {
     append(state, value) {
       state.lists.unshift(value);
     },
-    delete(state, value) {
-      state.lists = state.lists.filter((val) => val.id !== value);
+    // update data
+    update(state, value) {
+      state.lists = state.lists.map((val) => {
+        return val.id === value.id ? value : val;
+      });
     },
   },
   actions: {},
   getters: {
     uncollected(state) {
-      return state.lists.filter((val) => val.status === false);
+      return JSON.parse(JSON.stringify(state.lists)).filter(
+        (val) => val.status === 0
+      );
     },
     // all uncollected record
     uncollectedBySpv(state, getters, rootState, rootGetters) {
@@ -28,7 +33,7 @@ const Uncollected = {
       if (state.lists.length > 0) {
         let result = {};
         // sort the lists
-        let temp = JSON.parse(JSON.stringify(state.lists)).sort(
+        let temp = rootGetters["Document/uncollected"].sort(
           (a, b) => a.periode < b.periode
         );
         // iterate the lists

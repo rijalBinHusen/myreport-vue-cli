@@ -49,7 +49,7 @@ export default {
     data() {
         return {
             collect: {
-                periode: new Date(),
+                periode: this.GET_LASTDATE,
             }
         }
     },
@@ -62,7 +62,7 @@ export default {
         async send(){
             if(this.collect.periode) {
                 // bring up the loader
-                // this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
                 
                 let periodeTime = this.GET_DATEFORMAT({format: "ymdTime", time: this.collect.periode})
                 // let warehouseInputed = []
@@ -75,12 +75,12 @@ export default {
                     await this.$store.dispatch("append", {
                         store: "Document",
                         obj: {
-                            id: this._UNCOLLECTED[0] ? this._UNCOLLECTED[0].id : "UNC22050000", 
+                            id: this.GET_UNCOLLECTED[0] ? this.GET_UNCOLLECTED[0].id : "UNC22050000", 
                             name: allName[i].id, 
                             periode: periodeTime,
                             shift: allName[i].shift,
                             head: allName[i].shift == 3 ? this.GET_HEADSHIFT(2).id : this.GET_HEADSHIFT(allName[i].shift).id,
-                            status: false,
+                            status: 0,
                         },
                     })
                     // baseReportFile record, tunggu sampai selesai
@@ -114,13 +114,13 @@ export default {
     computed: {
         ...mapState({
             _SPV: state => JSON.parse(JSON.stringify(state.Supervisors.lists)),
-            _UNCOLLECTED: state => JSON.parse(JSON.stringify(state.Uncollected.lists)),
             _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
         }),
         ...mapGetters({
+            GET_UNCOLLECTED: "Document/uncollected",
             GET_HEADENABLE: "Headspv/enabled",
             GET_SPVENABLE: "Supervisors/enabled",
-            GET_LASTDATE: "Uncollected/lastDate",
+            GET_LASTDATE: "Document/lastDate",
             GET_DATEFORMAT: "dateFormat",
             GET_SUPERVISORID: "Supervisors/spvId",
             GET_HEADID: "Headspv/headId",
