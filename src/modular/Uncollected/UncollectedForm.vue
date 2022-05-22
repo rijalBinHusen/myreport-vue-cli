@@ -75,7 +75,7 @@ export default {
                     await this.$store.dispatch("append", {
                         store: "Document",
                         obj: {
-                            id: this.GET_UNCOLLECTED.length > 0 ? this.GET_UNCOLLECTED.slice(-1)[0].id : "UNC22050000", 
+                            id: this.$store.state.Document.lists.length > 0 ?  this.$store.state.Document.lists.slice(-1)[0].id : "UNC22050000", 
                             name: allName[i].id, 
                             periode: periodeTime,
                             shift: allName[i].shift,

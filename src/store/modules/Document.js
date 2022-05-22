@@ -11,7 +11,7 @@ const Uncollected = {
     },
     // add data to
     append(state, value) {
-      state.lists.unshift(value);
+      state.lists.push(value);
     },
     // update data
     update(state, value) {
