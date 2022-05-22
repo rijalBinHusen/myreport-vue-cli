@@ -4,12 +4,10 @@ const Navbar = {
     active: "",
     lists: [
       { id: "Warehouses", title: "Warehouses", group: "setting" },
-      { id: "Supervisors", title: "Supervisors", group: "setting" },
-      { id: "Backup", title: "Backup data", group: "setting" },
-      { id: "ImportData", title: "Import data", group: "setting" },
       { id: "Uncollected", title: "Uncollected report", group: "reports" },
       { id: "Collected", title: "Collected report", group: "reports" },
       { id: "Importbase", title: "Import base report", group: "reports" },
+      { id: "Supervisors", title: "Supervisors", group: "setting" },
       { id: "Base", title: "Base report", group: "reports" },
       { id: "ProblemReport", title: "Problems report", group: "reports" },
       { id: "Cases", title: "Cases report", group: "reports" },
@@ -17,6 +15,8 @@ const Navbar = {
       { id: "Finished", title: "Finished report", group: "reports" },
       { id: "Headspv", title: "Head division", group: "setting" },
       { id: "BaseItem", title: "Base item", group: "setting" },
+      { id: "Backup", title: "Backup data", group: "setting" },
+      { id: "ImportData", title: "Import data", group: "setting" },
     ],
   },
   mutations: {
