@@ -24,9 +24,15 @@ const Warehouses = {
   actions: {},
   getters: {
     warehouseId: (state) => (id) => {
-      return JSON.parse(JSON.stringify(state.lists)).find(
+      let rec = JSON.parse(JSON.stringify(state.lists)).find(
         (val) => val.id === id
       );
+      return rec && rec.name
+        ? rec
+        : {
+            id: "",
+            name: "Not found",
+          };
     },
   },
 };

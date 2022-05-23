@@ -1,11 +1,11 @@
 <template>
   <div v-if="modal" style="display: block;" class="w3-modal">
-    <div class="w3-modal-content w3-animate-zoom">
-      <header v-if="form !== 'Loader'" class="w3-container w3-teal">
+    <div class="w3-modal-content w3-animate-zoom w3-round-large">
+      <header v-if="form !== 'Loader'" class="w3-container w3-teal w3-round-large">
           <!-- v-if="modal.mode !== 'loading'" -->
         <span
           @click="active"
-          class="w3-xlarge w3-button w3-display-topright w3-teal"
+          class="w3-xlarge w3-button w3-display-topright w3-teal w3-round-large w3-hover-none"
         >
           &times;
         </span>

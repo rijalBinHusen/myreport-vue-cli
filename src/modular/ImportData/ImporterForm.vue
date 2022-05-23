@@ -2,9 +2,20 @@
 <form class="w3-container" @submit.prevent="impor">
     <h2>Select store</h2>
     <Checkbox v-for="(store) in listsStore" :key="store" :label="store" @check="selectStore($event)" />
-    <hr>
+    <div class="w3-row w3-border w3-round-large w3-padding">
+        <p class="w3-col s2">Select mode:</p>
+        <span class="w3-col s2 w3-margin-top">
+            <input type="radio" name="mode" id="write" @click="mode = 'write'" />
+            <label for="write"> Write mode</label><br>
+        </span>
+
+        <span class="w3-col s3  w3-margin-top">
+            <input type="radio" name="mode" id="append" @click="mode = 'append'" />
+            <label for="append"> Append mode</label>
+        </span>
+    </div>
     <p>Total record would be imported: {{ total }} record</p>
-    <Button v-if="total > 0" primary value="Import" type="button"/>
+    <Button v-if="total > 0 && mode" primary value="Import" type="button"/>
 </form>
 </template>
 
@@ -23,6 +34,7 @@ export default {
         return {
             importLists: [],
             total: 0,
+            mode: "",
         }
     },
     methods: {
@@ -30,6 +42,7 @@ export default {
             EMPTY_STORE: "emptyStore",
             // payload = {store: nameOfStore: obj: [Array would to wrote]}
             WRITE_STORE: "rewriteStore",
+            APPEND_IMPORT: "appendImport",
         }),
         selectStore(ev) {
             if(this.importLists.includes(ev)) {
@@ -66,12 +79,18 @@ export default {
                 // })
 
                 for( let i =0 ; i < this._IMPOR[store].length; i++) {
-                    let newDoc = Object.assign(this._IMPOR[store][i].data, {_key: this._IMPOR[store][i].key })
-                    doc.push(newDoc)
-                    //if the end of record
-                    if( (i + 1) === this._IMPOR[store].length) {
-                        //push to localbase
-                        await this.WRITE_STORE({store: store, obj: doc})
+                    
+                    if(this.mode === 'write') {
+                        doc.push(Object.assign(this._IMPOR[store][i].data, {_key: this._IMPOR[store][i].key })) 
+                        //if the end of record
+                        if( (i + 1) === this._IMPOR[store].length) {
+                            //push to localbase
+                            await this.WRITE_STORE({store: store, obj: doc})
+                        }
+                    } 
+                    
+                    else {
+                        await this.APPEND_IMPORT({ store: store, obj : this._IMPOR[store][i].data})
                     }
                 }
 

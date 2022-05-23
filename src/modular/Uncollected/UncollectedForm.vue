@@ -1,13 +1,13 @@
 <template>
 <form @submit.prevent="send">
-    <div class="w3-col s2 w3-round-large w3-topbar w3-bottombar w3-padding-small w3-margin-right">
-    <h3 class="w3-margin-bottom">Periode</h3>
-    <Datepicker 
-        class="w3-input w3-row" 
-        v-model="collect.periode" 
-        :lowerLimit="this.GET_LASTDATE"
-        DateFormat="yyyy-MM-dd"
-    />
+    <div class="w3-col s2 w3-round-large w3-topbar w3-bottombar w3-padding-small w3-small">
+        <h3 class="w3-margin-bottom">Periode</h3>
+        <Datepicker 
+            class="w3-input w3-row" 
+            v-model="collect.periode" 
+            :lowerLimit="this.GET_LASTDATE"
+            DateFormat="yyyy-MM-dd"
+        />
         <h3>Kabag</h3>
         <Input 
             v-for="name in GET_HEADENABLE" :key="name.id" 
@@ -15,7 +15,7 @@
             :value="name.shift+''" @inp="changeShift('Headspv', name.id, $event)"
         />
     </div>
-    <div v-for="(names2, index) in names" :key="index" class="w3-col s2 w3-round-large w3-topbar w3-bottombar w3-padding-small w3-margin-right">
+    <div v-for="(names2, index) in names" :key="index" class="w3-col s2 w3-round-large w3-topbar w3-bottombar w3-padding-small w3-small">
         <h3>Supervisor</h3>
         <Input 
             v-for="name in names2" :key="name.id" 
@@ -128,9 +128,10 @@ export default {
         }),
         names() {
             let result = []
+            let sortByWH = this.GET_SPVENABLE.sort((a, b) => a.warehouse > b.warehouse )
             let groupLength = Math.ceil(this.GET_SPVENABLE.length / 3) * 3
             for (let i = 0; i < groupLength; i += 3) {
-                result.push(this.GET_SPVENABLE.slice(i, i+3))
+                result.push(sortByWH.slice(i, i+3))
             }
             return result
         },

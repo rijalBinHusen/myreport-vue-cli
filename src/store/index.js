@@ -67,6 +67,11 @@ export default createStore({
       return myfunction.tunggu(130);
     },
 
+    async appendImport({}, value) {
+      myfunction.append(value);
+      return myfunction.tunggu(130);
+    },
+
     delete({ commit, rootGetters }, value) {
       commit(`${value.store}/delete`, value, { root: true });
       // delete record from indexeddb and return as promise
