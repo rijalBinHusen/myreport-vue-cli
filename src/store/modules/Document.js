@@ -84,6 +84,9 @@ const Uncollected = {
       let lists = JSON.parse(JSON.stringify(state.lists));
       return lists.find((val) => val.id === id);
     },
+    lastId(state) {
+      return state.lists.sort((a, b) => a.id < b.id)[0];
+    },
   },
 };
 

@@ -6,7 +6,8 @@ let db = new Localbase("myreport");
 export default {
   append: function (value) {
     //{store: "namastore", obj: {obj: toInput } }
-    db.collection(value.store.toLowerCase()).add(value.obj);
+    // db.collection(value.store.toLowerCase()).add(value.obj);
+    db.collection(value.store.toLowerCase()).doc(value.obj.id).set(value.obj);
   },
   update: function (value) {
     // { criteria: {id: 001}, obj: { obj: objtoupdate } }

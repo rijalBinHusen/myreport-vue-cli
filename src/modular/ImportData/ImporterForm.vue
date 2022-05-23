@@ -81,7 +81,7 @@ export default {
                 for( let i =0 ; i < this._IMPOR[store].length; i++) {
                     
                     if(this.mode === 'write') {
-                        doc.push(Object.assign(this._IMPOR[store][i].data, {_key: this._IMPOR[store][i].key })) 
+                        doc.push(Object.assign(this._IMPOR[store][i].data, {_key: this._IMPOR[store][i].data.id })) 
                         //if the end of record
                         if( (i + 1) === this._IMPOR[store].length) {
                             //push to localbase

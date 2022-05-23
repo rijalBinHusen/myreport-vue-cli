@@ -11,8 +11,8 @@
             />
 		<Datatable
           :datanya="viewByPeriode ? listByPeriode : listsByWarehouse"
-          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode'] : ['Nama', 'Gudang', 'Daftar report']"
-          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2'] : ['name', 'warehouseName', 'uncollected']"
+          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift'] : ['Nama', 'Gudang', 'Daftar report']"
+          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2', 'shift'] : ['name', 'warehouseName', 'uncollected']"
           option
           id="tableUncollected"
           #default="{ prop }"
@@ -78,7 +78,7 @@ export default {
             this.$store.commit("Modal/active", {
                 judul: "Edit record", 
                 form: "UncollectedEditForm",
-                obj: this.GET_DOCID(ev),
+                id: ev,
             });
         },
 		addPeriod() {
@@ -127,7 +127,6 @@ export default {
             GET_SUPERVISORS: "Supervisors/lists",
             GET_SPVID: "Supervisors/spvId",
             GET_DATEFORMAT: "dateFormat",
-            GET_DOCID: "Document/getId"
         }),
         listsByWarehouse() {
             let result = []

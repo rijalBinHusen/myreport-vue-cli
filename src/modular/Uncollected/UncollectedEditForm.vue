@@ -57,6 +57,7 @@
 import Select from "../../components/elements/Select.vue"
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
+import myfunction from "../../myfunction"
 
 export default {
     methods: {
@@ -78,7 +79,7 @@ export default {
         },
     },
     mounted() {
-        this.record = this.$store.getters["Modal/obj"].obj
+        this.record = this.$store.getters["Document/getId"](this.$store.getters["Modal/obj"].id)
     },
     components: {
         Input,

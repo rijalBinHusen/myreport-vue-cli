@@ -121,6 +121,7 @@ export default {
             GET_HEADENABLE: "Headspv/enabled",
             GET_SPVENABLE: "Supervisors/enabled",
             GET_LASTDATE: "Document/lastDate",
+            GET_LASTID: "Document/lastId",
             GET_DATEFORMAT: "dateFormat",
             GET_SUPERVISORID: "Supervisors/spvId",
             GET_HEADID: "Headspv/headId",
