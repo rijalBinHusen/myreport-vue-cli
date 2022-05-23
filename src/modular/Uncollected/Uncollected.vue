@@ -19,11 +19,11 @@
           >
 				<span v-if="!viewByPeriode && prop.total > 2">
 					<Button
-					secondary
-					value="Pesan" 
-					datanya="tes" 
-					type="button" 
-					@trig="pesan(prop)" 
+                        secondary
+                        value="Pesan" 
+                        datanya="tes" 
+                        type="button" 
+                        @trig="pesan(prop)" 
 					/>
 				</span>
                 <span v-if="viewByPeriode">
@@ -38,7 +38,17 @@
                     listsKey="id"
                     listsValue="isi"
                     @trig="collect({val: $event, rec: prop.id})"
+                    class="w3-small"
                     />
+
+                    <Button
+                        class="w3-small"
+                        secondary
+                        value="Edit" 
+                        datanya="tes" 
+                        type="button" 
+                        @trig="edit(prop.id)" 
+					/>
                 </span>
         </Datatable>
 </div>
@@ -64,6 +74,13 @@ export default {
         Dropdown
     },
     methods: {
+        edit(ev) {
+            this.$store.commit("Modal/active", {
+                judul: "Edit record", 
+                form: "UncollectedEditForm",
+                obj: this.GET_DOCID(ev),
+            });
+        },
 		addPeriod() {
             // bring up the form and the modal
             this.$store.commit("Modal/active", {judul: "Masukkan periode", form: "UncollectedForm"});
@@ -110,6 +127,7 @@ export default {
             GET_SUPERVISORS: "Supervisors/lists",
             GET_SPVID: "Supervisors/spvId",
             GET_DATEFORMAT: "dateFormat",
+            GET_DOCID: "Document/getId"
         }),
         listsByWarehouse() {
             let result = []

@@ -27,7 +27,11 @@ const Modal = {
     },
   },
   actions: {},
-  getters: {},
+  getters: {
+    obj(state) {
+      return JSON.parse(JSON.stringify(state.more));
+    },
+  },
 };
 
 export default Modal;

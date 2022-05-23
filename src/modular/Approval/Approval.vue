@@ -18,7 +18,7 @@
                     <Button value="Share" type="button" primary small @trig="share(prop.id)" />
                 </span>
                 <span v-else>
-                    Shared at {{ this.$store.getters["dateFormat"]({ format: "dateMonth", time: prop.share }) }}
+                    Shared at {{ this.$store.getters["dateFormat"]({ format: "dateMonth", time: prop.shared }) }}
                 </span>
             </Datatable>
 			<!-- </table> -->

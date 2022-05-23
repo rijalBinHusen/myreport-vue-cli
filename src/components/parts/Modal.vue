@@ -26,6 +26,7 @@
 <script>
 
 import UncollectedForm from "../../modular/Uncollected/UncollectedForm.vue"
+import UncollectedEditForm from "../../modular/Uncollected/UncollectedEditForm.vue"
 import ApprovalForm from "../../modular/Approval/ApprovalForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
@@ -36,6 +37,7 @@ import BaseStockForm from "../../modular/Base/BaseStockForm.vue"
 export default {
   name: "Modal",
     components: {
+      UncollectedEditForm,
       BaseStockForm,
       BaseClockForm,
       UncollectedForm,

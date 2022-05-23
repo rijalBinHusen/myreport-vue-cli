@@ -1,5 +1,5 @@
 <template>
-    <select @change="selected($event.target.value)" :class="classLists" name="option">
+    <select @change="selected($event.target.value)" :id="id" :class="classLists" name="option">
         <option 
             v-for="option in options" :key="option[value]" 
             :value="option[value]"
@@ -42,6 +42,7 @@ export default {
         nomargin: Boolean,
         small: Boolean,
         inselect: String,
+        id: String,
     },
     emits: ["selected"],
     methods: {

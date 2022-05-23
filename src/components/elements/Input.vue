@@ -2,12 +2,14 @@
     <div :class="className">
         <label>{{ label }}</label>
         <input 
-        @change="inp($event.target.value)" 
-        @keyup="inp($event.target.value)"
-        class="w3-input w3-border w3-padding w3-round-large" 
-        :type="type" 
-        :value="value"
-        :placeholder="placeholder">
+            @change="inp($event.target.value)" 
+            @keyup="inp($event.target.value)"
+            class="w3-input w3-border w3-padding w3-round-large" 
+            :type="type" 
+            :value="value"
+            :placeholder="placeholder"
+            :disabled="disabled"
+        >
   </div>
 </template>
 
@@ -31,6 +33,7 @@ export default {
         },
         value: String,
         class: String,
+        disabled: Boolean,
     },
     emits: ["inp"],
     methods: {
