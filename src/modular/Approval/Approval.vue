@@ -90,7 +90,7 @@ export default {
         },
     },
     mounted() {
-        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 2 }})
+        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 2, shared: false }})
     }
 }
 </script>

@@ -173,11 +173,14 @@ export default createStore({
     },
     rewriteStore({}, payload) {
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
-      return myfunction.reWriteStoreWithKey(payload);
+      myfunction.reWriteStoreWithKey(payload);
+      // setelah store di write biar nunggu dulu, agar browser tidak freez
+      return myfunction.tunggu(8000);
     },
     emptyStore({}, payload) {
       myfunction.deleteCollection(payload);
-      return myfunction.tunggu(2000);
+      // setelah store dihapus biar nunggu 4 detik, agar browser tidak freez
+      return myfunction.tunggu(4000);
     },
   },
   getters: {

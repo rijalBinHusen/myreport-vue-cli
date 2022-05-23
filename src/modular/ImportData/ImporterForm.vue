@@ -87,7 +87,7 @@ export default {
             _IMPOR: state => JSON.parse(JSON.stringify(state.Impor.lists))
         }),
         listsStore() {
-            return Object.keys(this._IMPOR).slice(0, -1)
+            return Object.keys(this._IMPOR).filter((val) => val !== "status")
         }
     }
 }

@@ -76,31 +76,13 @@ export default {
     return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
   },
   deleteCollection: function (value) {
-    /*value = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()"/
-    	} */
-    if (typeof value === "object") {
-      db.collection(storenya(value.store, value.split, value.period)).delete();
-    } else {
-      db.collection(value).delete();
-    }
+    db.collection(value).delete();
   },
   deleteDb: function () {
     db.delete();
   },
   emptyStore: function (value) {
-    /*value = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()"
-    	} */
-    if (typeof value === "object") {
-      db.collection(storenya(value.store, value.split, value.period)).set({});
-    } else {
-      db.collection(value).set([{}]);
-    }
+    db.collection(value).set([{}]);
   },
   deleteDocument: function (value) {
     db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
