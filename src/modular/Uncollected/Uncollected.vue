@@ -1,7 +1,16 @@
 <template>
 <div class="w3-container w3-margin-top">
         <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
-        <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
+        
+        <Dropdown
+            value="Kirim rekap"  
+            :lists="$store.state.Headspv.lists"
+            listsKey="phone"
+            listsValue="name"
+            @trig="pesanSemua($event)"
+            class="w3-right"
+        />
+
         <Button 
             class="w3-right" 
             primary 
@@ -143,21 +152,21 @@ export default {
 			// let datanya = JSON.parse(JSON.stringify(ev))
 			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu *[ ${ev.uncollected.slice(1).map((val) => val.periode2)} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-			// window.open(link)
-            console.log(link)
+			window.open(link)
+            // console.log(link)
 		},
-        pesanSemua() {
-            let nophone = window.prompt()
-            if(nophone){
+        pesanSemua(ev) {
+            // let nophone = window.prompt()
+            // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
             this.listsByWarehouse.forEach((val) => {
                 if(val.uncollected && val.uncollected.length > 2) {
-                    result += `*${val.name} ${val.warehouseName}* : [${ val.uncollected.slice(7) }]%0a%0a`
+                    result += `*${val.name} ${val.warehouseName}* : [${ val.uncollected.slice(1).map((val) => val.periode2) }]%0a%0a`
                 }
             })
-            window.open(`https://wa.me/${nophone}?text=${result}`)
+            window.open(`https://wa.me/${ev}?text=${result}`)
             // console.log(result)
-            }
+            // }
         }
     },
     computed: {
