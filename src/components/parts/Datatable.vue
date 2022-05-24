@@ -40,6 +40,9 @@
           >
           {{ tulisanBaku(head) }}
         </th>
+
+        <slot name="th"></slot>
+        
         <th v-if="option" scope="col">Option</th>
       </tr>
 
@@ -69,6 +72,8 @@
       >
         <th>{{ index + deData.startRow + 1 }}</th>
         <td :key="r[key]" v-for="key in keys">{{ r[key] }}</td>
+
+        <slot name="td" :obj="r" :id="r.id"></slot>
 
         <td v-if="option">
           <slot :prop="r"></slot>

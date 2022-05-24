@@ -59,8 +59,12 @@ const Uncollected = {
             time: val.periode,
           });
           result[val.name]
-            ? result[val.name].push(val.periode)
-            : (result[val.name] = [val.periode]);
+            ? result[val.name].push(
+                Object.assign(val, { periode2: val.periode })
+              )
+            : (result[val.name] = [
+                Object.assign(val, { periode2: val.periode }),
+              ]);
         });
         return result;
       }

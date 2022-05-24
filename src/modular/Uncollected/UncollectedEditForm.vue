@@ -27,7 +27,7 @@
                 value="id"
                 text="title"
                 @selected="record.shift = $event"
-                :inselect="(record.shift ? record.shift : 1) + ''"
+                :inselect="record.shift"
             />
             <label for="name">Edit nama:</label>
             <Select 
@@ -62,12 +62,29 @@ import myfunction from "../../myfunction"
 export default {
     methods: {
         save() {
+            if(this.more.mode === "collected") {
+                // get record from uncollected the state
+                let info = this.$store.getters["Document/getId"](this.more.id)
+                info.collected = this.$store.getters["dateFormat"]({format: this.more.time})
+                info.shared = false
+                info.status = 1
+                    // console.log(info)
+                this.$store.dispatch("update", {
+                                store: "Document",
+                                obj: info,
+                                criteria: {id: this.more.id }
+                            })
+                return
+            }
             this.$store.dispatch("update", {store: "Document", obj: this.record, criteria: {id: this.record.id} })
+            //close the modeal
+            this.$store.commit("Modal/active")
         },
     },
     data() {
         return {
             record: {},
+            more: "",
         }
     },
     computed: {
@@ -75,11 +92,15 @@ export default {
             return this.$store.state.Supervisors.lists
         },
         heads() {
-            return this.$store.state.Headspv.lists
+            let option = this.$store.state.Headspv.lists
+            option.unshift({id: "", name: "Pilih head supervisor"})
+            return option
         },
     },
     mounted() {
         this.record = this.$store.getters["Document/getId"](this.$store.getters["Modal/obj"].id)
+        this.more = this.$store.getters["Modal/obj"]
+
     },
     components: {
         Input,

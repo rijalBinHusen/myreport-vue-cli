@@ -1,55 +1,83 @@
 <template>
 <div class="w3-container w3-margin-top">
-			<Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
-            <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
-            <Button 
-                class="w3-right" 
-                primary 
-                :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
-                type="button" 
-                @trig="viewByPeriode = !viewByPeriode" 
-            />
+        <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
+        <Button class="w3-right" primary value="Rekap" type="button" @trig="pesanSemua" />
+        <Button 
+            class="w3-right" 
+            primary 
+            :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
+            type="button" 
+            @trig="viewByPeriode = !viewByPeriode" 
+        />
+
 		<Datatable
           :datanya="viewByPeriode ? listByPeriode : listsByWarehouse"
-          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift'] : ['Nama', 'Gudang', 'Daftar report']"
-          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2', 'shift'] : ['name', 'warehouseName', 'uncollected']"
+          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Nama', 'Gudang']"
+          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2', 'shift', 'spvHead'] : ['name', 'warehouseName']"
           option
           id="tableUncollected"
-          #default="{ prop }"
-          >
-				<span v-if="!viewByPeriode && prop.total > 2">
+        >
+
+                <template #th v-if="!viewByPeriode">
+                    <th>Daftar periode</th>
+                </template>
+
+                <template #td="{ obj }" v-if="!viewByPeriode">
+                    <td>
+                        <Dropdown
+                            v-for="unc in obj.uncollected" :key="unc.id"
+                            :value="unc.periode2"  
+                            :lists="[
+                                { id: -1, isi: '-1 Hari'},
+                                { id: -2, isi: '-2 Hari'},
+                                { id: -3, isi: '-3 Hari'},
+                                { id: 0, isi: '0 Hari' }
+                            ]"
+                            listsKey="id"
+                            listsValue="isi"
+                            @trig="check({val: $event, id: unc.id})"
+                            class="w3-small"
+                        />
+                    </td>
+                </template>
+
+				<template #default="{ prop }">
 					<Button
+                        small
+                        v-if="!viewByPeriode && prop.uncollected.length > 2"
                         secondary
                         value="Pesan" 
                         datanya="tes" 
                         type="button" 
                         @trig="pesan(prop)" 
 					/>
-				</span>
-                <span v-if="viewByPeriode">
+
                     <Dropdown
-                    value="Collect"  
-                    :lists="[
-                        { id: -1, isi: '-1 Hari'},
-                        { id: -2, isi: '-2 Hari'},
-                        { id: -3, isi: '-3 Hari'},
-                        { id: 0, isi: '0 Hari' }
-                    ]"
-                    listsKey="id"
-                    listsValue="isi"
-                    @trig="collect({val: $event, rec: prop.id})"
-                    class="w3-small"
+                        v-if="viewByPeriode"
+                        value="Collect"  
+                        :lists="[
+                            { id: -1, isi: '-1 Hari'},
+                            { id: -2, isi: '-2 Hari'},
+                            { id: -3, isi: '-3 Hari'},
+                            { id: 0, isi: '0 Hari' }
+                        ]"
+                        listsKey="id"
+                        listsValue="isi"
+                        @trig="collect({val: $event, rec: prop.id})"
+                        class="w3-small"
                     />
 
                     <Button
-                        class="w3-small"
+                         v-if="viewByPeriode"
+                        small
                         secondary
                         value="Edit" 
                         datanya="tes" 
                         type="button" 
                         @trig="edit(prop.id)" 
 					/>
-                </span>
+                </template>
+        
         </Datatable>
 </div>
 </template>
@@ -81,6 +109,17 @@ export default {
                 id: ev,
             });
         },
+        check(ev) {
+            this.$store.commit("Modal/active", {
+                judul: `Report collected at ${
+                    this.GET_DATEFORMAT({format: "dateMonth", time: this.GET_DATEFORMAT({format: ev.val})})
+                }`, 
+                form: "UncollectedEditForm",
+                id: ev.id,
+                mode: "collected",
+                time: ev.val
+            });
+        },
 		addPeriod() {
             // bring up the form and the modal
             this.$store.commit("Modal/active", {judul: "Masukkan periode", form: "UncollectedForm"});
@@ -102,9 +141,10 @@ export default {
 		pesan(ev) {
 			// slice the data
 			// let datanya = JSON.parse(JSON.stringify(ev))
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu *[ ${ev.uncollected.slice(7)} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu *[ ${ev.uncollected.slice(1).map((val) => val.periode2)} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-			window.open(link)
+			// window.open(link)
+            console.log(link)
 		},
         pesanSemua() {
             let nophone = window.prompt()
@@ -126,6 +166,7 @@ export default {
             GET_UNCOLLECTEDBYSPV: "Document/uncollectedBySpv",
             GET_SUPERVISORS: "Supervisors/lists",
             GET_SPVID: "Supervisors/spvId",
+            HEADID: "Headspv/headId",
             GET_DATEFORMAT: "dateFormat",
         }),
         listsByWarehouse() {
@@ -134,7 +175,8 @@ export default {
                 if(this.GET_UNCOLLECTEDBYSPV[val.id]) {
 
                     result.push(Object.assign(val, { 
-                        uncollected: this.GET_UNCOLLECTEDBYSPV[val.id].join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
+                        uncollected: this.GET_UNCOLLECTEDBYSPV[val.id]
+                        // .join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
                     }))
                 }
             })
@@ -150,6 +192,7 @@ export default {
                             spvName: spvInfo.name,
                             spvPhone: spvInfo.phone,
                             spvWarehouse: spvInfo.warehouseName,
+                            spvHead: this.HEADID(val.head).name,
                             periode2: this.GET_DATEFORMAT({format: 'dateMonth', time: val.periode})
                             })
                     )
