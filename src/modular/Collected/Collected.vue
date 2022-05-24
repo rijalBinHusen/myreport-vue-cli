@@ -1,16 +1,21 @@
 <template>
 <div class="">
-
-            <Datatable
-            :datanya="collected"
-            :heads="['Nama', 'Gudang', 'Periode', 'Collected']"
-            :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2']"
-            option
-            id="tableCollected"
-            v-slot:default="{ prop }"
-            >
-
-				<Button value="Batal" type="button" danger small @trig="unCollect(prop.id)" />
+        <Button 
+            class="w3-right w3-margin-top" 
+            primary 
+            :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
+            type="button" 
+            @trig="viewByPeriode = !viewByPeriode" 
+        />
+        <Datatable
+        :datanya="viewByPeriode ? collected : listsByWarehouse"
+        :heads="viewByPeriode ? ['Nama', 'Gudang', 'Periode', 'Collected'] : ['Nama', 'Gudang']"
+        :keys="viewByPeriode ? ['spvName', 'spvWarehouse', 'periode2', 'collected2'] : ['name', 'warehouseName']"
+        :option="viewByPeriode"
+        :id="viewByPeriode ? 'tableCollected' : 'collectedBySpv'"
+        >
+            <template  v-if="viewByPeriode" #default="{ prop }">
+                <Button value="Batal" type="button" danger small @trig="unCollect(prop.id)" />
                 <Button value="Edit" type="button" secondary small @trig="edit(prop.id)" />
                 <Dropdown
                     value="Approval"  
@@ -24,23 +29,48 @@
                     listsKey="id"
                     listsValue="isi"
                     @trig="approval({val: $event, rec: prop.id})"
+                />
+            </template>
+
+            <template #th v-if="!viewByPeriode">
+                <th>Daftar periode</th>
+            </template>
+
+            <template #td="{ obj }" v-if="!viewByPeriode">
+                <td>
+                    <Dropdown
+                        v-for="unc in obj.uncollected" :key="unc.id"
+                        :value="unc.periode2"  
+                        :lists="[
+                            { id: -1, isi: '-1 Hari'},
+                            { id: -2, isi: '-2 Hari'},
+                            { id: -3, isi: '-3 Hari'},
+                            { id: 0, isi: '0 Hari' }
+                        ]"
+                        listsKey="id"
+                        listsValue="isi"
+                        @trig="approval({val: $event, rec: unc.id})"
+                        class="w3-small"
                     />
-            </Datatable>
-			<!-- </table> -->
-			
-        </div>
+                </td>
+            </template>
+        </Datatable>
+        <!-- </table> -->
+        
+    </div>
 </template>
 
 <script>
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
+import { mapGetters } from "vuex"
 
 export default {
     name: "Collect",
     data() {
         return {
-            periode: new Date()
+            viewByPeriode: true,
         };
     },
     components: {
@@ -94,6 +124,10 @@ export default {
 		},
     },
     computed: {
+        ...mapGetters({
+            GET_SUPERVISORS: "Supervisors/lists",
+            DOCBYSPV: "Document/docBySpv",
+        }),
         collected() {
 			let collect = this.$store.getters["Document/collected"]
 			let result = []
@@ -107,6 +141,19 @@ export default {
                     result.push(val)
                 }
 			})
+            return result
+        },
+        listsByWarehouse() {
+            let result = []
+            this.GET_SUPERVISORS.forEach((val) => {
+                if(this.DOCBYSPV("collected")[val.id]) {
+                    result.push(Object.assign(val, { 
+                        uncollected: this.DOCBYSPV("collected")[val.id]
+                        // .join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
+                    }))
+                }
+            })
+            console.log(result)
             return result
         },
     },

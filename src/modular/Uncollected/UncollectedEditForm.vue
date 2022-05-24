@@ -62,6 +62,8 @@ import myfunction from "../../myfunction"
 export default {
     methods: {
         save() {
+            //close the modeal
+            this.$store.commit("Modal/active")
             if(this.more.mode === "collected") {
                 // get record from uncollected the state
                 let info = this.$store.getters["Document/getId"](this.more.id)
@@ -77,8 +79,6 @@ export default {
                 return
             }
             this.$store.dispatch("update", {store: "Document", obj: this.record, criteria: {id: this.record.id} })
-            //close the modeal
-            this.$store.commit("Modal/active")
         },
     },
     data() {
@@ -92,7 +92,7 @@ export default {
             return this.$store.state.Supervisors.lists
         },
         heads() {
-            let option = this.$store.state.Headspv.lists
+            let option = JSON.parse(JSON.stringify(this.$store.state.Headspv.lists))
             option.unshift({id: "", name: "Pilih head supervisor"})
             return option
         },

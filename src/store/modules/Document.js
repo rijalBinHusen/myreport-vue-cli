@@ -44,12 +44,12 @@ const Uncollected = {
       );
     },
     // all uncollected record
-    uncollectedBySpv(state, getters, rootState, rootGetters) {
+    docBySpv: (state, getters, rootState, rootGetters) => (status) => {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
       if (state.lists.length > 0) {
         let result = {};
         // sort the lists
-        let temp = rootGetters["Document/uncollected"].sort(
+        let temp = rootGetters[`Document/${status}`].sort(
           (a, b) => a.periode < b.periode
         );
         // iterate the lists

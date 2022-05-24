@@ -163,7 +163,7 @@ export default {
     computed: {
         ...mapGetters({
             GET_UNCOLLECTED: "Document/uncollected",
-            GET_UNCOLLECTEDBYSPV: "Document/uncollectedBySpv",
+            DOCBYSPV: "Document/docBySpv",
             GET_SUPERVISORS: "Supervisors/lists",
             GET_SPVID: "Supervisors/spvId",
             HEADID: "Headspv/headId",
@@ -172,10 +172,9 @@ export default {
         listsByWarehouse() {
             let result = []
             this.GET_SUPERVISORS.forEach((val) => {
-                if(this.GET_UNCOLLECTEDBYSPV[val.id]) {
-
+                if(this.DOCBYSPV("uncollected")[val.id]) {
                     result.push(Object.assign(val, { 
-                        uncollected: this.GET_UNCOLLECTEDBYSPV[val.id]
+                        uncollected: this.DOCBYSPV("uncollected")[val.id]
                         // .join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
                     }))
                 }

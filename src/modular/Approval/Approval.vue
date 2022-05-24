@@ -7,8 +7,8 @@
 
             <Datatable
             :datanya="approval"
-            :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Approve']"
-            :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2', 'approval2']"
+            :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
+            :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2', 'headName', 'approval2']"
             option
             id="tableApproval"
             v-slot:default="{ prop }"
@@ -83,6 +83,7 @@ export default {
                     val.periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
                     val.collected2 = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
                     val.approval2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.approval })
+                    val.headName = this.$store.getters["Headspv/headId"](val.head)["name"]
                     result.push(val)
                 }
 			})
