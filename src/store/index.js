@@ -50,19 +50,15 @@ export default createStore({
   },
   mutations: {},
   actions: {
-    async append({ commit, rootGetters, dispatch }, value) {
+    append({ commit, rootGetters, dispatch }, value) {
       // check auto backup
       // await dispatch("Backup/check", {}, { root: true });
 
-      // create id to the record
-      if (value.obj.id) {
-        value.obj.id = myfunction.generateId(value.obj.id, true);
-      }
-      // commit to module e.g 'Group/append
-      commit(`${value.store}/append`, value.obj, { root: true });
-
       // insert record to indexeddb and return as promise
-      myfunction.append(value);
+      myfunction.append(value).then((result) => {
+        // commit to module e.g 'Group/append
+        commit(`${value.store}/append`, result.data.data, { root: true });
+      });
       //return promise 130 ms and then resolve
       return myfunction.tunggu(130);
     },
@@ -117,8 +113,6 @@ export default createStore({
         myfunction
           .getData({
             store: val.toLowerCase(),
-            orderBy: "id",
-            desc: true,
             limit: 200,
           })
           .then((result) => {
