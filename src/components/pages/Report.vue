@@ -69,7 +69,8 @@ export default {
                 this.step = ""
                 // download filenya
                 if(this.reportNow === "report001") {
-                    exportToXls(this.$store.getters["Document/exportData"], "ambil dari this.periode")
+                    let namaFileReport = `Pengumpulan dokumen periode ${this.$store.getters["dateFormat"]({format: "ymdexcel", time: this.periode[0]})} sampai dengan ${this.$store.getters["dateFormat"]({format: "ymdexcel", time: this.periode[1]})}`
+                    exportToXls(this.$store.getters["Document/exportData"], namaFileReport)
                 }
             }
             // jika mutation.payload === undefined (modal ditutup manual, user tidak jadi download)
