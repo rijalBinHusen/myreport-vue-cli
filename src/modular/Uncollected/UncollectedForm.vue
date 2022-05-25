@@ -80,6 +80,8 @@ export default {
                             periode: periodeTime,
                             shift: allName[i].shift,
                             head: allName[i].shift == 3 ? this.GET_HEADSHIFT(2).id : this.GET_HEADSHIFT(allName[i].shift).id,
+                            collected: "false",
+                            approval: "false",
                             status: 0,
                         },
                     })

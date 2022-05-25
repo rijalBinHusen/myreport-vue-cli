@@ -18,6 +18,7 @@ const Navbar = {
       { id: "BaseItem", title: "Base item", group: "setting" },
       { id: "Backup", title: "Backup data", group: "setting" },
       { id: "ImportData", title: "Import data", group: "setting" },
+      { id: "Report", title: "Export report", group: "setting" },
     ],
   },
   mutations: {

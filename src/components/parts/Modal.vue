@@ -33,6 +33,7 @@ import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
 import BaseReportFile from "../../modular/BaseImport/BaseReportFileForm.vue"
 import BaseClockForm from "../../modular/Base/BaseClockForm.vue";
 import BaseStockForm from "../../modular/Base/BaseStockForm.vue"
+import ExportDocumen from "../../modular/Reports/ExportDocumentByPeriode.vue"
 
 export default {
   name: "Modal",
@@ -45,6 +46,7 @@ export default {
       Loader,
       ImporterForm,
       BaseReportFile,
+      ExportDocumen,
     },
   props: {
     judul: {

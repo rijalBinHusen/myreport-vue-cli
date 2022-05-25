@@ -1,5 +1,5 @@
 <template>
-  <table :class="clas">
+  <table :class="clas + ' w3-striped w3-border'">
     <tr>
       <th v-for="header in headers" :key="header">
           {{ header }}

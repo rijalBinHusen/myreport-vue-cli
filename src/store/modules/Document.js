@@ -87,6 +87,41 @@ const Uncollected = {
     lastId(state) {
       return state.lists.sort((a, b) => a.id < b.id)[0];
     },
+    exportData(state, getters, rootState, rootGetters) {
+      return state.lists.map((val) => {
+        let spvInfo = rootGetters["Supervisors/spvId"](val.name);
+        val.name = spvInfo.name;
+        val.warehouse = spvInfo.warehouseName;
+        (val.head = rootGetters["Headspv/headId"](val.head).name),
+          (val.periode = rootGetters["dateFormat"]({
+            format: "ymdexcel",
+            time: val.periode,
+          }));
+
+        val.collected = !isNaN(val.collected)
+          ? rootGetters["dateFormat"]({
+              format: "ymdexcel",
+              time: val.collected,
+            })
+          : val.collected;
+
+        val.approval = !isNaN(val.approval)
+          ? rootGetters["dateFormat"]({
+              format: "ymdexcel",
+              time: val.approval,
+            })
+          : val.approval;
+
+        val.shared = !isNaN(val.shared)
+          ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.shared })
+          : val.shared;
+
+        delete val.id;
+        delete val.status;
+
+        return val;
+      });
+    },
   },
 };
 

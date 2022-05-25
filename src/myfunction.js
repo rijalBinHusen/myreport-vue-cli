@@ -196,6 +196,10 @@ export default {
     } //dapatkan tahun bulan, yyyym
     else if (a[0] === "ymdTime") {
       return new Date(a004 + "/" + (a003 + 1) + "/" + a002).getTime();
-    }
+    } else if (a[0] === "ymdexcel") {
+      return (
+        a004 + "/" + (a003 + 1 > 9 ? a003 + 1 : "0" + (a003 + 1)) + "/" + a002
+      );
+    } //dapatkan waktu penuh yyyy/mm/dd
   },
 };
