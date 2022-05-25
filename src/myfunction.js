@@ -3,11 +3,81 @@ import Localbase from "localbase";
 // initiate new db
 let db = new Localbase("myreport");
 
+let summary = {};
+
+function generateId(store) {
+  // ambil last id dari summary  // kalau tidak ada bikin baru
+  let lastId = summary[store]
+    ? summary[store].lastId
+    : store.slice(0, 3) + "22050000";
+
+  let id = lastId.slice(0, 3);
+  // masukkan increment
+  // ambil 4 string e.g 0000 akan menjadi 0001
+  let increment = Number(lastId.slice(-4)) + 1 + "";
+  // 2022
+  let fullYear = new Date().getFullYear() + "";
+  // 5
+  let monthNow = new Date().getMonth() + 1;
+  // 22
+  let year = lastId.slice(3, 5); //21
+  // 05
+  let month = lastId.slice(5, 7); //08
+  //if the month same
+  if (monthNow === Number(month)) {
+    id += year + month;
+  }
+  //if the month not same
+  else {
+    // if the month 9 change to 09
+    monthNow = monthNow < 9 ? "0" + monthNow : monthNow;
+    id += fullYear.slice(2) + monthNow;
+    increment = "0";
+  }
+  //0000
+  let result = id + "0000".slice(increment.length) + increment;
+
+  // Update summary
+  summary[store] ? false : (summary[store] = {});
+  summary[store] = {
+    lastId: result,
+    total: summary[store].total ? summary[store].total + 1 : 1,
+  };
+  // save to indexeddb
+  write("summary", store, summary[store]);
+  // kembalikan
+  return result;
+}
+
+function write(store, document, value) {
+  //{store: "namastore", obj: {obj: toInput } }
+  // db.collection(value.store.toLowerCase()).add(value.obj);
+  db.collection(store.toLowerCase()).doc(document).set(value);
+}
+
+function getStoreWithKey(store) {
+  return db.collection(store).get({ keys: true });
+}
+
+getStoreWithKey("summary").then((result) => {
+  if (result) {
+    result.forEach((val) => {
+      summary[val.key] = val.data;
+    });
+  }
+});
+
 export default {
-  append: function (value) {
+  append: async function (value) {
     //{store: "namastore", obj: {obj: toInput } }
     // db.collection(value.store.toLowerCase()).add(value.obj);
-    db.collection(value.store.toLowerCase()).doc(value.obj.id).set(value.obj);
+    let id = generateId(value.store.toLowerCase());
+    let result = await db
+      .collection(value.store.toLowerCase())
+      .add(Object.assign(value.obj, { id: id }));
+    if (result) {
+      return result;
+    }
   },
   update: function (value) {
     // { criteria: {id: 001}, obj: { obj: objtoupdate } }
@@ -100,37 +170,6 @@ export default {
     db.collection(storenya(value.store, value.split, value.period))
       .doc({ [value.parameter]: value.value })
       .delete();
-  },
-  generateId: function (id, waktu) {
-    //DIV
-    let masterId = id.slice(0, 3);
-    //0003 as 3 on will be +1
-    let increment = Number(id.slice(3)) + 1 + "";
-
-    if (waktu) {
-      //ABS21080001
-      increment = Number(id.slice(-4)) + 1 + "";
-      let fullYear = new Date().getFullYear() + "";
-      let monthNow = new Date().getMonth() + 1;
-      let year = id.slice(3, 5); //21
-      let month = id.slice(5, 7); //08
-      //if the month same
-      if (monthNow === Number(month)) {
-        masterId += year + month;
-      }
-      //if the month not same
-      else {
-        // if the month 9 change to 09
-        monthNow = monthNow < 9 ? "0" + monthNow : monthNow;
-        masterId += fullYear.slice(2) + monthNow;
-        increment = "0";
-      }
-    }
-    //0000
-    let length = "0000".slice(increment.length);
-
-    //DIV0001
-    return masterId + length + increment;
   },
   tunggu: function (time) {
     return new Promise((resolve) => {

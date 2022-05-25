@@ -28,12 +28,12 @@
       :lists="_WAREHOUSES" 
       :keys="['name']"
       options
-      v-slot:default="slotProp"
+      #default="{ prop }"
     >
       <Button 
         primary 
         value="Edit" 
-        :datanya="slotProp.prop.id" 
+        :datanya="prop.id" 
         type="button" 
         @trig="edit($event)" 
         />
@@ -68,7 +68,6 @@ export default {
         let record = {
               store: "Warehouses",
               obj: {
-                id: this.editId ? this.editId : this._WAREHOUSES[0] ? this._WAREHOUSES[0].id : "WHS22050000",
                 name: this.warehouse
               }}
         this.editId ? record.criteria = { id: this.editId } : false
