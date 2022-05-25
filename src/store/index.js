@@ -131,6 +131,20 @@ export default createStore({
       //empty the store
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
+      // if get all data, not by criteria
+      if (value.allData) {
+        myfunction
+          .getData({ store: value.store.toLowerCase() })
+          .then((result) => {
+            if (result.length > 0) {
+              commit(`${value.store}/${value.store.toLowerCase()}`, result, {
+                root: true,
+              });
+            }
+          });
+        return;
+      }
+
       // call the get data functions
       myfunction.findData(value).then((result) => {
         commit(

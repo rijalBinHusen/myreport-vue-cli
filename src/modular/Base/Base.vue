@@ -12,14 +12,13 @@
         </AGGrid>
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
-            <PeriodePicker v-if="periode" @exit="periode = false" @show="showData($event[0], $event[1])" />
-            <div id="set-periode" v-else class="w3-row w3-center">
+            <div id="set-periode" class="w3-row w3-center">
             <Button 
                 class="w3-left w3-col s2 w3-margin-top w3-margin-right" 
                 primary 
                 value="Set periode" 
                 type="button" 
-                @trig="periode = true" 
+                @trig="pickPeriode" 
             />
                 <!-- Base report -->
                 <Select 
@@ -253,20 +252,8 @@ export default {
             // catat base id, so all component can read it
             this.$store.commit("BaseReportFile/baseId", ev)
         },
-        async showData(periode1, periode2) {
-            // bring up the loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // jika yang diminta total qty
-            let dateCheck = periode1 === periode2 
-                                ? [periode1.getTime()] 
-                                : this.$store.getters["getDaysArray"](periode1, periode2)
-            let objToSend = {
-                    store: "BaseReportFile", 
-                    date: dateCheck
-                }
-            await this.$store.dispatch("findDataByDateArrays", objToSend)
-            this.$store.commit("Modal/active")
-            this.periode = false
+        pickPeriode() {
+            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
         },
     },
     computed: {
@@ -354,7 +341,6 @@ export default {
             if(newVal === oldVal) {
                 return
             }
-            console.log(this.base)
             this.totalWaktu = 0;
             this.totalDo = 0
             this.totalKendaraan = 0
@@ -376,7 +362,7 @@ export default {
         },
     },
     mounted() {
-        this.$store.dispatch("getData", {store: "Baseitem"})
+        this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
     },
     name: "Base"
 }
