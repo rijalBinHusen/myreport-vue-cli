@@ -31,7 +31,7 @@ export default {
         startExport() {
             let judul = `Pengumpulan dokumen periode ${this.$store.getters["dateFormat"]({format: "ymdexcel", time: this.periode1})} sampai dengan ${this.$store.getters["dateFormat"]({format: "ymdexcel", time: this.periode2})}`
             // bring up the loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            this.$store.commit("Modal/active", {judul: "", form: "Loader", periode: [this.periode1, this.periode2]});
             // jika yang diminta nama dan periode
                 let dateCheck = this.periode1 === this.periode2 
                                     ? [this.periode1] 

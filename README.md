@@ -68,3 +68,25 @@ saya melupakanya.
 
 ## Component Periode picker
 - [ ] Ubah agar periode1 dan periode2 ambil dari props
+
+## Applying subscibe mutation feater from vuex
+ketika komponen created
+- subscribe mutation yang ada divuex ( dalam kasus saya, vuex dimodal dan mutationya bernama active )
+
+ketika mutation modal active di picu  ( dalam kasus saya diaktifkan dengan merender component periode picker )
+- kirim object ke mutation [ dalam kasus saya seperti ini Modal.mustation({ judul, namaComponent yang ditampilkan}) ]
+- push namaComponen ke state di komponen
+- jika user melakukan itu melakukan pecarian, maka satate yang ada dikomponen menjadi ["picker", "Loader", undefined ]
+- jika state dikomponent === ["picker", "Loader", undefined ], lakukan apa yang diinginkan
+
+ketika sudah selesai pilih periode
+- tekan tombol show
+- cari dokumen didalam db
+-  setelah selesai tutup modal
+
+ketika modal ditutup ( lewat vuex mutation modal.active )
+- subscribe akan mengiri data ke komponen
+- komponen akan membaca data dari subscribe
+- jika data dari subscribe yaitu modal.active === false, lakukan apa yang diinginkan
+  
+Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-changes-2mgj).
