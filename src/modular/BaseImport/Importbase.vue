@@ -1,20 +1,14 @@
 <template>
 <div class="">
     <div class="w3-margin-top w3-container">
-    <Button 
-        v-if="!periode"
-        class="w3-right" 
-        primary 
-        value="Set periode" 
-        type="button" 
-        @trig="periode = true" 
-    />
-    <PeriodePicker 
-        v-else 
-        class="w3-right w3-margin-right" 
-        @show="show($event[0], $event[1])" 
-        @exit="periode = false"
-    />
+        <Button 
+            v-if="!periode"
+            class="w3-right" 
+            primary 
+            value="Set periode" 
+            type="button" 
+            @trig="pickPeriode" 
+        />
     </div>
         <input
             class="w3-hide"
@@ -49,7 +43,6 @@
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import PeriodePicker from "../../components/parts/PeriodePicker.vue"
 import { mapState, mapGetters} from "vuex"
 import * as XLSX from "xlsx";
 
@@ -65,25 +58,27 @@ export default {
         Input,
         Button,
         Datatable,
-        PeriodePicker,
     },
     methods: {
-        // to show lists data
-        async show(periode1, periode2) {
-            // bring up the loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // jika yang diminta total qty
-            let dateCheck = periode1 === periode2 
-                                ? [periode1.getTime()] 
-                                : this.$store.getters["getDaysArray"](periode1, periode2)
-            let objToSend = {
-                    store: "BaseReportFile", 
-                    date: dateCheck
-                }
-            await this.$store.dispatch("findDataByDateArrays", objToSend)
-            this.$store.commit("Modal/active")
-            this.periode = false
+        pickPeriode() {
+            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
         },
+        // // to show lists data
+        // async show(periode1, periode2) {
+        //     // bring up the loader
+        //     this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+        //     // jika yang diminta total qty
+        //     let dateCheck = periode1 === periode2 
+        //                         ? [periode1.getTime()] 
+        //                         : this.$store.getters["getDaysArray"](periode1, periode2)
+        //     let objToSend = {
+        //             store: "BaseReportFile", 
+        //             date: dateCheck
+        //         }
+        //     await this.$store.dispatch("findDataByDateArrays", objToSend)
+        //     this.$store.commit("Modal/active")
+        //     this.periode = false
+        // },
         // to launch file picker
         launch(ev) {
             this.$refs.importerBase.click();

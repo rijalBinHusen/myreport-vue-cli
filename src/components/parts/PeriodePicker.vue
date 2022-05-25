@@ -8,7 +8,7 @@
             <label class="w3-margin-top">Sampai tanggal</label>
             <datepicker class="w3-margin-top w3-border w3-input" :lowerLimit="periode1" v-model="periode2"></datepicker>
         </div>
-        <Button primary @trig="send" value="Export" class="w3-margin-top" type="button" />
+        <Button primary @trig="send" :value="btnValue" class="w3-margin-top" type="button" />
     </div>
 </template>
 
@@ -43,6 +43,11 @@ export default {
                 this.$store.commit("Modal/active")
             })
         },
+    },
+    computed: {
+        btnValue() {
+            return this.$store.state.Modal.more.btnValue
+        }
     }
 }
 </script>

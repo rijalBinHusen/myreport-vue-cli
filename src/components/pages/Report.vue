@@ -36,14 +36,15 @@ export default {
             reports: [
                 { judul: "Export pengumpulan dokumen", keterangan: "Export periode pengumpulan dokumen berdasarkan tanggal", id: "report001"}
             ],
-            step: ""
+            step: "",
+            unsubscribe: ""
         }
     },
     methods: {
         launch(id) {
             this.reportNow = id
             // luncurkan periode picker
-            this.$store.commit("Modal/active", { judul: "Set record to export", form: "PeriodePicker", store: "Document"});
+            this.$store.commit("Modal/active", { judul: "Set record to export", form: "PeriodePicker", store: "Document", btnValue: "Export"});
         }
     },
     created() {
@@ -83,7 +84,8 @@ export default {
             }
         });
     },
-    beforeDestroy() {
+    beforeUnmount() {
+        console.log("before")
         this.unsubscribe();
     },
     components: {

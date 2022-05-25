@@ -65,17 +65,19 @@ export default {
                 this.$store.commit("Modal/active", {judul: "", form: "Loader"});
                 
                 let periodeTime = this.GET_DATEFORMAT({format: "ymdTime", time: this.collect.periode})
-                // let warehouseInputed = []
+                let warehouseInputed = []
                 // uncollected record, ambil semua nama
                 let allName = this.GET_SPVENABLE
                 // console.log(allName)
                 //// iterate semua nama satu satu
                 for(let i=0; i < allName.length; i++) {
+                    //unique id
+                    let idN = this.$store.state.Document.lists.length > 0 ?  this.$store.state.Document.lists.slice(-1)[0].id : "UNC22050000"
                     // uncollected record, tunggu sampai append selesai
                     await this.$store.dispatch("append", {
                         store: "Document",
                         obj: {
-                            id: this.$store.state.Document.lists.length > 0 ?  this.$store.state.Document.lists.slice(-1)[0].id : "UNC22050000", 
+                            id: idN, 
                             name: allName[i].id, 
                             periode: periodeTime,
                             shift: allName[i].shift,
@@ -86,21 +88,20 @@ export default {
                         },
                     })
                     // baseReportFile record, tunggu sampai selesai
-                    // if(!warehouseInputed.includes(allName[i].warehouse)) {
-                    //     warehouseInputed.push(allName[i].warehouse)
-                    //     await this.$store.dispatch("append", {
-                    //         store: "BaseReportFile",
-                    //     obj: {
-                    //         id: uidN, 
-                    //         periode: periodeTime,
-                    //         warehouse: allName[i].warehouse,
-                    //         fileName: false,
-                    //         stock: false,
-                    //         clock: false,
-                    //     },
-                    //     period: periodeTime
-                    //     })
-                    // }
+                    if(!warehouseInputed.includes(allName[i].warehouse)) {
+                        warehouseInputed.push(allName[i].warehouse)
+                        await this.$store.dispatch("append", {
+                            store: "BaseReportFile",
+                            obj: {
+                                id: idN, 
+                                periode: periodeTime,
+                                warehouse: allName[i].warehouse,
+                                fileName: false,
+                                stock: false,
+                                clock: false,
+                            },
+                        })
+                    }
                 }
                 //close the modeal
                 this.$store.commit("Modal/active")
