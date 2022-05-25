@@ -42,7 +42,7 @@ export default {
             EMPTY_STORE: "emptyStore",
             // payload = {store: nameOfStore: obj: [Array would to wrote]}
             WRITE_STORE: "rewriteStore",
-            APPEND_IMPORT: "appendImport",
+            APPEND_IMPORT: "appendWoutGenerateId",
         }),
         selectStore(ev) {
             if(this.importLists.includes(ev)) {

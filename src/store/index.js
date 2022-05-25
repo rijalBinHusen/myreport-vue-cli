@@ -67,7 +67,7 @@ export default createStore({
       return myfunction.tunggu(130);
     },
 
-    async appendImport({}, value) {
+    async appendWoutGenerateId({}, value) {
       myfunction.append(value);
       return myfunction.tunggu(130);
     },
@@ -81,24 +81,13 @@ export default createStore({
       });
     },
     // deelete by parameter
-    deleteByParam({ rootGetters }, value) {
-      // value = { store: "BaseReportFile", parameter: "parent", value: "c038", period: "periodeOfrecord" }
+    deleteByParam({}, value) {
+      // value = { store: "BaseReportFile", parameter: "parent", value: "c038"}
       // ^ would delete all record that contain parent: c038 in BaseReportFile collection
 
-      // set obj before send
-      let objToSend = Object.assign(rootGetters[`${value.store}/store`], value);
-
-      // check the periode
-      if (objToSend.split) {
-        if (!value.period) {
-          console.error("We need the period criteria");
-          return;
-        }
-      }
-      // console.log(objToSend);
       // delete record from indexeddb and return as promise
       return new Promise((resolve) => {
-        myfunction.deleteDocumentByParam(objToSend);
+        myfunction.deleteDocumentByParam(value);
         setTimeout(() => resolve(), 2330);
       });
     },

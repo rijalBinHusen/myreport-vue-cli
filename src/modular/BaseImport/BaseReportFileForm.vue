@@ -70,8 +70,8 @@ export default {
             // console.log("length row clock", lengthRowClock)
             // console.log("length row stock", lengthRowStock)
             // console.log("Iterate length", iterateLength)
-
-            //iterate data menggunakan for
+            
+            // //iterate data menggunakan for
             for(let i = 1; i <= iterateLength; i++) {
                 let leadNumber = "0000"
                 let increment = i + ""
@@ -86,7 +86,7 @@ export default {
                 let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
-                    await this.$store.dispatch("append", {
+                    await this.$store.dispatch("appendWoutGenerateId", {
                         store: "BaseReportClock",
                         obj: {
                             id: this._BASEID + counter,
@@ -98,7 +98,6 @@ export default {
                             finish: clockSheet["H"+i] ? clockSheet["H"+i].w : 0,
                             rehat: 0,
                         },
-                        period: infoBaseReport.periode
                     })
                 }
                 /* 
@@ -110,7 +109,7 @@ export default {
             let in1st = stockSheet["E"+i] ? stockSheet["E"+i].v : 0
             let out1st = stockSheet["F"+i] ? stockSheet["F"+i] : 0
                 if(in1st > 0 || out1st > 0) {
-                    await this.$store.dispatch("append",  {
+                    await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
                             id: this._BASEID + "01" + counter,
@@ -125,7 +124,6 @@ export default {
                             dateEnd: "",
                             real: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
                         },
-                        period: infoBaseReport.periode
                     })
                 }
                 /*
@@ -136,7 +134,7 @@ export default {
             let in2nd = stockSheet["H"+i] ? stockSheet["H"+i].v : 0
             let out2nd = stockSheet["I"+i] ? stockSheet["I"+i].v : 0
                 if(in2nd > 0 || out2nd > 0) {
-                    await this.$store.dispatch("append",  {
+                    await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
                             id: this._BASEID + "02" + counter,
@@ -169,7 +167,7 @@ export default {
                 let totalOut = out1 + out2
 
                     if( (in1 || out1  || out2  || in2) && i > 3 && stockSheet["A"+i] ) {
-                    await this.$store.dispatch("append",  {
+                    await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
                             id: this._BASEID + "03" + counter,
@@ -190,9 +188,6 @@ export default {
             }
             // console.log("D10",this._BASEREPORT.sheets[this.clock]["D10"].v)
             // console.log("D11",this._BASEREPORT.sheets[this.clock]["D11"].v)
-            // kosongkan state base report
-            this.$store.commit("BaseReportFile/baseId", null)
-            this.$store.commit("BaseReportFile/importTemp", null)
             // update baseReportFile record
             infoBaseReport.fileName = this._BASEREPORT.fileName
             infoBaseReport.stock = this.stock
@@ -201,10 +196,13 @@ export default {
             this.$store.dispatch("update",  { 
                 store: "BaseReportFile", 
                 obj: infoBaseReport,
-                period: infoBaseReport.periode
+                criteria: {id: infoBaseReport.id}
                 })
             // sembunyikan loader
             this.$store.commit("Modal/active");
+            // kosongkan state base report
+            this.$store.commit("BaseReportFile/baseId", null)
+            this.$store.commit("BaseReportFile/importTemp", null)
 
         }
     },

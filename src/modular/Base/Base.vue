@@ -224,8 +224,7 @@ export default {
             ev.forEach((val) => {
                 this.$store.dispatch("delete", { 
                     store: store, 
-                    id: val,
-                    period: this.base.periode,
+                    id: val
                 })
             })
         },

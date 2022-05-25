@@ -97,7 +97,7 @@ export default {
   value: "c08"
     } */
     //keyword = {key: value}
-    db.collection(storenya(value.store, value.split, value.period))
+    db.collection(value.store.toLowerCase())
       .doc({ [value.parameter]: value.value })
       .delete();
   },
