@@ -153,7 +153,6 @@ export default {
                     }))
                 }
             })
-            console.log(result)
             return result
         },
     },

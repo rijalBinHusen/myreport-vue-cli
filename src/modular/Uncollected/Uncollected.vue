@@ -53,7 +53,7 @@
 				<template #default="{ prop }">
 					<Button
                         small
-                        v-if="!viewByPeriode && prop.uncollected.length > 2"
+                        v-if="!viewByPeriode"
                         secondary
                         value="Pesan" 
                         datanya="tes" 
@@ -150,18 +150,41 @@ export default {
 		pesan(ev) {
 			// slice the data
 			// let datanya = JSON.parse(JSON.stringify(ev))
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu *[ ${ev.uncollected.slice(1).map((val) => val.periode2)} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
+            // daftar laporan yang melebihi H+2 dari sekarang
+            let sekarang = new Date().getTime()
+            let listLaporan = []
+            ev.uncollected.forEach((val) => {
+                if(sekarang - val.periode >= 172800000 ) {
+                    listLaporan.push(val.periode2)
+                }
+            })
+
+            // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouse} yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-			window.open(link)
-            // console.log(link)
+            if(listLaporan.length > 0) {
+                window.open(link)
+                // console.log(link)
+                return
+            }
+            alert("Tidak ada laporan lebih dari H+2")
 		},
         pesanSemua(ev) {
             // let nophone = window.prompt()
             // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
             this.listsByWarehouse.forEach((val) => {
-                if(val.uncollected && val.uncollected.length > 2) {
-                    result += `*${val.name} ${val.warehouseName}* : [${ val.uncollected.slice(1).map((val) => val.periode2) }]%0a%0a`
+                if(val.uncollected) {
+                // daftar laporan yang melebihi H+2 dari sekarang
+                let sekarang = new Date().getTime()
+                let listLaporan = []
+                val.uncollected.forEach((val) => {
+                    if(sekarang - val.periode >= 172800000 ) {
+                        listLaporan.push(val.periode2)
+                    }
+                })
+                if(listLaporan.length > 0)
+                    result += `*${val.name} ${val.warehouseName}* : [${ listLaporan.join(", ") }]%0a%0a`
                 }
             })
             window.open(`https://wa.me/${ev}?text=${result}`)

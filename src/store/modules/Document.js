@@ -48,22 +48,18 @@ const Uncollected = {
       // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
       if (state.lists.length > 0) {
         let result = {};
-        // sort the lists
-        let temp = rootGetters[`Document/${status}`].sort(
-          (a, b) => a.periode < b.periode
-        );
         // iterate the lists
-        temp.forEach((val) => {
-          val.periode = rootGetters["dateFormat"]({
+        rootGetters[`Document/${status}`].forEach((val) => {
+          val.periode2 = rootGetters["dateFormat"]({
             format: "dateMonth",
             time: val.periode,
           });
           result[val.name]
             ? result[val.name].push(
-                Object.assign(val, { periode2: val.periode })
+                Object.assign(val, { periode2: val.periode2 })
               )
             : (result[val.name] = [
-                Object.assign(val, { periode2: val.periode }),
+                Object.assign(val, { periode2: val.periode2 }),
               ]);
         });
         return result;
