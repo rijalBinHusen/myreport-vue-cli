@@ -23,9 +23,12 @@
 	import Headspv from "../../modular/Headspv/Headspv.vue"
 	import BaseItem from "../../modular/BaseItem/BaseItem.vue"
 	import ProblemReport from "../../modular/ProblemReport/ProblemReport.vue"
+	import Finished from "../../modular/Finished/Finished.vue"
+
 	export default {
 		name: "Main",
 		components: {
+			Finished,
 			Approval,
 			ProblemReport,
 			Headspv,

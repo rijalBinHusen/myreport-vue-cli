@@ -8,7 +8,7 @@
             <label class="w3-margin-top">Sampai tanggal</label>
             <datepicker class="w3-margin-top w3-border w3-input" :lowerLimit="periode1" v-model="periode2"></datepicker>
         </div>
-        <Button primary @trig="send" :value="btnValue" class="w3-margin-top" type="button" />
+        <Button primary @trig="send" :value="obj.btnValue" class="w3-margin-top" type="button" />
     </div>
 </template>
 
@@ -25,12 +25,13 @@ export default {
         return {
             periode1: new Date(),
             periode2: new Date(),
+            obj: {},
         }
     },
     methods: {
         send() {
             // get name of store from the modal state, that set when user hit the button to launch this periode picker
-            let store = this.$store.getters["Modal/obj"].store
+            // let store = this.obj.store
             // open the modal with loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader", periode: [this.periode1, this.periode2]});
             // search dokumen in the database
@@ -38,16 +39,18 @@ export default {
                     ? [this.periode1] 
                     : this.$store.getters["getDaysArray"](this.periode1, this.periode2)
             // cari data, tunggu sampai selesai
-            this.$store.dispatch("findDataByDateArrays", { store: store, date: dateCheck, criteria: {} }).then(() => {
+            this.$store.dispatch("findDataByDateArrays", { 
+                store: this.obj.store, 
+                date: dateCheck, 
+                criteria: this.obj.criteria ? this.obj.criteria : {} 
+            }).then(() => {
                 //tutup modal
                 this.$store.commit("Modal/active")
             })
         },
     },
-    computed: {
-        btnValue() {
-            return this.$store.state.Modal.more.btnValue
-        }
+    mounted() {
+        this.obj = this.$store.getters["Modal/obj"]
     }
 }
 </script>
