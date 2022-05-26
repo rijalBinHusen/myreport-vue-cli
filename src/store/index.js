@@ -42,6 +42,7 @@ export default createStore({
       "Headspv",
       "Baseitem",
       "Document",
+      "Problem",
     ],
   },
   mutations: {},
@@ -142,7 +143,7 @@ export default createStore({
       }
 
       // call the get data functions
-      myfunction.findData(value).then((result) => {
+      return myfunction.findData(value).then((result) => {
         commit(
           `${value.store}/${value.store.toLowerCase()}`,
           result ? result : [],

@@ -52,6 +52,6 @@ export default {
             editId: "",
         }
     },
-    name: "ProblemReport"
+    name: "ProblemReport",
 }
 </script>

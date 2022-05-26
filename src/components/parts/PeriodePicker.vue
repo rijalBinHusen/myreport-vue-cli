@@ -33,7 +33,7 @@ export default {
             // get name of store from the modal state, that set when user hit the button to launch this periode picker
             // let store = this.obj.store
             // open the modal with loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader", periode: [this.periode1, this.periode2]});
+            this.$store.commit("Modal/active", {judul: "", form: "Loader", periode: [this.periode1, this.periode2], mode: "PeriodePicker"});
             // search dokumen in the database
             let dateCheck = this.periode1 === this.periode2 
                     ? [this.periode1] 

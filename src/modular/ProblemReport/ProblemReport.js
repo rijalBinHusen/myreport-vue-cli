@@ -41,14 +41,32 @@ const Problem = {
           format: "dateMonth",
           time: val.tanggalMulai,
         }),
-        status: val.tanggalMulai == val.tanggalSelesai ? "Progress" : "Closed",
+        status:
+          new Date().getTime() <= val.tanggalSelesai ? "Progress" : "Closed",
       }));
     },
     problemId: (state, getters, rootState, rootGetters) => (id) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(
         (val) => val.id === id
       );
-      return rec;
+      return rec && rec.id ? rec : "";
+    },
+    problemActive: (state) => (time) => {
+      // this.$store.getters["Problem/problemActive"](new Date().getTime())
+      let result = {}
+      JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
+          /* object yang diharapkan
+          Gudang: {
+            kodeItem: problemId
+          }
+          */
+        if(time >= val.tanggalMulai || time <= val.tanggalSelesai) {
+          result.hasOwnProperty([val.warehouse])
+            ? result[val.warehouse][val.item] =  val.id 
+            : result = { [val.warehouse]: { [val.item]: val.id } }
+        }
+      });
+      return result
     },
   },
 };

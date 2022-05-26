@@ -167,7 +167,6 @@ import { mapState, mapGetters, mapActions } from "vuex"
 import InputItem from "../Base/InputItem.vue"
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
-import { uid } from "uid"
 
 export default {
     data() {
@@ -198,7 +197,8 @@ export default {
     },
     computed: {
         ...mapState({
-            _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists))
+            _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
+            _PROBLEM: state => JSON.parse(JSON.stringify(state.Problem.lists))
         }),        
         ...mapGetters({
             GET_SPVENABLE: "Supervisors/enabled",
@@ -241,13 +241,14 @@ export default {
             if(this.id) {
                 this.UPDATE({
                 store: "Problem",
-                obj: this.problem
+                obj: this.problem,
+                criteria: { id: this.id }
                 })
                 return
             }
             this.APPEND({
                 store: "Problem",
-                obj: Object.assign( { id: uid(3) }, this.problem)
+                obj: Object.assign( { id: this._PROBLEM[0] ? this._PROBLEM[0].id : "PRB22050000" }, this.problem)
             })
         }
     },
@@ -264,6 +265,9 @@ export default {
                 return
             }
             this.problem.tanggalMulai = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
+            // let tanggalSelesai = new Date(newVal.setFullYear(newVal.getFullYear() + 1))
+            // this.problem.tanggalSelesai = this.GET_DATEFORMAT({format: "ymdTime", time: tanggalSelesai})
+            this.tanggalSelesaiModel = new Date(this.problem.tanggalMulai + 31536000000)
         },
         dlModel(newVal, oldVal) {
             if(newVal === oldVal) {

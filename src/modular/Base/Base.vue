@@ -79,8 +79,8 @@
             </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih', 'Problem']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih', 'problem']"
           id="tableBaseReport"
           option
           v-slot:default="slotProp"
@@ -139,6 +139,7 @@ export default {
             totalKendaraan: 0,
             totalWaktu: 0,
             standartWaktu: 0,
+            problem: {},
         }
     },
     methods: {
@@ -224,6 +225,8 @@ export default {
             }
             // find detail about base report
             this.base = this.baseReport.find((val) => val.id === ev)
+            // get the problem for the day
+            this.problem = this.$store.getters["Problem/problemActive"](this.base.periode)
             // store
             let store = ["BaseReportClock", "BaseReportStock"]
             // buka loader
@@ -244,6 +247,27 @@ export default {
         },
         pickPeriode() {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
+        },
+        detailsDocument() {
+            // total waktu, total kendaraan, total do
+            this.totalWaktu = 0;
+            this.totalDo = 0
+            this.totalKendaraan = 0
+            this._BASECLOCK.filter((val) => {
+                if(val.shift == this.shift){
+                    this.totalDo += 1
+                    this.totalKendaraan += 1
+                    // start
+                    let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
+                    //finish
+                    let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
+                    // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
+                    // finish - start
+                    let total = finish < start ? (finish + 86400000) - start : finish - start
+                    // jaddikan menit, masukan total waktu
+                    this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
+                }
+            })
         },
     },
     computed: {
@@ -283,6 +307,11 @@ export default {
                             this.standartWaktu += +val.out
                             val.namaItem = this.BASEITEMKODE(val.item).name
                             val.selisih = val.real - (val.awal + val.in - val.out)
+                            // cari apakah gudang ini, dan item ini ada problem
+                            // jika 
+                            console.log(this.problem, val.item)
+                            val.problem = this.$store.getters["Problem/problemId"](this.problem[this.base.warehouse][val.item]).masalah
+                            
                             return val
                         }
                     })
@@ -326,29 +355,11 @@ export default {
         },
     },
     watch: {
-        // total waktu, total kendaraan, total do
         shift(newVal, oldVal) {
             if(newVal === oldVal) {
                 return
             }
-            this.totalWaktu = 0;
-            this.totalDo = 0
-            this.totalKendaraan = 0
-            this._BASECLOCK.filter((val) => {
-                if(val.shift == this.shift){
-                    this.totalDo += 1
-                    this.totalKendaraan += 1
-                    // start
-                    let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
-                    //finish
-                    let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
-                    // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
-                    // finish - start
-                    let total = finish < start ? (finish + 86400000) - start : finish - start
-                    // jaddikan menit, masukan total waktu
-                    this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
-                }
-            })
+            this.detailsDocument()
         },
     },
     mounted() {

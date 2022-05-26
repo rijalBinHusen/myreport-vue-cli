@@ -85,7 +85,6 @@ export default {
         });
     },
     beforeUnmount() {
-        console.log("before")
         this.unsubscribe();
     },
     components: {
