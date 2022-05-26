@@ -17,8 +17,9 @@
             value="id"
             text="name"
             @selected="headSpv = $event"
+            :inselect="headSpv"
         />
-        <label class="w3-margin-top">Nama collected report</label>
+        <label class="w3-margin-top">Nama document report</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="nameReport" disabled />
         <div class="w3-row">
             <div class="w3-col s2 w3-padding-top w3-margin-right">
@@ -47,7 +48,7 @@
             @trig="this.$emit('exit')" 
         />
         <Button 
-            v-if="name && nameReport && headSpv"
+            v-if="nameReport && nameReport !== 'Not found'"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -62,7 +63,6 @@
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
 import myfunction from "../../myfunction"
-import { uid } from "uid"
 
 export default {
     components: {
@@ -74,7 +74,7 @@ export default {
             name: null,
             nameReport: null,
             headSpv: null,
-            collected: null,
+            document: null,
         }
     },
     methods: {},
@@ -107,17 +107,18 @@ export default {
     },
     methods: {
         save() {
-            this.$emit("finished", {
-                id: uid(4),
-                collectedReport: this.collected.id,
-                baseReportFile: this.base.id,
-                shift: this.shift,
-                headSpv: this.headSpv,
-                totalDO: this.totalDo,
-                totalKendaraan: this.totalKendaraan,
-                totalWaktu: this.totalWaktu,
-                standartWaktu: this.standartWaktu
-            })
+            this.$emit("finished",
+                Object.assign(this.document,
+                {
+                    isFinished: true,
+                    finished: new Date().getTime(),
+                    baseReportFile: this.base.id,
+                    totalDO: this.totalDo,
+                    totalKendaraan: this.totalKendaraan,
+                    totalWaktu: this.totalWaktu,
+                    standartWaktu: this.standartWaktu
+                })
+            )
         },
     },
     computed: {
@@ -144,19 +145,18 @@ export default {
                 return
             }
             myfunction.findData({
-                store: "Collected",
-                split: "bulan",
-                period: this.base.periode,
-                obj: { 
+                store: "Document",
+                criteria: { 
                     periode: this.base.periode,
-                    name: newVal
+                    name: newVal,
+                    shift: this.shift,
                 }
             }).then((result) => {
                 if(!result) {
                     this.nameReport = "Not found"
                     return
                 }
-                this.collected = result[0]
+                this.document = result[0]
                 // periode
                 this.nameReport = this.$store.getters["dateFormat"]({format: 'dateMonth', time: result[0].periode})
                 //dapatkan info supervisors
@@ -165,6 +165,10 @@ export default {
                 this.nameReport += " / "+info.warehouseName
                 // nama karu
                 this.nameReport += " / Supervisors "+info.name
+                // shift
+                this.nameReport += " / Shift "+info.shift
+                // head spv
+                this.headSpv = this.document.head
 
             })
         }

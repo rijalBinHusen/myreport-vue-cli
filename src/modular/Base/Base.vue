@@ -31,7 +31,7 @@
                 />            
                 <!-- Sheet report -->
                 <Select 
-                v-if="baseReport.length > 1"
+                v-if="baseReport.length > 1 && base"
                 class="w3-col s1 w3-margin-right"
                 :options='[
                     { id: 0, title: "Pilih sheet" }, 
@@ -45,7 +45,7 @@
                 />            
                 <!-- Shift -->
                 <Select 
-                v-if="baseReport.length > 1"
+                v-if="baseReport.length > 1 && base"
                 class="w3-col s1 w3-margin-right"
                 :options="[
                     { id:0, title: 'Pilih shift' }, 
@@ -156,35 +156,25 @@ export default {
         async markAsFinished(ev) {
             // buka loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // baseReportStockLists
-            let baseReportStockLists = this._BASESTOCK.filter((val) => val.shift == this.shift)
-            // masukkan ke database finished report
-            this.$store.dispatch("append", {
-                store: "Finished",
+            // update document dengan data yang ada di ev
+            await this.$store.dispatch("update", {
+                store: "Document", 
                 obj: ev,
-                period: this.base.periode
+                criteria: { id: ev.id }
             })
-            // iterate lists
-            for(let i =0; i < baseReportStockLists.length; i++) {
-                // console.log(this.lists[i].id)
-                // console.log(i)
-                // tunggu pindah ke finishedStock
-                let objStock = baseReportStockLists[i]
-                delete objStock.shift
-                delete objStock.parent
-                objStock.parent = ev.id
-                await this.$store.dispatch("append",{
-                    store: "FinishedStock",
-                    obj: objStock,
-                    period: this.base.periode
-                })
-                // tunggu hapus dari baseReportStock
-                await this.$store.dispatch("delete",{
-                    store: "BaseReportStock",
-                    id: baseReportStockLists[i].id,
-                    period: this.base.periode
+
+            // iterate baseReport stocklist dan tambahkan parent document ev.id
+            for(let i =0; i < this.lists.length; i++) {
+                let record = JSON.parse(JSON.stringify(this.lists[i]))
+                delete record.namaItem
+                // tunggu sampai update selesai
+                await this.$store.dispatch("update", {
+                    store: "BaseReportStock", 
+                    obj: Object.assign(record, {parentDocument: ev.id}),
+                    criteria: { id: record.id }
                 })
             }
+
             // tutup loader
             this.$store.commit("Modal/active");
         },
@@ -223,7 +213,7 @@ export default {
             ev.forEach((val) => {
                 this.$store.dispatch("delete", { 
                     store: store, 
-                    id: val
+                    criteria: {id: val}
                 })
             })
         },

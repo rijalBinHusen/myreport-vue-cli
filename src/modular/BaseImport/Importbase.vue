@@ -20,8 +20,8 @@
 
             <Datatable
             :datanya="lists"
-            :heads="['Periode', 'Gudang', 'Nama file']"
-            :keys="['periode2', 'warehouseName', 'fileName']"
+            :heads="['Periode', 'Gudang', 'Nama file', 'Shee stock', 'Sheet clock']"
+            :keys="['periode2', 'warehouseName', 'fileName', 'stock', 'clock']"
             option
             id="tableImportBase"
             v-slot:default="slotProp"
@@ -172,6 +172,8 @@ export default {
                     val.warehouseName = this.WAREHOUSE_ID(val.warehouse).name
                     val.periode2 = this.DATEFORMAT({ format: "dateMonth", time: val.periode})
                     val.fileName = val.fileName ? val.fileName : "Not imported yet"
+                    val.stock = val.fileName ? val.stock : "Not imported yet"
+                    val.clock = val.fileName ? val.clock : "Not imported yet"
                     result.push(val)
                 }
 			})

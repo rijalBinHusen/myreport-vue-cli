@@ -73,12 +73,10 @@ export default createStore({
     },
 
     delete({ commit, rootGetters }, value) {
-      commit(`${value.store}/delete`, value, { root: true });
+      commit(`${value.store}/delete`, value.criteria.id, { root: true });
       // delete record from indexeddb and return as promise
-      return new Promise((resolve) => {
-        myfunction.deleteDocument(value);
-        setTimeout(() => resolve(), 330);
-      });
+      myfunction.deleteDocument(value);
+      return myfunction.tunggu(330);
     },
     // deelete by parameter
     deleteByParam({}, value) {
@@ -98,6 +96,8 @@ export default createStore({
       myfunction.update(value);
       // send to module
       commit(`${value.store}/update`, value.obj, { root: true });
+      // tunggu 130 ms
+      return myfunction.tunggu(130);
     },
 
     getStart({ commit, state, rootGetters }) {
@@ -157,6 +157,7 @@ export default createStore({
       });
     },
     async findDataByDateArrays({ commit, rootGetters }, value) {
+      // value = {store: document, criteria: {status: 0} }
       //empty the store
       commit(`${value.store}/${value.store.toLowerCase()}`, []);
 
