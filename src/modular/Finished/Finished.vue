@@ -13,8 +13,8 @@
         :heads="['Periode', 'Nama', 'Gudang', 'Shift', 'Finished']"
         :keys="['periode2', 'spvName', 'spvWarehouse', 'shift', 'finished2']"
         option
-        id="tableApproval"
-        v-slot:default="{ prop }"
+        id="tableFinished"
+        #default="{ prop }"
     >
     <!-- lihat info detail -->
     <Button value="Details" type="button" secondary small @trig="details(prop)"/>

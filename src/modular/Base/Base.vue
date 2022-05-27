@@ -83,15 +83,31 @@
           :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih', 'problem']"
           id="tableBaseReport"
           option
-          v-slot:default="slotProp"
+          #default="{ prop }"
         >
+
+            <Dropdown
+                v-if="prop.selisih !== 0 || prop.problem"
+                value="Pesan"  
+                :lists="[
+                    { id: 1, isi: 'Apakah selisih baru'},
+                    { id: 2, isi: 'Selisih tidak sama'},
+                    { id: 3, isi: 'Selisih sudah selesai?'}
+                ]"
+                class="w3-small"
+                listsKey="id"
+                listsValue="isi"
+                @trig="message($event, prop)"
+            />
+            
             <Button 
                 value="Delete" 
                 type="button" 
                 danger 
                 small
-                @trig="remove([slotProp.prop.id])" 
+                @trig="remove(prop.id)" 
             />
+
         </Datatable>
         </div>
         <BaseFinishForm 
@@ -117,9 +133,11 @@ import Select from "../../components/elements/Select.vue"
 import { mapState, mapGetters } from "vuex"
 import AGGrid from "../../components/parts/AGGrid.vue"
 import BaseFinishForm from "./BaseFinishForm.vue"
+import Dropdown from "../../components/elements/Dropdown.vue"
 
 export default {
     components: {
+        Dropdown,
         AGGrid,
         Button,
         Datatable,
@@ -129,9 +147,9 @@ export default {
     },
     data() {
         return {
-            periode: false, 
-            sheet: null,
-            shift: null,
+            periode: "unc22050199", 
+            sheet: "stock",
+            shift: 3,
             excelMode: false,
             base: null,
             BaseFinishForm: null,
@@ -143,6 +161,9 @@ export default {
         }
     },
     methods: {
+        message(ev, obj) {
+            console.log(ev, obj)
+        },
         launchForm() {
             // jika clock jika stock
             let form = this.sheet === "clock" ? "BaseClockForm" : "BaseStockForm"
@@ -211,12 +232,10 @@ export default {
             }
             let store = this.sheet === "stock" ? 'BaseReportStock' : 'BaseReportClock'
             //delete from idb
-            ev.forEach((val) => {
                 this.$store.dispatch("delete", { 
                     store: store, 
-                    criteria: {id: val}
+                    criteria: {id: ev}
                 })
-            })
         },
         async find(ev) {    
             if(!ev) {
@@ -309,7 +328,6 @@ export default {
                             val.selisih = val.real - (val.awal + val.in - val.out)
                             // cari apakah gudang ini, dan item ini ada problem
                             // jika 
-                            console.log(this.problem, val.item)
                             val.problem = this.$store.getters["Problem/problemId"](this.problem[this.base.warehouse][val.item]).masalah
                             
                             return val
