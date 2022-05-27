@@ -41,6 +41,34 @@ const BaseReportFile = {
         JSON.stringify(state.lists.find((val) => val.id === id))
       );
     },
+    // return unique date of report 
+    dateReport(state, getters, rootState, rootGetters) {
+      // get the uniquee date
+      let uniquee = [ ...new Set ( JSON.parse(JSON.stringify(state.lists)).map((val) => val.periode) ) ]
+      //return as object
+      return uniquee.length > 0 
+        ? uniquee.map((val) => {
+            return {
+              periode: val,
+              periode2: rootGetters["dateFormat"]({format: "dateMonth", time: val})
+            }
+          })
+        : []
+    },
+    // return unique date of report 
+    warehouseReport(state, getters, rootState, rootGetters) {
+      // get the uniquee date
+      let uniquee = [ ...new Set ( JSON.parse(JSON.stringify(state.lists)).map((val) => val.warehouse) ) ]
+      //return as object
+      return uniquee.length > 0 
+        ? uniquee.map((val) => {
+            return {
+              warehouse: val,
+              warehouseName: rootGetters["Warehouses/warehouseId"](val).name
+            }
+          })
+        : []
+    },
   },
 };
 

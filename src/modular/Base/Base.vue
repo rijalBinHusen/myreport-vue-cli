@@ -20,15 +20,24 @@
                 type="button" 
                 @trig="pickPeriode" 
             />
-                <!-- Base report -->
+                <!-- Date Base report -->
                 <Select 
-                class="w3-col s3 w3-margin-right"
-                :options="baseReport" 
-                value="id"
-                text="title"
-                :inselect="base ? base.id : null"
-                @selected="find($event)"
-                />            
+                  v-if="listsPeriode.length > 0"
+                  class="w3-col s1 w3-margin-right"
+                  :options="listsPeriode" 
+                  value="periode"
+                  text="periode2"
+                />
+
+                <!-- Warehouse Base report -->
+                <Select 
+                  v-if="listsWarehouse.length > 0"
+                  class="w3-col s2 w3-margin-right"
+                  :options="listsWarehouse" 
+                  value="warehouse"
+                  text="warehouseName"
+                />
+
                 <!-- Sheet report -->
                 <Select 
                 v-if="baseReport.length > 1 && base"
@@ -147,9 +156,9 @@ export default {
     },
     data() {
         return {
-            periode: "unc22050199", 
-            sheet: "stock",
-            shift: 3,
+            periode: "", 
+            sheet: "",
+            shift: "",
             excelMode: false,
             base: null,
             BaseFinishForm: null,
@@ -158,6 +167,11 @@ export default {
             totalWaktu: 0,
             standartWaktu: 0,
             problem: {},
+            unsubscribe: "",
+            step: "",
+            listsPeriode: "",
+            listsWarehouse: "",
+            lists: [],
         }
     },
     methods: {
@@ -302,46 +316,38 @@ export default {
             BASEID: "BaseReportFile/baseId",
             BASEITEMKODE: "Baseitem/baseItemKode",
             GETTIME: "dateFormat",
+            DATEBASEREPORT: "BaseReportFile/dateReport",
+            WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
         }),
-        baseReport() {
-			let result = [{id: "", title: "Pilih base report"}]
-			this._BASEREPORT.forEach((val) => {
-                if(val.imported) {
-                    val.title = this.DATEFORMAT({ format: "dateMonth", time: val.periode}) + " " +this.WAREHOUSE_ID(val.warehouse).name 
-                    result.push(val)
-                }
-			})
-            return result
-        },
-        lists() {
-            let result = []
+        // lists() {
+        //     let result = []
             
-            if(this.shift) {
-                // jika stock
-                if(this.sheet === "stock") {
-                    this.standartWaktu = 0
-                    // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
-                    result = this._BASESTOCK.filter((val) => {
-                        if(val.shift == this.shift) {   
-                            this.standartWaktu += +val.out
-                            val.namaItem = this.BASEITEMKODE(val.item).name
-                            val.selisih = val.real - (val.awal + val.in - val.out)
-                            // cari apakah gudang ini, dan item ini ada problem
-                            // jika 
-                            val.problem = this.$store.getters["Problem/problemId"](this.problem[this.base.warehouse][val.item]).masalah
+        //     if(this.shift) {
+        //         // jika stock
+        //         if(this.sheet === "stock") {
+        //             this.standartWaktu = 0
+        //             // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
+        //             result = this._BASESTOCK.filter((val) => {
+        //                 if(val.shift == this.shift) {   
+        //                     this.standartWaktu += +val.out
+        //                     val.namaItem = this.BASEITEMKODE(val.item).name
+        //                     val.selisih = val.real - (val.awal + val.in - val.out)
+        //                     // cari apakah gudang ini, dan item ini ada problem
+        //                     // jika 
+        //                     val.problem = this.$store.getters["Problem/problemId"](this.problem[this.base.warehouse][val.item]).masalah
                             
-                            return val
-                        }
-                    })
-                }
-                // jika clock
-                if(this.sheet === "clock") {
-                    result = this._BASECLOCK.filter((val) => val.shift == this.shift)
-                }
-            }
+        //                     return val
+        //                 }
+        //             })
+        //         }
+        //         // jika clock
+        //         if(this.sheet === "clock") {
+        //             result = this._BASECLOCK.filter((val) => val.shift == this.shift)
+        //         }
+        //     }
 
-            return result
-        },
+        //     return result
+        // },
         originColumn() {
             return this.sheet === "clock"
                             ? [
@@ -379,9 +385,57 @@ export default {
             }
             this.detailsDocument()
         },
+        listsPeriode(newVal, oldVal) {
+          if(newVal === oldVal) {
+                return
+            }
+
+          if(this.sheet === "clock") {
+                    this.lists = this._BASECLOCK.filter((val) => val.shift == this.shift)
+                }
+        },
+        listsWarehouse(newVal, oldVal) {},
     },
     mounted() {
-        this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
+        // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
+        this.listsPeriode = this.DATEBASEREPORT
+        this.listsWarehouse = this.WAREHOUSEBASEREPORT
+    },
+    created() {
+        this.step = ""
+        this.unsubscribe = this.$store.subscribe((mutation) => {
+            // console.log(mutation)
+        if (mutation.type === 'Modal/active') {
+            // jika mutation.payload && mutation.payload.form === PeriodePicker (user akan memilih periode yang akan didownload)
+            if(mutation.payload && mutation.payload.form === "PeriodePicker") {
+                // this.step = mutation.payload.form
+                this.step = mutation.payload.form
+                return
+            } 
+            // jika mutation.payload && mutation.payload.form === Loader (user telah memilih periode yang didownload)
+            if(this.step === "PeriodePicker" && mutation.payload && mutation.payload.form === "Loader") {
+                this.step = mutation.payload.form
+                // this.step = mutation.payload.form
+                return
+            }
+            // jika mutation.payload === undefined && this.step === Loader (modal ditutup otomatis setelah semua data didapatkan dari database)
+            if(!mutation.payload && this.step === "Loader") {
+                // this.step = ""
+                this.step = ""
+                // update lists
+                this.listsPeriode = this.DATEBASEREPORT
+                this.listsWarehouse = this.WAREHOUSEBASEREPORT
+                
+                return
+            }
+            // jika mutation.payload === undefined (modal ditutup manual, user tidak jadi download)
+                // this.step kembali jadi "" lagi
+                this.step = ""
+            }
+        });
+    },
+    beforeUnmount() {
+        this.unsubscribe();
     },
     name: "Base"
 }
