@@ -38,10 +38,16 @@ const BaseReportStock = {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
-    shift: (state) => (shift) => {
-      return JSON.parse(
-        JSON.stringify(state.lists.filter((val) => val.shift === shift))
-      );
+    shiftAndPeriode: (state, getters, rootState, rootGetters) => (shift, periode) => {
+      return  state.lists.length > 0 
+        ? JSON.parse(
+            JSON.stringify(state.lists.filter((map) => {
+              if(val.shift === shift && val.periode === periode) {
+                return val
+              }
+            })
+          ))
+        : []
     },
   },
 };

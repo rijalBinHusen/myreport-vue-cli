@@ -27,6 +27,9 @@
                   :options="listsPeriode" 
                   value="periode"
                   text="periode2"
+                  @selected="selectedPeriode = $event"
+                  :inselect="selectedPeriode"
+                  judul="periode"
                 />
 
                 <!-- Warehouse Base report -->
@@ -36,32 +39,35 @@
                   :options="listsWarehouse" 
                   value="warehouse"
                   text="warehouseName"
+                  @selected="selectedWarehouse = $event"
+                  :inselect="selectedWarehouse"
+                  judul="gudang"
                 />
 
                 <!-- Sheet report -->
                 <Select 
-                v-if="baseReport.length > 1 && base"
+                v-if="listsWarehouse.length > 0"
                 class="w3-col s1 w3-margin-right"
                 :options='[
-                    { id: 0, title: "Pilih sheet" }, 
                     { id: "clock", title: "Clock" },
                     { id: "stock", title: "Stock" },
                 ]'
                 value="id"
                 text="title"
+                judul="sheet"
                 :inselect="sheet"
                 @selected="sheet = $event"
                 />            
                 <!-- Shift -->
                 <Select 
-                v-if="baseReport.length > 1 && base"
+                v-if="listsWarehouse.length > 0"
                 class="w3-col s1 w3-margin-right"
                 :options="[
-                    { id:0, title: 'Pilih shift' }, 
                     { id:1, title: 'Shift 1'},
                     { id:2, title: 'Shift 2'},
                     { id:3, title: 'Shift 3'},
                 ]" 
+                judul="shift"
                 value="id"
                 text="title"
                 :inselect="shift"
@@ -88,8 +94,8 @@
             </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih', 'Problem']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih', 'problem']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih']"
           id="tableBaseReport"
           option
           #default="{ prop }"
@@ -172,6 +178,8 @@ export default {
             listsPeriode: "",
             listsWarehouse: "",
             lists: [],
+            selectedPeriode: "",
+            selectedWarehouse: "",
         }
     },
     methods: {
@@ -302,6 +310,19 @@ export default {
                 }
             })
         },
+        renewLists() {
+          if(this.sheet === "stock") {
+            this.lists = this.BASEREPORTSTOCKSHIFTANDPERIODE(this.shift, this.selectedPeriode)
+            return
+          }
+
+          if(this.sheet === "clock") {
+           // this.lists = 
+           console.log(
+            this.BASEREPORTCLOCKSHIFTANDPERIODE(this.shift, this.selectedPeriode)
+            )
+          }
+        }
     },
     computed: {
         ...mapState({
@@ -318,6 +339,8 @@ export default {
             GETTIME: "dateFormat",
             DATEBASEREPORT: "BaseReportFile/dateReport",
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
+            BASEREPORTSTOCKSHIFTANDPERIODE: "BaseReportStock/shiftAndPeriode",
+            BASEREPORTCLOCKSHIFTANDPERIODE: "BaseReportClock/shiftAndPeriode",
         }),
         // lists() {
         //     let result = []
@@ -380,21 +403,26 @@ export default {
     },
     watch: {
         shift(newVal, oldVal) {
-            if(newVal === oldVal) {
-                return
-            }
-            this.detailsDocument()
+          if(newVal === oldVal) { return }
+          this.renewLists()
+          this.detailsDocument()
         },
-        listsPeriode(newVal, oldVal) {
-          if(newVal === oldVal) {
-                return
-            }
-
-          if(this.sheet === "clock") {
-                    this.lists = this._BASECLOCK.filter((val) => val.shift == this.shift)
-                }
+        sheet(newVal, oldVal) {
+          if(newVal === oldVal) { return }
+          this.detailsDocument()
+          this.renewLists()
         },
-        listsWarehouse(newVal, oldVal) {},
+        selectedPeriode(newVal, oldVal) {
+          if(newVal === oldVal) { return }
+          this.detailsDocument()
+          this.renewLists()
+        },
+        selectedWarehouse(newVal, oldVal) {
+          console.log(newVal, oldVal)
+          if(newVal === oldVal) { return }
+          this.detailsDocument()
+          this.renewLists()
+        },
     },
     mounted() {
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
@@ -422,9 +450,10 @@ export default {
             if(!mutation.payload && this.step === "Loader") {
                 // this.step = ""
                 this.step = ""
-                // update lists
+                // update lists select periode dan gudang
                 this.listsPeriode = this.DATEBASEREPORT
                 this.listsWarehouse = this.WAREHOUSEBASEREPORT
+                // dapatkan clock dan stock untuk periode tersebut
                 
                 return
             }

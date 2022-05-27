@@ -33,16 +33,15 @@ const BaseReportClock = {
       );
     },
   },
-  actions: {},
-  getters: {
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
+  actions: {
+    getDataByParent
   },
-  shift: (state) => (shift) => {
-    return JSON.parse(
-      JSON.stringify(state.lists.filter((val) => val.shift === shift))
-    );
+  getters: {
+    shiftAndPeriode: (state) => (shift, periode) => {
+      return JSON.parse(
+        JSON.stringify(state.lists.filter((val) => val.shift === shift && val.periode === periode))
+      );
+    },
   },
 };
 
