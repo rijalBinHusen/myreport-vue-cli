@@ -185,6 +185,7 @@ export default {
     methods: {
         ...mapActions({
             CLOCKBYPARENT: "BaseReportClock/getDataByParent",
+            STOCKBYPARENT: "BaseReportStock/getDataByParent",
         }),
         message(ev, obj) {
             console.log(ev, obj)
@@ -262,33 +263,6 @@ export default {
                     criteria: {id: ev}
                 })
         },
-        async find(ev) {    
-            if(!ev) {
-                this.base = ev
-                return
-            }
-            // find detail about base report
-            this.base = this.baseReport.find((val) => val.id === ev)
-            // get the problem for the day
-            this.problem = this.$store.getters["Problem/problemActive"](this.base.periode)
-            // store
-            let store = ["BaseReportClock", "BaseReportStock"]
-            // buka loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // tunggu mendapatkan base report clock, report stock
-            for(let i = 0; i < store.length; i++) {
-                await this.$store.dispatch("findDataByDateArrays", {
-                    store: store[i],
-                    date: [this.base.periode],
-                    criteria: { parent: ev },
-                    dateNotCriteria: true,
-                })
-            }
-            //tutup loader
-            this.$store.commit("Modal/active")
-            // catat base id, so all component can read it
-            this.$store.commit("BaseReportFile/baseId", ev)
-        },
         pickPeriode() {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
         },
@@ -297,21 +271,22 @@ export default {
             this.totalWaktu = 0;
             this.totalDo = 0
             this.totalKendaraan = 0
-            // this._BASECLOCK.filter((val) => {
-            //     if(val.shift == this.shift){
-            //         this.totalDo += 1
-            //         this.totalKendaraan += 1
-            //         // start
-            //         let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
-            //         //finish
-            //         let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
-            //         // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
-            //         // finish - start
-            //         let total = finish < start ? (finish + 86400000) - start : finish - start
-            //         // jaddikan menit, masukan total waktu
-            //         this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
-            //     }
-            // })
+            if(this.shift && this.base && this.base.id) {
+                this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id).forEach((val) => {
+                    this.totalDo += 1
+                    this.totalKendaraan += 1
+                    // start
+                    let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
+                    //finish
+                    let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
+                    // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
+                    // finish - start
+                    let total = finish < start ? (finish + 86400000) - start : finish - start
+                    // jaddikan menit, masukan total waktu
+                    this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
+                })
+
+            }
         },
         renewLists() {
           if(this.sheet === "stock") {
@@ -320,8 +295,7 @@ export default {
           }
 
           if(this.sheet === "clock") {
-           this.lists = this.BASEREPORTCLOCKSHIFTANDPERIODE(this.shift, this.base.id)
-           console.log(this.BASEREPORTCLOCKSHIFTANDPERIODE(this.shift, this.base.id))
+           this.lists = this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id)
           }
         }
     },
@@ -340,61 +314,32 @@ export default {
             GETTIME: "dateFormat",
             DATEBASEREPORT: "BaseReportFile/dateReport",
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
-            BASEREPORTSTOCKSHIFTANDPERIODE: "BaseReportStock/shiftAndPeriode",
-            BASEREPORTCLOCKSHIFTANDPERIODE: "BaseReportClock/shiftAndPeriode",
+            BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
+            BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportClock/shiftAndParent",
             BASEIDSELECTED: "BaseReportFile/getIdByPeriodeByWarehouse"
         }),
-        // lists() {
-        //     let result = []
-            
-        //     if(this.shift) {
-        //         // jika stock
-        //         if(this.sheet === "stock") {
-        //             this.standartWaktu = 0
-        //             // ['Item', 'Awal', 'In', 'Tanggal masuk', 'Out', 'Tanggal keluar', 'Akhir', 'Tanggal Akhir']
-        //             result = this._BASESTOCK.filter((val) => {
-        //                 if(val.shift == this.shift) {   
-        //                     this.standartWaktu += +val.out
-        //                     val.namaItem = this.BASEITEMKODE(val.item).name
-        //                     val.selisih = val.real - (val.awal + val.in - val.out)
-        //                     // cari apakah gudang ini, dan item ini ada problem
-        //                     // jika 
-        //                     val.problem = this.$store.getters["Problem/problemId"](this.problem[this.base.warehouse][val.item]).masalah
-                            
-        //                     return val
-        //                 }
-        //             })
-        //         }
-        //         // jika clock
-        //         if(this.sheet === "clock") {
-        //             result = this._BASECLOCK.filter((val) => val.shift == this.shift)
-        //         }
-        //     }
-
-        //     return result
-        // },
         originColumn() {
             return this.sheet === "clock"
-                            ? [
-                                { headerName: "Nomor", field: "noDo", width: 100 },
-                                { headerName: "Register", field: "reg", width: 100 },
-                                { headerName: "Start", field: "start", width: 100 },
-                                { headerName: "Finish", field: "finish", width: 100 },
-                                { headerName: "istirahat", field: "rehat", editable: true, width: 100 },
-                            ]
-                            : [
-                                { headerName: "Kode Item", field: "item", editable: true, resizable: true },
-                                { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 300 },
-                                { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
-                                { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
-                                { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
-                                { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100 }, 
-                                { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
-                            ];
+                ? [
+                    { headerName: "Nomor", field: "noDo", width: 100 },
+                    { headerName: "Register", field: "reg", width: 100 },
+                    { headerName: "Start", field: "start", width: 100 },
+                    { headerName: "Finish", field: "finish", width: 100 },
+                    { headerName: "istirahat", field: "rehat", editable: true, width: 100 },
+                ]
+                : [
+                    { headerName: "Kode Item", field: "item", editable: true, resizable: true },
+                    { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 300 },
+                    { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
+                    { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
+                    { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
+                    { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
+                ];
             },
         tableName() {
             return  this.sheet === "clock" ? "ExcelClock" : "excelStock";
@@ -405,12 +350,12 @@ export default {
     },
     watch: {
         shift(newVal, oldVal) {
-          if(newVal === oldVal) { return }
-          this.renewLists()
+          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet) { return }
           this.detailsDocument()
+          this.renewLists()
         },
         sheet(newVal, oldVal) {
-          if(newVal === oldVal) { return }
+          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet) { return }
           this.detailsDocument()
           this.renewLists()
         },
@@ -425,6 +370,7 @@ export default {
             this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
             this.detailsDocument()
             this.renewLists()
+            console.log(this.base)
         },
     },
     mounted() {
@@ -460,13 +406,9 @@ export default {
                 this.listsPeriode = this.DATEBASEREPORT
                 this.listsWarehouse = this.WAREHOUSEBASEREPORT
                 // dapatkan clock dan stock untuk periode tersebut
-                // ambil dari state basereportfile
-                // iterate basereportfile, cari basereportstock, basereportclock by array id
-        
-                this.CLOCKBYPARENT(
-                    this._BASEREPORT.map((val) => val.id)
-                )
-                
+                // trigger dispatch untuk mencari basereportclock, basereportstock byparent
+                // this.STOCKBYPARENT()
+                this.CLOCKBYPARENT()
                 // tunggu dapatkan clock base
                 return
             }

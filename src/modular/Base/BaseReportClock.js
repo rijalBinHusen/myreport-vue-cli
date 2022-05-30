@@ -34,30 +34,17 @@ const BaseReportClock = {
     },
   },
   actions: {
-    getDataByParent({commit, dispatch}, parent) {
-      if(Array.isArray(parent)) {
-        let promise = []
-        for (let i = 0; i < parent.length; i++) {
-          promise.push(dispatch("getDataByCriteria", { 
-            store: "BaseReportClock",
-            criteria: { parent: parent[i] },
-            allData: false,
-            append: true,
-           }, { root: true })
-          )
-        }
-        return Promise.allSettled(promise)
-      }
-      dispatch("getDataByCriteria", { 
-        store: "BaseReportClock",
-        criteria: { parent: parent },
-        allData: false,
-        append: true,
-       }, {root: true})
+    getDataByParent({commit, dispatch, rootState}, parent) {
+      rootState.BaseReportFile.lists.forEach((val) => {
+        dispatch("getDataByCriteriaAppend", { 
+          store: "BaseReportClock", 
+          criteria: {parent: val.id} 
+        }, { root: true })
+      })
     }
   },
   getters: {
-    shiftAndPeriode: (state) => (shift, id) => {
+    shiftAndParent: (state) => (shift, id) => {
       return JSON.parse(
         JSON.stringify(state.lists.filter((val) => val.shift == shift && val.parent == id)
       ));

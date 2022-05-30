@@ -127,28 +127,15 @@ export default createStore({
           }
     	} */
 
-      //empty the state
-      if(!value.append) {
-        commit(`${value.store}/${value.store.toLowerCase()}`, []);
-        console.log("bersihkan state")
-      }
-
       // if get all data, not by criteria
       if (value.allData) {
         return myfunction
           .getData({ store: value.store.toLowerCase() })
           .then((result) => {
             if (result.length > 0) {
-              if(!value.append) {
-                commit(`${value.store}/${value.store.toLowerCase()}`, result, {
-                  root: true,
-                });
-                return
-              }
-                commit(`${value.store}/append}`, result, {
-                  root: true,
-                });
-                console.log("keepstate")
+              commit(`${value.store}/${value.store.toLowerCase()}`, result, {
+                root: true,
+              }); 
             }
           });
       }
@@ -161,6 +148,20 @@ export default createStore({
           {
             root: true,
           }
+        );
+      });
+    },
+    getDataByCriteriaAppend({ commit, rootGetters }, value) {
+      // the first letter of value.store must be capital e.g 'Group'
+      /*value = { 
+            store: "nameOfStore",
+            criteria: { status: 0 }
+          }
+      } */
+      return myfunction.findData(value).then((result) => {
+        commit(`${value.store}/append`,
+            result.length > 0 ? result : [],
+            { root: true }
         );
       });
     },
