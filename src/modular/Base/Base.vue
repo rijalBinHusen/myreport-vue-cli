@@ -320,11 +320,8 @@ export default {
           }
 
           if(this.sheet === "clock") {
-           // this.lists = 
-           console.log(
-            this.shift, this.selectedPeriode
-            // this.BASEREPORTCLOCKSHIFTANDPERIODE(this.shift, this.selectedPeriode)
-            )
+           this.lists = this.BASEREPORTCLOCKSHIFTANDPERIODE(this.shift, this.base.id)
+           console.log(this.BASEREPORTCLOCKSHIFTANDPERIODE(this.shift, this.base.id))
           }
         }
     },
@@ -418,20 +415,16 @@ export default {
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-          if(newVal === oldVal) { return }
-          this.detailsDocument()
-          this.renewLists()
-          console.log(
-                this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-            )
+            if(!this.selectedPeriode || !this.selectedWarehouse) { return }
+            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.detailsDocument()
+            this.renewLists()
         },
         selectedWarehouse(newVal, oldVal) {
-          console.log(
-            this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-        )
-          if(newVal === oldVal) { return }
-          this.detailsDocument()
-          this.renewLists()
+            if(!this.selectedPeriode || !this.selectedWarehouse) { return }
+            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.detailsDocument()
+            this.renewLists()
         },
     },
     mounted() {

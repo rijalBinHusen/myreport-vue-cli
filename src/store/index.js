@@ -123,13 +123,14 @@ export default createStore({
             store: "nameOfStore",
             criteria: { status: 0 }
             allData: false,
-            keepState: false
+            append: true
           }
     	} */
 
       //empty the state
-      if(!value.keepState) {
+      if(!value.append) {
         commit(`${value.store}/${value.store.toLowerCase()}`, []);
+        console.log("bersihkan state")
       }
 
       // if get all data, not by criteria
@@ -138,9 +139,16 @@ export default createStore({
           .getData({ store: value.store.toLowerCase() })
           .then((result) => {
             if (result.length > 0) {
-              commit(`${value.store}/${value.store.toLowerCase()}`, result, {
-                root: true,
-              });
+              if(!value.append) {
+                commit(`${value.store}/${value.store.toLowerCase()}`, result, {
+                  root: true,
+                });
+                return
+              }
+                commit(`${value.store}/append}`, result, {
+                  root: true,
+                });
+                console.log("keepstate")
             }
           });
       }

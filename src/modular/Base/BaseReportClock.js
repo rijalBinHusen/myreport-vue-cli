@@ -42,7 +42,7 @@ const BaseReportClock = {
             store: "BaseReportClock",
             criteria: { parent: parent[i] },
             allData: false,
-            keepState: true,
+            append: true,
            }, { root: true })
           )
         }
@@ -52,14 +52,15 @@ const BaseReportClock = {
         store: "BaseReportClock",
         criteria: { parent: parent },
         allData: false,
+        append: true,
        }, {root: true})
     }
   },
   getters: {
-    shiftAndPeriode: (state) => (shift, periode) => {
+    shiftAndPeriode: (state) => (shift, id) => {
       return JSON.parse(
-        JSON.stringify(state.lists.filter((val) => val.shift === shift && val.periode === periode))
-      );
+        JSON.stringify(state.lists.filter((val) => val.shift == shift && val.parent == id)
+      ));
     },
   },
 };

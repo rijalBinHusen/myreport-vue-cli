@@ -66,7 +66,7 @@ const BaseReportFile = {
         : []
     },
     getIdByPeriodeByWarehouse: (state) => (periode, warehouse) => {
-      return JSON.parse(JSON.stringify(state)).find((val) => val.periode === periode && val.warehouse === warehouse)
+      return JSON.parse(JSON.stringify(state.lists)).find((val) => val.periode == periode && val.warehouse == warehouse )
     }
   },
 };
