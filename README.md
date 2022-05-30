@@ -108,10 +108,19 @@ Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-ch
 			tampilkan problem
 
 ## Pengerjaan laporan
-1. Import base laporan
+- [x] Import base laporan
 2. Export laporan yang belum finished berupa excel
+	- export menjadi 2 sheet
+	- sheet 1 berisi record basereport stock ( id, parent, parent document, periode, gudang, shift, item, nama item, awal, in, date in, out, date out, real, daateend, problem )
+	- sheet 2 berisi record document ( id, periode, collected, shared, approval, finished, shift, spv, head, totaldo, total kendaraan, totalwaktu, standartwaktu, basereportfile, isfinished, status)
 3. kerjakan laporan diexcel
+	- jika ada yang perlu dikonfirmasi ke spv, tulis disampingnya (confirm)
 4. jika selesai, import file excel ke aplikasi
+	- import import normal seperti biasa
+	- cari setiap yang ada problem, atau yang memiliki selisih, atau yang memiliki value confirm
+	- sisipkan detail problem
+	- tampilkan item yang bermasalah
+	- konfirmasi jika ada yang perlu dikonfirmasi
 5. export sesuai dengan format laporan yang ditentukan
 
 ## Alur menampilkan base report

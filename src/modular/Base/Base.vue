@@ -291,7 +291,6 @@ export default {
         renewLists() {
           if(this.sheet === "stock") {
             this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
-            console.log(this.lists)
             return
           }
 
