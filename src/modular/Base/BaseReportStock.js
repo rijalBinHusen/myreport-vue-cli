@@ -33,16 +33,25 @@ const BaseReportStock = {
       );
     },
   },
-  actions: {},
+  actions: {
+    getDataByParent({commit, dispatch, rootState}, parent) {
+      rootState.BaseReportFile.lists.forEach((val) => {
+        dispatch("getDataByCriteriaAppend", { 
+          store: "BaseReportStock", 
+          criteria: {parent: val.id} 
+        }, { root: true })
+      })
+    }
+  },
   getters: {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
     },
-    shiftAndPeriode: (state, getters, rootState, rootGetters) => (shift, periode) => {
+    shiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {
       return  state.lists.length > 0 
         ? JSON.parse(
-            JSON.stringify(state.lists.filter((map) => {
-              if(val.shift === shift && val.periode === periode) {
+            JSON.stringify(state.lists.filter((val) => {
+              if(val.shift == shift && val.parent == id) {
                 return val
               }
             })

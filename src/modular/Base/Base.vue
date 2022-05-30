@@ -95,7 +95,7 @@
         <Datatable
           :datanya="lists"
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['namaItem', 'selisih']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['item', 'awal']"
           id="tableBaseReport"
           option
           #default="{ prop }"
@@ -290,7 +290,8 @@ export default {
         },
         renewLists() {
           if(this.sheet === "stock") {
-            this.lists = this.BASEREPORTSTOCKSHIFTANDPERIODE(this.shift, this.selectedPeriode)
+            this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
+            console.log(this.lists)
             return
           }
 
@@ -314,7 +315,7 @@ export default {
             GETTIME: "dateFormat",
             DATEBASEREPORT: "BaseReportFile/dateReport",
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
-            BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
+            BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
             BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportClock/shiftAndParent",
             BASEIDSELECTED: "BaseReportFile/getIdByPeriodeByWarehouse"
         }),
@@ -370,7 +371,6 @@ export default {
             this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
             this.detailsDocument()
             this.renewLists()
-            console.log(this.base)
         },
     },
     mounted() {
@@ -407,7 +407,7 @@ export default {
                 this.listsWarehouse = this.WAREHOUSEBASEREPORT
                 // dapatkan clock dan stock untuk periode tersebut
                 // trigger dispatch untuk mencari basereportclock, basereportstock byparent
-                // this.STOCKBYPARENT()
+                this.STOCKBYPARENT()
                 this.CLOCKBYPARENT()
                 // tunggu dapatkan clock base
                 return

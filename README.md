@@ -108,13 +108,16 @@ Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-ch
 			tampilkan problem
 
 ## Pengerjaan laporan
-- Import base laporan
-- Export laporan yang belum finished berupa excel
-- kerjakan laporan diexcel
-- jika selesai, import file excel ke aplikasi
-- export sesuai dengan format laporan yang ditentukan
+1. Import base laporan
+2. Export laporan yang belum finished berupa excel
+3. kerjakan laporan diexcel
+4. jika selesai, import file excel ke aplikasi
+5. export sesuai dengan format laporan yang ditentukan
 
 ## Alur menampilkan base report
 1. User memilih periode yang akan ditampilkan
 2. Ambil periode dari basefile report dari database
 3. setelah didapatkan, kemudian lanjut ambil basereport clock, dan basereport stock dari database
+
+## bug to fix
+- [ ] nama supervisor tidak berubah pada /Uncollected/UncollectedEditForm
