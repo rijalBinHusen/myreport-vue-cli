@@ -122,15 +122,19 @@ export default createStore({
       /*value = { 
             store: "nameOfStore",
             criteria: { status: 0 }
+            allData: false,
+            keepState: false
           }
     	} */
 
-      //empty the store
-      commit(`${value.store}/${value.store.toLowerCase()}`, []);
+      //empty the state
+      if(!value.keepState) {
+        commit(`${value.store}/${value.store.toLowerCase()}`, []);
+      }
 
       // if get all data, not by criteria
       if (value.allData) {
-        myfunction
+        return myfunction
           .getData({ store: value.store.toLowerCase() })
           .then((result) => {
             if (result.length > 0) {
@@ -139,7 +143,6 @@ export default createStore({
               });
             }
           });
-        return;
       }
 
       // call the get data functions

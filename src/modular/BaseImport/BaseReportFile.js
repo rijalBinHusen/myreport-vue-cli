@@ -3,7 +3,6 @@ const BaseReportFile = {
   state: {
     baseId: null,
     lists: [],
-    store: { store: "BaseReportFile", split: "bulan" },
     importTemp: null,
   },
   mutations: {
@@ -33,9 +32,6 @@ const BaseReportFile = {
   },
   actions: {},
   getters: {
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
     baseId: (state) => (id) => {
       return JSON.parse(
         JSON.stringify(state.lists.find((val) => val.id === id))
@@ -69,6 +65,9 @@ const BaseReportFile = {
           })
         : []
     },
+    getIdByPeriodeByWarehouse: (state) => (periode, warehouse) => {
+      return JSON.parse(JSON.stringify(state)).find((val) => val.periode === periode && val.warehouse === warehouse)
+    }
   },
 };
 

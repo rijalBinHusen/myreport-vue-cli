@@ -28,7 +28,7 @@ saya melupakanya.
 - [x] Perhitungan waktu pada base clock jika mulai 23:00, dan selesai 03:00
 
 ### Problem report
-- [ ] Form untuk input problem
+- [x] Form untuk input problem
 - Gudang
 - Nama supervisors
 - Nama head supervisors
@@ -69,7 +69,7 @@ saya melupakanya.
 ## Component Periode picker
 - [ ] Ubah agar periode1 dan periode2 ambil dari props
 
-## Applying subscibe mutation feater from vuex
+## Applying subscibe mutation feature from vuex ( Report page)
 ketika komponen created
 - subscribe mutation yang ada divuex ( dalam kasus saya, vuex dimodal dan mutationya bernama active )
 
@@ -90,3 +90,31 @@ ketika modal ditutup ( lewat vuex mutation modal.active )
 - jika data dari subscribe yaitu modal.active === false, lakukan apa yang diinginkan
   
 Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-changes-2mgj).
+
+## Problem / cari problem dari base report page
+// cari problem berdasarkan gudang
+	// diharapkan hasilnya berupa object e.g kodeItem: {  key:val, key: val  }
+// pada lists base report, foreach item, dari setiap item harap mengecek problem
+	// jika tidak ada silahkan lanjut
+	// jika ada, pastikan :
+		//jika tanggal report === tanggalmulai problem 
+			// jika shift report >= shiftmulai problem
+			tampilkan problem
+		//jika tanggal report > tanggal mulai problem && tanggal report < tanggal selesai problem
+			// jika tanggal report < tanggal selesai problem
+			tampilkan problem
+		//jika tanggal report === tanggalselesai problem
+			//jika shift report < shift selesai problem
+			tampilkan problem
+
+## Pengerjaan laporan
+- Import base laporan
+- Export laporan yang belum finished berupa excel
+- kerjakan laporan diexcel
+- jika selesai, import file excel ke aplikasi
+- export sesuai dengan format laporan yang ditentukan
+
+## Alur menampilkan base report
+1. User memilih periode yang akan ditampilkan
+2. Ambil periode dari basefile report dari database
+3. setelah didapatkan, kemudian lanjut ambil basereport clock, dan basereport stock dari database

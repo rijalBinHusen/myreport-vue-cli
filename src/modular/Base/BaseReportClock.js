@@ -34,7 +34,26 @@ const BaseReportClock = {
     },
   },
   actions: {
-    getDataByParent
+    getDataByParent({commit, dispatch}, parent) {
+      if(Array.isArray(parent)) {
+        let promise = []
+        for (let i = 0; i < parent.length; i++) {
+          promise.push(dispatch("getDataByCriteria", { 
+            store: "BaseReportClock",
+            criteria: { parent: parent[i] },
+            allData: false,
+            keepState: true,
+           }, { root: true })
+          )
+        }
+        return Promise.allSettled(promise)
+      }
+      dispatch("getDataByCriteria", { 
+        store: "BaseReportClock",
+        criteria: { parent: parent },
+        allData: false,
+       }, {root: true})
+    }
   },
   getters: {
     shiftAndPeriode: (state) => (shift, periode) => {
