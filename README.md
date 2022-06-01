@@ -69,7 +69,7 @@ saya melupakanya.
 ## Component Periode picker
 - [ ] Ubah agar periode1 dan periode2 ambil dari props
 
-## Applying subscibe mutation feature from vuex ( Report page)
+## Applying subscribe mutation feature from vuex ( Report page)
 ketika komponen created
 - subscribe mutation yang ada divuex ( dalam kasus saya, vuex dimodal dan mutationya bernama active )
 

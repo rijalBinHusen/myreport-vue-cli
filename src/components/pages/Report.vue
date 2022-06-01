@@ -34,7 +34,8 @@ export default {
         return {
             reportNow: "",
             reports: [
-                { judul: "Export pengumpulan dokumen", keterangan: "Export periode pengumpulan dokumen berdasarkan tanggal", id: "report001"}
+                { judul: "Export pengumpulan dokumen", keterangan: "Export periode pengumpulan dokumen berdasarkan tanggal", id: "report001"},
+                { judul: "Export base report", keterangan: "Export base report untuk mengisi tanggal expired di excel", id: "report002"}
             ],
             step: "",
             unsubscribe: ""
@@ -42,9 +43,30 @@ export default {
     },
     methods: {
         launch(id) {
+            if(id === "repot001") {
             this.reportNow = id
             // luncurkan periode picker
             this.$store.commit("Modal/active", { judul: "Set record to export", form: "PeriodePicker", store: "Document", btnValue: "Export"});
+
+            } else if (id === "report002") {
+                this.exportBaseReport()        
+            }
+        },
+        async exportBaseReport() {
+            // open loader
+            this.$store.commit("Modal/active", { judul: "", form: "Loader" })
+            // cari document dengan criteria { isFinished: false }
+            await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: false } })
+            // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
+            await this.$store.dispatch("BaseReportFile/getDataByState")
+            // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+            await this.$store.dispatch("BaseReportStock/getDataByParent")
+            // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+            await this.$store.dispatch("BaseReportStock/getDataByParent")
+            // ambil document
+            console.log(this.$store.getters["Document/exportCompletely"])
+            // tutup loader
+            this.$store.commit("Modal/active")
         }
     },
     created() {

@@ -35,6 +35,7 @@ const BaseReportStock = {
   },
   actions: {
     getDataByParent({commit, dispatch, rootState}, parent) {
+      commit("basereportstock", [])
       rootState.BaseReportFile.lists.forEach((val) => {
         dispatch("getDataByCriteriaAppend", { 
           store: "BaseReportStock", 
@@ -57,6 +58,14 @@ const BaseReportStock = {
             })
           ))
         : []
+    },
+    standartWaktuByParentAndShift: (state) => (shift, id) =>  {
+      let filtered = JSON.parse(JSON.stringify(state.lists)).filter((val) => val.shift == shift && val.parent == id)
+      let result = 0
+       filtered.forEach((val) => {
+        result += val.out
+      })
+       return result
     },
   },
 };

@@ -159,10 +159,9 @@ export default createStore({
           }
       } */
       return myfunction.findData(value).then((result) => {
-        commit(`${value.store}/append`,
-            result.length > 0 ? result : [],
-            { root: true }
-        );
+        if(result) {
+        commit(`${value.store}/append`, result, { root: true } );
+        }
       });
     },
     async findDataByDateArrays({ commit, rootGetters }, value) {

@@ -116,12 +116,109 @@ const Uncollected = {
           ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.shared })
           : val.shared;
 
+        val.finished = !isNaN(val.finished)
+          ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.finished })
+          : val.finished
+
         delete val.id;
         delete val.status;
 
         return val;
       });
     },
+    dateDocument(state, getters, rootState, rootGetters) {
+      // get the uniquee date
+      let uniquee = [ ...new Set ( JSON.parse(JSON.stringify(state.lists)).map((val) => val.periode) ) ]
+      //return as object
+      return uniquee.length > 0 
+        ? uniquee.map((val) => {
+            return {
+              periode: val,
+              periode2: rootGetters["dateFormat"]({format: "dateMonth", time: val})
+            }
+          })
+        : []
+    },
+    exportCompletely(state, getters, rootState, rootGetters) {
+    // data expected like so
+    // id: idrecord, [v]
+    // name: spvrecord, [v] 
+    // periode: perioderecord, [v]
+    // shift: shiftrecord, [v]
+    // head: headrecord, [v]
+    // collected: collectedrecord, [v]
+    // approval: approvalrecord, [v]
+    // shared: false, [v]
+    // finished: false, [v]
+    // basereportfile: false, [v]
+    // totaldo: false, [v]
+    // totalkendaraan: false, [v]
+    // totalwaktu: false, [v]
+    // standartwaktu: false, [v]
+    // isfinished: false, [v]
+    return state.lists.map((val) => {
+        let spvInfo = rootGetters["Supervisors/spvId"](val.name);
+        val.spv = spvInfo.name;
+        val.warehouseName = spvInfo.warehouseName;
+        val.headName = rootGetters["Headspv/headId"](val.head).name;
+        // baseReportInfo
+        let baseReportFile = rootGetters["BaseReportFile/getIdByPeriodeByWarehouse"](val.periode, spvInfo.warehouse)
+        // baseReportFile
+        val.baseReportFile = baseReportFile
+        val.totalDo = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalDo
+        val.totalKendaraan = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalKendaraan
+        val.totalWaktu = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalWaktu
+        val.standartWaktu = rootGetters["BaseReportStock/standartWaktuByShiftAndParent"](val.shift, val.baseReportFile)
+
+        val.periode2 = rootGetters["dateFormat"]({
+          format: "ymdexcel",
+          time: val.periode,
+        });
+
+        val.collected2 = !isNaN(val.collected)
+          ? rootGetters["dateFormat"]({
+              format: "ymdexcel",
+              time: val.collected,
+            })
+          : val.collected;
+
+        val.approval2 = !isNaN(val.approval)
+          ? rootGetters["dateFormat"]({
+              format: "ymdexcel",
+              time: val.approval,
+            })
+          : val.approval;
+
+        val.shared2 = !isNaN(val.shared)
+          ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.shared })
+          : val.shared;
+
+        val.finished2 = !isNaN(val.finished)
+          ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.finished })
+          : val.finished;
+
+        delete val.status;
+
+        return {
+          id: val.id,
+          spv: spv, 
+          periode: val.periode2,
+          shift: val.shift,
+          head: val.headName,
+          collected: val.collected2,
+          approval: val.approval2,
+          shared: val.shared2,
+          finished: val.finished2,
+          basereportfile: val.baseReportFile,
+          totaldo: val.totalDo,
+          totalkendaraan: val.totalKendaraan,
+          totalwaktu: val.totalWaktu,
+          standartwaktu: val.standartWaktu,
+          isfinished: val.finished2,
+        }
+      })
+    }
+
   },
 };
 

@@ -30,7 +30,16 @@ const BaseReportFile = {
       state.baseId = payload;
     },
   },
-  actions: {},
+  actions: {
+    async getDataByState({commit, rootGetters, dispatch}) {
+      commit("basereportfile", [])
+      // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
+      let documen = rootGetters["Document/dateDocument"]
+        for(let i = 0; i < documen.length; i++ ) {
+          await dispatch("getDataByCriteriaAppend", {store: "BaseReportFile", criteria: { periode: documen[i].periode, imported: true } }, { root: true })
+        }
+    }
+  },
   getters: {
     baseId: (state) => (id) => {
       return JSON.parse(
