@@ -5,6 +5,7 @@
         <label class="w3-margin-top">Clock Sheet</label>
         <Select 
             :options="sheetNames" 
+            judul="Clock sheet"
             value="id"
             text="title"
             @selected="clock = $event"
@@ -12,6 +13,7 @@
         <label class="w3-margin-top">Stock Sheet</label>
         <Select 
             :options="sheetNames" 
+            judul="Stock sheet"
             value="id"
             text="title"
             @selected="stock = $event"
@@ -221,7 +223,6 @@ export default {
                     title: val
                 }
             })
-            result.unshift({id: null, title: "Select sheet"})
             return result
         }
     },

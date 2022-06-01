@@ -168,7 +168,7 @@ const Uncollected = {
         val.totalDo = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalDo
         val.totalKendaraan = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalKendaraan
         val.totalWaktu = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalWaktu
-        val.standartWaktu = rootGetters["BaseReportStock/standartWaktuByShiftAndParent"](val.shift, val.baseReportFile)
+        val.standartWaktu = rootGetters["BaseReportStock/standartWaktuByParentAndShift"](val.shift, val.baseReportFile)
 
         val.periode2 = rootGetters["dateFormat"]({
           format: "ymdexcel",
@@ -201,7 +201,7 @@ const Uncollected = {
 
         return {
           id: val.id,
-          spv: spv, 
+          spv: val.spv, 
           periode: val.periode2,
           shift: val.shift,
           head: val.headName,
@@ -214,7 +214,7 @@ const Uncollected = {
           totalkendaraan: val.totalKendaraan,
           totalwaktu: val.totalWaktu,
           standartwaktu: val.standartWaktu,
-          isfinished: val.finished2,
+          isfinished: val.isfinished,
         }
       })
     }
