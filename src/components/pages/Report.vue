@@ -56,16 +56,17 @@ export default {
             // open loader
             this.$store.commit("Modal/active", { judul: "", form: "Loader" })
             // cari document dengan criteria { isFinished: false }
-            let documen = await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: false } })
+            let documen = await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: "false" } })
             // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
-            // await this.$store.dispatch("BaseReportFile/getDataByState")
-            // // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+            console.log("selesai ambil documen")
+            await this.$store.dispatch("BaseReportFile/getDataByState")
+            // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
             // await this.$store.dispatch("BaseReportStock/getDataByParent")
             // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
             // await this.$store.dispatch("BaseReportStock/getDataByParent")
             // // ambil document
             
-            console.log("selesai ambil documen")
+            console.log("selesai ambil BaseReportFile")
 
             // tutup loader
             this.$store.commit("Modal/active")
