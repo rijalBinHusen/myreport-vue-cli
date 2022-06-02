@@ -156,7 +156,8 @@ const Uncollected = {
     // totalwaktu: false, [v]
     // standartwaktu: false, [v]
     // isfinished: false, [v]
-    return state.lists.map((val) => {
+    let result = []
+    state.lists.forEach((val) => {
         let spvInfo = rootGetters["Supervisors/spvId"](val.name);
         val.spv = spvInfo.name;
         val.warehouseName = spvInfo.warehouseName;
@@ -164,59 +165,62 @@ const Uncollected = {
         // baseReportInfo
         let baseReportFile = rootGetters["BaseReportFile/getIdByPeriodeByWarehouse"](val.periode, spvInfo.warehouse)
         // baseReportFile
-        val.baseReportFile = baseReportFile
-        val.totalDo = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalDo
-        val.totalKendaraan = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalKendaraan
-        val.totalWaktu = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalWaktu
-        val.standartWaktu = rootGetters["BaseReportStock/standartWaktuByParentAndShift"](val.shift, val.baseReportFile)
+        if(baseReportFile) {
+          val.baseReportFile = baseReportFile.id
+          val.totalDo = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalDo
+          val.totalKendaraan = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalKendaraan
+          val.totalWaktu = rootGetters["BaseReportClock/detailsByShiftAndParent"](val.shift, val.baseReportFile).totalWaktu
+          val.standartWaktu = rootGetters["BaseReportStock/standartWaktuByParentAndShift"](val.shift, val.baseReportFile)
 
-        val.periode2 = rootGetters["dateFormat"]({
-          format: "ymdexcel",
-          time: val.periode,
-        });
+          val.periode2 = rootGetters["dateFormat"]({
+            format: "ymdexcel",
+            time: val.periode,
+          });
 
-        val.collected2 = !isNaN(val.collected)
-          ? rootGetters["dateFormat"]({
-              format: "ymdexcel",
-              time: val.collected,
-            })
-          : val.collected;
+          val.collected2 = !isNaN(val.collected)
+            ? rootGetters["dateFormat"]({
+                format: "ymdexcel",
+                time: val.collected,
+              })
+            : val.collected;
 
-        val.approval2 = !isNaN(val.approval)
-          ? rootGetters["dateFormat"]({
-              format: "ymdexcel",
-              time: val.approval,
-            })
-          : val.approval;
+          val.approval2 = !isNaN(val.approval)
+            ? rootGetters["dateFormat"]({
+                format: "ymdexcel",
+                time: val.approval,
+              })
+            : val.approval;
 
-        val.shared2 = !isNaN(val.shared)
-          ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.shared })
-          : val.shared;
+          val.shared2 = !isNaN(val.shared)
+            ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.shared })
+            : val.shared;
 
-        val.finished2 = !isNaN(val.finished)
-          ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.finished })
-          : val.finished;
+          val.finished2 = !isNaN(val.finished)
+            ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.finished })
+            : val.finished;
 
-        delete val.status;
+          delete val.status;
 
-        return {
-          id: val.id,
-          spv: val.spv, 
-          periode: val.periode2,
-          shift: val.shift,
-          head: val.headName,
-          collected: val.collected2,
-          approval: val.approval2,
-          shared: val.shared2,
-          finished: val.finished2,
-          basereportfile: val.baseReportFile,
-          totaldo: val.totalDo,
-          totalkendaraan: val.totalKendaraan,
-          totalwaktu: val.totalWaktu,
-          standartwaktu: val.standartWaktu,
-          isfinished: val.isfinished,
+          result.push({
+            id: val.id,
+            spv: val.spv, 
+            periode: val.periode2,
+            shift: val.shift,
+            head: val.headName,
+            collected: val.collected2,
+            approval: val.approval2,
+            shared: val.shared2,
+            finished: val.finished2,
+            basereportfile: val.baseReportFile,
+            totaldo: val.totalDo,
+            totalkendaraan: val.totalKendaraan,
+            totalwaktu: val.totalWaktu,
+            standartwaktu: val.standartWaktu,
+            isfinished: val.isfinished,
+          })
         }
       })
+    return result
     }
 
   },

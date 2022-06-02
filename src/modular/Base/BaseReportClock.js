@@ -51,7 +51,7 @@ const BaseReportClock = {
         JSON.stringify(state.lists.filter((val) => val.shift == shift && val.parent == id)
       ));
     },
-    detailsByShiftAndParent: (state, rootGetters) => (shift, id) => {
+    detailsByShiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {
       let totalDo = 0;
       let totalKendaraan = 0;
       let totalWaktu = 0

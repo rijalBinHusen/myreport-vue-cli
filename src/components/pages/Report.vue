@@ -63,9 +63,10 @@ export default {
             await this.$store.dispatch("BaseReportStock/getDataByParent")
             // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
             await this.$store.dispatch("BaseReportClock/getDataByParent")
-            console.log("selesai ambil BaseReportClock")
             // // ambil document
-            
+            console.log(
+                this.$store.getters["Document/exportCompletely"]
+                )
 
             // tutup loader
             this.$store.commit("Modal/active")
