@@ -109,7 +109,7 @@ export default {
                 */
             //    Checker stock shift 1
             let in1st = stockSheet["E"+i] ? stockSheet["E"+i].v : 0
-            let out1st = stockSheet["F"+i] ? stockSheet["F"+i] : 0
+            let out1st = stockSheet["F"+i] ? stockSheet["F"+i].v : 0
                 if(in1st > 0 || out1st > 0) {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
