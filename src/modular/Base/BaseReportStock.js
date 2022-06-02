@@ -65,12 +65,11 @@ const BaseReportStock = {
        return result
     },
     exportData(state, getters, rootState, rootGetters) {
-    // periode, [v]
-    // gudang, [v]
-    // parentdocument, [v]
-    // problem
     // id, [v]
     // parent,[v] 
+    // parentdocument
+    // periode, [v]
+    // gudang, [v]
     // shift, [v]
     // item, [v]
     // namaitem, 
@@ -81,11 +80,27 @@ const BaseReportStock = {
     // dateout, [v]
     // real, [v]
     // dateend, [v]
+    // problem
     return state.lists.map((val) => {
       let parentFile = rootGetters["BaseReportFile/baseId"](val.parent)
-      val.periode = rootGetters["dateFormat"]({ format: "dateMonth", time: parentFile.periode })
-      val.gudang = rootGetters["Warehouses/warehouseId"](parentFile.warehouse).name
-      return val
+      return {
+        id: val.id,
+        parent: val.parent,
+        periode: rootGetters["dateFormat"]({ format: "dateMonth", time: parentFile.periode }),
+        gudang: rootGetters["Warehouses/warehouseId"](parentFile.warehouse).name,
+        shift: val.shift,
+        item: val.item,
+        namaItem: "",
+        awal: val.awal,
+        Masuk: val.in,
+        TanggalMasuk: val.dateIn ? val.dateIn : "",
+        Keluar: val.out,
+        TanggalKeluar: val.dateOut ? val.dateOut : "" ,
+        Akhir: "",
+        real: val.real,
+        TanggalAkhir: val.dateEnd ? val.dateEnd : "",
+        selisih: "",
+      }
     })
 
     }

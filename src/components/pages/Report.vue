@@ -72,10 +72,11 @@ export default {
             //     "stock", this.$store.getters["BaseReportStock/exportData"]
             //     )
             // download file
+            let periode = this.$store.getters["BaseReportFile/dateReport"]
             exportSeperateSheet({
                 stock: this.$store.getters["BaseReportStock/exportData"],
                 document: this.$store.getters["Document/exportCompletely"],
-            }, "Bismillah")
+            }, `Base report periode ${periode[0].periode2} sampai dengan ${periode.slice(-1)[0].periode2}`)
 
             // tutup loader
             this.$store.commit("Modal/active")

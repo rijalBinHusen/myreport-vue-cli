@@ -203,9 +203,10 @@ const Uncollected = {
 
           result.push({
             id: val.id,
-            spv: val.spv, 
             periode: val.periode2,
+            Gudang: val.warehouseName,
             shift: val.shift,
+            spv: val.spv, 
             head: val.headName,
             collected: val.collected2,
             approval: val.approval2,
