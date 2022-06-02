@@ -58,14 +58,12 @@ export default {
             // cari document dengan criteria { isFinished: false }
             let documen = await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: "false" } })
             // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
-            console.log("selesai ambil documen")
             await this.$store.dispatch("BaseReportFile/getDataByState")
-            console.log("selesai ambil BaseReportFile")
             // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
             await this.$store.dispatch("BaseReportStock/getDataByParent")
-            console.log("selesai ambil BaseReportStock")
             // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
-            // await this.$store.dispatch("BaseReportStock/getDataByParent")
+            await this.$store.dispatch("BaseReportClock/getDataByParent")
+            console.log("selesai ambil BaseReportClock")
             // // ambil document
             
 
