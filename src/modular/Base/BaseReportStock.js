@@ -86,20 +86,23 @@ const BaseReportStock = {
       return {
         id: val.id,
         parent: val.parent,
+        parentDocument: "",
         periode: rootGetters["dateFormat"]({ format: "dateMonth", time: parentFile.periode }),
         gudang: rootGetters["Warehouses/warehouseId"](parentFile.warehouse).name,
         shift: val.shift,
         item: val.item,
-        namaItem: "",
+        namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
         awal: val.awal,
         Masuk: val.in,
         TanggalMasuk: val.dateIn ? val.dateIn : "",
+        planKeluar: "",
         Keluar: val.out,
         TanggalKeluar: val.dateOut ? val.dateOut : "" ,
         Akhir: "",
         real: val.real,
         TanggalAkhir: val.dateEnd ? val.dateEnd : "",
         selisih: "",
+        isChanged: "",
       }
     })
 

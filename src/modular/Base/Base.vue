@@ -186,6 +186,7 @@ export default {
         ...mapActions({
             CLOCKBYPARENT: "BaseReportClock/getDataByParent",
             STOCKBYPARENT: "BaseReportStock/getDataByParent",
+            GETALLITEM: "Baseitem/getAllItem"
         }),
         message(ev, obj) {
             console.log(ev, obj)
@@ -376,6 +377,7 @@ export default {
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
         this.listsWarehouse = this.WAREHOUSEBASEREPORT
+        this.GETALLITEM()
     },
     created() {
         this.step = ""

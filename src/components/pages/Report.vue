@@ -83,6 +83,7 @@ export default {
         }
     },
     created() {
+        this.$store.dispatch("Baseitem/getAllItem")
         this.step = ""
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // console.log(mutation)

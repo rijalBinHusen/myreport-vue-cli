@@ -28,7 +28,13 @@ const Baseitem = {
     },
   },
 
-  actions: {},
+  actions: {
+    getAllItem({state, dispatch}) {
+      if(state.lists.length <= 200) {
+        dispatch("getDataByCriteria", { store: "Baseitem", allData: true }, {root: true})
+      }
+    }
+  },
   getters: {
     baseItemId: (state, getters, rootState, rootGetters) => (id) => {
       return [...state.lists].find((val) => val.id === id);
