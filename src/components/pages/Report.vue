@@ -65,7 +65,10 @@ export default {
             await this.$store.dispatch("BaseReportClock/getDataByParent")
             // // ambil document
             console.log(
-                this.$store.getters["Document/exportCompletely"]
+                "document", this.$store.getters["Document/exportCompletely"]
+                )
+            console.log(
+                "stock", this.$store.getters["BaseReportStock/exportData"]
                 )
 
             // tutup loader

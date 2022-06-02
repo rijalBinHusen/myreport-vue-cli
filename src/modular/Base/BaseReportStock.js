@@ -2,7 +2,6 @@ const BaseReportStock = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "BaseReportStock", split: "bulan" },
   },
   mutations: {
     // add data to
@@ -46,9 +45,6 @@ const BaseReportStock = {
     }
   },
   getters: {
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
     shiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {
       return  state.lists.length > 0 
         ? JSON.parse(
@@ -68,6 +64,31 @@ const BaseReportStock = {
       })
        return result
     },
+    exportData(state, getters, rootState, rootGetters) {
+    // periode, [v]
+    // gudang, [v]
+    // parentdocument, [v]
+    // problem
+    // id, [v]
+    // parent,[v] 
+    // shift, [v]
+    // item, [v]
+    // namaitem, 
+    // awal, [v]
+    // in, [v]
+    // datein, [v]
+    // out, [v]
+    // dateout, [v]
+    // real, [v]
+    // dateend, [v]
+    return state.lists.map((val) => {
+      let parentFile = rootGetters["BaseReportFile/baseId"](val.parent)
+      val.periode = rootGetters["dateFormat"]({ format: "dateMonth", time: parentFile.periode })
+      val.gudang = rootGetters["Warehouses/warehouseId"](parentFile.warehouse).name
+      return val
+    })
+
+    }
   },
 };
 
