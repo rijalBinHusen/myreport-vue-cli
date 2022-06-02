@@ -28,6 +28,7 @@
 import Table from "../elements/Table.vue"
 import Button from "../elements/Button.vue"
 import exportToXls from "../../exportToXls"
+import exportSeperateSheet from "../../exportToXlsSeperateSheet"
 
 export default {
     data () {
@@ -64,12 +65,17 @@ export default {
             // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
             await this.$store.dispatch("BaseReportClock/getDataByParent")
             // // ambil document
-            console.log(
-                "document", this.$store.getters["Document/exportCompletely"]
-                )
-            console.log(
-                "stock", this.$store.getters["BaseReportStock/exportData"]
-                )
+            // console.log(
+            //     "document", this.$store.getters["Document/exportCompletely"]
+            //     )
+            // console.log(
+            //     "stock", this.$store.getters["BaseReportStock/exportData"]
+            //     )
+            // download file
+            exportSeperateSheet({
+                stock: this.$store.getters["BaseReportStock/exportData"],
+                document: this.$store.getters["Document/exportCompletely"],
+            }, "Bismillah")
 
             // tutup loader
             this.$store.commit("Modal/active")
