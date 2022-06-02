@@ -34,14 +34,15 @@ const BaseReportStock = {
     },
   },
   actions: {
-    getDataByParent({commit, dispatch, rootState}, parent) {
+    async getDataByParent({commit, dispatch, rootState}) {
       commit("basereportstock", [])
-      rootState.BaseReportFile.lists.forEach((val) => {
-        dispatch("getDataByCriteriaAppend", { 
-          store: "BaseReportStock", 
-          criteria: {parent: val.id} 
-        }, { root: true })
-      })
+      let parent = rootState.BaseReportFile.lists
+      for(let i = 0; i < parent.length; i++) {
+          await dispatch("getDataByCriteriaAppend", { 
+            store: "BaseReportStock", 
+            criteria: {parent: parent[i].id} 
+          }, { root: true })
+      }
     }
   },
   getters: {
