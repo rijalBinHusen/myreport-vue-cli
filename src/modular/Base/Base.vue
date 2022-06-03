@@ -7,6 +7,7 @@
             :tableName="tableName"
             @exit="excelMode = false"
             @save="save($event)"
+            rowHeight="180"
         >
             <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
         </AGGrid>
@@ -333,12 +334,12 @@ export default {
                     { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 300 },
                     { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
                     { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
-                    { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
-                    { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
                     { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
-                    { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
                 ];
             },
