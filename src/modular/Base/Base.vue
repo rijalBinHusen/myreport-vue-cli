@@ -7,7 +7,7 @@
             :tableName="tableName"
             @exit="excelMode = false"
             @save="save($event)"
-            rowHeight="180"
+            rowHeight="70"
         >
             <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
         </AGGrid>
@@ -96,7 +96,7 @@
         <Datatable
           :datanya="lists"
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['item', 'awal']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['itemName', 'awal']"
           id="tableBaseReport"
           option
           #default="{ prop }"
