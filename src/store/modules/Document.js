@@ -2,9 +2,13 @@ const Uncollected = {
   namespaced: true,
   state: {
     lists: [],
+    allData: false,
   },
 
   mutations: {
+    allData(state) {
+      state.allData = !state.allData
+    },
     // new data from localbase
     document(state, value) {
       state.lists = value;
@@ -24,7 +28,24 @@ const Uncollected = {
       });
     },
   },
-  actions: {},
+  actions: {
+    async getAllDocumentNotFinished({state, commit, dispatch}) {
+      if(state.allData) { return }
+      commit("Modal/active", { judul: "", form: "Loader" }, { root: true })
+      // cari document dengan criteria { isFinished: false }
+      await dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: "false" } }, { root: true })
+      // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
+      await dispatch("BaseReportFile/getDataByState", {}, { root: true })
+      // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+      await dispatch("BaseReportStock/getDataByParent", {}, { root: true })
+      // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+      await dispatch("BaseReportClock/getDataByParent", {}, { root: true })
+      // 
+      commit("Modal/active", false, { root: true })
+      commit("allData")
+      return "finished"
+    },
+  },
   getters: {
     uncollected(state) {
       return state.lists.length > 0

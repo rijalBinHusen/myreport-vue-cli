@@ -55,23 +55,24 @@ export default {
         },
         async exportBaseReport() {
             // open loader
-            this.$store.commit("Modal/active", { judul: "", form: "Loader" })
-            // cari document dengan criteria { isFinished: false }
-            let documen = await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: "false" } })
-            // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
-            await this.$store.dispatch("BaseReportFile/getDataByState")
-            // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
-            await this.$store.dispatch("BaseReportStock/getDataByParent")
-            // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
-            await this.$store.dispatch("BaseReportClock/getDataByParent")
-            // // ambil document
-            // console.log(
-            //     "document", this.$store.getters["Document/exportCompletely"]
-            //     )
-            // console.log(
-            //     "stock", this.$store.getters["BaseReportStock/exportData"]
-            //     )
-            // download file
+            // this.$store.commit("Modal/active", { judul: "", form: "Loader" })
+            // // cari document dengan criteria { isFinished: false }
+            // let documen = await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: "false" } })
+            // // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
+            // await this.$store.dispatch("BaseReportFile/getDataByState")
+            // // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+            // await this.$store.dispatch("BaseReportStock/getDataByParent")
+            // // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+            // await this.$store.dispatch("BaseReportClock/getDataByParent")
+            // // // ambil document
+            // // console.log(
+            // //     "document", this.$store.getters["Document/exportCompletely"]
+            // //     )
+            // // console.log(
+            // //     "stock", this.$store.getters["BaseReportStock/exportData"]
+            // //     )
+            // // download file
+            await this.$store.dispatch("Document/getAllDocumentNotFinished")
             let periode = this.$store.getters["BaseReportFile/dateReport"]
             exportSeperateSheet({
                 stock: this.$store.getters["BaseReportStock/exportData"],
@@ -79,7 +80,7 @@ export default {
             }, `Base report periode ${periode[0].periode2} sampai dengan ${periode.slice(-1)[0].periode2}`)
 
             // tutup loader
-            this.$store.commit("Modal/active")
+            // this.$store.commit("Modal/active")
         }
     },
     created() {

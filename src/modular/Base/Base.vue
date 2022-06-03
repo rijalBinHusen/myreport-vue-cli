@@ -331,7 +331,7 @@ export default {
                 ]
                 : [
                     { headerName: "Kode Item", field: "item", editable: true, resizable: true },
-                    { headerName: "Nama Item", field: "namaItem", editable: false, resizable: true, width: 300 },
+                    { headerName: "Nama Item", field: "itemName", editable: false, resizable: true, width: 300 },
                     { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
                     { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
                     { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
@@ -374,7 +374,9 @@ export default {
             this.renewLists()
         },
     },
-    mounted() {
+    async mounted() {
+        // getAllDocumentNotFinished
+        await this.$store.dispatch("Document/getAllDocumentNotFinished")
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
         this.listsWarehouse = this.WAREHOUSEBASEREPORT
