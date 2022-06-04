@@ -362,16 +362,17 @@ export default {
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-            if(!this.selectedPeriode || !this.selectedWarehouse) { return }
+            if(!this.selectedPeriode) { return }
             this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
             this.detailsDocument()
-            this.renewLists()
+            this.listsWarehouse = this.WAREHOUSEBASEREPORT(newVal)
+            this.sheet = ""
+            this.shift = ""
+            this.lists = []
         },
         selectedWarehouse(newVal, oldVal) {
             if(!this.selectedPeriode || !this.selectedWarehouse) { return }
             this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-            this.detailsDocument()
-            this.renewLists()
         },
     },
     async mounted() {
@@ -379,7 +380,6 @@ export default {
         await this.$store.dispatch("Document/getAllDocumentNotFinished")
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
-        this.listsWarehouse = this.WAREHOUSEBASEREPORT
         this.GETALLITEM()
     },
     created() {
@@ -408,7 +408,6 @@ export default {
                 this.step = ""
                 // update lists select periode dan gudang
                 this.listsPeriode = this.DATEBASEREPORT
-                this.listsWarehouse = this.WAREHOUSEBASEREPORT
                 // dapatkan clock dan stock untuk periode tersebut
                 // trigger dispatch untuk mencari basereportclock, basereportstock byparent
                 this.STOCKBYPARENT()

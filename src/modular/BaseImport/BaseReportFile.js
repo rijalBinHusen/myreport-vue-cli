@@ -61,18 +61,33 @@ const BaseReportFile = {
         : []
     },
     // return unique date of report 
-    warehouseReport(state, getters, rootState, rootGetters) {
+    warehouseReport: (state, getters, rootState, rootGetters) => (periode) => {
       // get the uniquee date
-      let uniquee = [ ...new Set ( JSON.parse(JSON.stringify(state.lists)).map((val) => val.warehouse) ) ]
-      //return as object
-      return uniquee.length > 0 
-        ? uniquee.map((val) => {
-            return {
+      return state.lists.filter((val) => {
+        if(val.periode == periode) {
+          return {
               warehouse: val,
               warehouseName: rootGetters["Warehouses/warehouseId"](val).name
             }
-          })
-        : []
+        }
+      })
+      // filter.map((val) => {
+      //   return {
+      //     warehouse: val.warehouse,
+      //     warehohuse:
+      //   }
+      // })
+
+      // let uniquee = [ ...new Set ( JSON.parse(JSON.stringify(state.lists)).map((val) => val.warehouse) ) ]
+      // //return as object
+      // return uniquee.length > 0 
+      //   ? uniquee.map((val) => {
+      //       return {
+      //         warehouse: val,
+      //         warehouseName: rootGetters["Warehouses/warehouseId"](val).name
+      //       }
+      //     })
+      //   : []
     },
     getIdByPeriodeByWarehouse: (state) => (periode, warehouse) => {
       return JSON.parse(JSON.stringify(state.lists)).find((val) => val.periode == periode && val.warehouse == warehouse )
