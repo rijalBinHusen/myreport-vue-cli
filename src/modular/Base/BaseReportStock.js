@@ -51,6 +51,7 @@ const BaseReportStock = {
             JSON.stringify(state.lists.filter((val) => {
               if(val.shift == shift && val.parent == id) {
                 val.itemName = rootGetters["Baseitem/baseItemKode"](val.item).name
+                val.selisih = (val.awal + val.in - val.out) - val.real
                 return val
               }
             })

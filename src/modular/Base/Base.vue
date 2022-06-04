@@ -95,8 +95,8 @@
             </div>
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['itemName', 'awal']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih', 'Problem']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['itemName', 'selisih', 'problem']"
           id="tableBaseReport"
           option
           #default="{ prop }"

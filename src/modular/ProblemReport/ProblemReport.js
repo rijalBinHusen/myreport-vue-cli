@@ -51,19 +51,21 @@ const Problem = {
       );
       return rec && rec.id ? rec : "";
     },
-    problemActive: (state) => (time, warehouse) => {
+    problemActive: (state) => (time, warehouse, item) => {
       // this.$store.getters["Problem/problemActive"](new Date().getTime())
-      let result = {}
+      let result = []
       JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
           /* object yang diharapkan
           {
             kodeItem: problemId
           }
           */
-        if(time >= val.tanggalMulai || time <= val.tanggalSelesai && val.warehouse == warehouse) {
-          result.hasOwnProperty([val.item])
-            ? result[val.item] =  val.id 
-            : result = { [val.item]: val.id }
+        if( (time >= val.tanggalMulai 
+                    || time <= val.tanggalSelesai) 
+            && val.warehouse == warehouse 
+            && val.item == item
+            ) {
+            result.push(val.id)
         }
       });
       return result

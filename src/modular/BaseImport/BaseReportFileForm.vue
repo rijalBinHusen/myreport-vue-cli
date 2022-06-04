@@ -42,6 +42,7 @@ export default {
         return {
             clock: null,
             stock: null,
+            infoBaseReport: "",
         }
     },
     methods: {
@@ -51,8 +52,8 @@ export default {
                 alert("Select sheet first!")
                 return
             }
-            // BASE record info
-            let infoBaseReport = this.MODALDETAILS.obj
+            // BASE record info move to data
+            // let infoBaseReport = this.MODALDETAILS.obj
             // this.GET_BASEID(this._BASEID)
             // tampilkan loader, proses data yang sudah dipilih
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -92,8 +93,8 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId", {
                         store: "BaseReportClock",
                         obj: {
-                            id: this._BASEID + counter,
-                            parent: this._BASEID,
+                            id: this.infoBaseReport.id + counter,
+                            parent: this.infoBaseReport.id,
                             shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
                             noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
                             reg: clockSheet["F"+i] ? clockSheet["F"+i].w : 0,
@@ -115,8 +116,8 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this._BASEID + "01" + counter,
-                            parent: this._BASEID,
+                            id: this.infoBaseReport.id + "01" + counter,
+                            parent: this.infoBaseReport.id,
                             shift: 1,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
                             awal: stockSheet["D"+i] ?  stockSheet["D"+i].v : 0,
@@ -126,6 +127,7 @@ export default {
                             dateOut: "",
                             dateEnd: "",
                             real: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
+                            problem: this.PROBLEMACTIVE(this.infoBaseReport.periode, this.infoBaseReport.warehouse, stockSheet["A"+i] ? stockSheet["A"+i].v : "No item")
                         },
                     })
                 }
@@ -140,8 +142,8 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this._BASEID + "02" + counter,
-                            parent: this._BASEID,
+                            id: this.infoBaseReport.id + "02" + counter,
+                            parent: this.infoBaseReport.id,
                             shift: 2,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
                             awal: stockSheet["G"+i] ?  stockSheet["G"+i].v : 0,
@@ -151,8 +153,8 @@ export default {
                             dateOut: "",
                             dateEnd: "",
                             real: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
+                            problem: this.PROBLEMACTIVE(this.infoBaseReport.periode, this.infoBaseReport.warehouse, stockSheet["A"+i] ? stockSheet["A"+i].v : "No item")
                         },
-                        period: infoBaseReport.periode
                     })
                 }
 
@@ -173,8 +175,8 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this._BASEID + "03" + counter,
-                            parent: this._BASEID,
+                            id: this.infoBaseReport.id + "03" + counter,
+                            parent: this.infoBaseReport.id,
                             shift: 3,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
                             awal: stockSheet["J"+i] ?  stockSheet["J"+i].v : 0,
@@ -184,22 +186,22 @@ export default {
                             dateOut: "",
                             dateEnd: "",
                             real: stockSheet["P"+i] ?  stockSheet["P"+i].v : 0,
+                            problem: this.PROBLEMACTIVE(this.infoBaseReport.periode, this.infoBaseReport.warehouse, stockSheet["A"+i] ? stockSheet["A"+i].v : "No item")
                         },
-                        period: infoBaseReport.periode
                     })
                 }
             }
             // console.log("D10",this._BASEREPORT.sheets[this.clock]["D10"].v)
             // console.log("D11",this._BASEREPORT.sheets[this.clock]["D11"].v)
             // update baseReportFile record
-            infoBaseReport.fileName = this._BASEREPORT.fileName
-            infoBaseReport.stock = this.stock
-            infoBaseReport.clock = this.clock
-            infoBaseReport.imported = true
+            this.infoBaseReport.fileName = this._BASEREPORT.fileName
+            this.infoBaseReport.stock = this.stock
+            this.infoBaseReport.clock = this.clock
+            this.infoBaseReport.imported = true
             this.$store.dispatch("update",  { 
                 store: "BaseReportFile", 
-                obj: infoBaseReport,
-                criteria: {id: infoBaseReport.id}
+                obj: this.infoBaseReport,
+                criteria: {id: this.infoBaseReport.id}
                 })
             // sembunyikan loader
             this.$store.commit("Modal/active");
@@ -216,7 +218,8 @@ export default {
         }),
         ...mapGetters({
             // GET_BASEID: "BaseReportFile/baseId"
-            MODALDETAILS: "Modal/obj"
+            MODALDETAILS: "Modal/obj",
+            PROBLEMACTIVE: "Problem/problemActive",
         }),
         sheetNames() {
             let result = this._BASEREPORT.sheetNames.map((val) => {
@@ -229,7 +232,7 @@ export default {
         }
     },
     created() {
-        console.log(this.MODALDETAILS)
+        this.infoBaseReport = JSON.parse(JSON.stringify(this.MODALDETAILS.obj))
     }
 }
 </script>
