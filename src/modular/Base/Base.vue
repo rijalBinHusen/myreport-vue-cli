@@ -85,7 +85,7 @@
                 />
                 <!-- MArk as finished -->
                 <Button 
-                    v-if="base && sheet === 'stock' && shift && lists.length > 0"
+                    v-if="base && sheet === 'stock' && shift && lists.length > 0 && !lists[0]?.parentDocument"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
@@ -366,8 +366,6 @@ export default {
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-            if(!this.selectedPeriode) { return }
-            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
             this.detailsDocument()
             this.listsWarehouse = this.WAREHOUSEBASEREPORT(newVal)
             this.sheet = ""
@@ -375,7 +373,6 @@ export default {
             this.lists = []
         },
         selectedWarehouse(newVal, oldVal) {
-            if(!this.selectedPeriode || !this.selectedWarehouse) { return }
             this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
         },
     },

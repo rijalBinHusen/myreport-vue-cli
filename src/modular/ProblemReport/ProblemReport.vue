@@ -8,15 +8,23 @@
                 :keys="['namaGudang', 'namaItem', 'masalah', 'tanggalMulai', 'status']"
                 option
                 id="problemReport"
-                v-slot:default="slotProp"
+                #default="{ prop }"
             >
                 <Button 
                     small
                     primary 
                     value="Edit" 
-                    :datanya="slotProp.prop.id" 
+                    :datanya="prop.id" 
                     type="button" 
                     @trig="edit($event)" 
+                />
+                <Button 
+                    small
+                    secondary
+                    value="Duplicate" 
+                    :datanya="prop.id" 
+                    type="button" 
+                    @trig="duplicate($event)" 
                 />
             </Datatable>
         </div>
@@ -39,6 +47,19 @@ export default {
         edit(ev) {
             this.editId = ev
             this.form = true
+        },
+        duplicate(ev){
+            let confirm = window.confirm("Apakah anda yakin akan menduplikat record tersebut?")
+            if(!confirm) { return }
+            let record = this.$store.getters["Problem/problemId"](ev)
+            delete record.id
+            this.$store.dispatch("append",
+            {
+                store: "Problem",
+                obj: Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record)
+            })
+            // delete record.id
+            // console.log(Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record))
         }
     },
     computed: {
