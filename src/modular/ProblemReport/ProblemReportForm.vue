@@ -192,6 +192,7 @@ export default {
                 picPanjang: "",
                 tanggalSelesai: "",
                 shiftSelesai: "",
+                isfinished: "false",
             }
         }
     },

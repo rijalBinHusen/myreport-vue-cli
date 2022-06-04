@@ -132,7 +132,7 @@ export default createStore({
         return myfunction
           .getData({ store: value.store.toLowerCase() })
           .then((result) => {
-            if (result.length > 0) {
+            if (result?.length > 0) {
               commit(`${value.store}/${value.store.toLowerCase()}`, result, {
                 root: true,
               }); 

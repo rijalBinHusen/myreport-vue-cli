@@ -130,3 +130,10 @@ Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-ch
 
 ## bug to fix
 - [ ] nama supervisor tidak berubah pada /Uncollected/UncollectedEditForm
+- [ ] tidak bisa update record dari emit ag-grid dibase report
+
+## 2022-06-03 Todo
+- [ ] Tampilkan problem pada base report
+- [ ] Perlu periksa kembali document details (totalDO etc, etc)
+- [ ] Excel mode, gunakan custom cell editor pada koode item
+- [ ] Excel mode, tambahkan column plan output
