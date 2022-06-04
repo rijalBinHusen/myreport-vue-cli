@@ -32,12 +32,14 @@ import Loader from "./Loader.vue"
 import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
 import BaseReportFile from "../../modular/BaseImport/BaseReportFileForm.vue"
 import BaseClockForm from "../../modular/Base/BaseClockForm.vue";
+import BaseProblemForm from "../../modular/Base/BaseProblemForm.vue";
 import BaseStockForm from "../../modular/Base/BaseStockForm.vue"
 import PeriodePicker from "../parts/PeriodePicker.vue"
 
 export default {
   name: "Modal",
     components: {
+      BaseProblemForm,
       PeriodePicker,
       UncollectedEditForm,
       BaseStockForm,

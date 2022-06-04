@@ -126,7 +126,7 @@
                 class="w3-small"
                 listsKey="id"
                 listsValue="isi"
-                @trig="handleProblem($event, prop.id)"
+                @trig="handleProblem($event, prop)"
             />
             
             <Button 
@@ -206,16 +206,28 @@ export default {
         message(ev, obj) {
             console.log(ev, obj)
         },
-        handleProblem(ev, id) {
+        handleProblem(ev, obj) {
             if(ev === "delete") {
                 let confirm = window.confirm("Apakah anda yakin akan menghapus semua problem?")
                 if(confirm) {
-                    this.DELETEPROBLEMFROMSTOCK(id)
+                    this.DELETEPROBLEMFROMSTOCK(obj.id)
                     this.renewLists()
                 }
                 return
             }
-            console.log(ev, id)
+            // buka modal, dan kirim object yang dibutuhkan ke modal state (periode, warehouse, item, etc)
+            // console.log(ev, obj)
+            this.$store.commit("Modal/active", {
+                judul: "Edit problem", 
+                form: "BaseProblemForm",
+                obj: {
+                    id: obj.id,
+                    periode: this.base.periode,
+                    warehouse: this.base.warehouse,
+                    item: obj.item,
+                    itemName: obj.itemName,
+                }
+            });
         },
         launchForm() {
             // jika clock jika stock
@@ -293,7 +305,12 @@ export default {
                 })
         },
         pickPeriode() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
+            this.$store.commit("Modal/active", { 
+                judul: "Set record to show", 
+                form: "PeriodePicker", 
+                store: "BaseReportFile", 
+                btnValue: "Show"
+            });
         },
         detailsDocument() {
             // total waktu, total kendaraan, total do

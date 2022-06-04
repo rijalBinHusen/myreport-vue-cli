@@ -69,6 +69,21 @@ const BaseReportStock = {
       })
 
     },
+    updateProblem({dispatch, commit}, payload) {
+    // payload = { id: id, problem: []}
+    // update indexeddb
+    // console.log(payload)
+      dispatch("updateOnly", { 
+        store: "BaseReportStock", 
+        criteria: { id: payload.id }, 
+        obj: { problem: payload.problem }
+      }, { root: true })
+      // update state
+      commit("updateParam", { 
+        criteria: { id: payload.id }, 
+        obj: { problem: payload.problem } 
+      })
+    },
   },
   getters: {
     shiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {
