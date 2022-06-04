@@ -97,6 +97,11 @@ export default createStore({
       return myfunction.tunggu(130);
     },
 
+    updateOnly({}, payload) {
+      // payload = {store: "BaseReportStock", criteria: { id: stk22050003 }, obj: { problem: [] }}
+      myfunction.update(payload)
+    },
+
     getStart({ commit, state, rootGetters }) {
       // iterate the store
       state.store.forEach((val) => {

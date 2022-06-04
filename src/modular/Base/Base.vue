@@ -115,6 +115,19 @@
                 listsValue="isi"
                 @trig="message($event, prop)"
             />
+
+            <Dropdown
+                v-if="prop.selisih !== 0 || prop.problem"
+                value="Problem"  
+                :lists="[
+                    { id: 'delete', isi: 'Hapus'},
+                    { id: 'edit', isi: 'Edit'},
+                ]"
+                class="w3-small"
+                listsKey="id"
+                listsValue="isi"
+                @trig="handleProblem($event, prop.id)"
+            />
             
             <Button 
                 value="Delete" 
@@ -187,10 +200,22 @@ export default {
         ...mapActions({
             CLOCKBYPARENT: "BaseReportClock/getDataByParent",
             STOCKBYPARENT: "BaseReportStock/getDataByParent",
-            GETALLITEM: "Baseitem/getAllItem"
+            GETALLITEM: "Baseitem/getAllItem",
+            DELETEPROBLEMFROMSTOCK: "BaseReportStock/deleteProblem",
         }),
         message(ev, obj) {
             console.log(ev, obj)
+        },
+        handleProblem(ev, id) {
+            if(ev === "delete") {
+                let confirm = window.confirm("Apakah anda yakin akan menghapus semua problem?")
+                if(confirm) {
+                    this.DELETEPROBLEMFROMSTOCK(id)
+                    this.renewLists()
+                }
+                return
+            }
+            console.log(ev, id)
         },
         launchForm() {
             // jika clock jika stock

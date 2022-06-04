@@ -21,6 +21,17 @@ const BaseReportStock = {
         return val.id === value.id ? value : val;
       });
     },
+    updateParam(state, payload) {
+      // payload = { criteria: { id: stk22050003 }, obj: { problem: [] }}
+      state.lists = state.lists.map((val) => {
+        // val.id === stk22050003
+        if(val[Object.keys(payload.criteria)] == Object.values(payload.criteria)) {
+          // val.problem = []
+          val[Object.keys(payload.obj)] = Object.values(payload.obj)
+        }
+        return val
+      })
+    },
     delete(state, value) {
       // value = { parameter: "parent", value: "c038" }
       state.lists = state.lists.filter((val) => val.id !== value);
@@ -42,7 +53,22 @@ const BaseReportStock = {
             criteria: {parent: parent[i].id} 
           }, { root: true })
       }
-    }
+    },
+    deleteProblem({ dispatch, commit }, payload) {
+      // payload = id
+      // update indexeddb
+      dispatch("updateOnly", { 
+        store: "BaseReportStock", 
+        criteria: { id: payload }, 
+        obj: { problem: [] }
+      }, { root: true })
+      // update state
+      commit("updateParam", { 
+        criteria: { id: payload }, 
+        obj: { problem: [] } 
+      })
+
+    },
   },
   getters: {
     shiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {
