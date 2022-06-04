@@ -187,8 +187,7 @@ export default {
             totalWaktu: 0,
             standartWaktu: 0,
             problem: {},
-            unsubscribe: "",
-            step: "",
+            unwatch: "",
             listsPeriode: "",
             listsWarehouse: "",
             lists: [],
@@ -216,7 +215,7 @@ export default {
                 return
             }
             // buka modal, dan kirim object yang dibutuhkan ke modal state (periode, warehouse, item, etc)
-            // console.log(ev, obj)
+            // console.log(obj)
             this.$store.commit("Modal/active", {
                 judul: "Edit problem", 
                 form: "BaseProblemForm",
@@ -226,6 +225,7 @@ export default {
                     warehouse: this.base.warehouse,
                     item: obj.item,
                     itemName: obj.itemName,
+                    problem: obj.problem
                 }
             });
         },
@@ -426,46 +426,20 @@ export default {
         this.GETALLITEM()
     },
     created() {
-        this.step = ""
-        this.unsubscribe = this.$store.subscribe((mutation) => {
-            // console.log(mutation)
-        if (mutation.type === 'Modal/active') {
-            // jika mutation.payload && mutation.payload.form === PeriodePicker (user akan memilih periode yang akan didownload)
-            if(mutation.payload && mutation.payload.form === "PeriodePicker") {
-                // this.step = mutation.payload.form
-                this.step = mutation.payload.form
-                return
-            } 
-            // jika mutation.payload && mutation.payload.form === Loader (user telah memilih periode yang didownload)
-            if(this.step === "PeriodePicker" && mutation.payload && mutation.payload.form === "Loader") {
-                this.step = mutation.payload.form
-                // this.step = mutation.payload.form
-                return
+        this.unwatch = this.$store.watch(
+          (state, getters) => getters["Modal/obj"],
+          (newValue, oldValue) => {
+            // console.log(`Updating from ${JSON.stringify(oldValue?.form)} to ${JSON.stringify(newValue?.form)}`);
+
+            // Do whatever makes sense now
+            if (oldValue?.form === "BaseProblemForm" && newValue?.form === '') {
+              this.renewLists()
             }
-            // jika mutation.payload === undefined && this.step === Loader (modal ditutup otomatis setelah semua data didapatkan dari database)
-            if(!mutation.payload && this.step === "Loader") {
-                // buka loader lagi,
-                // open the modal with loader
-                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-                // this.step = ""
-                this.step = ""
-                // update lists select periode dan gudang
-                this.listsPeriode = this.DATEBASEREPORT
-                // dapatkan clock dan stock untuk periode tersebut
-                // trigger dispatch untuk mencari basereportclock, basereportstock byparent
-                this.STOCKBYPARENT()
-                this.CLOCKBYPARENT()
-                // tunggu dapatkan clock base
-                return
-            }
-            // jika mutation.payload === undefined (modal ditutup manual, user tidak jadi download)
-                // this.step kembali jadi "" lagi
-                this.step = ""
-            }
-        });
+          },
+        );
     },
     beforeUnmount() {
-        this.unsubscribe();
+         this.unwatch();
     },
     name: "Base"
 }

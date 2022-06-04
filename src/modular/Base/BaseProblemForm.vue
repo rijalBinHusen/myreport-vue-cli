@@ -37,9 +37,10 @@ import Button from "../../components/elements/Button.vue"
 			update() {
 				this.$store.dispatch("BaseReportStock/updateProblem", { 
 						id: this.info.id, 
-						problem: Object.assign({}, this.pickedProblem)
+						problem: [ ...this.pickedProblem ]
 					})
 				this.$store.commit("Modal/active");
+				// console.log([ ...this.pickedProblem ])
 			},
 		},
 		components: {
@@ -54,6 +55,7 @@ import Button from "../../components/elements/Button.vue"
 						this.$store.getters["Problem/problemId"](val) 
 					)
 			})
+			this.pickedProblem = this.info.problem
 		},
 		name: "BaseProblemForm"
 	}

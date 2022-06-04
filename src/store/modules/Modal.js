@@ -23,6 +23,10 @@ const Modal = {
           return;
         }
         state.active = false;
+        state.more = {
+          judul: '',
+          form: '',
+        }
       }
     },
   },
