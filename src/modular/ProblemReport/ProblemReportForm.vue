@@ -154,8 +154,12 @@
                     <textarea v-model="problem.solusiPanjang" id="solusiPanjang" style="width:100%; height:100%;"></textarea>
                 </div>
             </div>
-            <Button primary :value="id ? 'Update' : 'Submit'" class="w3-right" type="button"/>
             <Button danger value="Exit" class="w3-right" type="button" @trig="$emit('exit')"/>
+            <Button primary :value="id ? 'Update' : 'Submit'" class="w3-right" type="button"/>
+            <span class="w3-xlarge">
+                <label for="isfinished">Finished?</label>
+                <input type="checkbox" class="w3-xlarge" v-model="problem.isfinished" id="isfinished">
+            </span>
         </form>
     </div>
 </template>

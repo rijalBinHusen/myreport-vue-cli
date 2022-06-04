@@ -41,8 +41,7 @@ const Problem = {
           format: "dateMonth",
           time: val.tanggalMulai,
         }),
-        status:
-          new Date().getTime() <= val.tanggalSelesai ? "Progress" : "Closed",
+        status: val?.isfinished ? "Closed" : "Progress",
       }));
     },
     problemId: (state, getters, rootState, rootGetters) => (id) => {
@@ -70,6 +69,17 @@ const Problem = {
       });
       return result
     },
+    masalah: (state) => (arrayOfProblemId) => {
+      let result = []
+      if(arrayOfProblemId.length > 0) {
+        state.lists.forEach((val) => {
+          if(arrayOfProblemId.includes(val.id)) {
+            result.push(val.masalah)
+          }
+        })
+      }
+      return result.join(", ")
+    }
   },
 };
 

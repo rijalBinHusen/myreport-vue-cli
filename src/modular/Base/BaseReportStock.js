@@ -52,6 +52,7 @@ const BaseReportStock = {
               if(val.shift == shift && val.parent == id) {
                 val.itemName = rootGetters["Baseitem/baseItemKode"](val.item).name
                 val.selisih = (val.awal + val.in - val.out) - val.real
+                val.problem2 = rootGetters["Problem/masalah"](val.problem)
                 return val
               }
             })
