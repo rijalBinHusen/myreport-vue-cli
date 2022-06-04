@@ -52,7 +52,8 @@ export default {
                 return
             }
             // BASE record info
-            let infoBaseReport = this.GET_BASEID(this._BASEID)
+            let infoBaseReport = this.MODALDETAILS.obj
+            // this.GET_BASEID(this._BASEID)
             // tampilkan loader, proses data yang sudah dipilih
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // dapatkan !ref
@@ -211,10 +212,11 @@ export default {
     computed: {
         ...mapState({
             _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.importTemp)),
-            _BASEID: state => state.BaseReportFile.baseId,
+            // _BASEID: state => state.BaseReportFile.baseId,
         }),
         ...mapGetters({
-            GET_BASEID: "BaseReportFile/baseId"
+            // GET_BASEID: "BaseReportFile/baseId"
+            MODALDETAILS: "Modal/obj"
         }),
         sheetNames() {
             let result = this._BASEREPORT.sheetNames.map((val) => {
@@ -226,5 +228,8 @@ export default {
             return result
         }
     },
+    created() {
+        console.log(this.MODALDETAILS)
+    }
 }
 </script>

@@ -149,10 +149,12 @@ export default {
 			promise.then((d) => {
                 // send data excel to vuex
                 this.$store.commit("BaseReportFile/importTemp", d)
-                // bring the form up
-                this.$store.commit("Modal/active", {judul: infobase.warehouseName + " " + infobase.periode2, form: "BaseReportFile"});
-                //send id baseReport to vuex
-                this.$store.commit("BaseReportFile/baseId", infobase.id)
+                // bring the form up and send the baseid info to the modal state
+                this.$store.commit("Modal/active", {
+                    judul: infobase.warehouseName + " " + infobase.periode2, 
+                    form: "BaseReportFile",
+                    obj: infobase,
+                });
 			})
 		}
     },
@@ -179,6 +181,9 @@ export default {
 			})
             return result
         },
+    },
+    created() {
+        this.$store.dispatch("Baseitem/getAllItem")
     },
 }
 </script>
