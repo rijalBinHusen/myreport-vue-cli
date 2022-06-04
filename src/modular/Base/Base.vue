@@ -216,7 +216,9 @@ export default {
             // iterate baseReport stocklist dan tambahkan parent document ev.id
             for(let i =0; i < this.lists.length; i++) {
                 let record = JSON.parse(JSON.stringify(this.lists[i]))
-                delete record.namaItem
+                delete record.itemName
+                delete record.selisih
+                delete record.problem2
                 // tunggu sampai update selesai
                 await this.$store.dispatch("update", {
                     store: "BaseReportStock", 
@@ -274,6 +276,7 @@ export default {
             this.totalDo = 0
             this.totalKendaraan = 0
             if(this.shift && this.base && this.base.id) {
+                this.standartWaktu = this.STANDARTWAKTU(this.shift, this.base.id)
                 this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id).forEach((val) => {
                     this.totalDo += 1
                     this.totalKendaraan += 1
@@ -318,6 +321,7 @@ export default {
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
             BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
             BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportClock/shiftAndParent",
+            STANDARTWAKTU: "BaseReportStock/standartWaktuByParentAndShift",
             BASEIDSELECTED: "BaseReportFile/getIdByPeriodeByWarehouse"
         }),
         originColumn() {

@@ -133,7 +133,7 @@ Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-ch
 - [ ] tidak bisa update record dari emit ag-grid dibase report
 
 ## 2022-06-03 Todo
-- [ ] Tampilkan problem pada base report
-- [ ] Perlu periksa kembali document details (totalDO etc, etc)
+- [x] Tampilkan problem pada base report 2022-06-04
+- [x] Perlu periksa kembali document details (totalDO etc, etc) 2022-06-04
 - [ ] Excel mode, gunakan custom cell editor pada koode item
 - [ ] Excel mode, tambahkan column plan output

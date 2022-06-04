@@ -1,10 +1,11 @@
 <template>
     <div>
         <label class="w3-margin-top">Nama gudang</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="base.title + ' / Shift ' + shift" disabled />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="base.warehouseName + ' / Shift ' + shift" disabled />
         <!-- Supervisors -->
         <label>Pilih nama supervisors</label>
-        <Select 
+        <Select
+        judul="supervisor" 
         :options="names" 
         value="id"
         text="name"
@@ -14,6 +15,7 @@
         <label>Pilih nama kabag</label>
         <Select 
             :options="headspv" 
+            judul="kabag"
             value="id"
             text="name"
             @selected="headSpv = $event"
@@ -110,7 +112,7 @@ export default {
             this.$emit("finished",
                 Object.assign(this.document,
                 {
-                    isFinished: true,
+                    isfinished: true,
                     finished: new Date().getTime(),
                     baseReportFile: this.base.id,
                     totalDO: this.totalDo,
@@ -123,20 +125,10 @@ export default {
     },
     computed: {
         names() {
-            // ambil semua nama dari state
-            let options = this.$store.getters["Supervisors/enabled"].filter((val) => val.warehouse === this.base.warehouse)
-            // tambahkan option lain
-            options.unshift({id: "", name: "Pilih nama" })
-            // kembalikan agar tidak reactive
-            return options
+            return this.$store.getters["Supervisors/enabled"].filter((val) => val.warehouse === this.base.warehouse)
         },        
         headspv() {
-            // ambil semua nama dari state
-            let options = this.$store.getters["Headspv/enabled"]
-            // tambahkan option lain
-            options.unshift({id: "", name: "Pilih nama" })
-            // kembalikan agar tidak reactive
-            return options
+            return this.$store.getters["Headspv/enabled"]
         },
     },
     watch: {
