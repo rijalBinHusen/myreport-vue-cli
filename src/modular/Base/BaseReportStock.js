@@ -84,6 +84,43 @@ const BaseReportStock = {
         obj: { problem: payload.problem } 
       })
     },
+    async saveFromExcelMode({dispatch, commit}, arrayOfRecord) {
+      // open loader
+      commit("Modal/active", {judul: "", form: "Loader"}, { root: true });
+      // iterate
+
+          for (let i =0; i < arrayOfRecord.length; i++)  {
+            // jika keluar ada tanggalnya dan end date kosong dan akhir > 0 maka end date dikasi tanggal
+            if(arrayOfRecord[i].dateOut && !arrayOfRecord[i].dateEnd && +arrayOfRecord[i].real > 0) {
+            arrayOfRecord[i].dateEnd = arrayOfRecord[i].dateOut
+            } 
+            // jika keluar ada tanggalnya dan akhir == 0
+            else if (arrayOfRecord[i].dateOut && +arrayOfRecord[i].real == 0) {
+                arrayOfRecord[i].dateEnd = "-"
+            }
+            commit("update", arrayOfRecord[i])
+            let record = Object.assign({}, arrayOfRecord[i])
+            delete record.itemName
+            delete record.selisih
+            delete record.problem2
+            await dispatch("updateOnly", { 
+                      store: "BaseReportStock", 
+                      criteria: { id: arrayOfRecord[i].id }, 
+                      obj: {
+                            item: record.item,
+                            awal: record.awal,
+                            in: record.in,
+                            out: record.out,
+                            real: record.real,
+                            dateIn: record.dateIn,
+                            dateOut: record.dateOut,
+                            dateEnd: record.dateEnd
+                          }
+                      }, { root: true })
+        }
+        // tutup loader
+        commit("Modal/active", false, { root: true });
+    }
   },
   getters: {
     shiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {

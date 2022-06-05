@@ -268,29 +268,11 @@ export default {
             this.$store.commit("Modal/active");
         },
         save(ev) {
-            // tampilkan loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            ev.forEach((val) => {
-                // jika keluar ada tanggalnya dan end date kosong dan akhir > 0 maka end date dikasi tanggal
-                if(this.sheet === "stock") {
-                    if(val.dateOut && !val.dateEnd && +val.real > 0) {
-                    val.dateEnd = val.dateOut
-                    } 
-                    // jika keluar ada tanggalnya dan akhir == 0
-                    else if (val.dateOut && +val.real == 0) {
-                        val.dateEnd = "-"
-                    }
-                delete val.namaItem
-                }
-                this.$store.dispatch("update",  { 
-                store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
-                obj: val,
-                period: this.base.periode
-                })
-            })
-            // tutup loader
-            this.$store.commit("Modal/active")
-
+            // lempar ke dispatch
+            this.$store.dispatch(
+                    `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}/saveFromExcelMode`, 
+                    ev)
+            
         },
         remove(ev){
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
@@ -303,6 +285,7 @@ export default {
                     store: store, 
                     criteria: {id: ev}
                 })
+            this.renewLists()
         },
         pickPeriode() {
             this.$store.commit("Modal/active", { 
@@ -379,7 +362,7 @@ export default {
                     { headerName: "Kode Item", field: "item", editable: true, resizable: true },
                     { headerName: "Nama Item", field: "itemName", editable: false, resizable: true, width: 300 },
                     { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
-                    { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100}, 
+                    { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
                     { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
                     { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
