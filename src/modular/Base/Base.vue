@@ -424,8 +424,6 @@ export default {
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
         this.GETALLITEM()
-    },
-    created() {
         this.unwatch = this.$store.watch(
           (state, getters) => getters["Modal/obj"],
           (newValue, oldValue) => {

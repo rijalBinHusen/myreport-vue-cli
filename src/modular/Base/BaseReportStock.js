@@ -27,7 +27,7 @@ const BaseReportStock = {
         // val.id === stk22050003
         if(val[Object.keys(payload.criteria)] == Object.values(payload.criteria)) {
           // val.problem = []
-          val[Object.keys(payload.obj)] = Object.values(payload.obj)
+          val[Object.keys(payload.obj)[0]] = Object.values(payload.obj)[0]
         }
         return val
       })
