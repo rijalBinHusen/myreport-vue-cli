@@ -110,6 +110,7 @@ const BaseReportStock = {
                             item: record.item,
                             awal: record.awal,
                             in: record.in,
+                            planOut: record.planOut,
                             out: record.out,
                             real: record.real,
                             dateIn: record.dateIn,
@@ -131,6 +132,7 @@ const BaseReportStock = {
                 val.itemName = rootGetters["Baseitem/baseItemKode"](val.item).name
                 val.selisih = (val.awal + val.in - val.out) - val.real
                 val.problem2 = rootGetters["Problem/masalah"](val.problem)
+                val.planOut = ""
                 return val
               }
             })

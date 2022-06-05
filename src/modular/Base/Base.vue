@@ -364,6 +364,7 @@ export default {
                     { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
                     { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
                     { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                    { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
                     { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
                     { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
