@@ -51,7 +51,7 @@ const Uncollected = {
   getters: {
     documentByStatus: (state, getters, rootState, rootGetters) => (status) => {
       return state.lists.length > 0
-        ? state.lists.filter((val) => {
+        ? JSON.parse(JSON.stringify(state)).lists.filter((val) => {
             if(val?.status == status) {
               let spvInfo = rootGetters["Supervisors/spvId"](val.name)
               val.spvName = spvInfo.name
@@ -71,36 +71,33 @@ const Uncollected = {
           )
         : [];
     },
-    collected(state) {
-      return JSON.parse(JSON.stringify(state.lists)).filter(
-        (val) => val.status === 1
-      );
-    },
     approval(state) {
       return JSON.parse(JSON.stringify(state.lists)).filter(
         (val) => val.status === 2
       );
     },
     // all uncollected record
-    docBySpv: (state, getters, rootState, rootGetters) => (status) => {
-      // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
+    documentBySpv: (state, getters, rootState, rootGetters) => (status) => {
       if (state.lists.length > 0) {
+      // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
         let result = {};
         // iterate the lists
-        rootGetters[`Document/${status}`].forEach((val) => {
+        getters["documentByStatus"](status).forEach((val) => {
           val.periode2 = rootGetters["dateFormat"]({
             format: "dateMonth",
             time: val.periode,
           });
           result[val.name]
-            ? result[val.name].push(
-                Object.assign(val, { periode2: val.periode2 })
-              )
-            : (result[val.name] = [
-                Object.assign(val, { periode2: val.periode2 }),
-              ]);
+            ? result[val.name].push({ periode2: val.periode2 })
+            : (result[val.name]) = [{ periode2: val.periode2 }];
         });
-        return result;
+
+        return Object.keys(result).map((val) => {
+          // console.log(val)
+          // console.log(rootGetters["Supervisors/spvId"](val))
+          return Object.assign({documents: result[val] }, rootGetters["Supervisors/spvId"](val))
+        })
+        // return result;
       }
     },
     // mengembalikan tanggal terakhir yang sudah diinput

@@ -24,8 +24,8 @@ const Supervisors = {
   actions: {},
   getters: {
     lists(state, getters, rootState, rootGetters) {
-      let rec = JSON.parse(JSON.stringify(state.lists));
-      return rec.map((val) => {
+      // let rec = JSON.parse(JSON.stringify(state.lists));
+      return JSON.parse(JSON.stringify(state)).lists.map((val) => {
         val.warehouseName = rootGetters["Warehouses/warehouseId"](
           val.warehouse
         ).name;
@@ -38,9 +38,7 @@ const Supervisors = {
       );
     },
     spvId: (state, getters, rootState, rootGetters) => (id) => {
-      let rec = JSON.parse(JSON.stringify(state.lists)).find(
-        (val) => val.id === id
-      );
+      let rec = JSON.parse(JSON.stringify(state.lists)).find((val) => val.id === id);
       return rec && rec.name
         ? Object.assign(rec, {
             warehouseName: rootGetters["Warehouses/warehouseId"](rec.warehouse)
