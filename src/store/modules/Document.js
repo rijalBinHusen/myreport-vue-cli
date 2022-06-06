@@ -49,6 +49,21 @@ const Uncollected = {
     },
   },
   getters: {
+    documentByStatus: (state, getters, rootState, rootGetters) => (status) => {
+      return state.lists.length > 0
+        ? state.lists.filter((val) => {
+            if(val?.status == status) {
+              let spvInfo = rootGetters["Supervisors/spvId"](val.name)
+              val.spvName = spvInfo.name
+              val.spvWarehouse = spvInfo.warehouseName
+              val.headName = rootGetters["Headspv/headId"](val.head).name
+              val.periode2 = rootGetters["dateFormat"]({ format: "dateMonth", time: val.periode })
+              val.collected2 = !isNaN(val.collected) ? rootGetters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
+              return val
+            }
+        })
+        : [];
+    },
     uncollected(state) {
       return state.lists.length > 0
         ? JSON.parse(JSON.stringify(state.lists)).filter(

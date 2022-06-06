@@ -8,11 +8,11 @@
             @trig="viewByPeriode = !viewByPeriode" 
         />
         <Datatable
-        :datanya="viewByPeriode ? collected : listsByWarehouse"
-        :heads="viewByPeriode ? ['Nama', 'Gudang', 'Periode', 'Collected'] : ['Nama', 'Gudang']"
-        :keys="viewByPeriode ? ['spvName', 'spvWarehouse', 'periode2', 'collected2'] : ['name', 'warehouseName']"
-        :option="viewByPeriode"
-        :id="viewByPeriode ? 'tableCollected' : 'collectedBySpv'"
+            :datanya="lists"
+            :heads="heads"
+            :keys="keys"
+            :option="viewByPeriode"
+            :id="viewByPeriode ? 'tableCollected' : 'collectedBySpv'"
         >
             <template  v-if="viewByPeriode" #default="{ prop }">
                 <Button value="Batal" type="button" danger small @trig="unCollect(prop.id)" />
@@ -71,6 +71,7 @@ export default {
     data() {
         return {
             viewByPeriode: true,
+            lists: [],
         };
     },
     components: {
@@ -122,26 +123,26 @@ export default {
                             criteria: { id: ev }
                         })
 		},
+        renewLists() {
+            this.viewByPeriode
+                ? this.lists = this.$store.getters["Document/documentByStatus"](1)
+                : ""
+        },
     },
     computed: {
         ...mapGetters({
             GET_SUPERVISORS: "Supervisors/lists",
             DOCBYSPV: "Document/docBySpv",
         }),
-        collected() {
-			let collect = this.$store.getters["Document/collected"]
-			let result = []
-			collect.forEach((val) => {
-                if(val) {
-                let spvInfo = this.$store.getters["Supervisors/spvId"](val.name)
-                    val.spvName = spvInfo.name
-                    val.spvWarehouse = spvInfo.warehouseName
-                    val.periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
-                    val.collected2 = !isNaN(val.collected) ? this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
-                    result.push(val)
-                }
-			})
-            return result
+        heads() {
+            return this.viewByPeriode 
+                    ? ['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag'] 
+                    : ['Nama', 'Gudang']
+        },
+        keys() {
+            return this.viewByPeriode 
+                    ? ['spvName', 'spvWarehouse', 'periode2', 'collected2', 'headName'] 
+                    : ['name', 'warehouseName']
         },
         listsByWarehouse() {
             let result = []
@@ -156,8 +157,9 @@ export default {
             return result
         },
     },
-    mounted() {
-        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 1 }})
+    async mounted() {
+        await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 1 }})
+        this.renewLists()
     }
 }
 </script>
