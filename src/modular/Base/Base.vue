@@ -234,10 +234,9 @@ export default {
             let form = this.sheet === "clock" ? "BaseClockForm" : "BaseStockForm"
             // launch modal dan form
             this.$store.commit("Modal/active", {
-                judul: `Tambah data report ${this.sheet}`, 
+                judul: `Tambah record ${this.sheet}`, 
                 form: form,
                 addOn: { parent: this.base.id, shift: this.shift},
-                period: this.base.periode
             });
         },
         async markAsFinished(ev) {
@@ -365,7 +364,7 @@ export default {
                     { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
                     { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
-                    { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100 }, 
+                    { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter' }, 
                     { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                     { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
                     { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
@@ -414,7 +413,7 @@ export default {
             // console.log(`Updating from ${JSON.stringify(oldValue?.form)} to ${JSON.stringify(newValue?.form)}`);
 
             // Do whatever makes sense now
-            if (oldValue?.form === "BaseProblemForm" && newValue?.form === '') {
+            if ((oldValue?.form === "BaseProblemForm" || oldValue?.form === "BaseStockForm") && newValue?.form === '') {
               this.renewLists()
             }
           },

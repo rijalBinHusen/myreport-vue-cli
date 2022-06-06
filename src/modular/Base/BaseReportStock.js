@@ -121,6 +121,32 @@ const BaseReportStock = {
         }
         // tutup loader
         commit("Modal/active", false, { root: true });
+    },
+    async addItem({dispatch, commit}, payload) {
+      // open loader 
+      commit("Modal/active", {judul: "", form: "Loader"}, { root: true });
+      // payload = [{item: 01}, {item:02}]
+      for(let i=0; i < payload.length; i++) {
+
+      let obj = Object.assign(JSON.parse(JSON.stringify(payload[i])), {  
+                        awal: "",
+                        in:  "",
+                        out:  "",
+                        dateIn: "",
+                        dateOut: "",
+                        dateEnd: "",
+                        real: "",
+                        problem: ""
+              })
+        if(obj.item) {
+          commit("append", obj)
+          // console.log(obj)
+          await dispatch("appendWoutGenerateId", { store: "BaseReportStock", obj: obj} , { root: true })
+        }
+      }
+      // close loader
+      commit("Modal/active", false, { root: true });
+
     }
   },
   getters: {

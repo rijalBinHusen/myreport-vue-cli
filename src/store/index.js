@@ -64,7 +64,7 @@ export default createStore({
       return myfunction.tunggu(130);
     },
 
-    async appendWoutGenerateId({}, value) {
+    appendWoutGenerateId({}, value) {
       myfunction.append(value);
       return myfunction.tunggu(130);
     },
