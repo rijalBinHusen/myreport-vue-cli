@@ -318,14 +318,17 @@ export default {
             }
         },
         renewLists() {
-          if(this.sheet === "stock") {
-            this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
-            return
-          }
+            if(this.shift && this.base) {
 
-          if(this.sheet === "clock") {
-           this.lists = this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id)
-          }
+              if(this.sheet === "stock") {
+                this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
+                return
+              }
+
+              if(this.sheet === "clock") {
+               this.lists = this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id)
+              }
+            }
         }
     },
     computed: {
@@ -413,9 +416,14 @@ export default {
             // console.log(`Updating from ${JSON.stringify(oldValue?.form)} to ${JSON.stringify(newValue?.form)}`);
 
             // Do whatever makes sense now
-            if ((oldValue?.form === "BaseProblemForm" || oldValue?.form === "BaseStockForm") && newValue?.form === '') {
+            if (oldValue?.form === "BaseProblemForm" && newValue?.form === '') {
+              this.renewLists()
+              console.log("lists diperbarui")
+            }
+            if (oldValue?.before === "BaseStockForm" && newValue?.form === '') {
               this.renewLists()
             }
+            
           },
         );
     },

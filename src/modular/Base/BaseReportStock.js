@@ -124,7 +124,7 @@ const BaseReportStock = {
     },
     async addItem({dispatch, commit}, payload) {
       // open loader 
-      commit("Modal/active", {judul: "", form: "Loader"}, { root: true });
+      commit("Modal/active", {judul: "", form: "Loader", before: "BaseStockForm"}, { root: true });
       // payload = [{item: 01}, {item:02}]
       for(let i=0; i < payload.length; i++) {
 
@@ -136,7 +136,7 @@ const BaseReportStock = {
                         dateOut: "",
                         dateEnd: "",
                         real: "",
-                        problem: ""
+                        problem: []
               })
         if(obj.item) {
           commit("append", obj)
@@ -145,7 +145,7 @@ const BaseReportStock = {
         }
       }
       // close loader
-      commit("Modal/active", false, { root: true });
+      commit("Modal/active", false , { root: true });
 
     }
   },
