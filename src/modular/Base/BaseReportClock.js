@@ -43,7 +43,24 @@ const BaseReportClock = {
             criteria: {parent: parent[i].id} 
           }, { root: true })
       }
-    }
+    },
+    async saveFromExcelMode({dispatch, commit}, arrayOfRecord) {
+      // open loader
+      commit("Modal/active", {judul: "", form: "Loader"}, { root: true });
+      // iterate
+
+          for (let i =0; i < arrayOfRecord.length; i++)  {
+            commit("update", arrayOfRecord[i])
+            let record = Object.assign({}, arrayOfRecord[i])
+            await dispatch("updateOnly", { 
+                      store: "BaseReportClock", 
+                      criteria: { id: arrayOfRecord[i].id }, 
+                      obj: record
+                      }, { root: true })
+        }
+        // tutup loader
+        commit("Modal/active", false, { root: true });
+    },
   },
   getters: {
     shiftAndParent: (state) => (shift, id) => {

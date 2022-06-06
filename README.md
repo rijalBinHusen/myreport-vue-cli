@@ -135,5 +135,4 @@ Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-ch
 ## 2022-06-03 Todo
 - [x] Tampilkan problem pada base report 2022-06-04
 - [x] Perlu periksa kembali document details (totalDO etc, etc) 2022-06-04
-- [ ] Excel mode, gunakan custom cell editor pada koode item
 - [x] Excel mode, tambahkan column plan output 2022-06-04
