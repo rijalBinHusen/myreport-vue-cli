@@ -18,8 +18,8 @@
             <label for="shift">Edit shift:</label>
             <Select 
                 id="shift"
+                judul="shift"
                 :options="[
-                    { id:'', title: 'Pilih shift' }, 
                     { id:1, title: 'Shift 1'},
                     { id:2, title: 'Shift 2'},
                     { id:3, title: 'Shift 3'},
@@ -33,6 +33,7 @@
             <Select 
                 id="name"
                 :options="names" 
+                judul="Supervisor"
                 value="id"
                 text="name"
                 @selected="record.name = $event"
@@ -66,15 +67,14 @@ export default {
             this.$store.commit("Modal/active")
             if(this.more.mode === "collected") {
                 // get record from uncollected the state
-                let info = this.$store.getters["Document/getId"](this.more.id)
-                info.collected = this.$store.getters["dateFormat"]({format: this.more.time})
-                info.shared = false
-                info.status = 1
+                this.record.collected = this.$store.getters["dateFormat"]({format: this.more.time})
+                this.record.shared = false
+                this.record.status = 1
                     // console.log(info)
                 this.$store.dispatch("update", {
                                 store: "Document",
-                                obj: info,
-                                criteria: {id: this.more.id }
+                                obj: this.record,
+                                criteria: {id: this.record.id }
                             })
                 return
             }
@@ -92,15 +92,16 @@ export default {
             return this.$store.state.Supervisors.lists
         },
         heads() {
-            let option = JSON.parse(JSON.stringify(this.$store.state.Headspv.lists))
-            option.unshift({id: "", name: "Pilih head supervisor"})
-            return option
+            return JSON.parse(JSON.stringify(this.$store.state.Headspv.lists))
         },
     },
     mounted() {
         this.record = this.$store.getters["Document/getId"](this.$store.getters["Modal/obj"].id)
         this.more = this.$store.getters["Modal/obj"]
 
+    },
+    updated() {
+        console.log(this.record)
     },
     components: {
         Input,

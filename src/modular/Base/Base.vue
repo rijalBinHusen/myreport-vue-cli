@@ -418,7 +418,7 @@ export default {
             // Do whatever makes sense now
             if (oldValue?.form === "BaseProblemForm" && newValue?.form === '') {
               this.renewLists()
-              console.log("lists diperbarui")
+              // console.log("lists diperbarui")
             }
             if (oldValue?.before === "BaseStockForm" && newValue?.form === '') {
               this.renewLists()

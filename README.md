@@ -129,7 +129,7 @@ Im following this [Source](https://dev.to/viniciuskneves/watch-for-vuex-state-ch
 3. setelah didapatkan, kemudian lanjut ambil basereport clock, dan basereport stock dari database
 
 ## bug to fix
-- [ ] nama supervisor tidak berubah pada /Uncollected/UncollectedEditForm
+- [x] nama supervisor tidak berubah pada /Uncollected/UncollectedEditForm
 - [x] tidak bisa update record dari emit ag-grid dibase report 2022-06-07
 
 ## 2022-06-03 Todo
