@@ -20,9 +20,9 @@
         />
 
 		<Datatable
-          :datanya="viewByPeriode ? listByPeriode : listsByWarehouse"
+          :datanya="lists"
           :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Nama', 'Gudang']"
-          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2', 'shift', 'spvHead'] : ['name', 'warehouseName']"
+          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2', 'shift', 'headName'] : ['name', 'warehouseName']"
           option
           id="tableUncollected"
         >
@@ -103,6 +103,7 @@ export default {
     data() {
         return {
             viewByPeriode: true,
+            lists: []
         }
     },
     components: {
@@ -160,7 +161,7 @@ export default {
             })
 
             // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami iformasikan daftar laporan ${ev.warehouseName} yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan ${ev.warehouseName} yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
             if(listLaporan.length > 0) {
                 window.open(link)
@@ -190,7 +191,12 @@ export default {
             window.open(`https://wa.me/${ev}?text=${result}`)
             // console.log(result)
             // }
-        }
+        },
+        renewLists() {
+            this.viewByPeriode
+                ? this.lists = this.$store.getters["Document/documentByStatus"](0)
+                : this.lists = this.$store.getters["Document/documentBySpv"](0)
+        },
     },
     computed: {
         ...mapGetters({
@@ -213,27 +219,10 @@ export default {
             })
             return result
         },
-        listByPeriode() {
-            let result = []
-            if(this.GET_UNCOLLECTED.length > 0) {
-                this.GET_UNCOLLECTED.forEach((val) => {
-                    let spvInfo = this.GET_SPVID(val.name)
-                    result.push(
-                        Object.assign(val, { 
-                            spvName: spvInfo.name,
-                            spvPhone: spvInfo.phone,
-                            spvWarehouse: spvInfo.warehouseName,
-                            spvHead: this.HEADID(val.head).name,
-                            periode2: this.GET_DATEFORMAT({format: 'dateMonth', time: val.periode})
-                            })
-                    )
-                })
-            }
-            return result
-        }
     },
     mounted() {
         this.$store.dispatch("Document/getDocumentByStatusFromDB", "uncollected")
+        this.renewLists()
     }
 }
 </script>
