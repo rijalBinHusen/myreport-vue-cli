@@ -72,7 +72,7 @@
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="collect({val: $event, rec: prop.id})"
+                        @trig="collect({action: 'collect', val: $event, rec: prop.id})"
                         class="w3-small"
                     />
 
@@ -135,18 +135,8 @@ export default {
             this.$store.commit("Modal/active", {judul: "Masukkan periode", form: "UncollectedForm"});
 		},
         collect(ev) {
-            // get record from uncollected the state
-            let info = this.$store.getters["Document/getId"](ev.rec)
-            info.collected = this.$store.getters["dateFormat"]({format: ev.val})
-            info.shared = false
-            info.status = 1
-                // console.log(info)
-            this.$store.dispatch("update", {
-                            store: "Document",
-                            obj: info,
-                            criteria: {id: ev.rec }
-                        })
-            
+            // EV =  {action: 'approve', val: -1, rec: doc22050003}
+            this.$store.dispatch("Document/handleDocument", ev)
         },
 		pesan(ev) {
 			// slice the data
@@ -154,7 +144,7 @@ export default {
             // daftar laporan yang melebihi H+2 dari sekarang
             let sekarang = new Date().getTime()
             let listLaporan = []
-            ev.uncollected.forEach((val) => {
+            ev.documents.forEach((val) => {
                 if(sekarang - val.periode >= 172800000 ) {
                     listLaporan.push(val.periode2)
                 }
@@ -175,7 +165,7 @@ export default {
             // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
             this.listsByWarehouse.forEach((val) => {
-                if(val.uncollected) {
+                if(val.documents) {
                 // daftar laporan yang melebihi H+2 dari sekarang
                 let sekarang = new Date().getTime()
                 let listLaporan = []
