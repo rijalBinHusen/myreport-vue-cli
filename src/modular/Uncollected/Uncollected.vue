@@ -201,6 +201,14 @@ export default {
     mounted() {
         this.$store.dispatch("Document/getDocumentByStatusFromDB", "uncollected")
         this.renewLists()
+
+        // subscribe the mutation,, and renew lists when data updated
+        this.unsubscribe = this.$store.subscribe((mutation) => {
+            // jika document ada yang di update
+            if (mutation.type === 'Document/update') {
+                this.renewLists()
+            }
+        });
     }
 }
 </script>

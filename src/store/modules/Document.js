@@ -72,7 +72,11 @@ const Uncollected = {
           info.collected = "false"
           info.status = 0
       }
-      // 
+      // collect document
+      else if(payload.action === "collect") {
+          info.collected = rootGetters["dateFormat"]({format: payload.val})
+          info.status = 1
+      }
           dispatch("updateOnly", { 
             store: "Document", 
             criteria: { id: payload.rec }, 
