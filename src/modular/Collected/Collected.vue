@@ -126,7 +126,7 @@ export default {
         }
     },
     async mounted() {
-        await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 1 }})
+        await this.$store.dispatch("Document/getDocumentByStatusFromDB", "collected")
         this.renewLists()
 
         // subscribe the mutation,, and renew lists when data updated

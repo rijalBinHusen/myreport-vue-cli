@@ -233,7 +233,7 @@ export default {
         }
     },
     mounted() {
-        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 0 }})
+        this.$store.dispatch("Document/getDocumentByStatusFromDB", "uncollected")
     }
 }
 </script>

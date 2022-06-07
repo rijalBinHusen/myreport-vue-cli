@@ -3,6 +3,9 @@ const Uncollected = {
   state: {
     lists: [],
     allData: false,
+    uncollected: false,
+    collected: false,
+    approve: false,
   },
 
   mutations: {
@@ -12,6 +15,14 @@ const Uncollected = {
     // new data from localbase
     document(state, value) {
       state.lists = value;
+      state.allData = false
+      state.uncollected = false
+      state.collected = false
+      state.approve = false
+    },
+    status(state, payload) {
+      // value = uncollected
+      state[payload] = true
     },
     // add data to
     append(state, value) {
@@ -70,6 +81,29 @@ const Uncollected = {
           // update state
           commit("update", info)
     },
+    async getDocumentByStatusFromDB({ state, commit, dispatch }, status) {
+      // status = uncollected
+      // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
+      if(!state[status]) { 
+        let recordStatus;
+        // uncollected
+        if(status === "uncollected") {
+          recordStatus = { status: 0 }
+        }
+        // collected
+        else if(status === "collected") {
+          recordStatus = { status: 1 }
+        }
+        // approval
+        else if(status === "approval") {
+          recordStatus = { status: 2, shared: false }
+        }
+
+        commit("status", status)
+        await dispatch("getDataByCriteriaAppend", { store: "Document", criteria: recordStatus }, { root: true })
+      }
+      return "Finished"
+    }
   },
   getters: {
     documentByStatus: (state, getters, rootState, rootGetters) => (status) => {

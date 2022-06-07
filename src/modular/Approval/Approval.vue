@@ -91,7 +91,7 @@ export default {
         },
     },
     mounted() {
-        this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 2, shared: false }})
+        this.$store.dispatch("Document/getDocumentByStatusFromDB", "approval")
     }
 }
 </script>
