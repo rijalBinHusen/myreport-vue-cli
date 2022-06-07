@@ -72,6 +72,7 @@ export default {
         return {
             viewByPeriode: true,
             lists: [],
+            unsubscribe: "",
         };
     },
     components: {
@@ -99,20 +100,7 @@ export default {
         },
         handleAction(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            console.log(ev)
             this.$store.dispatch("Document/handleDocument", ev)
-            
-            // get record from uncollected the state
-            // let info = this.$store.getters["Document/getId"](ev.rec)
-            // info.approval = this.$store.getters["dateFormat"]({format: ev.val})
-            // info.status = 2
-            // // console.log(info)
-            // this.$store.dispatch("update", {
-            //                 store: "Document",
-            //                 obj: info,
-            //                 criteria: {id: ev.rec }
-            //             })
-
         },
 		unCollect(ev) {
 
@@ -157,6 +145,17 @@ export default {
     async mounted() {
         await this.$store.dispatch("getDataByCriteria", {store: "Document", criteria: { status: 1 }})
         this.renewLists()
-    }
+
+        // subscribe the mutation,, and renew lists when data updated
+        this.unsubscribe = this.$store.subscribe((mutation) => {
+            // jika document ada yang di update
+            if (mutation.type === 'Document/update') {
+                this.renewLists()
+            }
+        });
+    },
+    beforeUnmount() {
+        this.unsubscribe();
+    },
 }
 </script>
