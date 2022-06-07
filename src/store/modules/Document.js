@@ -51,10 +51,17 @@ const Uncollected = {
       // payload =  {action: 'approve', val: -1, rec: doc22050003}
       // get record from uncollected the state
       let info = rootGetters["Document/getId"](payload.rec)
+      // approve document
       if(payload.action === "approve") {
           info.approval = rootGetters["dateFormat"]({format: payload.val})
           info.status = 2
       }
+      // uncollect documment
+      else if(payload.action === "uncollect") {
+          info.collected = "false"
+          info.status = 0
+      }
+      // 
           dispatch("updateOnly", { 
             store: "Document", 
             criteria: { id: payload.rec }, 

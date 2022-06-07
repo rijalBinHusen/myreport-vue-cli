@@ -15,7 +15,12 @@
             :id="viewByPeriode ? 'tableCollected' : 'collectedBySpv'"
         >
             <template  v-if="viewByPeriode" #default="{ prop }">
-                <Button value="Batal" type="button" danger small @trig="unCollect(prop.id)" />
+                <Button 
+                    value="Batal" 
+                    type="button" 
+                    danger small 
+                    @trig="handleAction({action: 'uncollect', rec: prop.id})" 
+                />
                 <Button value="Edit" type="button" secondary small @trig="edit(prop.id)" />
                 <Dropdown
                     value="Approval"  
@@ -102,19 +107,6 @@ export default {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
             this.$store.dispatch("Document/handleDocument", ev)
         },
-		unCollect(ev) {
-
-            // get record from uncollected the state
-            let info = this.$store.getters["Document/getId"](ev)
-            info.collected = false
-            info.status = 0
-            // console.log(info)
-            this.$store.dispatch("update", {
-                            store: "Document",
-                            obj: info,
-                            criteria: { id: ev }
-                        })
-		},
         renewLists() {
             this.viewByPeriode
                 ? this.lists = this.$store.getters["Document/documentByStatus"](1)
