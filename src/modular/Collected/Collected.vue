@@ -28,7 +28,7 @@
                     class="w3-small"
                     listsKey="id"
                     listsValue="isi"
-                    @trig="approval({val: $event, rec: prop.id})"
+                    @trig="handleAction({action: 'approve', val: $event, rec: prop.id})"
                 />
             </template>
 
@@ -49,7 +49,7 @@
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="approval({val: $event, rec: doc.periode2})"
+                        @trig="handleAction({action: 'approve', val: $event, rec: doc?.id})"
                         class="w3-small"
                     />
                 </td>
@@ -97,17 +97,21 @@ export default {
             }
             
         },
-        approval(ev) {
+        handleAction(ev) {
+            // EV =  {action: 'approve', val: -1, rec: doc22050003}
+            console.log(ev)
+            this.$store.dispatch("Document/handleDocument", ev)
+            
             // get record from uncollected the state
-            let info = this.$store.getters["Document/getId"](ev.rec)
-            info.approval = this.$store.getters["dateFormat"]({format: ev.val})
-            info.status = 2
-            // console.log(info)
-            this.$store.dispatch("update", {
-                            store: "Document",
-                            obj: info,
-                            criteria: {id: ev.rec }
-                        })
+            // let info = this.$store.getters["Document/getId"](ev.rec)
+            // info.approval = this.$store.getters["dateFormat"]({format: ev.val})
+            // info.status = 2
+            // // console.log(info)
+            // this.$store.dispatch("update", {
+            //                 store: "Document",
+            //                 obj: info,
+            //                 criteria: {id: ev.rec }
+            //             })
 
         },
 		unCollect(ev) {
@@ -148,7 +152,6 @@ export default {
     watch: {
         viewByPeriode(newVal, oldVal) {
             this.renewLists()
-            console.log(this.lists)
         }
     },
     async mounted() {

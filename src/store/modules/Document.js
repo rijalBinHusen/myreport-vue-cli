@@ -47,6 +47,22 @@ const Uncollected = {
       commit("allData")
       return "finished"
     },
+    handleDocument({state, commit, dispatch, rootGetters}, payload) {
+      // payload =  {action: 'approve', val: -1, rec: doc22050003}
+      // get record from uncollected the state
+      let info = rootGetters["Document/getId"](payload.rec)
+      if(payload.action === "approve") {
+          info.approval = rootGetters["dateFormat"]({format: payload.val})
+          info.status = 2
+      }
+          dispatch("updateOnly", { 
+            store: "Document", 
+            criteria: { id: payload.rec }, 
+            obj: info
+          }, { root: true })
+          // update state
+          commit("update", info)
+    },
   },
   getters: {
     documentByStatus: (state, getters, rootState, rootGetters) => (status) => {
@@ -88,8 +104,8 @@ const Uncollected = {
             time: val.periode,
           });
           result[val.name]
-            ? result[val.name].push({ periode2: val.periode2 })
-            : (result[val.name]) = [{ periode2: val.periode2 }];
+            ? result[val.name].push({ id: val.id, periode2: val.periode2 })
+            : (result[val.name]) = [{ id: val.id, periode2: val.periode2 }];
         });
 
         return Object.keys(result).map((val) => {
@@ -116,8 +132,8 @@ const Uncollected = {
     },
     //mengembalikan record sesuai id
     getId: (state) => (id) => {
-      let lists = JSON.parse(JSON.stringify(state.lists));
-      return lists.find((val) => val.id === id);
+      return JSON.parse(JSON.stringify(state.lists))
+              .find((val) => val.id === id);;
     },
     lastId(state) {
       return state.lists.sort((a, b) => a.id < b.id)[0];
