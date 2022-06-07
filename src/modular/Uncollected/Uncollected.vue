@@ -34,8 +34,8 @@
                 <template #td="{ obj }" v-if="!viewByPeriode">
                     <td>
                         <Dropdown
-                            v-for="unc in obj.uncollected" :key="unc.id"
-                            :value="unc.periode2"  
+                            v-for="doc in obj.documents" :key="doc?.id"
+                            :value="doc?.periode2"  
                             :lists="[
                                 { id: -1, isi: '-1 Hari'},
                                 { id: -2, isi: '-2 Hari'},
@@ -44,7 +44,7 @@
                             ]"
                             listsKey="id"
                             listsValue="isi"
-                            @trig="check({val: $event, id: unc.id})"
+                            @trig="check({val: $event, id: doc?.id})"
                             class="w3-small"
                         />
                     </td>
@@ -200,25 +200,13 @@ export default {
     },
     computed: {
         ...mapGetters({
-            GET_UNCOLLECTED: "Document/uncollected",
-            DOCBYSPV: "Document/docBySpv",
-            GET_SUPERVISORS: "Supervisors/lists",
-            GET_SPVID: "Supervisors/spvId",
-            HEADID: "Headspv/headId",
             GET_DATEFORMAT: "dateFormat",
         }),
-        listsByWarehouse() {
-            let result = []
-            this.GET_SUPERVISORS.forEach((val) => {
-                if(this.DOCBYSPV("uncollected")[val.id]) {
-                    result.push(Object.assign(val, { 
-                        uncollected: this.DOCBYSPV("uncollected")[val.id]
-                        // .join(", "), total: this.GET_UNCOLLECTEDBYSPV[val.id].length
-                    }))
-                }
-            })
-            return result
-        },
+    },
+    watch: {
+        viewByPeriode(newVal, oldVal) {
+            this.renewLists()
+        }
     },
     mounted() {
         this.$store.dispatch("Document/getDocumentByStatusFromDB", "uncollected")
