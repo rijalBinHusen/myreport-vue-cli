@@ -15,7 +15,7 @@
                 type="text"
             />
 
-            <label for="shift">Edit shift:</label>
+            <label v-if="more?.mode === 'edit'" for="shift">Edit shift:</label>
             <Select 
                 id="shift"
                 judul="shift"
@@ -28,8 +28,9 @@
                 text="title"
                 @selected="record.shift = $event"
                 :inselect="record.shift"
+                :disabled="more?.mode === 'view' "
             />
-            <label for="name">Edit nama:</label>
+            <label v-if="more?.mode === 'edit'" for="name">Edit nama:</label>
             <Select 
                 id="name"
                 :options="names" 
@@ -38,8 +39,9 @@
                 text="name"
                 @selected="record.name = $event"
                 :inselect="record.name"
+                :disabled="more?.mode === 'view' "
             />
-            <label for="head">Edit kabag:</label>
+            <label v-if="more?.mode === 'edit'" for="head">Edit kabag:</label>
             <Select 
                 id="head"
                 :options="heads" 
@@ -47,9 +49,10 @@
                 text="name"
                 @selected="record.head = $event"
                 :inselect="record.head"
+                :disabled="more?.mode === 'view' "
             />
         </div>
-        <Button primary value="Save"  class="w3-margin-top" type="button" @trig="save" />
+        <Button primary value="Save" v-if="more?.mode === 'edit'"  class="w3-margin-top" type="button" @trig="save" />
     </div>
 </template>
 
@@ -99,9 +102,6 @@ export default {
         this.record = this.$store.getters["Document/getId"](this.$store.getters["Modal/obj"].id)
         this.more = this.$store.getters["Modal/obj"]
 
-    },
-    updated() {
-        console.log(this.record)
     },
     components: {
         Input,

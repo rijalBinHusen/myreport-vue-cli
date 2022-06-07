@@ -21,7 +21,7 @@
                     danger small 
                     @trig="handleAction({action: 'uncollect', rec: prop.id})" 
                 />
-                <Button value="Edit" type="button" secondary small @trig="edit(prop.id)" />
+                <Button value="Details" type="button" secondary small @trig="details(prop.id)" />
                 <Dropdown
                     value="Approval"  
                     :lists="[
@@ -86,22 +86,13 @@ export default {
         Datatable,
     },
     methods: {
-        edit(ev) {
-            // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
-            //this.$store.dispatch("update", objToSend)
-            // ev.collected = window.prompt()
-            
-            // let rec = this.$store.getters["Collected/listsId"](ev)
-            let info = this.$store.getters["Document/getId"](ev)
-            info.collected = window.prompt()
-            if(info.collected) {
-                this.$store.dispatch("update", {
-                            store: "Document",
-                            obj: info,
-                            criteria: {id: ev }
-                        })
-            }
-            
+        details(ev) {
+            this.$store.commit("Modal/active", {
+                judul: "Edit record", 
+                form: "UncollectedEditForm",
+                id: ev,
+                mode: "view",
+            });
         },
         handleAction(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
