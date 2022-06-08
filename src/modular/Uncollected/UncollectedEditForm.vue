@@ -16,8 +16,7 @@
                     judul="langkah selanjutnya"
                     :options="[
                         { id: 'collect', title: 'Koleksi'},
-                        { id: 'approve', title: 'Aprrove'},
-                        { id: 'share', title: 'Share'},
+                        { id: 'ijin', title: 'Tidak masuk'},
                     ]" 
                     value="id"
                     text="title"
@@ -26,23 +25,6 @@
                 />
             </div>
             <div class="w3-row">
-                <div class="w3-col s4">
-                    <label v-if="more?.mode === 'edit'" for="shift">Edit shift:</label>
-                    <Select 
-                        id="shift"
-                        judul="shift"
-                        :options="[
-                            { id:1, title: 'Shift 1'},
-                            { id:2, title: 'Shift 2'},
-                            { id:3, title: 'Shift 3'},
-                        ]" 
-                        value="id"
-                        text="title"
-                        @selected="record.shift = $event"
-                        :inselect="record.shift"
-                        :disabled="more?.mode === 'view' "
-                    />
-                </div>
                 
                 <div class="w3-col s4" style="padding: 0 16px 0 16px;">
                     <label v-if="more?.mode === 'edit'" for="name">Edit nama:</label>
@@ -71,6 +53,24 @@
                     />
                 </div>
 
+                <div class="w3-col s4">
+                    <label v-if="more?.mode === 'edit'" for="shift">Edit shift:</label>
+                    <Select 
+                        id="shift"
+                        judul="shift"
+                        :options="[
+                            { id:1, title: 'Shift 1'},
+                            { id:2, title: 'Shift 2'},
+                            { id:3, title: 'Shift 3'},
+                        ]" 
+                        value="id"
+                        text="title"
+                        @selected="record.shift = $event"
+                        :inselect="record.shift"
+                        :disabled="more?.mode === 'view' "
+                    />
+                </div>
+
             </div>
         </div>
         <Button primary value="Save" v-if="more?.mode === 'edit'"  class="w3-margin-top" type="button" @trig="save" />
@@ -94,6 +94,14 @@ export default {
                 this.$store.dispatch("Document/handleDocument", { 
                     action: 'collect', 
                     val: this.more?.time, 
+                    rec: this. more?.id
+                })
+                return
+            }
+
+            else if(this.more?.next === "ijin") {
+                this.$store.dispatch("Document/handleDocument", { 
+                    action: 'ijin', 
                     rec: this. more?.id
                 })
                 return

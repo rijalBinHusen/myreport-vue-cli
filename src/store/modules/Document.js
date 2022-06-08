@@ -77,6 +77,13 @@ const Uncollected = {
           info.collected = rootGetters["dateFormat"]({format: payload.val})
           info.status = 1
       }
+      // ijin
+      else if(payload.action === "ijin") {
+          info.collected = "Tidak masuk"
+          info.approval = "Tidak masuk"
+          info.shared = "Tidak masuk"
+          info.status = 2
+      }
           dispatch("updateOnly", { 
             store: "Document", 
             criteria: { id: payload.rec }, 
@@ -160,7 +167,6 @@ const Uncollected = {
 
         return rootGetters["Supervisors/lists"].filter((val) => {
           if(!val?.disabled) {
-            console.log(getters["periodeDocumentByStatusBySpv"](status, val?.id))
             return Object.assign(val, { documents: getters["periodeDocumentByStatusBySpv"](status, val?.id) })
           }
         })
