@@ -144,6 +144,7 @@ export default {
 			// slice the data
 			// let datanya = JSON.parse(JSON.stringify(ev))
             // daftar laporan yang melebihi H+2 dari sekarang
+            console.log(ev)
             let sekarang = new Date().getTime()
             let listLaporan = []
             ev.documents.forEach((val) => {
@@ -153,7 +154,7 @@ export default {
             })
 
             // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan ${ev.warehouseName} yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk segera dikumpulkan,%0akarena jika lebih dari 2 hari,%0areport bapak akan diberi tanda terlambat mengumpulkan,%0a%0aTerimakasih atas perhatianya.`
+			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan *${ev.warehouseName}* yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk dikumpulkan tidak lebih dari H+2,%0a%0aTerimakasih atas perhatianya.`
 			let link = `https://wa.me/${ev.phone}?text=${pesan}`
             if(listLaporan.length > 0) {
                 window.open(link)
@@ -166,12 +167,12 @@ export default {
             // let nophone = window.prompt()
             // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
-            this.listsByWarehouse.forEach((val) => {
+            this.$store.getters["Document/documentBySpv"](0).forEach((val) => {
                 if(val.documents) {
                 // daftar laporan yang melebihi H+2 dari sekarang
                 let sekarang = new Date().getTime()
                 let listLaporan = []
-                val.uncollected.forEach((val) => {
+                val.documents.forEach((val) => {
                     if(sekarang - val.periode >= 172800000 ) {
                         listLaporan.push(val.periode2)
                     }

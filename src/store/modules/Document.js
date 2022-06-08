@@ -15,7 +15,7 @@ const Uncollected = {
     // new data from localbase
     document(state, value) {
       state.lists = value;
-      state.allData = false
+      state.allData = true
       state.uncollected = false
       state.collected = false
       state.approve = false
@@ -104,6 +104,9 @@ const Uncollected = {
     async getDocumentByStatusFromDB({ state, commit, dispatch }, status) {
       // status = uncollected
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
+      if(state.allData) {
+        commit("document", [])
+      }
       if(!state[status]) { 
         let recordStatus;
         // uncollected
@@ -153,7 +156,7 @@ const Uncollected = {
               time: val.periode,
             })
 
-            result.push({ id: val.id, periode2: val.periode2 })
+            result.push({ id: val.id, periode: val.periode, periode2: val.periode2 })
           }
         })
         return result
