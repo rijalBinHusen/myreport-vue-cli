@@ -103,7 +103,7 @@
         >
 
             <Dropdown
-                v-if="prop.selisih !== 0 || prop.problem"
+                v-if="prop.selisih !== 0 || prop.problem.length"
                 value="Pesan"  
                 :lists="[
                     { id: 'apaBaru', isi: 'Apakah selisih baru'},
@@ -224,11 +224,12 @@ export default {
             //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
             //   "planOut": ""
             // dapatkan nomor telfon dulu
-            let spvInfo = ""
+            let spvInfo = this.$store.getters["BaseReportFile/infoByParentAndShift"](obj?.parent, obj?.shift)
             let pesan;
             if(ev === "apaBaru") {
-                pesan += `Assalamu alaikum pak ${ev}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${ev} periode ${ev} shift ${ev.shift}, untuk item ${ev.itemName} terdapat selisih sebanyak ${ (ev.awal + ev.in - ev.out) - ev.real }, apakah itu selisih baru pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut`
+                pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${spvInfo.periode}* shift ${obj.shift} *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ (obj.awal + obj.in - obj.out) - obj.real }*, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
             }
+            console.log(pesan)
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {

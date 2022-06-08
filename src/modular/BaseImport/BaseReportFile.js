@@ -41,9 +41,13 @@ const BaseReportFile = {
     }
   },
   getters: {
-    infoByParent: (state, getters, rootState, rootGetters) => (parentId) => {
+    infoByParentAndShift: (state, getters, rootState, rootGetters) => (parentId, shift) => {
+      // return yang dibutuhkan: periode, shift, Nama karu, nomor telfon, nama gudang
+      // cari periode + warehouse (disini dapat periode)
       let parent = getters["baseId"](parentId)
-      return Object.assign({ periode: parent?.periode }, rootGetters["Supervisors/spvId"]())
+      // cari basedocument by periode, warehouse, shift (disini dapat nama karu, nomor telfon, nama gudang)
+      let spvInfo = rootGetters["Document/documentByPeriodeAndWarehouseAndShift"](parent?.periode, parent?.warehouse, shift)
+      return Object.assign({ periode: parent?.periode }, spvInfo)
     },
     baseId: (state) => (id) => {
       return JSON.parse(

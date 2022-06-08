@@ -126,6 +126,16 @@ const Uncollected = {
     }
   },
   getters: {
+    documentByPeriodeAndWarehouseAndShift: (state, getters, rootState, rootGetters) => (periode, warehouse, shift) => {
+      //  (disini dapat nama karu, nomor telfon, nama gudang)
+      let result = ""
+      JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
+        if(val?.periode == periode && val?.warehouse == warehouse && val?.shift == shift) {
+          result = rootGetters["Supervisors/spvId"](val?.name)
+        }
+      })
+      return result
+    },
     documentByStatus: (state, getters, rootState, rootGetters) => (status) => {
       return state.lists.length > 0
         ? JSON.parse(JSON.stringify(state)).lists.filter((val) => {
@@ -145,7 +155,7 @@ const Uncollected = {
     periodeDocumentByStatusBySpv: (state, getters, rootState, rootGetters) => (status, spv) => {
       if(state.lists.length) {
         let result = []
-        JSON.parse(JSON.stringify(state.lists)).filter((val) => {
+        JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
           if(val?.status == status && val?.name == spv) {
             
             val.periode2 = rootGetters["dateFormat"]({
