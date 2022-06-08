@@ -41,8 +41,9 @@ const BaseReportFile = {
     }
   },
   getters: {
-    infoByParent: (state, getters, rootState, rootGetters) => (parent) => {
-      let parent = getters["baseId"](parent)
+    infoByParent: (state, getters, rootState, rootGetters) => (parentId) => {
+      let parent = getters["baseId"](parentId)
+      return Object.assign({ periode: parent?.periode }, rootGetters["Supervisors/spvId"]())
     },
     baseId: (state) => (id) => {
       return JSON.parse(

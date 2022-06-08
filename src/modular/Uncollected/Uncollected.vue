@@ -103,7 +103,8 @@ export default {
     data() {
         return {
             viewByPeriode: true,
-            lists: []
+            lists: [],
+            timeOut: "",
         }
     },
     components: {
@@ -189,6 +190,7 @@ export default {
             this.viewByPeriode
                 ? this.lists = this.$store.getters["Document/documentByStatus"](0)
                 : this.lists = this.$store.getters["Document/documentBySpv"](0)
+            clearTimeout(this.timeOut)
         },
     },
     computed: {
@@ -210,6 +212,12 @@ export default {
             // jika document ada yang di update
             if (mutation.type === 'Document/update') {
                 this.renewLists()
+            }
+            if (mutation.type === 'Document/append') {
+                clearTimeout(this.timeOut)
+                this.timeOut = setTimeout( () => {
+                    this.renewLists()
+                } , 1500 )
             }
         });
     }
