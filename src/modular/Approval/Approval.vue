@@ -6,12 +6,12 @@
     </div>
 
             <Datatable
-            :datanya="approval"
-            :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
-            :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2', 'headName', 'approval2']"
-            option
-            id="tableApproval"
-            v-slot:default="{ prop }"
+                :datanya="lists"
+                :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
+                :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2', 'headName', 'approval2']"
+                option
+                id="tableApproval"
+                v-slot:default="{ prop }"
             >
 				<span v-if="!prop.shared">
                     <Button value="Batal" type="button" danger small @trig="unapprove(prop.id)" />
@@ -34,7 +34,7 @@ export default {
     name: "Collect",
     data() {
         return {
-            periode: new Date()
+            lists: []
         };
     },
     components: {
@@ -69,7 +69,10 @@ export default {
                             obj: record,
                             criteria: { id: ev }
                         })
-        }
+        },
+        renewLists() {
+                this.lists = this.$store.getters["Document/documentByStatus"](2)
+        },
     },
     computed: {
         approval() {
@@ -90,8 +93,9 @@ export default {
             return result
         },
     },
-    mounted() {
-        this.$store.dispatch("Document/getDocumentByStatusFromDB", "approval")
+    async mounted() {
+        await await this.$store.dispatch("Document/getDocumentByStatusFromDB", "approval")
+        this.renewLists()
     }
 }
 </script>

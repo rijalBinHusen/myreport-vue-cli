@@ -132,18 +132,6 @@ const Uncollected = {
         })
         : [];
     },
-    uncollected(state) {
-      return state.lists.length > 0
-        ? JSON.parse(JSON.stringify(state.lists)).filter(
-            (val) => val.status === 0
-          )
-        : [];
-    },
-    approval(state) {
-      return JSON.parse(JSON.stringify(state.lists)).filter(
-        (val) => val.status === 2
-      );
-    },
     periodeDocumentByStatusBySpv: (state, getters, rootState, rootGetters) => (status, spv) => {
       if(state.lists.length) {
         let result = []
