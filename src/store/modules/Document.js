@@ -85,11 +85,11 @@ const Uncollected = {
           info.status = 2
       }
 
-      else if(state === "share") {
-        info.shared = this.$store.getters["dateFormat"]({format: "time"})
+      else if(payload.action === "share") {
+        info.shared = rootGetters["dateFormat"]({format: "time"})
       }
 
-      else if(state === "unapprove") {
+      else if(payload.action === "unapprove") {
         info.approval = "false"
         info.status = 1
       }

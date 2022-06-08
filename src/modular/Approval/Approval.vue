@@ -54,7 +54,8 @@ export default {
     name: "Collect",
     data() {
         return {
-            lists: []
+            lists: [],
+            unsubscribe: "",
         };
     },
     components: {
@@ -80,6 +81,16 @@ export default {
     async mounted() {
         await await this.$store.dispatch("Document/getDocumentByStatusFromDB", "approval")
         this.renewLists()
-    }
+    // subscribe the mutation,, and renew lists when data updated
+        this.unsubscribe = this.$store.subscribe((mutation) => {
+            // jika document ada yang di update
+            if (mutation.type === 'Document/update') {
+                this.renewLists()
+            }
+        });
+    },
+    beforeUnmount() {
+        this.unsubscribe();
+    },
 }
 </script>
