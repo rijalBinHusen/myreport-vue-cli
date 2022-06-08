@@ -117,6 +117,7 @@ export default {
                 judul: "Edit record", 
                 form: "UncollectedEditForm",
                 id: ev,
+                mode: "edit"
             });
         },
         check(ev) {
@@ -126,8 +127,9 @@ export default {
                 }`, 
                 form: "UncollectedEditForm",
                 id: ev.id,
-                mode: "collected",
-                time: ev.val
+                mode: "edit",
+                time: ev.val,
+                next: "collect"
             });
         },
 		addPeriod() {
