@@ -84,6 +84,15 @@ const Uncollected = {
           info.shared = "Tidak masuk"
           info.status = 2
       }
+
+      else if(state === "share") {
+        info.shared = this.$store.getters["dateFormat"]({format: "time"})
+      }
+
+      else if(state === "unapprove") {
+        info.approval = "false"
+        info.status = 1
+      }
           dispatch("updateOnly", { 
             store: "Document", 
             criteria: { id: payload.rec }, 
@@ -127,6 +136,7 @@ const Uncollected = {
               val.headName = rootGetters["Headspv/headId"](val.head).name
               val.periode2 = rootGetters["dateFormat"]({ format: "dateMonth", time: val.periode })
               val.collected2 = !isNaN(val.collected) ? rootGetters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected
+              val.approval2 = !isNaN(val.approval) ? rootGetters["dateFormat"]({ format: "dateMonth", time: val.approval }) : val.approval
               return val
             }
         })
