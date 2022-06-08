@@ -85,6 +85,7 @@ export default {
                             collected: "false",
                             approval: "false",
                             status: 0,
+                            warehouse: allName[i]?.warehouse
                             shared: "false", 
                             finished: "false", 
                             totaldo: "false", 

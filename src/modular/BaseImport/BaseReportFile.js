@@ -41,6 +41,9 @@ const BaseReportFile = {
     }
   },
   getters: {
+    infoByParent: (state, getters, rootState, rootGetters) => (parent) => {
+      let parent = getters["baseId"](parent)
+    },
     baseId: (state) => (id) => {
       return JSON.parse(
         JSON.stringify(state.lists.find((val) => val.id === id))
@@ -71,23 +74,6 @@ const BaseReportFile = {
             }
         }
       })
-      // filter.map((val) => {
-      //   return {
-      //     warehouse: val.warehouse,
-      //     warehohuse:
-      //   }
-      // })
-
-      // let uniquee = [ ...new Set ( JSON.parse(JSON.stringify(state.lists)).map((val) => val.warehouse) ) ]
-      // //return as object
-      // return uniquee.length > 0 
-      //   ? uniquee.map((val) => {
-      //       return {
-      //         warehouse: val,
-      //         warehouseName: rootGetters["Warehouses/warehouseId"](val).name
-      //       }
-      //     })
-      //   : []
     },
     getIdByPeriodeByWarehouse: (state) => (periode, warehouse) => {
       return JSON.parse(JSON.stringify(state.lists)).find((val) => val.periode == periode && val.warehouse == warehouse )

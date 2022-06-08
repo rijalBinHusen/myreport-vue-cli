@@ -106,9 +106,9 @@
                 v-if="prop.selisih !== 0 || prop.problem"
                 value="Pesan"  
                 :lists="[
-                    { id: 1, isi: 'Apakah selisih baru'},
-                    { id: 2, isi: 'Selisih tidak sama'},
-                    { id: 3, isi: 'Selisih sudah selesai?'}
+                    { id: 'apaBaru', isi: 'Apakah selisih baru'},
+                    { id: 'tidakSama', isi: 'Selisih tidak sama'},
+                    { id: 'apaSelesai', isi: 'Selisih sudah selesai?'}
                 ]"
                 class="w3-small"
                 listsKey="id"
@@ -203,7 +203,32 @@ export default {
             DELETEPROBLEMFROMSTOCK: "BaseReportStock/deleteProblem",
         }),
         message(ev, obj) {
-            console.log(ev, obj)
+            // ev = jenis pesan, obj=lengtka
+            //   "id": "unc22060042020006",
+            //   "parent": "unc22060042",
+            //   "shift": 2,
+            //   "item": "1TOMGCVANBC-4--",
+            //   "awal": 5084,
+            //   "in": 0,
+            //   "out": 118,
+            //   "dateIn": "",
+            //   "dateOut": "",
+            //   "dateEnd": "",
+            //   "real": 4966,
+            //   "problem": [
+            //     "a2722060000",
+            //     "a2722060001"
+            //   ],
+            //   "itemName": "GORIORIO MAGIC LOKAL",
+            //   "selisih": 0,
+            //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
+            //   "planOut": ""
+            // dapatkan nomor telfon dulu
+            let spvInfo = ""
+            let pesan;
+            if(ev === "apaBaru") {
+                pesan += `Assalamu alaikum pak ${ev}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${ev} periode ${ev} shift ${ev.shift}, untuk item ${ev.itemName} terdapat selisih sebanyak ${ (ev.awal + ev.in - ev.out) - ev.real }, apakah itu selisih baru pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut`
+            }
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {
