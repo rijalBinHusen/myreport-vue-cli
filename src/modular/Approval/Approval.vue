@@ -13,7 +13,7 @@
                 id="tableApproval"
                 v-slot:default="{ prop }"
             >
-				<span v-if="!prop.shared">
+				<span v-if="prop.shared == 'false'">
                     <Button 
                         value="Batal" 
                         type="button" 
@@ -30,9 +30,9 @@
 
                 </span>
                 <span v-else>
-                    Shared at {{
+                    {{
                     !isNaN(prop.shared)
-                     ? this.$store.getters["dateFormat"](
+                     ? "Shared at "+ this.$store.getters["dateFormat"](
                          { 
                             format: "dateMonth", 
                             time: prop.shared 
