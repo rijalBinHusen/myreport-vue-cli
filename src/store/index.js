@@ -41,7 +41,6 @@ export default createStore({
       "Supervisors",
       "Headspv",
       "Baseitem",
-      "Document",
       "Problem",
     ],
   },

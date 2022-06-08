@@ -137,28 +137,34 @@ const Uncollected = {
         (val) => val.status === 2
       );
     },
+    periodeDocumentByStatusBySpv: (state, getters, rootState, rootGetters) => (status, spv) => {
+      if(state.lists.length) {
+        let result = []
+        JSON.parse(JSON.stringify(state.lists)).filter((val) => {
+          if(val?.status == status && val?.name == spv) {
+            
+            val.periode2 = rootGetters["dateFormat"]({
+              format: "dateMonth",
+              time: val.periode,
+            })
+
+            result.push({ id: val.id, periode2: val.periode2 })
+          }
+        })
+        return result
+      }
+    },
     // all uncollected record
     documentBySpv: (state, getters, rootState, rootGetters) => (status) => {
-      if (state.lists.length > 0) {
-      // {user1: [{id: 1, periode:1 }, {id:2, periode:2}]}
-        let result = {};
-        // iterate the lists
-        getters["documentByStatus"](status).forEach((val) => {
-          val.periode2 = rootGetters["dateFormat"]({
-            format: "dateMonth",
-            time: val.periode,
-          });
-          result[val.name]
-            ? result[val.name].push({ id: val.id, periode2: val.periode2 })
-            : (result[val.name]) = [{ id: val.id, periode2: val.periode2 }];
-        });
+      if (state.lists.length) {
 
-        return Object.keys(result).map((val) => {
-          // console.log(val)
-          // console.log(rootGetters["Supervisors/spvId"](val))
-          return Object.assign({documents: result[val] }, rootGetters["Supervisors/spvId"](val))
+        return rootGetters["Supervisors/lists"].filter((val) => {
+          if(!val?.disabled) {
+            console.log(getters["periodeDocumentByStatusBySpv"](status, val?.id))
+            return Object.assign(val, { documents: getters["periodeDocumentByStatusBySpv"](status, val?.id) })
+          }
         })
-        // return result;
+        
       }
     },
     // mengembalikan tanggal terakhir yang sudah diinput

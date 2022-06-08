@@ -200,8 +200,8 @@ export default {
             this.renewLists()
         }
     },
-    mounted() {
-        this.$store.dispatch("Document/getDocumentByStatusFromDB", "uncollected")
+    async mounted() {
+        await this.$store.dispatch("Document/getDocumentByStatusFromDB", "uncollected")
         this.renewLists()
 
         // subscribe the mutation,, and renew lists when data updated
