@@ -9,9 +9,6 @@ const Uncollected = {
   },
 
   mutations: {
-    allData(state) {
-      state.allData = !state.allData
-    },
     // new data from localbase
     document(state, value) {
       state.lists = value;
@@ -23,6 +20,7 @@ const Uncollected = {
     status(state, payload) {
       // value = uncollected
       state[payload] = true
+      state.allData = false
     },
     // add data to
     append(state, value) {
@@ -41,7 +39,6 @@ const Uncollected = {
   },
   actions: {
     async getAllDocumentNotFinished({state, commit, dispatch}) {
-      if(state.allData) { return }
       commit("Modal/active", { judul: "", form: "Loader" }, { root: true })
       // cari document dengan criteria { isFinished: false }
       await dispatch("getDataByCriteria", {store: "Document", criteria: { isfinished: "false" } }, { root: true })
@@ -55,7 +52,6 @@ const Uncollected = {
       await dispatch("getDataByCriteria", {store: "Problem", criteria: { isfinished: false } }, { root: true })
       // 
       commit("Modal/active", false, { root: true })
-      commit("allData")
       return "finished"
     },
     handleDocument({state, commit, dispatch, rootGetters}, payload) {
@@ -106,6 +102,7 @@ const Uncollected = {
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
       if(state.allData) {
         commit("document", [])
+
       }
       if(!state[status]) { 
         let recordStatus;
