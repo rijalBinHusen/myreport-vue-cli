@@ -220,6 +220,9 @@ export default {
                 } , 1500 )
             }
         });
-    }
+    },
+    beforeUnmount() {
+         this.unsubscribe();
+    },
 }
 </script>

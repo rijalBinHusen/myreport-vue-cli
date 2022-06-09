@@ -56,6 +56,7 @@ const Uncollected = {
     },
     handleDocument({state, commit, dispatch, rootGetters}, payload) {
       // payload =  {action: 'approve', val: -1, rec: doc22050003}
+      // payload =  {action: 'finished', val: { etc: etc from BaseFinishForm }, rec: doc22050003}
       // get record from uncollected the state
       let info = rootGetters["Document/getId"](payload.rec)
       // approve document
@@ -88,6 +89,16 @@ const Uncollected = {
       else if(payload.action === "unapprove") {
         info.approval = "false"
         info.status = 1
+      }
+      else if(payload.action === "finished") {
+        delete info.isfinished
+        delete info.finished
+        delete info.baseReportFile
+        delete info.totalDO
+        delete info.totalKendaraan
+        delete info.totalWaktu
+        delete info.standartWaktu
+        info = Object.assign(info, payload.val)
       }
           dispatch("updateOnly", { 
             store: "Document", 

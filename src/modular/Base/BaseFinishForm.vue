@@ -109,18 +109,23 @@ export default {
     },
     methods: {
         save() {
-            this.$emit("finished",
-                Object.assign(this.document,
+            this.$emit("finished", {id: this.document?.id})
+            this.$store.dispatch("Document/handleDocument",
                 {
-                    isfinished: true,
-                    finished: new Date().getTime(),
-                    baseReportFile: this.base.id,
-                    totalDO: this.totalDo,
-                    totalKendaraan: this.totalKendaraan,
-                    totalWaktu: this.totalWaktu,
-                    standartWaktu: this.standartWaktu
-                })
+                    action: "finished",
+                    val: {
+                        isfinished: true,
+                        finished: new Date().getTime(),
+                        baseReportFile: this.base.id,
+                        totalDO: this.totalDo,
+                        totalKendaraan: this.totalKendaraan,
+                        totalWaktu: this.totalWaktu,
+                        standartWaktu: this.standartWaktu
+                    },
+                    rec: this.document?.id
+                }
             )
+            // console.log(this.document)
         },
     },
     computed: {

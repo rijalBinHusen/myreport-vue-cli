@@ -269,12 +269,6 @@ export default {
         async markAsFinished(ev) {
             // buka loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // update document dengan data yang ada di ev
-            await this.$store.dispatch("update", {
-                store: "Document", 
-                obj: ev,
-                criteria: { id: ev.id }
-            })
 
             // iterate baseReport stocklist dan tambahkan parent document ev.id
             for(let i =0; i < this.lists.length; i++) {
@@ -285,7 +279,7 @@ export default {
                 // tunggu sampai update selesai
                 await this.$store.dispatch("update", {
                     store: "BaseReportStock", 
-                    obj: Object.assign(record, {parentDocument: ev.id}),
+                    obj: Object.assign(record, { parentDocument: ev.id }),
                     criteria: { id: record.id }
                 })
             }
