@@ -185,7 +185,8 @@ export default {
             totalWaktu: 0,
             standartWaktu: 0,
             problem: {},
-            unwatch: "",
+            unsubscribe: "",
+            timeOut: "",
             listsPeriode: "",
             listsWarehouse: "",
             lists: [],
@@ -237,7 +238,6 @@ export default {
                 let confirm = window.confirm("Apakah anda yakin akan menghapus semua problem?")
                 if(confirm) {
                     this.DELETEPROBLEMFROMSTOCK(obj.id)
-                    this.renewLists()
                 }
                 return
             }
@@ -305,7 +305,6 @@ export default {
                     store: store, 
                     criteria: {id: ev}
                 })
-            this.renewLists()
         },
         pickPeriode() {
             this.$store.commit("Modal/active", { 
@@ -340,6 +339,7 @@ export default {
         },
         renewLists() {
             if(this.shift && this.base) {
+                // console.log("renew lists")
 
               if(this.sheet === "stock") {
                 this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
@@ -431,25 +431,21 @@ export default {
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
         this.GETALLITEM()
-        this.unwatch = this.$store.watch(
-          (state, getters) => getters["Modal/obj"],
-          (newValue, oldValue) => {
-            // console.log(`Updating from ${JSON.stringify(oldValue?.form)} to ${JSON.stringify(newValue?.form)}`);
-
-            // Do whatever makes sense now
-            if (oldValue?.form === "BaseProblemForm" && newValue?.form === '') {
-              this.renewLists()
-              // console.log("lists diperbarui")
+        // subscribe the mutation,, and renew lists when data updated
+        this.unsubscribe = this.$store.subscribe((mutation) => {
+            // jika base report ada yang di update
+            // console.log(mutation)
+            if (mutation.type.includes('BaseReport')) {
+                // console.log("Tunggu 1 detik")
+                clearTimeout(this.timeOut)
+                this.timeOut = setTimeout( () => {
+                    this.renewLists()
+                } , 600 )
             }
-            if (oldValue?.before === "BaseStockForm" && newValue?.form === '') {
-              this.renewLists()
-            }
-            
-          },
-        );
+        });
     },
     beforeUnmount() {
-         this.unwatch();
+         this.unsubscribe();
     },
     name: "Base"
 }
