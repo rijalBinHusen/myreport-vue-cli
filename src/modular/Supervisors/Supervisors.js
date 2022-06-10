@@ -19,9 +19,35 @@ const Supervisors = {
         return val.id === value.id ? value : val;
       });
     },
+    updateParam(state, payload) {
+      // payload = { criteria: { id: stk22050003 }, obj: { problem: [] }}
+      state.lists = state.lists.map((val) => {
+        // val.id === stk22050003
+        if(val[Object.keys(payload.criteria)] == Object.values(payload.criteria)) {
+          // val.problem = []
+          val[Object.keys(payload.obj)[0]] = Object.values(payload.obj)[0]
+        }
+        return val
+      })
+    },
   },
 
-  actions: {},
+  actions: {
+    updateWarehouses({ commit, dispatch}, payload) {
+      // console.log(payload)
+      // payload = {id: 123, supervisors: [] }
+      dispatch("updateOnly", { 
+        store: "Supervisors", 
+        criteria: { id: payload?.id }, 
+        obj: { warehouses: payload?.warehouses }
+      }, { root: true })
+      // update state
+      commit("updateParam", { 
+        criteria: { id: payload?.id }, 
+        obj: { warehouses: payload?.warehouses } 
+      })
+    },
+  },
   getters: {
     lists(state, getters, rootState, rootGetters) {
       // let rec = JSON.parse(JSON.stringify(state.lists));

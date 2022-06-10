@@ -4,15 +4,7 @@
     <p class="w3-col s2 w3-right-align w3-margin-right">Add new supervisor : </p>
     <input v-model="supervisor.name" class=" w3-round-large w3-col s2 w3-input w3-large w3-margin-right" type="text" placeholder="Supervisor name" />
     <input v-model="supervisor.phone" class="w3-round-large w3-col s2 w3-input w3-large w3-margin-right" type="text" placeholder="Phone" />
-    <Select 
-    nomargin
-    :options="warehouses" 
-    class="w3-col s2"
-    value="id"
-    text="name"
-    :inselect="supervisor.warehouse"
-    @selected="supervisor.warehouse = $event"
-    />
+    
     <Button 
       primary 
       class="w3-left w3-large w3-margin-left" 
@@ -33,9 +25,9 @@
     <br />
     <Table 
       v-if="GET_SUPERVISORS.length > 0"
-      :headers="['Nama', 'Warehouse']" 
+      :headers="['Nama']" 
       :lists="GET_SUPERVISORS" 
-      :keys="['name', 'warehouseName']"
+      :keys="['name']"
       options
     >
       <template #th>
@@ -49,23 +41,25 @@
         </td>
       </template>
 
-      <template v-slot:default="slotProp">
+      <template v-slot:default="{ prop }">
+      
       <Button 
         primary 
         value="Edit" 
-        :datanya="slotProp.prop.id" 
+        :datanya="prop?.id" 
         type="button" 
         @trig="edit($event)" 
         />
 
         <Button
-          :danger="slotProp.prop.disabled"
-          :primary="!slotProp.prop.disabled"
-          :value="slotProp.prop.disabled ? 'Disabled' : 'Enabled'" 
-          :datanya="slotProp.prop.id" 
+          :danger="prop?.disabled"
+          :primary="!prop?.disabled"
+          :value="prop?.disabled ? 'Disabled' : 'Enabled'" 
+          :datanya="prop?.id" 
           type="button" 
           @trig="disableName($event)" 
         />
+
       </template>
     </Table>
 </template>
@@ -129,7 +123,6 @@ export default {
       this.supervisor = {
         name: "",
         phone: "",
-        warehouse: "",
       }
     },
     disableName(ev) {
@@ -147,14 +140,6 @@ export default {
       GET_SUPERVISORID: "Supervisors/spvId",
       GET_SUPERVISORS: "Supervisors/lists"
     }),
-    warehouses() {
-      let rec = this.$store.state.Warehouses.lists.map((val) => (val))
-      rec.unshift({
-        id: "",
-        name: "Select warehouse"
-      })
-      return rec
-    }
   },
 };
 </script>
