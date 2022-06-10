@@ -24,9 +24,8 @@
     <br />
     <br />
     <Table 
-      v-if="GET_SUPERVISORS.length > 0"
       :headers="['Nama']" 
-      :lists="GET_SUPERVISORS" 
+      :lists="lists" 
       :keys="['name']"
       options
     >
@@ -54,10 +53,9 @@
         <Button
           :danger="prop?.disabled"
           :primary="!prop?.disabled"
-          :value="prop?.disabled ? 'Disabled' : 'Enabled'" 
-          :datanya="prop?.id" 
+          :value="prop?.disabled ? 'Disabled' : 'Enabled'"
           type="button" 
-          @trig="disableName($event)" 
+          @trig="disableName(prop?.id, prop?.disabled)" 
         />
 
       </template>
@@ -82,6 +80,7 @@ export default {
     return {
       supervisor: {},
       editId: "",
+      lists: [],
       timeOut: "",
     }
   },
@@ -98,7 +97,7 @@ export default {
       }
       this.editId = id
       this.timeOut = setTimeout(() => {
-        this.$store.dispatch("Supervisors/updateShift", { id: id, shift: shift })
+        this.$store.dispatch("Supervisors/updateParam", { id: id, param: { shift: shift } })
         this.cancel()
       }, 1000)
     },
@@ -132,15 +131,21 @@ export default {
         phone: "",
       }
     },
-    disableName(ev) {
-            let record = this.GET_SUPERVISORID(ev)
-            // change record disabled
-            record.disabled = !record.disabled
-            this.UPDATE({ store: "Supervisors", obj: record, criteria: { id: ev } })
-        },
+    disableName(ev, disabled) {
+      this.$store.dispatch("Supervisors/updateParam", { 
+        id: ev, 
+        param: { disabled: !disabled } 
+      })
+      this.renewLists()
+    },
+    renewLists() {
+      console.log(this.GET_SUPERVISORS)
+      this.lists = this.GET_SUPERVISORS
+    },
   },
   mounted() {
     this.cancel();
+    this.renewLists()
   },
   computed: {
     ...mapGetters({
