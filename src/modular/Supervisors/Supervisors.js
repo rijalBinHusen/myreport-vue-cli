@@ -47,6 +47,19 @@ const Supervisors = {
         obj: { warehouses: payload?.warehouses } 
       })
     },
+    updateShift({commit, dispatch}, payload) {
+      // payload ={ id: 123, shift: 3}
+      dispatch("updateOnly", { 
+        store: "Supervisors", 
+        criteria: { id: payload?.id }, 
+        obj: { shift: payload?.shift }
+      }, { root: true })
+      // update state
+      commit("updateParam", { 
+        criteria: { id: payload?.id }, 
+        obj: { shift: payload?.shift } 
+      })
+    },
   },
   getters: {
     lists(state, getters, rootState, rootGetters) {

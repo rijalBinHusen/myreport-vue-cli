@@ -8,11 +8,11 @@
     <Button 
       primary 
       class="w3-left w3-large w3-margin-left" 
-      :value="editId ? 'Update' : 'Add'" 
+      :value="editId && supervisor?.name ? 'Update' : 'Add'" 
       type="button"
     />
     <Button 
-      v-if="editId"
+      v-if="editId && supervisor?.name"
       danger 
       class="w3-left w3-large" 
       value="Cancel" 
@@ -82,6 +82,7 @@ export default {
     return {
       supervisor: {},
       editId: "",
+      timeOut: "",
     }
   },
   methods: {
@@ -91,9 +92,15 @@ export default {
     }),
 
     changeShift(id, shift) {
-      let record = this.GET_SUPERVISORID(id)
-      record.shift = shift
-      this.UPDATE({ store: "Supervisors", obj: record, criteria: { id: id } })
+      
+      if(this.editId == id) {
+        clearTimeout(this.timeOut)
+      }
+      this.editId = id
+      this.timeOut = setTimeout(() => {
+        this.$store.dispatch("Supervisors/updateShift", { id: id, shift: shift })
+        this.cancel()
+      }, 1000)
     },
     send() {
       if(this.supervisor.name) {
