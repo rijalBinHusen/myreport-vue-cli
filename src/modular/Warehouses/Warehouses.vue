@@ -28,12 +28,20 @@
       :lists="_WAREHOUSES" 
       :keys="['name']"
       options
-      v-slot:default="slotProp"
+      #default="{ prop }"
     >
+      <Button 
+        secondary 
+        value="Supervisors" 
+        :datanya="prop.id" 
+        type="button" 
+        @trig="supervisors($event)" 
+        />
+
       <Button 
         primary 
         value="Edit" 
-        :datanya="slotProp.prop.id" 
+        :datanya="prop.id" 
         type="button" 
         @trig="edit($event)" 
         />
@@ -62,6 +70,14 @@ export default {
       APPEND: "append",
       UPDATE: "update"
     }),
+
+    supervisors(ev) {
+      this.$store.commit("Modal/active", {
+                judul: "Edit supervisors", 
+                form: "WarehouseSupervisorsForm",
+                obj: { id: ev }
+            });
+    },
 
     send() {
       if(this.warehouse) {
