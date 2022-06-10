@@ -7,6 +7,7 @@
 				v-model="pickedSupervisors"
 				:value="list.id" 
 				:id="list.id" 
+				class="w3-margin-right"
 			/>
 	        <label :for="list.id">  {{ list?.name }}</label>
 		</div>
@@ -35,17 +36,11 @@ import Button from "../../components/elements/Button.vue"
 		},
 		methods:{
 			update() {
-				// console.log(this.pickedSupervisors)
 				this.$store.dispatch("Warehouses/updateSupervisors", {
 					id: this.info?.id,
 					supervisors: [ ...this.pickedSupervisors ]
 				})
-				// this.$store.dispatch("BaseReportStock/updateProblem", { 
-				// 		id: this.info.id, 
-				// 		problem: [ ...this.pickedProblem ]
-				// 	})
-				// this.$store.commit("Modal/active");
-				// console.log([ ...this.pickedProblem ])
+				this.$store.commit("Modal/active");
 			},
 		},
 		components: {
