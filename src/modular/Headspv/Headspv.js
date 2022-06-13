@@ -33,9 +33,12 @@ const Headspv = {
   },
 
   actions: {
-    update({dispatch}, payload){
-      // payload= { name: "", phone: "", id: ""}
-      dispatch("update",{
+    update({dispatch, commit}, payload){
+      // payload= { name: "", phone: "", id: ""}// state
+      commit("update", payload)
+      
+      //idb
+      dispatch("updateOnly",{
         store: "Headspv",
         criteria: { id: payload?.id},
         obj : { name: payload?.name, phone: payload?.phone }
