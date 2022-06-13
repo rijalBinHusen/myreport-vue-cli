@@ -33,9 +33,13 @@ const Supervisors = {
   },
 
   actions: {
-    update({dispatch}, payload){
+    update({dispatch, commit}, payload){
       // payload= { name: "", phone: "", id: ""}
-      dispatch("update",{
+      // state
+      commit("update", payload)
+      
+      //idb
+      dispatch("updateOnly",{
         store: "Supervisors",
         criteria: { id: payload?.id},
         obj : { name: payload?.name, phone: payload?.phone }
