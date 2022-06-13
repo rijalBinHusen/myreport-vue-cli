@@ -84,7 +84,6 @@ export default {
         let record = {
               store: "Warehouses",
               obj: {
-                id: this.editId ? this.editId : this._WAREHOUSES[0] ? this._WAREHOUSES[0].id : "WHS22050000",
                 name: this.warehouse
               }}
         this.editId ? record.criteria = { id: this.editId } : false
