@@ -8,7 +8,6 @@
         class="w3-left w3-large w3-margin-left" 
         :value="editId ? 'Update' : 'Add'" 
         type="button" 
-        @trig="send" 
       />
       <Button 
         v-if="editId"
@@ -59,7 +58,7 @@ export default {
     return {
       warehouse: "",
       editId: "",
-    }
+    };
   },
   components: {
     Button,
@@ -80,20 +79,17 @@ export default {
     },
 
     send() {
-      if(this.warehouse) {
-        let record = {
-              store: "Warehouses",
-              obj: {
-                name: this.warehouse
-              }}
-        this.editId ? record.criteria = { id: this.editId } : false
-        // if update
-        if(this.editId) { this.UPDATE(record) }
-        // else
-        else { this.APPEND(record) }
-        this.warehouse = ""
-        this.editId = ""
+      // jika update
+      if(this.editId) {
+        this.$store.dispatch("Warehouses/update", { id: this.editId, name: this.warehouse })
       }
+      // jika tidak
+      else {
+        this.$store.dispatch("Warehouses/append", this.warehouse)
+      }
+      // reset the form
+      this.cancel()
+      
     },
     edit(ev) {
       this.editId = ev

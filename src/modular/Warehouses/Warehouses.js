@@ -33,6 +33,27 @@ const Warehouses = {
   },
 
   actions: {
+    update({dispatch, commit}, payload) {
+      // payload = {id: id, name: name}
+      dispatch("updateOnly", { 
+        store: "Warehouses", 
+        criteria: { id: payload?.id }, 
+        obj: { name: payload?.name }
+      }, { root: true })
+      // update state
+      commit("updateParam", { 
+        criteria: { id: payload?.id }, 
+        obj: { name: payload?.name } 
+      })
+    },
+    append({dispatch}, payload) {
+      //payload = namagudang
+      dispatch("append", {
+              store: "Warehouses",
+              obj: {
+                name: payload
+              }}, {root: true})
+    },
     updateSupervisors({ commit, dispatch}, payload) {
       // console.log(payload)
       // payload = {id: 123, supervisors: [] }
