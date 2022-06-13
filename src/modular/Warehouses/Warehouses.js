@@ -33,17 +33,17 @@ const Warehouses = {
   },
 
   actions: {
-    update({dispatch, commit}, payload) {
-      // payload = {id: id, name: name}
+    updateParam({commit, dispatch}, payload) {
+      // payload ={ id: 123, param: { shift: 3 } }
       dispatch("updateOnly", { 
         store: "Warehouses", 
         criteria: { id: payload?.id }, 
-        obj: { name: payload?.name }
+        obj: { [Object.keys(payload?.param)[0]]: Object.values(payload?.param)[0]}
       }, { root: true })
       // update state
       commit("updateParam", { 
         criteria: { id: payload?.id }, 
-        obj: { name: payload?.name } 
+        obj: { [Object.keys(payload?.param)[0]]: Object.values(payload?.param)[0]}
       })
     },
     append({dispatch}, payload) {

@@ -44,6 +44,14 @@
         type="button" 
         @trig="edit($event)" 
         />
+
+        <Button
+          :danger="prop?.disabled"
+          :primary="!prop?.disabled"
+          :value="prop?.disabled ? 'Disabled' : 'Enabled'"
+          type="button" 
+          @trig="disableWarehouse(prop?.id, prop?.disabled)" 
+        />
     </Table>
 </template>
 
@@ -81,7 +89,10 @@ export default {
     send() {
       // jika update
       if(this.editId) {
-        this.$store.dispatch("Warehouses/update", { id: this.editId, name: this.warehouse })
+        this.$store.dispatch("Warehouses/updateParam", { 
+          id: this.editId, 
+          param: { name: this.warehouse } 
+        })
       }
       // jika tidak
       else {
@@ -90,6 +101,12 @@ export default {
       // reset the form
       this.cancel()
       
+    },
+    disableWarehouse(ev, disabled) {
+      this.$store.dispatch("Warehouses/updateParam", { 
+        id: ev, 
+        param: { disabled: !disabled } 
+      })
     },
     edit(ev) {
       this.editId = ev
