@@ -4,6 +4,7 @@ import Localbase from "localbase";
 let db = new Localbase("myreport");
 
 let summary = {};
+let timeOut;
 
 function generateId(store) {
   // ambil last id dari summary  // kalau tidak ada bikin baru
@@ -43,14 +44,27 @@ function generateId(store) {
     lastId: result,
     total: summary[store].total ? summary[store].total + 1 : 1,
   };
-  // save to indexeddb
-  write("summary", store, summary[store]);
+  // clear timeOut
+  clearTimeout(timeOut)
+
+  // wait 2000ms and update summary
+  timeOut = setTimeout(() => {
+    updateSummary() 
+  }, 2000)
+  // write("summary", store, summary[store]);
   // kembalikan
   return result;
 }
 
+function updateSummary() {
+  let record = Object.keys(summary).map((val) => {
+    return Object.assign({ _key: val }, summary[val])
+  })
+  reWriteStoreWithKey({store: "summary", obj: record})
+}
+
 function write(store, document, value) {
-  //{store: "namastore", obj: {obj: toInput } }
+  //store = namastore, document = "namaKey" value: { obj: toInput } }
   // db.collection(value.store.toLowerCase()).add(value.obj);
   db.collection(store.toLowerCase()).doc(document).set(value);
 }
@@ -59,6 +73,7 @@ function getStoreWithKey(store) {
   return db.collection(store).get({ keys: true });
 }
 
+// ketika aplikasi load, jalankan fungsi ambil summary
 getStoreWithKey("summary").then((result) => {
   if (result) {
     result.forEach((val) => {
@@ -66,6 +81,11 @@ getStoreWithKey("summary").then((result) => {
     });
   }
 });
+
+function reWriteStoreWithKey (value) {
+    // value = {store: nameOfStore: obj: [Array would to wrote]}
+    db.collection(value.store).set(value.obj, { keys: true });
+  }
 
 export default {
   append: async function (value) {
@@ -99,11 +119,7 @@ export default {
       .doc({ id: value.id })
       .set(value.obj);
   },
-  reWriteStoreWithKey: function (value) {
-    // console.log(value);
-    // value = {store: nameOfStore: obj: [Array would to wrote]}
-    db.collection(value.store).set(value.obj, { keys: true });
-  },
+  reWriteStoreWithKey: reWriteStoreWithKey,
   getData: function (deData) {
     let store = deData.store;
 
