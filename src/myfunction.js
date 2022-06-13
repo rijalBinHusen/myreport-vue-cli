@@ -4,6 +4,7 @@ import Localbase from "localbase";
 let db = new Localbase("myreport");
 
 let summary = {};
+let storeToUpdate = [] //store that would to update
 let timeOut;
 
 function generateId(store) {
@@ -44,23 +45,28 @@ function generateId(store) {
     lastId: result,
     total: summary[store].total ? summary[store].total + 1 : 1,
   };
-  // clear timeOut
-  clearTimeout(timeOut)
 
-  // wait 2000ms and update summary
-  timeOut = setTimeout(() => {
-    updateSummary() 
-  }, 2000)
+  // rekam store untuk diupdate
+  storeToUpdate.includes(store)
+    ? ''
+    : storeToUpdate.push(store)
+
   // write("summary", store, summary[store]);
+  updateSummary()
   // kembalikan
   return result;
 }
 
 function updateSummary() {
-  let record = Object.keys(summary).map((val) => {
-    return Object.assign({ _key: val }, summary[val])
-  })
-  reWriteStoreWithKey({store: "summary", obj: record})
+  // clear timeOut
+  clearTimeout(timeOut)
+
+  // wait 2000ms and update summary
+  timeOut = setTimeout( async () => {
+    for (let i = 0; i < storeToUpdate.length; i++) {
+      await write("summary", storeToUpdate[i], summary[storeToUpdate[i]]);
+    }
+  }, 2000)
 }
 
 function write(store, document, value) {
