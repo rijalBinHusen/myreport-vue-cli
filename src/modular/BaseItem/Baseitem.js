@@ -15,6 +15,7 @@ const Baseitem = {
     },
     // update data
     update(state, value) {
+      console.log(value)
       state.lists = state.lists.map((val) => {
         return val.id === value.id ? value : val;
       });
@@ -33,7 +34,26 @@ const Baseitem = {
       if(state.lists.length <= 200) {
         dispatch("getDataByCriteria", { store: "Baseitem", allData: true }, {root: true})
       }
-    }
+    },
+    update({dispatch, commit}, payload){
+      // payload= { name: "", phone: "", id: ""}
+      // state
+      commit("update", payload)
+      
+      //idb
+      dispatch("updateOnly",{
+        store: "Baseitem",
+        criteria: { id: payload?.id},
+        obj : { kode: payload?.kode, name: payload?.name }
+      }, { root: true })
+    },
+    append({dispatch}, payload) {
+      //payload = {name: odjfer, phone: 123123123}
+      dispatch("append", {
+              store: "Baseitem",
+              obj: payload
+            }, {root: true})
+    },
   },
   getters: {
     baseItemId: (state, getters, rootState, rootGetters) => (id) => {

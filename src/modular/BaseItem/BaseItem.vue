@@ -50,8 +50,7 @@
     </form>
   </div>
     <Datatable
-      v-if="_BASEITEM.length > 0"
-      :datanya="_BASEITEM"
+      :datanya="$store.state.Baseitem.lists"
       :heads="['Kode item', 'Nama item']"
       :keys="['kode', 'name']"
       option
@@ -80,7 +79,6 @@
 import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import { mapState, mapGetters, mapActions } from "vuex";
 import * as XLSX from "xlsx";
 
 export default {
@@ -97,32 +95,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      APPEND: "append",
-      UPDATE: "update"
-    }),
-
     send() {
-      if(this.Baseitem.name) {
-        // if update
-        let record = {
-              store: "Baseitem",
-              obj: { ...this.Baseitem }
-            }
-
-        if(this.editId) { this.UPDATE(Object.assign({ criteria: { id: this.editId } }, record )) }
-
-        // else
-        else {
-          record.obj.id = this._BASEITEM[0] ? this._BASEITEM[0].id : "ITM22050000"
-          this.APPEND(record)
-        }
+    // jika update
+      if(this.editId) {
+        this.$store.dispatch("Baseitem/update",{ ...this.Baseitem, id: this.editId })
       }
+      // jika tidak
+      else {
+        this.$store.dispatch("Baseitem/append", { ...this.Baseitem })
+      }
+      // reset the form
       this.cancel()
     },
     edit(ev) {
       this.editId = ev
-      this.Baseitem = { ...this.GET_BASEITEMID(ev) }
+      this.Baseitem = { ...this.$store.getters["Baseitem/baseItemId"](ev) }
     },
     cancel() {
       this.editId = ""
@@ -181,13 +168,5 @@ export default {
   mounted() {
     this.cancel();
   },
-  computed: {
-    ...mapState({
-      _BASEITEM: state => [ ...state.Baseitem.lists ],
-    }),
-    ...mapGetters({
-      GET_BASEITEMID: "Baseitem/baseItemId",
-    }),
-  }
 };
 </script>
