@@ -50,6 +50,9 @@ const Baseitem = {
               store: "Baseitem",
               obj: payload
             }, {root: true})
+            .then(() => {
+              return true
+            })
     },
   },
   getters: {

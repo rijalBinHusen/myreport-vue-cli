@@ -96,13 +96,14 @@ export default {
   },
   methods: {
     send() {
+      if(!this.Baseitem?.name && !this.Baseitem?.kode) { return }
     // jika update
       if(this.editId) {
         this.$store.dispatch("Baseitem/update",{ ...this.Baseitem, id: this.editId })
       }
       // jika tidak
       else {
-        this.$store.dispatch("Baseitem/append", { ...this.Baseitem })
+        this.$store.dispatch("append",{ obj: { ...this.Baseitem }, store: "Baseitem" })
       }
       // reset the form
       this.cancel()
@@ -154,10 +155,10 @@ export default {
         let lengthRow = +infoRow[1].match(/\d+/)[0]
         for(let i = 1; i <= lengthRow; i++) {
           if(d.sheet["A"+i]) {
-            await this.APPEND({
+            await this.$store.dispatch("append", { 
               store: "Baseitem",
-              obj: { id: this._BASEITEM[0] ? this._BASEITEM[0].id : "ITM22050000", kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v },
-            })
+              obj: { kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v }
+             })
           }
         }
         // close the loader
