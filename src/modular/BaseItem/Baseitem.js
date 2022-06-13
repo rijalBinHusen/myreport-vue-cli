@@ -15,16 +15,13 @@ const Baseitem = {
     },
     // update data
     update(state, value) {
-      console.log(value)
       state.lists = state.lists.map((val) => {
         return val.id === value.id ? value : val;
       });
     },
     delete(state, value) {
-      let keyCriteria = Object.keys(value.criteria)[0];
-      let valueCriteria = Object.values(value.criteria)[0];
       state.lists = state.lists.filter(
-        (val) => val[keyCriteria] !== valueCriteria
+        (val) => val?.id !== value
       );
     },
   },
