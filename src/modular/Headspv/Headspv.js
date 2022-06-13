@@ -19,9 +19,49 @@ const Headspv = {
         return val.id === value.id ? value : val;
       });
     },
+    updateParam(state, payload) {
+      // payload = { criteria: { id: stk22050003 }, obj: { problem: [] }}
+      state.lists = state.lists.map((val) => {
+        // val.id === stk22050003
+        if(val[Object.keys(payload.criteria)] == Object.values(payload.criteria)) {
+          // val.problem = []
+          val[Object.keys(payload.obj)[0]] = Object.values(payload.obj)[0]
+        }
+        return val
+      })
+    },
   },
 
-  actions: {},
+  actions: {
+    update({dispatch}, payload){
+      // payload= { name: "", phone: "", id: ""}
+      dispatch("update",{
+        store: "Headspv",
+        criteria: { id: payload?.id},
+        obj : { name: payload?.name, phone: payload?.phone }
+      }, { root: true })
+    },
+    append({dispatch}, payload) {
+      //payload = {name: odjfer, phone: 123123123}
+      dispatch("append", {
+              store: "Headspv",
+              obj: payload
+            }, {root: true})
+    },
+    updateParam({commit, dispatch}, payload) {
+      // payload ={ id: 123, param: { shift: 3 } }
+      dispatch("updateOnly", { 
+        store: "Headspv", 
+        criteria: { id: payload?.id }, 
+        obj: { [Object.keys(payload?.param)[0]]: Object.values(payload?.param)[0]}
+      }, { root: true })
+      // update state
+      commit("updateParam", { 
+        criteria: { id: payload?.id }, 
+        obj: { [Object.keys(payload?.param)[0]]: Object.values(payload?.param)[0]}
+      })
+    },
+  },
   getters: {
     enabled(state) {
       return state.lists.filter((val) => val.disabled === false);

@@ -1,17 +1,17 @@
 <template>
   <div class="w3-center w3-margin-top w3-row">
     <form ref="spvForm" class="margin-bottom" @submit.prevent="send">
-    <p class="w3-col s3 w3-right-align w3-margin-right">Add new head supervisor : </p>
-    <input v-model="head.name" class="w3-col s3 w3-input w3-large w3-margin-right" type="text" placeholder="Supervisor name" />
+    <p class="w3-col s3 w3-right-align w3-margin-right">Add new head Head name : </p>
+    <input v-model="head.name" class="w3-col s3 w3-input w3-large w3-margin-right" type="text" placeholder="Head name" />
     <input v-model="head.phone" class="w3-col s3 w3-input w3-large w3-margin-right" type="text" placeholder="Phone" />
     <Button 
       primary 
       class="w3-left w3-large w3-margin-left" 
-      :value="editId ? 'Update' : 'Add'" 
+      :value="editId && head?.name ? 'Update' : 'Add'" 
       type="button"
     />
     <Button 
-      v-if="editId"
+      v-if="editId && head?.name"
       danger 
       class="w3-left w3-large" 
       value="Cancel" 
@@ -23,9 +23,8 @@
     <br />
     <br />
     <Table 
-      v-if="_HEADSPV.length > 0"
       :headers="['Nama']" 
-      :lists="_HEADSPV" 
+      :lists="$store.state.Headspv.lists" 
       :keys="['name']"
       options
     >
@@ -41,22 +40,22 @@
         </td>
       </template>
 
-      <template #default="slotProp">
+      <template #default="{ prop }">
         <Button 
           primary 
           value="Edit" 
-          :datanya="slotProp.prop.id" 
+          :datanya="prop.id" 
           type="button" 
           @trig="edit($event)" 
         />
 
         <Button
-          :danger="slotProp.prop.disabled"
-          :primary="!slotProp.prop.disabled"
-          :value="slotProp.prop.disabled ? 'Disabled' : 'Enabled'" 
-          :datanya="slotProp.prop.id" 
+          :danger="prop.disabled"
+          :primary="!prop.disabled"
+          :value="prop.disabled ? 'Disabled' : 'Enabled'" 
+          :datanya="prop.id" 
           type="button" 
-          @trig="disableName($event)" 
+          @trig="disableName($event, prop?.disabled)" 
         />
       </template>
     </Table>
@@ -66,7 +65,6 @@
 import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
 import Table from "../../components/elements/Table.vue"
-import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -82,62 +80,45 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      APPEND: "append",
-      UPDATE: "update"
-    }),
-
     changeShift(id, shift) {
-      let record = this.GET_HEADID(id)
-      // change shift
-      record.shift = shift
-      this.UPDATE({ store: "Headspv", obj: record, criteria: { id: id } })
+      if(this.editId == id) {
+        clearTimeout(this.timeOut)
+      }
+
+      this.editId = id
+
+      this.timeOut = setTimeout(() => {
+        this.$store.dispatch("Headspv/updateParam", { id: id, param: { shift: shift } })
+        this.cancel()
+      }, 1000)
     },
-
-    send() {
-      if(this.head.name) {
-        let record = {
-          store: "Headspv",
-          obj: { ...this.head }
-        }
-        // if update
-          if(this.editId) {this.UPDATE(Object.assign({ criteria: { id: this.editId } }, record )) }
-
-        // else
-        else {
-          record.obj.id = this._HEADSPV[0] ? this._HEADSPV[0].id : "HSP22050000"
-          record.obj.disabled = false
-          record.obj.shift = 3
-          this.APPEND(record)
-        }
+    send() {  // jika update
+      if(this.editId) {
+        this.$store.dispatch("Headspv/update",{ ...this.head, id: this.editId })
+      }
+      // jika tidak
+      else {
+        this.$store.dispatch("Headspv/append", { ...this.head })
       }
       this.cancel()
     },
     edit(ev) {
       this.editId = ev
-      this.head = this.GET_HEADID(ev)
+      this.head = this.$store.getters["Headspv/headId"](ev)
     },
     cancel() {
       this.editId = ""
       this.head = {}
     },
-    disableName(ev) {
-            let record = this.GET_HEADID(ev)
-            // change record disabled
-            record.disabled = !record.disabled
-            this.UPDATE({ store: "Headspv", obj: record, criteria: { id: ev } })
-        },
+    disableName(ev, disabled) {
+      this.$store.dispatch("Headspv/updateParam", { 
+        id: ev, 
+        param: { disabled: !disabled } 
+      })
+    },
   },
   mounted() {
     this.cancel();
-  },
-  computed: {
-    ...mapState({
-      _HEADSPV: state => [...state.Headspv.lists]
-    }),
-    ...mapGetters({
-      GET_HEADID: "Headspv/headId",
-    }),
   },
 };
 </script>
