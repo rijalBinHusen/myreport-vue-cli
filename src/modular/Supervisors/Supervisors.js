@@ -33,19 +33,20 @@ const Supervisors = {
   },
 
   actions: {
-    updateWarehouses({ commit, dispatch}, payload) {
-      // console.log(payload)
-      // payload = {id: 123, supervisors: [] }
-      dispatch("updateOnly", { 
-        store: "Supervisors", 
-        criteria: { id: payload?.id }, 
-        obj: { warehouses: payload?.warehouses }
+    update({dispatch}, payload){
+      // payload= { name: "", phone: "", id: ""}
+      dispatch("update",{
+        store: "Supervisors",
+        criteria: { id: payload?.id},
+        obj : { name: payload?.name, phone: payload?.phone }
       }, { root: true })
-      // update state
-      commit("updateParam", { 
-        criteria: { id: payload?.id }, 
-        obj: { warehouses: payload?.warehouses } 
-      })
+    },
+    append({dispatch}, payload) {
+      //payload = {name: odjfer, phone: 123123123}
+      dispatch("append", {
+              store: "Supervisors",
+              obj: payload
+            }, {root: true})
     },
     updateParam({commit, dispatch}, payload) {
       // payload ={ id: 123, param: { shift: 3 } }
@@ -62,33 +63,13 @@ const Supervisors = {
     },
   },
   getters: {
-    lists(state, getters, rootState, rootGetters) {
-      // let rec = JSON.parse(JSON.stringify(state.lists));
-      return JSON.parse(JSON.stringify(state)).lists.map((val) => {
-        val.warehouseName = rootGetters["Warehouses/warehouseId"](
-          val.warehouse
-        ).name;
-        return val;
-      });
-    },
     enabled(state) {
       return JSON.parse(
         JSON.stringify(state.lists.filter((val) => val.disabled === false))
       );
     },
     spvId: (state, getters, rootState, rootGetters) => (id) => {
-      let rec = JSON.parse(JSON.stringify(state.lists)).find((val) => val.id === id);
-      return rec && rec.name
-        ? Object.assign(rec, {
-            warehouseName: rootGetters["Warehouses/warehouseId"](rec.warehouse)
-              .name,
-          })
-        : {
-            name: null,
-            phone: null,
-            warehouse: null,
-            disabled: false,
-          };
+      return JSON.parse(JSON.stringify(state.lists)).find((val) => val.id === id);
     },
   },
 };

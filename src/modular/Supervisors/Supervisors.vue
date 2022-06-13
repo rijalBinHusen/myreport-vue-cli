@@ -25,7 +25,7 @@
     <br />
     <Table 
       :headers="['Nama']" 
-      :lists="lists" 
+      :lists="$store.state.Supervisors.lists" 
       :keys="['name']"
       options
     >
@@ -67,7 +67,6 @@ import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
 import { uid } from "uid"
 import Table from "../../components/elements/Table.vue"
-import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -85,11 +84,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions({
-      APPEND: "append",
-      UPDATE: "update"
-    }),
-
     changeShift(id, shift) {
       
       if(this.editId == id) {
@@ -102,27 +96,19 @@ export default {
       }, 1000)
     },
     send() {
-      if(this.supervisor.name) {
-        let record = {
-          store: "Supervisors",
-              obj: { ...this.supervisor }
-          }
-        
-        // if update 
-        if(this.editId) { this.UPDATE(Object.assign({ criteria: { id: this.editId } }, record )) }
-        // else
-        else {
-          record.obj.id = this.GET_SUPERVISORS[0] ? this.GET_SUPERVISORS[0].id : "SPV22050000"
-          record.obj.disabled = false
-          record.obj.shift = 3
-          this.APPEND(record)
-        }
+      // jika update
+      if(this.editId) {
+        this.$store.dispatch("Supervisors/update",{ ...this.supervisor, id: this.editId })
+      }
+      // jika tidak
+      else {
+        this.$store.dispatch("Supervisors/append", { ...this.supervisor })
       }
       this.cancel()
     },
     edit(ev) {
       this.editId = ev
-      this.supervisor = this.GET_SUPERVISORID(ev)
+      this.supervisor = this.$store.getters["Supervisors/spvId"](ev)
     },
     cancel() {
       this.editId = ""
@@ -136,22 +122,10 @@ export default {
         id: ev, 
         param: { disabled: !disabled } 
       })
-      this.renewLists()
-    },
-    renewLists() {
-      console.log(this.GET_SUPERVISORS)
-      this.lists = this.GET_SUPERVISORS
     },
   },
   mounted() {
     this.cancel();
-    this.renewLists()
-  },
-  computed: {
-    ...mapGetters({
-      GET_SUPERVISORID: "Supervisors/spvId",
-      GET_SUPERVISORS: "Supervisors/lists"
-    }),
   },
 };
 </script>
