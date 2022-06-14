@@ -96,7 +96,7 @@ export default {
                             head: spv?.shift == 3 
                                     ? this.GET_HEADSHIFT(2)?.id 
                                     : this.GET_HEADSHIFT(spv?.shift)?.id,
-                            warehouse: this._WAREHOUSES[i],
+                            warehouse: this._WAREHOUSES[i]?.id,
                         })
                     }
                 }

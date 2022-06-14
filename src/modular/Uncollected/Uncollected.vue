@@ -22,7 +22,7 @@
 		<Datatable
           :datanya="lists"
           :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Nama', 'Gudang']"
-          :keys="viewByPeriode ? ['spvWarehouse', 'spvName', 'periode2', 'shift', 'headName'] : ['name', 'warehouseName']"
+          :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['name', 'warehouseName']"
           option
           id="tableUncollected"
         >

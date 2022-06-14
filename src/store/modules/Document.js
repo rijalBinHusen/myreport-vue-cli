@@ -176,7 +176,7 @@ const Uncollected = {
             if(val?.status == status) {
               let spvInfo = rootGetters["Supervisors/spvId"](val.name)
               val.spvName = spvInfo.name
-              val.spvWarehouse = spvInfo.warehouseName
+              val.warehouseName = rootGetters["Warehouses/warehouseId"](val?.warehouse)?.name
               val.headName = rootGetters["Headspv/headId"](val.head).name
               val.periode2 = rootGetters["dateFormat"]({ format: "dateMonth", time: val.periode })
               val.collected2 = !isNaN(val.collected) ? rootGetters["dateFormat"]({ format: "dateMonth", time: val.collected }) : val.collected

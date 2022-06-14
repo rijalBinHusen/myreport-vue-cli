@@ -26,7 +26,7 @@
             </div>
             <div class="w3-row">
                 
-                <div class="w3-col s4" style="padding: 0 16px 0 16px;">
+                <div class="w3-col s3">
                     <label v-if="more?.mode === 'edit'" for="name">Edit nama:</label>
                     <Select 
                         id="name"
@@ -40,7 +40,7 @@
                     />
                 </div>
                 
-                <div class="w3-col s4">
+                <div class="w3-col s3" style="padding: 0 16px 0 16px;">
                     <label v-if="more?.mode === 'edit'" for="head">Edit kabag:</label>
                     <Select 
                         id="head"
@@ -53,7 +53,7 @@
                     />
                 </div>
 
-                <div class="w3-col s4">
+                <div class="w3-col s3" style="padding: 0 16px 0 16px;">
                     <label v-if="more?.mode === 'edit'" for="shift">Edit shift:</label>
                     <Select 
                         id="shift"
@@ -67,6 +67,20 @@
                         text="title"
                         @selected="record.shift = $event"
                         :inselect="record.shift"
+                        :disabled="more?.mode === 'view' "
+                    />
+                </div>
+
+                <div class="w3-col s3">
+                    <label v-if="more?.mode === 'edit'" for="warehouse">Edit gudang:</label>
+                    <Select 
+                        id="warehouse"
+                        judul="gudang"
+                        :options="$store.state.Warehouses.lists" 
+                        value="id"
+                        text="name"
+                        @selected="record.warehouse = $event"
+                        :inselect="record?.warehouse"
                         :disabled="more?.mode === 'view' "
                     />
                 </div>
