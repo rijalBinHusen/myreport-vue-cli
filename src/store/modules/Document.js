@@ -197,7 +197,12 @@ const Uncollected = {
               time: val.periode,
             })
 
-            result.push({ id: val.id, periode: val.periode, periode2: val.periode2 })
+            result.push({ 
+              id: val.id, 
+              periode: val.periode, 
+              periode2: val.periode2 ,
+              warehouseName: rootGetters["Warehouses/warehouseId"](val?.warehouse)?.name
+            })
           }
         })
         return result
@@ -207,10 +212,8 @@ const Uncollected = {
     documentBySpv: (state, getters, rootState, rootGetters) => (status) => {
       if (state.lists.length) {
 
-        return rootGetters["Supervisors/lists"].filter((val) => {
-          if(!val?.disabled) {
+        return rootGetters["Supervisors/enabled"].filter((val) => {
             return Object.assign(val, { documents: getters["periodeDocumentByStatusBySpv"](status, val?.id) })
-          }
         })
         
       }
