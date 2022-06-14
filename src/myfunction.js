@@ -72,7 +72,7 @@ function updateSummary() {
 function write(store, document, value) {
   //store = namastore, document = "namaKey" value: { obj: toInput } }
   // db.collection(value.store.toLowerCase()).add(value.obj);
-  db.collection(store.toLowerCase()).doc(document).set(value);
+  return db.collection(store.toLowerCase()).doc(document).set(value);
 }
 
 function getStoreWithKey(store) {
@@ -96,14 +96,12 @@ function reWriteStoreWithKey (value) {
 export default {
   append: async function (value) {
     //{store: "namastore", obj: {obj: toInput } }
-    // db.collection(value.store.toLowerCase()).add(value.obj);
     let id = generateId(value.store.toLowerCase());
-    let result = await db
-      .collection(value.store.toLowerCase())
-      .add(Object.assign(value.obj, { id: id }));
-    if (result) {
-      return result;
-    }
+    // let result = await 
+    return db
+            .collection(value.store.toLowerCase())
+            .doc(id)
+            .set(Object.assign({ id: id }, value.obj));
   },
   update: function (value) {
     // { criteria: {id: 001}, obj: { obj: objtoupdate } }

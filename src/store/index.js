@@ -54,7 +54,7 @@ export default createStore({
       // insert record to indexeddb and return as promise
       myfunction.append(value).then((result) => {
         // commit to module e.g 'Group/append
-        commit(`${value.store}/append`, result.data.data, { root: true });
+        commit(`${value.store}/append`, result.data, { root: true });
       });
       //return promise 130 ms and then resolve
       return myfunction.tunggu(130);

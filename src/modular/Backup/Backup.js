@@ -47,7 +47,6 @@ const Backup = {
         {
           store: "Backup",
           obj: {
-            id: state.lists[0].id,
             time: new Date().getTime(),
             nextBackup: now.getTime(),
             setup: value,
