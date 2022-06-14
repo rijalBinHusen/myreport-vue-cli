@@ -227,7 +227,7 @@ const Uncollected = {
       let result = {}
       state.lists.forEach((val) => {
         // if val?.name (spvId) === spvId
-        if(val?.name === spvId && (new Date().getTime() - val.periode >= 172800000)) {
+        if(val?.name === spvId && (new Date().getTime() - val.periode >= 172800000) && val?.status == 0) {
           result[val?.warehouse]
             ? result[val?.warehouse].push(rootGetters["dateFormat"]({format: "dateMonth", time: val?.periode}))
             : result[val?.warehouse] = [rootGetters["dateFormat"]({format: "dateMonth", time: val?.periode})]
