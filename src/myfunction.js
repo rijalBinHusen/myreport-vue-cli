@@ -63,9 +63,13 @@ function updateSummary() {
 
   // wait 2000ms and update summary
   timeOut = setTimeout( async () => {
+    
     for (let i = 0; i < storeToUpdate.length; i++) {
       await write("summary", storeToUpdate[i], summary[storeToUpdate[i]]);
     }
+
+    // empty store to update
+    storeToUpdate = []
   }, 2000)
 }
 

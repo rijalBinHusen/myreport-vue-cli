@@ -102,7 +102,7 @@ export default {
       }
       // jika tidak
       else {
-        this.$store.dispatch("Supervisors/append", { ...this.supervisor })
+        this.$store.dispatch("Supervisors/append", { ...this.supervisor, disabled: false })
       }
       this.cancel()
     },
