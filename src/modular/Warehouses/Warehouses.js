@@ -70,6 +70,15 @@ const Warehouses = {
     },
   },
   getters: {
+    warehouseNameBySpv: (state) => (spvId) => {
+      let result = []
+      state.lists.forEach((val) => {
+        if(val.supervisors.includes(spvId)) {
+          result.push(val?.name.replace('Gudang jadi ', ''))
+        }
+      })
+      return result.join(" & ")
+    },
     warehouseId: (state) => (id) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(
         (val) => val.id === id

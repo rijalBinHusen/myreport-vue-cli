@@ -212,8 +212,11 @@ const Uncollected = {
     documentBySpv: (state, getters, rootState, rootGetters) => (status) => {
       if (state.lists.length) {
 
-        return rootGetters["Supervisors/enabled"].filter((val) => {
-            return Object.assign(val, { documents: getters["periodeDocumentByStatusBySpv"](status, val?.id) })
+        return rootGetters["Supervisors/enabled"].map((val) => {
+            return Object.assign(val, { 
+              documents: getters["periodeDocumentByStatusBySpv"](status, val?.id),
+              warehouseName: rootGetters["Warehouses/warehouseNameBySpv"](val?.id)
+            })
         })
         
       }

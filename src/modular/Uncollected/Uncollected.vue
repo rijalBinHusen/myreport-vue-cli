@@ -21,10 +21,10 @@
 
 		<Datatable
           :datanya="lists"
-          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Nama']"
-          :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['name']"
+          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Gudang', 'Nama']"
+          :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['warehouseName', 'name']"
           option
-          id="tableUncollected"
+          :id="viewByPeriode ? 'uncollectedByPeriode' : 'uncollectedBySpv'"
         >
 
                 <template #th v-if="!viewByPeriode">
@@ -35,7 +35,7 @@
                     <td>
                         <Dropdown
                             v-for="doc in obj.documents" :key="doc?.id"
-                            :value="doc?.periode2+' - '+doc?.warehouseName.replace('Gudang jadi ', '')"  
+                            :value="doc?.periode2+' | '+doc?.warehouseName.replace('Gudang jadi ', '')"  
                             :lists="[
                                 { id: -1, isi: '-1 Hari'},
                                 { id: -2, isi: '-2 Hari'},
