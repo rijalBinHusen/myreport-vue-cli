@@ -38,6 +38,29 @@ const Uncollected = {
     },
   },
   actions: {
+    async append({dispatch}, payload) {
+      // payload = {periode: "", warehouse: ""}
+      await dispatch("append", {
+        store: "Document",
+        
+        obj: Object.assign({ 
+          collected: "false",
+          approval: "false",
+          status: 0,
+          shared: "false", 
+          finished: "false", 
+          totaldo: "false", 
+          totalkendaraan: "false", 
+          totalwaktu: "false", 
+          standartwaktu: "false", 
+          basereportfile: "false", 
+          isfinished: "false",
+        }, payload)
+
+      }, { root: true })
+      // return a true value, so the promise would be resolved
+      return "finished"
+    },
     async getAllDocumentNotFinished({state, commit, dispatch}) {
       commit("Modal/active", { judul: "", form: "Loader" }, { root: true })
       // cari document dengan criteria { isFinished: false }

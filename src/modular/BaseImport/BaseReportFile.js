@@ -38,7 +38,16 @@ const BaseReportFile = {
         for(let i = 0; i < documen.length; i++ ) {
           await dispatch("getDataByCriteriaAppend", {store: "BaseReportFile", criteria: { periode: documen[i].periode, imported: true } }, { root: true })
         }
-    }
+    },
+    async append({dispatch}, payload) {
+      // payload = {periode: "", warehouse: ""}
+      await dispatch("append", {
+        store: "BaseReportFile",
+        obj: Object.assign({ fileName: "false", stock: "false", clock: "false" }, payload)
+      }, { root: true })
+      // return a true value, so the promise would be resolved
+      return "finished"
+    },
   },
   getters: {
     infoByParentAndShift: (state, getters, rootState, rootGetters) => (parentId, shift) => {

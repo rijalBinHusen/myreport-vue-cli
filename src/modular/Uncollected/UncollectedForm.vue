@@ -50,65 +50,53 @@ export default {
         return {
             collect: {
                 periode: this.GET_LASTDATE,
+                timeOut: "",
+                id: "",
             }
         }
     },
     methods: {
         changeShift(store, id, shift) {
-            let record = store == 'Supervisors' ? this.GET_SUPERVISORID(id) : this.GET_HEADID(id)
-            record.shift = shift
-            this.$store.dispatch("update", { store: store, obj: record, criteria: { id: id } })
+            if(this.id == id) {
+                clearTimeout(this.timeOut)
+              }
+              this.id = id
+              this.timeOut = setTimeout(() => {
+                    this.$store.dispatch(`${store}/updateParam`, { 
+                        id: id, 
+                        param: { shift: shift } 
+                    })
+                
+              }, 1000)
         },
         async send(){
             if(this.collect.periode) {
                 // bring up the loader
                 this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-                
+                // jadikkan this.periode sebagai new Date().getTime()
                 let periodeTime = this.GET_DATEFORMAT({format: "ymdTime", time: this.collect.periode})
-                let warehouseInputed = []
-                // uncollected record, ambil semua nama
-                let allName = this.GET_SPVENABLE
                 // console.log(allName)
-                //// iterate semua nama satu satu
-                for(let i=0; i < allName.length; i++) {
-                    //unique id
-                    let idN = this.$store.state.Document.lists.length > 0 ?  this.$store.state.Document.lists.slice(-1)[0].id : "UNC22050000"
-                    // uncollected record, tunggu sampai append selesai
-                    await this.$store.dispatch("append", {
-                        store: "Document",
-                        obj: {
-                            id: idN, 
-                            name: allName[i].id, 
+                //// iterate gudang, kemudian iterate nama spv yang ada didalam gudang
+                for(let i=0; i < this._WAREHOUSES.length; i++) {
+
+                    // baseReportFile record, masukkan berdasar iteraatenya gudang
+                    await this.$store.dispatch("BaseReportFile/append", { 
                             periode: periodeTime,
-                            shift: allName[i].shift,
-                            head: allName[i].shift == 3 ? this.GET_HEADSHIFT(2).id : this.GET_HEADSHIFT(allName[i].shift).id,
-                            collected: "false",
-                            approval: "false",
-                            status: 0,
-                            warehouse: allName[i]?.warehouse,
-                            shared: "false", 
-                            finished: "false", 
-                            totaldo: "false", 
-                            totalkendaraan: "false", 
-                            totalwaktu: "false", 
-                            standartwaktu: "false", 
-                            basereportfile: "false", 
-                            isfinished: "false",
-                        },
+                            warehouse: this._WAREHOUSES[i],
                     })
-                    // baseReportFile record, tunggu sampai selesai
-                    if(!warehouseInputed.includes(allName[i].warehouse)) {
-                        warehouseInputed.push(allName[i].warehouse)
-                        await this.$store.dispatch("append", {
-                            store: "BaseReportFile",
-                            obj: {
-                                id: idN, 
-                                periode: periodeTime,
-                                warehouse: allName[i].warehouse,
-                                fileName: false,
-                                stock: false,
-                                clock: false,
-                            },
+
+                    // Document record, iterate spv yang ada digudang
+                    for(let j = 0; j < this._WAREHOUSES[i]?.supervisors.length; j ++) {
+                        // get the supervisor information
+                        let spv = this.GET_SUPERVISORID(this._WAREHOUSES[i]?.supervisors[j])
+                        await this.$store.dispatch("Document/append", {
+                            name: spv?.id, 
+                            periode: periodeTime,
+                            shift: spv?.shift,
+                            head: spv?.shift == 3 
+                                    ? this.GET_HEADSHIFT(2)?.id 
+                                    : this.GET_HEADSHIFT(spv?.shift)?.id,
+                            warehouse: this._WAREHOUSES[i],
                         })
                     }
                 }
@@ -133,7 +121,6 @@ export default {
             GET_HEADENABLE: "Headspv/enabled",
             GET_SPVENABLE: "Supervisors/enabled",
             GET_LASTDATE: "Document/lastDate",
-            GET_LASTID: "Document/lastId",
             GET_DATEFORMAT: "dateFormat",
             GET_SUPERVISORID: "Supervisors/spvId",
             GET_HEADID: "Headspv/headId",
@@ -141,10 +128,9 @@ export default {
         }),
         names() {
             let result = []
-            let sortByWH = this.GET_SPVENABLE.sort((a, b) => a.warehouse > b.warehouse )
             let groupLength = Math.ceil(this.GET_SPVENABLE.length / 3) * 3
             for (let i = 0; i < groupLength; i += 3) {
-                result.push(sortByWH.slice(i, i+3))
+                result.push(this.GET_SPVENABLE.slice(i, i+3))
             }
             return result
         },

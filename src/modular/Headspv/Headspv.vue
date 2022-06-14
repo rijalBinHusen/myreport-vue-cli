@@ -98,7 +98,7 @@ export default {
       }
       // jika tidak
       else {
-        this.$store.dispatch("Headspv/append", { ...this.head })
+        this.$store.dispatch("Headspv/append", { ...this.head, disabled: false })
       }
       this.cancel()
     },
