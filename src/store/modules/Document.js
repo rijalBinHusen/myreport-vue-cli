@@ -221,6 +221,20 @@ const Uncollected = {
         
       }
     },
+    // Document more then 2 days, by spv id
+    documentMore2DaysBySpv:(state, getters, rootState, rootGetters) => (spvId) => {
+      // expected result { warehouseName: [ listOfDocument ] }
+      let result = {}
+      state.lists.forEach((val) => {
+        // if val?.name (spvId) === spvId
+        if(val?.name === spvId && (new Date().getTime() - val.periode >= 172800000)) {
+          result[val?.warehouse]
+            ? result[val?.warehouse].push(rootGetters["dateFormat"]({format: "dateMonth", time: val?.periode}))
+            : result[val?.warehouse] = [rootGetters["dateFormat"]({format: "dateMonth", time: val?.periode})]
+        }
+      })
+      return result
+    },
     // mengembalikan tanggal terakhir yang sudah diinput
     lastDate(state) {
       let temp;

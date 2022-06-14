@@ -145,24 +145,26 @@ export default {
 			// slice the data
 			// let datanya = JSON.parse(JSON.stringify(ev))
             // daftar laporan yang melebihi H+2 dari sekarang
-            console.log(ev)
+            // console.log(ev)
             let sekarang = new Date().getTime()
-            let listLaporan = []
-            ev.documents.forEach((val) => {
-                if(sekarang - val.periode >= 172800000 ) {
-                    listLaporan.push(val.periode2)
-                }
-            })
+            // let listLaporan = {}
+            // ev.documents.forEach((val) => {
+            //     if(sekarang - val.periode >= 172800000){
+            //         listLaporan[val?.warehouseName]
+            //             ? listLaporan[val?.warehouseName]["documents"]
+            //         listLaporan.push(`${val?.periode2} ${val?.warehouseName}`)
+            //     }
+            // })
 
             // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
-			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan *${ev.warehouseName}* yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk dikumpulkan tidak lebih dari H+2,%0a%0aTerimakasih atas perhatianya.`
-			let link = `https://wa.me/${ev.phone}?text=${pesan}`
-            if(listLaporan.length > 0) {
-                window.open(link)
-                // console.log(link)
-                return
-            }
-            alert("Tidak ada laporan lebih dari H+2")
+			// let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan *${ev.warehouseName}* yang belum dikumpulkan yaitu *[ ${listLaporan.join(", ")} ]*%0a%0amohon untuk dikumpulkan tidak lebih dari H+2,%0a%0aTerimakasih atas perhatianya.`
+			// let link = `https://wa.me/${ev.phone}?text=${pesan}`
+   //          if(listLaporan.length > 0) {
+   //              window.open(link)
+                 console.log(this.$store.getters["Document/documentMore2DaysBySpv"](ev?.id))
+   //              return
+   //          }
+   //          alert("Tidak ada laporan lebih dari H+2")
 		},
         pesanSemua(ev) {
             // let nophone = window.prompt()
