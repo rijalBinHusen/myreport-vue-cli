@@ -8,7 +8,7 @@
             <Datatable
                 :datanya="lists"
                 :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
-                :keys="['spvName', 'spvWarehouse', 'periode2', 'collected2', 'headName', 'approval2']"
+                :keys="['spvName', 'warehouseName', 'periode2', 'collected2', 'headName', 'approval2']"
                 option
                 id="tableApproval"
                 v-slot:default="{ prop }"
