@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Main from "../components/pages/Main.vue";
+import NotFound from "../components/pages/NotFound.vue";
 // import { auth } from "../firebase";
 
 const routes = [
@@ -11,11 +12,16 @@ const routes = [
     //   requiresAuth: true,
     // },
   },
-  // {
-  //   path: "/login",
-  //   name: "Login",
-  //   component: () => import("../components/pages/Login.vue"),
-  // },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("../components/pages/Login.vue"),
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFound
+  }
 ];
 
 const router = createRouter({
