@@ -180,7 +180,7 @@ export default {
                     }
                 })
                 if(listLaporan.length > 0)
-                    result += `*${val.name}* :%0a${ listLaporan.join("") }%0a`
+                    result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
                 }
             })
             window.open(`https://wa.me/${ev}?text=${result}`)
