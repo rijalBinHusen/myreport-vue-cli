@@ -101,14 +101,17 @@ import myfunction from "../../myfunction"
 export default {
     methods: {
         save() {
-            //close the modeal
+            //close the modal
             this.$store.commit("Modal/active")
             if(this.more?.next === "collect") {
-                // EV =  {action: 'approve', val: -1, rec: doc22050003}
-                this.$store.dispatch("Document/handleDocument", { 
-                    action: 'collect', 
-                    val: this.more?.time, 
-                    rec: this. more?.id
+                this.$store.dispatch("update", {
+                    store: "Document", 
+                    obj: { 
+                        ...this.record, 
+                        collected: this.$store.getters["dateFormat"]({format: this.more?.time}),
+                        status: 1
+                    }, 
+                    criteria: {id: this.record.id} 
                 })
                 return
             }

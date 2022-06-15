@@ -116,7 +116,7 @@ export default {
         },
         keys() {
             return this.viewByPeriode 
-                    ? ['spvName', 'spvWarehouse', 'periode2', 'collected2', 'headName'] 
+                    ? ['spvName', 'warehouseName', 'periode2', 'collected2', 'headName'] 
                     : ['name', 'warehouseName']
         },
     },
