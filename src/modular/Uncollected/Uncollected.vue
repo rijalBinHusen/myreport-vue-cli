@@ -168,6 +168,7 @@ export default {
             // let nophone = window.prompt()
             // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
+            // get document by spv and iterate
             this.$store.getters["Document/documentBySpv"](0).forEach((val) => {
                 if(val.documents) {
                 // daftar laporan yang melebihi H+2 dari sekarang
@@ -175,11 +176,11 @@ export default {
                 let listLaporan = []
                 val.documents.forEach((val) => {
                     if(sekarang - val.periode >= 172800000 ) {
-                        listLaporan.push(val.periode2)
+                        listLaporan.push(`* ${val.periode2} | ${val?.warehouseName}%0a`)
                     }
                 })
                 if(listLaporan.length > 0)
-                    result += `*${val.name} ${val.warehouseName}* : [${ listLaporan.join(", ") }]%0a%0a`
+                    result += `*${val.name}* :%0a${ listLaporan.join("") }%0a`
                 }
             })
             window.open(`https://wa.me/${ev}?text=${result}`)
