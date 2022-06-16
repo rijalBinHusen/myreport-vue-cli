@@ -85,12 +85,12 @@ export default {
                         //if the end of record
                         if( (i + 1) === this._IMPOR[store].length) {
                             //push to localbase
-                            await this.WRITE_STORE({store: store, obj: doc})
+                            await this.WRITE_STORE({store: store.toLowerCase(), obj: doc})
                         }
                     } 
                     
                     else {
-                        await this.APPEND_IMPORT({ store: store, obj : this._IMPOR[store][i].data})
+                        await this.APPEND_IMPORT({ store: store.toLowerCase(), obj : this._IMPOR[store][i].data})
                     }
                 }
 

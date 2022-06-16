@@ -191,10 +191,13 @@ export default createStore({
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
       myfunction.reWriteStoreWithKey(payload);
       // setelah store di write biar nunggu dulu, agar browser tidak freez
-      return myfunction.tunggu(8000);
+      if(payload.obj.length < 30) {
+        return myfunction.tunggu(3000);
+      } 
+      return myfunction.tunggu(payload.obj.length * 25)
     },
     emptyStore({}, payload) {
-      myfunction.deleteCollection(payload);
+      myfunction.deleteCollection(payload.toLowerCase());
       // setelah store dihapus biar nunggu 4 detik, agar browser tidak freez
       return myfunction.tunggu(4000);
     },
