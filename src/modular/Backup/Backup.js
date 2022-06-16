@@ -58,7 +58,7 @@ const Backup = {
       if (state.lists.length > 25) {
         dispatch(
           "delete",
-          { store: "Backup", id: state.lists.slice(-1)[0].id },
+          { store: "Backup", criteria: { id: state.lists.slice(-1)[0].id} },
           { root: true }
         );
       }

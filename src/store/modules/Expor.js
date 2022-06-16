@@ -21,34 +21,27 @@ const Expor = {
       // iterate, push to variable and waiting
       for (let i = 0; i < storeName.length; i++) {
         // wait until data commit to state
-        await dispatch("getAllData", storeName[i], { root: true }).then(
-          (val) => {
-            // append to state this state
-            commit("append", { store: storeName[i], obj: val });
-            if (i === storeName.length - 1) {
-              // create a download file
-              var a = document.createElement("a");
-              var file = new Blob([JSON.stringify(state.lists)], {
-                type: "text/plain",
-              });
-              a.href = URL.createObjectURL(file);
-              a.download =
-                "Backup myreport " +
-                rootGetters["dateFormat"]({ format: "full" }) +
-                ".js";
-              return new Promise((resolve) => {
-                setTimeout(() => {
-                  a.click();
-                  // /close the loader
-                  commit("Modal/active", null, { root: true });
-                  commit("replace", {});
-                  resolve();
-                }, 3500);
-              });
-            }
-          }
-        );
+        let result = await dispatch("getAllData", storeName[i], { root: true })
+        // if result > 0
+        if(result?.length) {
+          // append to state this state
+          commit("append", { store: storeName[i], obj: result });
+        }
       }
+      // create a download file
+      var a = document.createElement("a");
+      // new blob data
+      var file = new Blob([JSON.stringify(state.lists)], { type: "text/plain" });
+      // append file
+      a.href = URL.createObjectURL(file);
+      // file name
+      a.download = "Backup myreport " + rootGetters["dateFormat"]({ format: "full" }) + ".js";
+      setTimeout(() => {
+          a.click();
+          // /close the loader
+          commit("Modal/active", null, { root: true });
+          commit("replace", {});
+        }, 3500);
     },
   },
   getters: {},
