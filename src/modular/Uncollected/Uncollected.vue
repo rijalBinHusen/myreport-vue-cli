@@ -152,11 +152,11 @@ export default {
 
                 let listLaporanText = ""
                 Object.keys(listLaporan).forEach((val) => {
-                    listLaporanText += this.$store.getters["Warehouses/warehouseId"](val)?.name
-                    listLaporanText += `[${listLaporan[val].join(", ")}]%0a%0a`
+                    listLaporanText += `*${listLaporan[val].join(", ")}*`
+                    listLaporanText += ` | ${this.$store.getters["Warehouses/warehouseId"](val)?.name}%0a`
                 })
                 // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
-    			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}mohon untuk dikumpulkan tidak lebih dari H+2,%0a%0aTerimakasih atas perhatianya.`
+    			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
 
                     window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
                      // console.log(pesan)
