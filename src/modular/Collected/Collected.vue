@@ -45,7 +45,7 @@
                 <td>
                     <Dropdown
                         v-for="doc in obj.documents" :key="doc.periode2"
-                        :value="doc.periode2"  
+                        :value="doc?.periode2+' | '+doc?.warehouseName.replace('Gudang jadi ', '')"  
                         :lists="[
                             { id: -1, isi: '-1 Hari'},
                             { id: -2, isi: '-2 Hari'},
