@@ -150,7 +150,7 @@ const Uncollected = {
         }
         // approval
         else if(status === "approval") {
-          recordStatus = { status: 2, shared: false }
+          recordStatus = { status: 2, shared: "false" }
         }
 
         commit("status", status)
