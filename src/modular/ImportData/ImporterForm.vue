@@ -1,7 +1,11 @@
 <template>
 <form class="w3-container" @submit.prevent="impor">
     <h2>Select store</h2>
-    <Checkbox v-for="(store) in listsStore" :key="store" :label="store" @check="selectStore($event)" />
+    <div class="w3-row w3-margin-bottom w3-border w3-round-large w3-padding w3-padding-16">
+        <span v-for="(store) in listsStore" :key="store" class="w3-col s3">
+            <Checkbox :label="store" @check="selectStore($event)" />
+        </span>
+    </div>
     <div class="w3-row w3-border w3-round-large w3-padding">
         <p class="w3-col s2">Select mode:</p>
         <span class="w3-col s2 w3-margin-top">
