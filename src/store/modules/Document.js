@@ -236,7 +236,7 @@ const Uncollected = {
       return state.lists.map((val) => {
         let spvInfo = rootGetters["Supervisors/spvId"](val.name);
         val.name = spvInfo.name;
-        val.warehouse = spvInfo.warehouseName;
+        val.warehouseName = rootGetters["Warehouses/warehouseId"](val?.warehouse)?.name;
         (val.head = rootGetters["Headspv/headId"](val.head).name),
           (val.periode = rootGetters["dateFormat"]({
             format: "ymdexcel",
@@ -267,6 +267,7 @@ const Uncollected = {
 
         delete val.id;
         delete val.status;
+        delete val.warehouse
 
         return val;
       });
