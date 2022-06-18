@@ -19,21 +19,22 @@
         />
 
             <Datatable
-            :datanya="lists"
-            :heads="['Periode', 'Gudang', 'Nama file', 'Shee stock', 'Sheet clock']"
-            :keys="['periode2', 'warehouseName', 'fileName', 'stock', 'clock']"
-            option
-            id="tableImportBase"
-            v-slot:default="slotProp"
-            v-if="!periode"
+                :datanya="$store.getters['BaseReportFile/lists']"
+                :heads="['Periode', 'Gudang', 'Nama file', 'Shee stock', 'Sheet clock']"
+                :keys="['periode2', 'warehouseName', 'fileName', 'stock', 'clock']"
+                option
+                id="tableImportBase"
+                v-slot:default="{ prop }"
+                v-if="!periode"
             >
 
-            <div v-if="!slotProp.prop.imported">
-                <Button value="Import file" :datanya="slotProp.prop.id" primary type="button" small @trig="launch($event)" />
-            </div>
-            <div v-else>
-				<Button value="Delete imported" type="button" :datanya="slotProp.prop.id" danger small @trig="remove($event)" />
-            </div>
+                <div v-if="!prop.imported">
+                    <Button value="Import file" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="launch($event)" />
+                </div>
+                <div v-else>
+    				<Button value="Delete imported" type="button" :datanya="prop.id" danger class="w3-tiny" @trig="remove($event)" />
+                </div>
+
             </Datatable>
 			
         </div>
@@ -159,31 +160,25 @@ export default {
 		}
     },
     computed: {
-        ...mapState({
-            _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.lists)),
-        }),
         ...mapGetters({
-            WAREHOUSE_ID: "Warehouses/warehouseId",
-            DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId"
         }),
-        lists() {
-			let result = []
-			this._BASEREPORT.forEach((val) => {
-                if(val) {
-                    val.warehouseName = this.WAREHOUSE_ID(val.warehouse).name
-                    val.periode2 = this.DATEFORMAT({ format: "dateMonth", time: val.periode})
-                    val.fileName = val.fileName ? val.fileName : "Not imported yet"
-                    val.stock = val.fileName ? val.stock : "Not imported yet"
-                    val.clock = val.fileName ? val.clock : "Not imported yet"
-                    result.push(val)
-                }
-			})
-            return result
-        },
     },
-    created() {
+    async created() {
+        // get all item name
         this.$store.dispatch("Baseitem/getAllItem")
+        // get today
+        let today = new Date()
+        // get 3 days before
+        let daybefore = this.$store.getters["dateFormat"]({format: -3})
+        // get all 3 days before as array
+        let days = this.$store.getters["getDaysArray"](daybefore, today)
+        // get data all 3 days
+        await this.$store.dispatch("findDataByDateArrays", { 
+                store: "BaseReportFile", 
+                date: days, 
+                criteria: {} 
+            })
     },
 }
 </script>
