@@ -97,6 +97,13 @@ const Uncollected = {
           info.shared = "Tidak masuk"
           info.status = 2
       }
+      // laporan tidak ada
+      else if(payload.action === "kosong") {
+          info.collected = "Laporan tidak ada"
+          info.approval = "Laporan tidak ada"
+          info.shared = "Laporan tidak ada"
+          info.status = 2
+      }
 
       else if(payload.action === "share") {
         info.shared = rootGetters["dateFormat"]({format: "time"})

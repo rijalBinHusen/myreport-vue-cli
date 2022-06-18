@@ -17,6 +17,7 @@
                     :options="[
                         { id: 'collect', title: 'Koleksi'},
                         { id: 'ijin', title: 'Tidak masuk'},
+                        { id: 'kosong', title: 'Laporan tidak ada'},
                     ]" 
                     value="id"
                     text="title"
@@ -119,6 +120,14 @@ export default {
             else if(this.more?.next === "ijin") {
                 this.$store.dispatch("Document/handleDocument", { 
                     action: 'ijin', 
+                    rec: this. more?.id
+                })
+                return
+            }
+
+            else if(this.more?.next === "kosong") {
+                this.$store.dispatch("Document/handleDocument", { 
+                    action: 'kosong', 
                     rec: this. more?.id
                 })
                 return
