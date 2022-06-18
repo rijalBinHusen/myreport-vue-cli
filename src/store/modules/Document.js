@@ -13,17 +13,10 @@ const Uncollected = {
     document(state, value) {
       state.lists = value;
       state.allData = true
-      state.uncollected = false
-      state.collected = false
-      state.approve = false
-    },
-    status(state, payload) {
-      // value = uncollected
-      state[payload] = true
-      state.allData = false
     },
     // add data to
     append(state, value) {
+      state.allData = false
       if (Array.isArray(value)) {
         value.forEach((val) => state.lists.push(val));
         return;
@@ -131,30 +124,12 @@ const Uncollected = {
           // update state
           commit("update", info)
     },
-    async getDocumentByStatusFromDB({ state, commit, dispatch }, status) {
+    async getDocumentByStatusFromDB({ state, commit, dispatch }) {
       // status = uncollected
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
       if(state.allData) {
         commit("document", [])
-
-      }
-      if(!state[status]) { 
-        let recordStatus;
-        // uncollected
-        if(status === "uncollected") {
-          recordStatus = { status: 0 }
-        }
-        // collected
-        else if(status === "collected") {
-          recordStatus = { status: 1 }
-        }
-        // approval
-        else if(status === "approval") {
-          recordStatus = { status: 2, shared: "false" }
-        }
-
-        commit("status", status)
-        await dispatch("getDataByCriteriaAppend", { store: "Document", criteria: recordStatus }, { root: true })
+        await dispatch("getDataByCriteriaAppend", { store: "Document", criteria: { shared: "false" } }, { root: true })
       }
       return "Finished"
     }
