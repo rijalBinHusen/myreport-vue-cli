@@ -82,7 +82,7 @@ export default {
                     // baseReportFile record, masukkan berdasar iteraatenya gudang
                     await this.$store.dispatch("BaseReportFile/append", { 
                             periode: periodeTime,
-                            warehouse: this._WAREHOUSES[i],
+                            warehouse: this._WAREHOUSES[i]?.id,
                     })
 
                     // Document record, iterate spv yang ada digudang
