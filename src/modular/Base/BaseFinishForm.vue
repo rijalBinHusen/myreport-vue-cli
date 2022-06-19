@@ -109,7 +109,7 @@ export default {
     },
     methods: {
         save() {
-            this.$emit("finished", {id: this.document?.id})
+            this.$emit("finished", {id: this.documentRecord?.id})
             this.$store.dispatch("Document/handleDocument",
                 {
                     action: "finished",
@@ -122,7 +122,7 @@ export default {
                         totalWaktu: this.totalWaktu,
                         standartWaktu: this.standartWaktu
                     },
-                    rec: this.document?.id
+                    rec: this.documentRecord?.id
                 }
             )
             // console.log(this.document)

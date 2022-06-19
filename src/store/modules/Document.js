@@ -126,13 +126,14 @@ const Uncollected = {
         info.approval = "false";
         info.status = 1;
       } else if (payload.action === "finished") {
-        delete info.isfinished;
-        delete info.finished;
-        delete info.baseReportFile;
-        delete info.totalDO;
-        delete info.totalKendaraan;
-        delete info.totalWaktu;
-        delete info.standartWaktu;
+        delete info?.isfinished;
+        delete info?.finished;
+        delete info?.baseReportFile;
+        delete info?.totalDO;
+        delete info?.totalKendaraan;
+        delete info?.totalWaktu;
+        delete info?.standartWaktu;
+        console.log(info);
         info = Object.assign(info, payload.val);
       }
       dispatch(
@@ -162,6 +163,28 @@ const Uncollected = {
     },
   },
   getters: {
+    finished(state, getters, rootState, rootGetters) {
+      return JSON.parse(JSON.stringify(state.lists)).filter((val) => {
+        if (val?.isfinished !== "false" && val?.baseReportFile !== "false") {
+          let spvInfo = rootGetters["Supervisors/spvId"](val.name);
+          val.spvName = spvInfo.name;
+          val.warehouseName = rootGetters["Warehouses/warehouseId"](
+            val?.warehouse
+          )?.name;
+          val.periode2 = rootGetters["dateFormat"]({
+            format: "dateMonth",
+            time: val.periode,
+          });
+          val.finished2 = rootGetters["dateFormat"]({
+            format: "dateMonth",
+            time: val.finished,
+          });
+          // val.approval2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.approval })
+          // val.headName = this.$store.getters["Headspv/headId"](val.head)["name"]
+          return val;
+        }
+      });
+    },
     documentByPeriodeAndWarehouseAndShift:
       (state) => (periode, warehouse, shift) => {
         //  (disini dapat nama karu, nomor telfon, nama gudang)

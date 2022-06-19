@@ -9,9 +9,9 @@
     />
 
     <Datatable
-        :datanya="finished"
+        :datanya="$store.getters['Document/finished']"
         :heads="['Periode', 'Nama', 'Gudang', 'Shift', 'Finished']"
-        :keys="['periode2', 'spvName', 'spvWarehouse', 'shift', 'finished2']"
+        :keys="['periode2', 'spvName', 'warehouseName', 'shift', 'finished2']"
         option
         id="tableFinished"
         #default="{ prop }"
@@ -45,7 +45,7 @@ export default {
     },
     methods: {
         pickPeriode() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show", criteria: {isFinished: true}});
+            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show", criteria: {isfinished: true}});
         },
 		details(ev) {
             console.log(ev)
@@ -63,20 +63,12 @@ export default {
                         })
         }
     },
-    computed: {
-        finished() {
-			let record = JSON.parse(JSON.stringify(this.$store.state.Document.lists))
-			return record.map((val) => {
-                let spvInfo = this.$store.getters["Supervisors/spvId"](val.name)
-                    val.spvName = spvInfo.name
-                    val.spvWarehouse = spvInfo.warehouseName
-                    val.periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.periode })
-                    val.finished2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.finished })
-                    // val.approval2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.approval })
-                    // val.headName = this.$store.getters["Headspv/headId"](val.head)["name"]
-                    return val
-            })
-        },
-    },
+    mounted() {
+        this.$store.dispatch(
+          "getDataByCriteria",
+          { store: "Document", criteria: { isfinished: true } },
+          { root: true }
+        );
+    }
 }
 </script>
