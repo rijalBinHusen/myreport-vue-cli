@@ -74,12 +74,15 @@ const Uncollected = {
       await dispatch("BaseReportStock/getDataByParent", {}, { root: true });
       // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
       await dispatch("BaseReportClock/getDataByParent", {}, { root: true });
+      // get all item
+      await dispatch("Baseitem/getAllItem", false, { root: true });
       // cari problem yang belum solve
       await dispatch(
         "getDataByCriteria",
         { store: "Problem", criteria: { isfinished: false } },
         { root: true }
       );
+
       //
       commit("Modal/active", false, { root: true });
       return "finished";

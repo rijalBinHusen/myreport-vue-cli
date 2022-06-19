@@ -197,7 +197,6 @@ export default {
         ...mapActions({
             CLOCKBYPARENT: "BaseReportClock/getDataByParent",
             STOCKBYPARENT: "BaseReportStock/getDataByParent",
-            GETALLITEM: "Baseitem/getAllItem",
             DELETEPROBLEMFROMSTOCK: "BaseReportStock/deleteProblem",
         }),
         message(ev, obj) {
@@ -429,7 +428,6 @@ export default {
         await this.$store.dispatch("Document/getAllDocumentNotFinished")
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
-        this.GETALLITEM()
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika base report ada yang di update
