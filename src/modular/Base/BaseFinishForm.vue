@@ -51,7 +51,7 @@
             @trig="this.$emit('exit')" 
         />
         <Button 
-            v-if="nameReport && nameReport !== 'Not found'"
+            v-if="documentRecord?.collected !== 'false'"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -65,7 +65,6 @@
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
-import myfunction from "../../myfunction"
 
 export default {
     components: {
@@ -75,9 +74,8 @@ export default {
     data() {
         return {
             name: null,
-            nameReport: null,
             headSpv: null,
-            document: null,
+            documentRecord: null,
             warehouseNamee: "",
         }
     },
@@ -139,11 +137,13 @@ export default {
         },
     },
     mounted() {
-        this.nameReport = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.base?.periode, this.base?.warehouse, this.shift)
-        this.name = this.nameReport?.name
-        this.headSpv = this.nameReport?.head
+        this.documentRecord = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.base?.periode, this.base?.warehouse, this.shift)
+        this.name = this.documentRecord?.name
+        this.headSpv = this.documentRecord?.head
         this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
-        // console.log(this.warehouseName)
+        if(this.documentRecord?.collected === "false") {
+            alert("The document record status not collected yet")
+        }
     },
 }
 </script>
