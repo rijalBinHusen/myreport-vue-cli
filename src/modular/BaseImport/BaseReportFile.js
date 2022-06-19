@@ -106,7 +106,7 @@ const BaseReportFile = {
         root: true,
       });
       // delete base repost clock
-      await dispatch("BaseReportStock/deleteRecordByParent", payload, {
+      await dispatch("BaseReportClock/deleteRecordByParent", payload, {
         root: true,
       });
       // update the baseReport file record
