@@ -1,18 +1,20 @@
 <template>
     <div>
         <label class="w3-margin-top">Nama gudang</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="base.warehouseName + ' / Shift ' + shift" disabled />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="warehouseName + ' / Shift ' + shift" disabled />
         <!-- Supervisors -->
-        <label>Pilih nama supervisors</label>
+        <label>Nama supervisors</label>
         <Select
-        judul="supervisor" 
-        :options="names" 
-        value="id"
-        text="name"
-        @selected="name = $event"
+            judul="supervisor" 
+            :options="names" 
+            value="id"
+            text="name"
+            @selected="name = $event"
+            :inselect="name"
+            disabled
         />
         <!-- Head spv -->
-        <label>Pilih nama kabag</label>
+        <label>Nama kabag</label>
         <Select 
             :options="headspv" 
             judul="kabag"
@@ -20,9 +22,8 @@
             text="name"
             @selected="headSpv = $event"
             :inselect="headSpv"
+            disabled
         />
-        <label class="w3-margin-top">Nama document report</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="nameReport" disabled />
         <div class="w3-row">
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total do</label>
@@ -77,6 +78,7 @@ export default {
             nameReport: null,
             headSpv: null,
             document: null,
+            warehouseNamee: "",
         }
     },
     methods: {},
@@ -130,45 +132,18 @@ export default {
     },
     computed: {
         names() {
-            return this.$store.getters["Supervisors/enabled"].filter((val) => val.warehouse === this.base.warehouse)
+            return this.$store.state.Supervisors.lists
         },        
         headspv() {
-            return this.$store.getters["Headspv/enabled"]
+            return this.$store.state.Headspv.lists
         },
     },
-    watch: {
-        name(newVal, oldVal) {
-            if(newVal === oldVal) {
-                return
-            }
-            myfunction.findData({
-                store: "Document",
-                criteria: { 
-                    periode: this.base.periode,
-                    name: newVal,
-                    shift: this.shift,
-                }
-            }).then((result) => {
-                if(!result) {
-                    this.nameReport = "Not found"
-                    return
-                }
-                this.document = result[0]
-                // periode
-                this.nameReport = this.$store.getters["dateFormat"]({format: 'dateMonth', time: result[0].periode})
-                //dapatkan info supervisors
-                let info = this.$store.getters["Supervisors/spvId"](result[0].name)
-                // nama gudang
-                this.nameReport += " / "+info.warehouseName
-                // nama karu
-                this.nameReport += " / Supervisors "+info.name
-                // shift
-                this.nameReport += " / Shift "+info.shift
-                // head spv
-                this.headSpv = this.document.head
-
-            })
-        }
+    mounted() {
+        this.nameReport = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.base?.periode, this.base?.warehouse, this.shift)
+        this.name = this.nameReport?.name
+        this.headSpv = this.nameReport?.head
+        this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
+        // console.log(this.warehouseName)
     },
 }
 </script>

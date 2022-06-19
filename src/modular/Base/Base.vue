@@ -222,7 +222,7 @@ export default {
             //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
             //   "planOut": ""
             // dapatkan nomor telfon dulu
-            let spvInfo = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.selectedPeriode, this.selectedWarehouse, this.shift)
+            let spvInfo = this.$store.getters["Document/spvByPeriodeAndWarehouseAndShift"](this.selectedPeriode, this.selectedWarehouse, this.shift)
             let pesan;
             if(ev === "apaBaru") {
                 pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift}, *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ (obj.awal + obj.in - obj.out) - obj.real }*, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
