@@ -75,50 +75,7 @@ export default {
                 return;
             }
 
-            let infobase = this.BASEID(ev)
-
-            // bring up the loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-
-            //delete from state
-            this.$store.commit("BaseReportStock/deleteByParam", {
-                parameter: "parent",
-                value: ev
-            })
-            //delete from idb
-            await this.$store.dispatch("deleteByParam", { 
-                store: "BaseReportStock", 
-                parameter: "parent", 
-                value: ev,
-                period: infobase.periode
-            })
-            //delete from state
-            this.$store.commit("BaseReportClock/deleteByParam", {
-                parameter: "parent",
-                value: ev
-            })
-            //delete from idb
-            await this.$store.dispatch("deleteByParam", { 
-                store: "BaseReportClock", 
-                parameter: "parent", 
-                value: ev,
-                period: infobase.periode
-            })
-
-            // update the baseReport file record
-            infobase.fileName = false
-            infobase.stock = false
-            infobase.clock = false
-            infobase.imported = false
-            this.$store.dispatch("update", {
-                store: "BaseReportFile", 
-                obj: infobase,
-                criteria: { id: infobase.id }
-            })
-
-            
-            // close the loader
-            this.$store.commit("Modal/active");
+            this.$store.dispatch("BaseReportFile/emptyRecord", ev)
         },
         // read file and put to the state
         readExcel(e) {

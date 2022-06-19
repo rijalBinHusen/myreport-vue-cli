@@ -43,11 +43,35 @@ const BaseReportFile = {
       // payload = {periode: "", warehouse: ""}
       await dispatch("append", {
         store: "BaseReportFile",
-        obj: Object.assign({ fileName: "false", stock: "false", clock: "false" }, payload)
+        obj: Object.assign({ fileName: "false", stock: "false", clock: "false", imported: false }, payload)
       }, { root: true })
       // return a true value, so the promise would be resolved
       return "finished"
     },
+    async emptyRecord({ commit, dispatch }, payload) {
+      // payload = idBaseReportFile
+      // bring up the loader
+      commit("Modal/active", {judul: "", form: "Loader"}, { root: true });
+      // delete base report stock
+      await dispatch("BaseReportStock/deleteRecordByParent", payload, { root: true })
+      // delete base repost clock
+      await dispatch("BaseReportStock/deleteRecordByParent", payload, { root: true })
+      // update the baseReport file record
+      await dispatch("update", {
+          store: "BaseReportFile", 
+          obj: {
+                fileName: "false",
+                stock: "false",
+                clock: "false",
+                imported: false
+              },
+          criteria: { id: payload }
+      }, { root: true })
+
+      
+      // close the loader
+      commit("Modal/active", false, { root: true });
+    }
   },
   getters: {
     lists(state, getters, rootState, rootGetters) {

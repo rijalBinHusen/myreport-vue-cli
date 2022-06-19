@@ -34,6 +34,17 @@ const BaseReportClock = {
     },
   },
   actions: {
+    deleteRecordByParent({dispatch, commit}, payload) {
+      // payload = parentId
+      //delete from state
+      commit("BaseReportClock/deleteByParam", { parameter: "parent", value: payload }, { root: true })
+      //delete from idb
+      return dispatch("deleteByParam", { 
+                  store: "BaseReportClock", 
+                  parameter: "parent", 
+                  value: payload,
+              }, { root: true })
+    },
     async getDataByParent({commit, dispatch, rootState}) {
       commit("basereportclock", [])
       let parent = rootState.BaseReportFile.lists

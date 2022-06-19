@@ -47,39 +47,39 @@
 
                 <!-- Sheet report -->
                 <Select 
-                v-if="selectedWarehouse.length > 0"
-                class="w3-col s1 w3-margin-right"
-                :options='[
-                    { id: "clock", title: "Clock" },
-                    { id: "stock", title: "Stock" },
-                ]'
-                value="id"
-                text="title"
-                judul="sheet"
-                :inselect="sheet"
-                @selected="sheet = $event"
+                    v-if="selectedWarehouse.length > 0"
+                    class="w3-col s1 w3-margin-right"
+                    :options='[
+                        { id: "clock", title: "Clock" },
+                        { id: "stock", title: "Stock" },
+                    ]'
+                    value="id"
+                    text="title"
+                    judul="sheet"
+                    :inselect="sheet"
+                    @selected="sheet = $event"
                 />            
                 <!-- Shift -->
-                <Select 
-                v-if="selectedWarehouse.length > 0"
-                class="w3-col s1 w3-margin-right"
-                :options="[
-                    { id:1, title: 'Shift 1'},
-                    { id:2, title: 'Shift 2'},
-                    { id:3, title: 'Shift 3'},
-                ]" 
-                judul="shift"
-                value="id"
-                text="title"
-                :inselect="shift"
-                @selected="shift = $event"
+                    <Select 
+                    v-if="selectedWarehouse.length > 0"
+                    class="w3-col s1 w3-margin-right"
+                    :options="[
+                        { id:1, title: 'Shift 1'},
+                        { id:2, title: 'Shift 2'},
+                        { id:3, title: 'Shift 3'},
+                    ]" 
+                    judul="shift"
+                    value="id"
+                    text="title"
+                    :inselect="shift"
+                    @selected="shift = $event"
                 />
                 <!-- oPEN IN EXCEL MODE -->
                 <Button 
                     v-if="lists.length > 0"
-                    class="w3-left w3-col s2 w3-margin-top w3-margin-right " 
+                    class="w3-left w3-col s1 w3-margin-top w3-padding " 
                     primary 
-                    value="Excel mode" 
+                    value="Excel" 
                     type="button" 
                     @trig="excelMode = true" 
                 />
@@ -101,32 +101,31 @@
           option
           #default="{ prop }"
         >
+            <span v-if="(prop.selisih !== 0 || prop.problem.length) && sheet === 'stock'">
+                <Dropdown
+                    value="Pesan"  
+                    :lists="[
+                        { id: 'apaBaru', isi: 'Apakah selisih baru'},
+                        { id: 'tidakSama', isi: 'Selisih tidak sama'},
+                    ]"
+                    class="w3-small"
+                    listsKey="id"
+                    listsValue="isi"
+                    @trig="message($event, prop)"
+                />
 
-            <Dropdown
-                v-if="prop.selisih !== 0 || prop.problem.length"
-                value="Pesan"  
-                :lists="[
-                    { id: 'apaBaru', isi: 'Apakah selisih baru'},
-                    { id: 'tidakSama', isi: 'Selisih tidak sama'},
-                ]"
-                class="w3-small"
-                listsKey="id"
-                listsValue="isi"
-                @trig="message($event, prop)"
-            />
-
-            <Dropdown
-                v-if="prop.selisih !== 0 || prop.problem"
-                value="Problem"  
-                :lists="[
-                    { id: 'delete', isi: 'Hapus'},
-                    { id: 'edit', isi: 'Edit'},
-                ]"
-                class="w3-small"
-                listsKey="id"
-                listsValue="isi"
-                @trig="handleProblem($event, prop)"
-            />
+                <Dropdown
+                    value="Problem"  
+                    :lists="[
+                        { id: 'delete', isi: 'Hapus'},
+                        { id: 'edit', isi: 'Edit'},
+                    ]"
+                    class="w3-small"
+                    listsKey="id"
+                    listsValue="isi"
+                    @trig="handleProblem($event, prop)"
+                />
+            </span>
             
             <Button 
                 value="Delete" 
@@ -446,9 +445,6 @@ export default {
     },
     beforeUnmount() {
          this.unsubscribe();
-    },
-    updated() {
-        console.log(this.listsWarehouse)
     },
     name: "Base"
 }

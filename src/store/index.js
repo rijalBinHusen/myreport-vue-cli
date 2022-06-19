@@ -88,7 +88,7 @@ export default createStore({
       // update indexeddb
       myfunction.update(value);
       // send to module
-      commit(`${value.store}/update`, value.obj, { root: true });
+      commit(`${value.store}/update`, { ...value.obj, id: value?.criteria?.id }, { root: true });
       // tunggu 130 ms
       return myfunction.tunggu(130);
     },

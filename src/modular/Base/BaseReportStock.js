@@ -44,6 +44,17 @@ const BaseReportStock = {
     },
   },
   actions: {
+    deleteRecordByParent({dispatch, commit}, payload) {
+      // payload = parentId
+      //delete baseReportstock from state
+      commit("BaseReportStock/deleteByParam", { parameter: "parent", value: payload }, { root: true })
+      //delete from idb
+      return dispatch("deleteByParam", { 
+                  store: "BaseReportStock", 
+                  parameter: "parent", 
+                  value: payload,
+              }, { root: true })
+    },
     async getDataByParent({commit, dispatch, rootState}) {
       commit("basereportstock", [])
       let parent = rootState.BaseReportFile.lists
