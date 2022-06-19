@@ -53,13 +53,9 @@ const BaseReportFile = {
     lists(state, getters, rootState, rootGetters) {
       return state.lists.length
         ? JSON.parse(JSON.stringify(state.lists)).map((val) => {
-              return {
-                  warehouseName: rootGetters["Warehouses/warehouseId"](val?.warehouse)?.name,
-                  periode2: rootGetters["dateFormat"]({ format: "dateMonth", time: val.periode}),
-                  fileName: val.fileName ? val.fileName : "Not imported yet",
-                  stock: val.fileName ? val.stock : "Not imported yet",
-                  clock: val.fileName ? val.clock : "Not imported yet",
-              }
+              val.warehouseName = rootGetters["Warehouses/warehouseId"](val?.warehouse)?.name
+              val.periode2= rootGetters["dateFormat"]({ format: "dateMonth", time: val.periode})
+              return val
             })
         : []
     },

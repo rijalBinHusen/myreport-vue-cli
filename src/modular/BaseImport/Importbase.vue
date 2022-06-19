@@ -24,7 +24,7 @@
                 :keys="['periode2', 'warehouseName', 'fileName', 'stock', 'clock']"
                 option
                 id="tableImportBase"
-                v-slot:default="{ prop }"
+                #default="{ prop }"
                 v-if="!periode"
             >
 
@@ -123,7 +123,7 @@ export default {
         // read file and put to the state
         readExcel(e) {
             // info of record
-            let infobase = this.lists.find((val) => val.id === this.importId)
+            let infobase = this.BASEID(this.importId)
             // bring the loader up
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
 			const file = e.target.files[0]

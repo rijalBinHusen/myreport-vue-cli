@@ -77,9 +77,6 @@ export default {
             
             // //iterate data menggunakan for
             for(let i = 1; i <= iterateLength; i++) {
-                let leadNumber = "0000"
-                let increment = i + ""
-                let counter = leadNumber.slice(increment.length) + increment
                 /* 
                     #CLOCK jika B5.v > 0 dan D5.v !== D4.v
                     maka masukkan ke idb 
@@ -93,7 +90,6 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId", {
                         store: "BaseReportClock",
                         obj: {
-                            id: this.infoBaseReport.id + counter,
                             parent: this.infoBaseReport.id,
                             shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
                             noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
@@ -116,7 +112,6 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this.infoBaseReport.id + "01" + counter,
                             parent: this.infoBaseReport.id,
                             shift: 1,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
@@ -142,7 +137,6 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this.infoBaseReport.id + "02" + counter,
                             parent: this.infoBaseReport.id,
                             shift: 2,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
@@ -175,7 +169,6 @@ export default {
                     await this.$store.dispatch("appendWoutGenerateId",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this.infoBaseReport.id + "03" + counter,
                             parent: this.infoBaseReport.id,
                             shift: 3,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
