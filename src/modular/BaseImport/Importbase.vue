@@ -126,18 +126,8 @@ export default {
     async created() {
         // get all item name
         this.$store.dispatch("Baseitem/getAllItem")
-        // get today
-        let today = new Date()
-        // get 3 days before
-        let daybefore = this.$store.getters["dateFormat"]({format: -3})
-        // get all 3 days before as array
-        let days = this.$store.getters["getDaysArray"](daybefore, today)
-        // get data all 3 days
-        await this.$store.dispatch("findDataByDateArrays", { 
-                store: "BaseReportFile", 
-                date: days, 
-                criteria: {} 
-            })
+        // get the 3 days before today basereportfile record
+        this.$store.dispatch("BaseReportFile/recordStarter")
     },
 }
 </script>
