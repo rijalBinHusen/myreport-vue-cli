@@ -404,12 +404,12 @@ export default {
     },
     watch: {
         shift(newVal, oldVal) {
-          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet) { return }
+          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet || !newVal) { return }
           this.detailsDocument()
           this.renewLists()
         },
         sheet(newVal, oldVal) {
-          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet) { return }
+          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet || !newVal) { return }
           this.detailsDocument()
           this.renewLists()
         },

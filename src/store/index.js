@@ -88,14 +88,18 @@ export default createStore({
       // update indexeddb
       myfunction.update(value);
       // send to module
-      commit(`${value.store}/update`, { ...value.obj, id: value?.criteria?.id }, { root: true });
+      commit(
+        `${value.store}/update`,
+        { ...value.obj, id: value?.criteria?.id },
+        { root: true }
+      );
       // tunggu 130 ms
       return myfunction.tunggu(130);
     },
 
     updateOnly({}, payload) {
       // payload = {store: "BaseReportStock", criteria: { id: stk22050003 }, obj: { problem: [] }}
-      myfunction.update(payload)
+      myfunction.update(payload);
     },
 
     getStart({ commit, state, rootGetters }) {
@@ -134,21 +138,21 @@ export default createStore({
             if (result?.length > 0) {
               commit(`${value.store}/${value.store.toLowerCase()}`, result, {
                 root: true,
-              }); 
+              });
             }
           });
+      } else {
+        // call the get data functions
+        return myfunction.findData(value).then((result) => {
+          commit(
+            `${value.store}/${value.store.toLowerCase()}`,
+            result ? result : [],
+            {
+              root: true,
+            }
+          );
+        });
       }
-
-      // call the get data functions
-      return myfunction.findData(value).then((result) => {
-        commit(
-          `${value.store}/${value.store.toLowerCase()}`,
-          result ? result : [],
-          {
-            root: true,
-          }
-        );
-      });
     },
     getDataByCriteriaAppend({ commit, rootGetters }, value) {
       // the first letter of value.store must be capital e.g 'Group'
@@ -158,8 +162,8 @@ export default createStore({
           }
       } */
       return myfunction.findData(value).then((result) => {
-        if(result) {
-        commit(`${value.store}/append`, result, { root: true } );
+        if (result) {
+          commit(`${value.store}/append`, result, { root: true });
         }
       });
     },
@@ -191,10 +195,10 @@ export default createStore({
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
       myfunction.reWriteStoreWithKey(payload);
       // setelah store di write biar nunggu dulu, agar browser tidak freez
-      if(payload.obj.length < 30) {
+      if (payload.obj.length < 30) {
         return myfunction.tunggu(3000);
-      } 
-      return myfunction.tunggu(payload.obj.length * 25)
+      }
+      return myfunction.tunggu(payload.obj.length * 25);
     },
     emptyStore({}, payload) {
       myfunction.deleteCollection(payload.toLowerCase());
