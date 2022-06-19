@@ -105,11 +105,13 @@ export default {
 			})
 			
 			promise.then((d) => {
+                let warehouseName = this.$store.getters["Warehouses/warehouseId"](infobase?.warehouse)?.name
+                let periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: infobase?.periode })
                 // send data excel to vuex
                 this.$store.commit("BaseReportFile/importTemp", d)
                 // bring the form up and send the baseid info to the modal state
                 this.$store.commit("Modal/active", {
-                    judul: infobase.warehouseName + " " + infobase.periode2, 
+                    judul: warehouseName + " " + periode2, 
                     form: "BaseReportFile",
                     obj: infobase,
                 });
