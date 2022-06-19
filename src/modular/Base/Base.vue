@@ -47,7 +47,7 @@
 
                 <!-- Sheet report -->
                 <Select 
-                v-if="listsWarehouse.length > 0"
+                v-if="selectedWarehouse.length > 0"
                 class="w3-col s1 w3-margin-right"
                 :options='[
                     { id: "clock", title: "Clock" },
@@ -61,7 +61,7 @@
                 />            
                 <!-- Shift -->
                 <Select 
-                v-if="listsWarehouse.length > 0"
+                v-if="selectedWarehouse.length > 0"
                 class="w3-col s1 w3-margin-right"
                 :options="[
                     { id:1, title: 'Shift 1'},
@@ -446,6 +446,9 @@ export default {
     },
     beforeUnmount() {
          this.unsubscribe();
+    },
+    updated() {
+        console.log(this.listsWarehouse)
     },
     name: "Base"
 }

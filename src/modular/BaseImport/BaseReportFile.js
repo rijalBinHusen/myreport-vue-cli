@@ -89,14 +89,16 @@ const BaseReportFile = {
     // return unique date of report 
     warehouseReport: (state, getters, rootState, rootGetters) => (periode) => {
       // get the uniquee date
-      return state.lists.filter((val) => {
+      let result = []
+      state.lists.forEach((val) => {
         if(val.periode == periode) {
-          return {
-              warehouse: val,
-              warehouseName: rootGetters["Warehouses/warehouseId"](val).name
-            }
+          result.push ({
+              warehouse: val?.warehouse,
+              warehouseName: rootGetters["Warehouses/warehouseId"](val?.warehouse).name
+            })
         }
       })
+      return result
     },
     getIdByPeriodeByWarehouse: (state) => (periode, warehouse) => {
       return JSON.parse(JSON.stringify(state.lists)).find((val) => val.periode == periode && val.warehouse == warehouse )
