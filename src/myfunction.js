@@ -7,6 +7,17 @@ let summary = {};
 let storeToUpdate = [] //store that would to update
 let timeOut;
 
+function getWeekNumber () {
+  // get today
+  let currentdate = new Date();
+  // get the 1 january day
+  var oneJan = new Date(currentdate.getFullYear(),0,1);
+  // get the number of today (currentdate - oneJan) would be epoch number and divide 1 day epoch number
+  var numberOfDays = Math.floor((currentdate - oneJan) / (24 * 60 * 60 * 1000));
+  // get the number of day + 1 + number of days and divide 1 week ( 170 / 7)
+  return Math.ceil(( currentdate.getDay() + 1 + numberOfDays) / 7);
+}
+
 function generateId(store) {
   // ambil last id dari summary  // kalau tidak ada bikin baru
   let lastId = summary[store]
@@ -20,20 +31,20 @@ function generateId(store) {
   // 2022
   let fullYear = new Date().getFullYear() + "";
   // 5
-  let monthNow = new Date().getMonth() + 1;
+  let weekNow = getWeekNumber()
   // 22
   let year = lastId.slice(3, 5); //21
   // 05
-  let month = lastId.slice(5, 7); //08
-  //if the month same
-  if (monthNow === Number(month)) {
-    id += year + month;
+  let week = lastId.slice(5, 7); //08
+  //if the week same
+  if (weekNow === Number(week)) {
+    id += year + week;
   }
-  //if the month not same
+  //if the week not same
   else {
-    // if the month 9 change to 09
-    monthNow = monthNow < 9 ? "0" + monthNow : monthNow;
-    id += fullYear.slice(2) + monthNow;
+    // if the week 9 change to 09
+    weekNow = weekNow < 9 ? "0" + weekNow : weekNow;
+    id += fullYear.slice(2) + weekNow;
     increment = "0";
   }
   //0000
