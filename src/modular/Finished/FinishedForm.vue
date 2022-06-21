@@ -10,30 +10,6 @@
                 type="text"
             />
         </div>
-        <!-- End of periode laporan -->
-
-        <!-- Nama supervisor -->
-        <!-- <div class="w3-col s3 w3-padding">
-            <Input label="Supervisor name:" 
-                placeholder="Periode" 
-                class="w3-margin-bottom" 
-                :value="more?.spvName" 
-                disabled 
-                type="text"
-            />
-        </div> -->
-        <!-- End of nama supervisor -->
-        <!-- Date collected -->
-        <!-- <div class="w3-col s3 w3-padding">
-            <Input label="Collected:" 
-                placeholder="Periode" 
-                class="w3-margin-bottom" 
-                :value="$store.getters['dateFormat']({format: 'dateMonth', time: more?.collected})"
-                disabled 
-                type="text"
-            />
-        </div> -->
-        <!-- End of date collected -->
     </div>
 </template>
 
@@ -55,14 +31,12 @@ export default {
                 { title: "Total DO", valueFrom: "totalDO"},
                 { title: "Total Kendaraan", valueFrom: "totalKendaraan"},
                 { title: "Total Waktu", valueFrom: "totalWaktu"},
-                { title: "Standart waktu", valueFrom: "standartWaktu"},
+                { title: "Total output", valueFrom: "standartWaktu"},
             ],
         }
     },
     mounted() {
         this.more = this.$store.getters["Modal/obj"]?.data
-        console.log(this.more)
-
     },
     components: {
         Input,

@@ -172,11 +172,11 @@ const Uncollected = {
             val?.warehouse
           )?.name;
           val.periode2 = rootGetters["dateFormat"]({
-            format: "dateMonth",
+            format: "ddmmyyyy",
             time: val.periode,
           });
           val.finished2 = rootGetters["dateFormat"]({
-            format: "dateMonth",
+            format: "ddmmyyyy",
             time: val.finished,
           });
           // val.approval2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.approval })
