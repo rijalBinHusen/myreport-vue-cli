@@ -16,12 +16,12 @@
         id="tableFinished"
         #default="{ prop }"
     >
-    <!-- lihat info detail -->
-    <Button value="Details" type="button" secondary small @trig="details(prop)"/>
-    <!-- edit in excel mode -->
-    <Button value="Edit" type="button" secondary small/>
-    <!-- share detail -->
-    <Button value="Share" type="button" primary small/>
+        <!-- lihat info detail -->
+        <Button value="Details" type="button" secondary small @trig="details(prop)"/>
+        <!-- edit in excel mode -->
+        <Button value="Edit" type="button" secondary small/>
+        <!-- share detail -->
+        <Button v-if="prop?.status === 2" value="Share" type="button" primary small/>
         
         
     </Datatable>
@@ -48,7 +48,7 @@ export default {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show", criteria: {isfinished: true}});
         },
 		details(ev) {
-            console.log(ev)
+            this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});
 		},
         share(ev){
             // console.log(ev)

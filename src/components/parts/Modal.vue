@@ -37,10 +37,12 @@ import BaseStockForm from "../../modular/Base/BaseStockForm.vue"
 import PeriodePicker from "../parts/PeriodePicker.vue"
 import WarehouseSupervisorsForm from "../../modular/Warehouses/WarehouseSupervisorsForm.vue"
 import SupervisorWarehousesForm from "../../modular/Supervisors/SupervisorWarehousesForm.vue"
+import FinishedForm from "../../modular/Finished/FinishedForm.vue"
 
 export default {
   name: "Modal",
     components: {
+      FinishedForm,
       SupervisorWarehousesForm,
       WarehouseSupervisorsForm,
       BaseProblemForm,
