@@ -56,6 +56,7 @@ export default {
         return {
             lists: [],
             unsubscribe: "",
+            timeOut: "",
         };
     },
     components: {
@@ -84,7 +85,13 @@ export default {
     // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika document ada yang di update
-            if (mutation.type === 'Document/update') {
+            if (mutation.type === 'Document/append') {
+                clearTimeout(this.timeOut)
+                this.timeOut = setTimeout( () => {
+                    this.renewLists()
+                } , 1500 )
+            }
+            else if (mutation.type === 'Document/update') {
                 this.renewLists()
             }
         });
