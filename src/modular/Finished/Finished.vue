@@ -59,6 +59,7 @@ export default {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});
 		},
         share(ev){
+            // exportDailyReport()
             this.$refs.importerBase.click();
             // // console.log(ev)
             // let record = this.$store.getters["Document/getId"](ev)

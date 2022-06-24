@@ -56,9 +56,9 @@ const Backup = {
       );
       // if lists length > 25 delete it
       if (state.lists.length > 25) {
-        dispatch(
+        await dispatch(
           "delete",
-          { store: "Backup", criteria: { id: state.lists.slice(-1)[0].id} },
+          { store: "Backup", criteria: { id: state.lists.slice(-1)[0].id } },
           { root: true }
         );
       }
