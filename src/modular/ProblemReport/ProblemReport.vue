@@ -56,7 +56,7 @@ export default {
             this.$store.dispatch("append",
             {
                 store: "Problem",
-                obj: Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record)
+                obj: record
             })
             // delete record.id
             // console.log(Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record))

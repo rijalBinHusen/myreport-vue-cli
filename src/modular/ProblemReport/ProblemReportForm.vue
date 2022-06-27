@@ -15,7 +15,8 @@
                     <Select 
                         id="warehouse"
                         class="w3-border"
-                        :options="warehouses"
+                        :options="$store.state.Warehouses.lists"
+                        judul="Gudang"
                         value="id"
                         text="name"
                         :inselect="problem.warehouse"
@@ -28,8 +29,9 @@
                     <label for="nameSpv">Nama supervisor</label>
                     <Select 
                         id="nameSpv"
-                        :options="names" 
+                        :options="$store.getters['Supervisors/enabled']" 
                         class="w3-border"
+                        judul="Supervisor"
                         value="id"
                         text="name"
                         :inselect="problem.nameSpv"
@@ -57,8 +59,8 @@
                     <Select 
                         class="w3-border"
                         id="shiftMulai"
+                        judul="Shift"
                         :options="[
-                            { id: '', title: 'Pilih shift' }, 
                             { id:1, title: 'Shift 1'},
                             { id:2, title: 'Shift 2'},
                             { id:3, title: 'Shift 3'},
@@ -79,7 +81,8 @@
                     <label>Nama kabag</label>
                     <Select 
                         class="w3-border"
-                        :options="headspv" 
+                        judul="Kabag"
+                        :options="$store.getters['Headspv/enabled']" 
                         value="id"
                         text="name"
                         :inselect="problem.nameHeadSpv"
@@ -113,8 +116,8 @@
                     <Select 
                         class="w3-border"
                         id="shiftMulai"
+                        judul="Shift"
                         :options="[
-                            { id: '', title: 'Pilih shift' }, 
                             { id:1, title: 'Shift 1'},
                             { id:2, title: 'Shift 2'},
                             { id:3, title: 'Shift 3'},
@@ -202,39 +205,12 @@ export default {
     },
     computed: {
         ...mapState({
-            _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
             _PROBLEM: state => JSON.parse(JSON.stringify(state.Problem.lists))
         }),        
         ...mapGetters({
-            GET_SPVENABLE: "Supervisors/enabled",
             GET_DATEFORMAT: "dateFormat",
-            GET_HEADSPVENABLE: "Headspv/enabled",
             GET_PROBLEMID: "Problem/problemId"
         }),
-        names() {
-            // ambil semua nama dari state
-            let options = Array.from(this.GET_SPVENABLE)
-            // tambahkan option lain
-            options.unshift({id: "", name: "Pilih nama" })
-            // kembalikan agar tidak reactive
-            return options
-        },
-        warehouses() {
-            let rec = this._WAREHOUSES
-            rec.unshift({
-                id: "",
-                name: "Select warehouse"
-            })
-            return rec
-        },        
-        headspv() {
-            // ambil semua nama dari state
-            let options = this.GET_HEADSPVENABLE
-            // tambahkan option lain
-            options.unshift({id: "", name: "Pilih nama" })
-            // kembalikan agar tidak reactive
-            return options
-        },
     },
     methods: {
         ...mapActions({
@@ -253,7 +229,7 @@ export default {
             }
             this.APPEND({
                 store: "Problem",
-                obj: Object.assign( { id: this._PROBLEM[0] ? this._PROBLEM[0].id : "PRB22050000" }, this.problem)
+                obj: this.problem,
             })
         }
     },
