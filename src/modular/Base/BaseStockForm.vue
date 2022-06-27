@@ -1,6 +1,6 @@
 <template>
     <div>
-      <div v-if="records.length > 0" v-for="(rec, index) in records" :key="rec.item" >
+      <div v-for="(rec, index) in records" :key="rec.item" >
         <label>Masukkan kode item</label>
         <InputItem  @chose="item(index, $event)" placeholder="Kode item" class="w3-input w3-border w3-margin-top" />
       </div>

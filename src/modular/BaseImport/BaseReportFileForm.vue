@@ -90,7 +90,7 @@ export default {
                 let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
-                    await this.$store.dispatch("appendWoutGenerateId", {
+                    await this.$store.dispatch("append", {
                         store: "BaseReportClock",
                         obj: {
                             parent: this.infoBaseReport.id,
@@ -112,7 +112,7 @@ export default {
             let in1st = stockSheet["E"+i] ? stockSheet["E"+i].v : 0
             let out1st = stockSheet["F"+i] ? stockSheet["F"+i].v : 0
                 if(in1st > 0 || out1st > 0) {
-                    await this.$store.dispatch("appendWoutGenerateId",  {
+                    await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
                         obj: {
                             parent: this.infoBaseReport.id,
@@ -137,7 +137,7 @@ export default {
             let in2nd = stockSheet["H"+i] ? stockSheet["H"+i].v : 0
             let out2nd = stockSheet["I"+i] ? stockSheet["I"+i].v : 0
                 if(in2nd > 0 || out2nd > 0) {
-                    await this.$store.dispatch("appendWoutGenerateId",  {
+                    await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
                         obj: {
                             parent: this.infoBaseReport.id,
@@ -169,7 +169,7 @@ export default {
                 let totalOut = out1 + out2
 
                     if( (in1 || out1  || out2  || in2) && i > 3 && stockSheet["A"+i] ) {
-                    await this.$store.dispatch("appendWoutGenerateId",  {
+                    await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
                         obj: {
                             parent: this.infoBaseReport.id,

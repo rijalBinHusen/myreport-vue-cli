@@ -61,6 +61,9 @@ const Uncollected = {
       return "finished";
     },
     async getAllDocumentNotFinished({ state, commit, dispatch }) {
+      if (state.allData) {
+        return;
+      }
       commit("Modal/active", { judul: "", form: "Loader" }, { root: true });
       // cari document dengan criteria { isFinished: false }
       await dispatch(
