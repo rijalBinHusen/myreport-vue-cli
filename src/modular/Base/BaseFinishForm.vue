@@ -1,7 +1,7 @@
 <template>
     <div>
         <label class="w3-margin-top">Nama gudang</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="warehouseName + ' / Shift ' + shift" disabled />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['dateFormat']({ format: 'dateMonth', time: base?.periode }) + ' ' + warehouseName + ' / Shift ' + shift" disabled />
         <!-- Supervisors -->
         <label>Nama supervisors</label>
         <Select
