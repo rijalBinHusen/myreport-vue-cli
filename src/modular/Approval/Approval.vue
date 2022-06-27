@@ -13,7 +13,7 @@
                 id="tableApproval"
                 v-slot:default="{ prop }"
             >
-				<span v-if="prop.shared == 'false'">
+				<span v-if="prop.shared == 'false' || !prop.shared ">
                     <Button 
                         value="Batal" 
                         type="button" 
