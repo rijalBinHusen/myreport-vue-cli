@@ -42,7 +42,6 @@ export default createStore({
       "Headspv",
       "Baseitem",
       "Problem",
-      "Document",
     ],
   },
   mutations: {},

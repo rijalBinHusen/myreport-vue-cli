@@ -8,8 +8,18 @@
             @exit="excelMode = false"
             @save="save($event)"
             rowHeight="70"
-        >
-            <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
+        >   
+            <template #button>
+                <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
+            </template>
+            <template #text>
+                {{ $store.getters["dateFormat"]({format: "dateMonth", time: Number(selectedPeriode) })
+                    + ", " +
+                    $store.getters["Warehouses/warehouseId"](selectedWarehouse)?.name
+                    + ", Shift: " +
+                     shift 
+                }}
+            </template>
         </AGGrid>
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
@@ -47,7 +57,7 @@
 
                 <!-- Sheet report -->
                 <Select 
-                    v-if="selectedWarehouse.length > 0"
+                    v-if="selectedWarehouse.length"
                     class="w3-col s1 w3-margin-right"
                     :options='[
                         { id: "clock", title: "Clock" },
@@ -61,7 +71,7 @@
                 />            
                 <!-- Shift -->
                     <Select 
-                    v-if="selectedWarehouse.length > 0"
+                    v-if="selectedWarehouse.length"
                     class="w3-col s1 w3-margin-right"
                     :options="[
                         { id:1, title: 'Shift 1'},
@@ -76,7 +86,7 @@
                 />
                 <!-- oPEN IN EXCEL MODE -->
                 <Button 
-                    v-if="lists.length > 0"
+                    v-if="lists.length"
                     class="w3-left w3-col s1 w3-margin-top w3-padding " 
                     primary 
                     value="Excel" 
@@ -85,7 +95,7 @@
                 />
                 <!-- MArk as finished -->
                 <Button 
-                    v-if="base && sheet === 'stock' && shift && lists.length > 0 && !lists[0]?.parentDocument"
+                    v-if="base && sheet === 'stock' && shift && lists.length && !lists[0]?.parentDocument"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 

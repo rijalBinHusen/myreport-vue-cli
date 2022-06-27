@@ -1,8 +1,7 @@
 <template>
 <div>
   <div class="w3-padding w3-teal w3-center w3-margin-bottom">
-    <slot></slot>
-  <Button class="w3-bar-item" small primary value="Export" type="button" />
+    <slot name="button"></slot>
   <span class="w3-dropdown-hover">
   <Button  class="w3-bar-item w3-margin-right" small primary value="Show column" type="button" />
     <span class="w3-small w3-dropdown-content w3-bar-block w3-border">
@@ -27,6 +26,7 @@
   <Button class="w3-bar-item w3-white" small primary value="+" type="button" @trig="width = width + 10" />
   <Button v-if="edited.length > 0" class="w3-bar-item" small primary value="Save" @trig="saveChanged" type="button" />
   <Button v-else class="w3-bar-item" small danger value="Exit" type="button" @trig="exit" />
+    <slot name="text"></slot>
   </div>
   <ag-grid-vue
     :style="{ 
