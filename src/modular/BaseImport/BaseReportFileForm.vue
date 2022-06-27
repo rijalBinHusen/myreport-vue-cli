@@ -82,8 +82,11 @@ export default {
                     maka masukkan ke idb 
                 */
             //    CLOCK CHECKER
+                // nomor do
                 let clockNo = clockSheet["D"+i] ? clockSheet["D"+ (i)].v : 0
+                // nomor do sebelumnya (atasnya)
                 let clockNoBefore = clockSheet["D"+ (i-1)] ? clockSheet["D"+ (i-1)].v : false
+                // status untuk diimport true or false
                 let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
@@ -91,7 +94,7 @@ export default {
                         store: "BaseReportClock",
                         obj: {
                             parent: this.infoBaseReport.id,
-                            shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
+                            shift: clockSheet["B"+i]?.v <= 3 ?  clockSheet["B"+i].v  : 3,
                             noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
                             reg: clockSheet["F"+i] ? clockSheet["F"+i].w : 0,
                             start: clockSheet["G"+i] ? clockSheet["G"+i].w : 0,
