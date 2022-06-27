@@ -2,7 +2,7 @@ const Problem = {
   namespaced: true,
   state: {
     lists: [],
-    store: { store: "Problem" },
+    unFinished: false,
   },
 
   mutations: {
@@ -12,6 +12,7 @@ const Problem = {
     },
     // add data to
     append(state, value) {
+      state.unFinished = true;
       state.lists.unshift(value);
     },
     // update data
@@ -22,7 +23,21 @@ const Problem = {
     },
   },
 
-  actions: {},
+  actions: {
+    async getProblemFromDB({ state, commit, dispatch }) {
+      // status = uncollected
+      // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
+      if (state.unFinished) {
+        commit("document", []);
+        await dispatch(
+          "getDataByCriteriaAppend",
+          { store: "Problem", criteria: { isFinished: false } },
+          { root: true }
+        );
+      }
+      return "Finished";
+    },
+  },
   getters: {
     store(state) {
       return JSON.parse(JSON.stringify(state.store));
@@ -52,34 +67,34 @@ const Problem = {
     },
     problemActive: (state) => (time, warehouse, item) => {
       // this.$store.getters["Problem/problemActive"](new Date().getTime())
-      let result = []
+      let result = [];
       JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
-          /* object yang diharapkan
+        /* object yang diharapkan
           {
             kodeItem: problemId
           }
           */
-        if( (time >= val.tanggalMulai 
-                    || time <= val.tanggalSelesai) 
-            && val.warehouse == warehouse 
-            && val.item == item
-            ) {
-            result.push(val.id)
+        if (
+          (time >= val.tanggalMulai || time <= val.tanggalSelesai) &&
+          val.warehouse == warehouse &&
+          val.item == item
+        ) {
+          result.push(val.id);
         }
       });
-      return result
+      return result;
     },
     masalah: (state) => (arrayOfProblemId) => {
-      let result = []
-      if(arrayOfProblemId.length > 0) {
+      let result = [];
+      if (arrayOfProblemId.length > 0) {
         state.lists.forEach((val) => {
-          if(arrayOfProblemId.includes(val.id)) {
-            result.push(val.masalah)
+          if (arrayOfProblemId.includes(val.id)) {
+            result.push(val.masalah);
           }
-        })
+        });
       }
-      return result.join(", ")
-    }
+      return result.join(", ");
+    },
   },
 };
 

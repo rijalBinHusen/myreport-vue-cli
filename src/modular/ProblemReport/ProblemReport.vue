@@ -73,6 +73,9 @@ export default {
             editId: "",
         }
     },
+    mounted() {
+        this.$store.dispatch("Problem/getProblemFromDB");
+    },
     name: "ProblemReport",
 }
 </script>

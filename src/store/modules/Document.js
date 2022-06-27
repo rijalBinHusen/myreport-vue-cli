@@ -77,11 +77,7 @@ const Uncollected = {
       // get all item
       await dispatch("Baseitem/getAllItem", false, { root: true });
       // cari problem yang belum solve
-      await dispatch(
-        "getDataByCriteria",
-        { store: "Problem", criteria: { isfinished: false } },
-        { root: true }
-      );
+      await dispatch("Problem/getProblemFromDB", true, { root: true });
 
       //
       commit("Modal/active", false, { root: true });
