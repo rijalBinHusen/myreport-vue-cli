@@ -94,8 +94,8 @@
                     @trig="excelMode = true" 
                 />
                 <!-- MArk as finished -->
+                    <!-- v-if="base && sheet === 'stock' && shift && lists.length && !lists[0]?.parentDocument" -->
                 <Button 
-                    v-if="base && sheet === 'stock' && shift && lists.length && !lists[0]?.parentDocument"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 

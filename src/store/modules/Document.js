@@ -40,17 +40,17 @@ const Uncollected = {
 
           obj: Object.assign(
             {
-              collected: "false",
-              approval: "false",
+              collected: false,
+              approval: false,
               status: 0,
               shared: "false",
-              finished: "false",
-              totalDO: "false",
-              totalKendaraan: "false",
-              totalWaktu: "false",
-              standartWaktu: "false",
-              baseReportFile: "false",
-              isfinished: "false",
+              finished: false,
+              totalDO: false,
+              totalKendaraan: false,
+              totalWaktu: false,
+              standartWaktu: false,
+              baseReportFile: false,
+              isfinished: false,
             },
             payload
           ),
@@ -68,7 +68,7 @@ const Uncollected = {
       // cari document dengan criteria { isFinished: false }
       await dispatch(
         "getDataByCriteria",
-        { store: "Document", criteria: { isfinished: "false" } },
+        { store: "Document", criteria: { isfinished: false } },
         { root: true }
       );
       // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }

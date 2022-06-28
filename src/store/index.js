@@ -99,6 +99,7 @@ export default createStore({
     updateOnly({}, payload) {
       // payload = {store: "BaseReportStock", criteria: { id: stk22050003 }, obj: { problem: [] }}
       myfunction.update(payload);
+      return myfunction.tunggu(130);
     },
 
     getStart({ commit, state, rootGetters }) {

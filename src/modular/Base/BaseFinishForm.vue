@@ -50,8 +50,8 @@
             small
             @trig="this.$emit('exit')" 
         />
+            <!-- v-if="documentRecord?.collected" -->
         <Button 
-            v-if="documentRecord?.collected"
             value="Save" 
             class="w3-right"
             type="button" 
