@@ -132,7 +132,6 @@ const Uncollected = {
         delete info?.totalKendaraan;
         delete info?.totalWaktu;
         delete info?.standartWaktu;
-        console.log(info);
         info = Object.assign(info, payload.val);
       }
       dispatch(

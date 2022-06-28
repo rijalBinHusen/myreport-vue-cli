@@ -51,7 +51,7 @@
             @trig="this.$emit('exit')" 
         />
         <Button 
-            v-if="documentRecord?.collected !== 'false'"
+            v-if="documentRecord?.collected"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -76,7 +76,7 @@ export default {
             name: null,
             headSpv: null,
             documentRecord: null,
-            warehouseNamee: "",
+            warehouseName: "",
         }
     },
     methods: {},
@@ -126,6 +126,7 @@ export default {
                 }
             )
             // console.log(this.document)
+            this.$emit('exit')
         },
     },
     computed: {
