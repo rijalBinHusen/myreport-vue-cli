@@ -71,6 +71,11 @@ const Uncollected = {
         { store: "Document", criteria: { isfinished: false } },
         { root: true }
       );
+      await dispatch(
+        "getDataByCriteriaAppend",
+        { store: "Document", criteria: { isfinished: "false" } },
+        { root: true }
+      );
       // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
       await dispatch("BaseReportFile/getDataByState", {}, { root: true });
       // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
@@ -125,15 +130,23 @@ const Uncollected = {
         info.approval = "false";
         info.status = 1;
       } else if (payload.action === "finished") {
-        delete info?.isfinished;
-        delete info?.finished;
+        info["isfinished"] = true;
+        info["finished"] = new Date().getTime();
         delete info?.baseReportFile;
+        // baseReportClock
         delete info?.totalDO;
         delete info?.totalKendaraan;
         delete info?.totalWaktu;
+        // end of baseReportClock
         delete info?.standartWaktu;
-        info = Object.assign(info, payload.val);
+        // totalDO, totalKendaraan, totalWaktu,
+        let detailsClock = rootGetters[
+          "BaseReportClock/detailsByShiftAndParent"
+        ](info?.shift, payload.val.baseReportFile);
+
+        info = Object.assign(info, detailsClock, payload.val);
       }
+      // console.log(info);
       dispatch(
         "updateOnly",
         {

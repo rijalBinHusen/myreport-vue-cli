@@ -111,7 +111,7 @@
           option
           #default="{ prop }"
         >
-            <span v-if="(prop.selisih !== 0 || prop.problem.length) && sheet === 'stock'">
+            <span v-if="(prop.selisih || prop.problem.length) && sheet === 'stock'">
                 <Dropdown
                     value="Pesan"  
                     :lists="[
@@ -151,9 +151,7 @@
             v-else 
             :base="base" 
             :shift="shift"
-            :totalDo="totalDo"
-            :totalWaktu="totalWaktu"
-            :totalKendaraan="totalKendaraan"
+            :detailsClock="detailsClock"
             :standartWaktu="standartWaktu"
             @exit="BaseFinishForm = false"
             @finished="markAsFinished($event)"
@@ -189,9 +187,9 @@ export default {
             excelMode: false,
             base: null,
             BaseFinishForm: null,
-            totalDo: 0,
-            totalKendaraan: 0,
-            totalWaktu: 0,
+            // totalDO, totalKendaraan, totalWaktu,
+            detailsClock: "",
+            // end of totalDO, totalKendaraan, totalWaktu,
             standartWaktu: 0,
             problem: {},
             unsubscribe: "",
@@ -285,8 +283,21 @@ export default {
                 shift: this.shift,
                 parent: this.base?.id
             }
-            await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
-            await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
+            // tambahkan parent document pada basereportclock
+            // await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
+            // tambahkan parent document pada basereportstock
+            // await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
+            // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
+            await this.$store.dispatch("Document/handleDocument",
+                {
+                    action: "finished",
+                    val: {
+                        baseReportFile: this.base.id,
+                        standartWaktu: this.standartWaktu
+                    },
+                    rec: ev
+                }
+            )
             // tutup loader
             this.$store.commit("Modal/active");
         },
@@ -320,25 +331,9 @@ export default {
         },
         detailsDocument() {
             // total waktu, total kendaraan, total do
-            this.totalWaktu = 0;
-            this.totalDo = 0
-            this.totalKendaraan = 0
             if(this.shift && this.base && this.base.id) {
                 this.standartWaktu = this.STANDARTWAKTU(this.shift, this.base.id)
-                this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id).forEach((val) => {
-                    this.totalDo += 1
-                    this.totalKendaraan += 1
-                    // start
-                    let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
-                    //finish
-                    let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
-                    // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
-                    // finish - start
-                    let total = finish < start ? (finish + 86400000) - start : finish - start
-                    // jaddikan menit, masukan total waktu
-                    this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
-                })
-
+                this.detailsClock = this.$store.getters["BaseReportClock/detailsByShiftAndParent"](this.shift, this.base.id)
             }
         },
         renewLists() {

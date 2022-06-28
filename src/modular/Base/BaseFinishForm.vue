@@ -27,15 +27,15 @@
         <div class="w3-row">
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total do</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalDo" />
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsClock.totalDo" />
             </div>
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total kendaraan</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalKendaraan" />
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsClock.totalKendaraan" />
             </div>
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total waktu</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalWaktu" />
+                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsClock.totalWaktu" />
             </div>
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Standart waktu</label>
@@ -50,8 +50,8 @@
             small
             @trig="this.$emit('exit')" 
         />
-            <!-- v-if="documentRecord?.collected" -->
         <Button 
+            v-if="documentRecord?.collected"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -90,16 +90,8 @@ export default {
             type: String,
             required: true,
         },
-        totalDo: {
-            type: Number,
-            required: true,
-        },
-        totalKendaraan: {
-            type: Number,
-            required: true,
-        },
-        totalWaktu: {
-            type: Number,
+        detailsClock: {
+            type: Object,
             required: true,
         },
         standartWaktu: {
@@ -109,21 +101,6 @@ export default {
     },
     methods: {
         save() {
-            this.$store.dispatch("Document/handleDocument",
-                {
-                    action: "finished",
-                    val: {
-                        isfinished: true,
-                        finished: new Date().getTime(),
-                        baseReportFile: this.base.id,
-                        totalDO: this.totalDo,
-                        totalKendaraan: this.totalKendaraan,
-                        totalWaktu: this.totalWaktu,
-                        standartWaktu: this.standartWaktu
-                    },
-                    rec: this.documentRecord?.id
-                }
-            )
             // console.log(this.document)
             this.$emit("finished", this.documentRecord?.id)
             this.$emit('exit')
