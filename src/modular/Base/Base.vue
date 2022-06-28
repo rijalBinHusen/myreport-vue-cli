@@ -277,26 +277,22 @@ export default {
         async markAsFinished(ev) {
             // buka loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-
             // iterate baseReport stocklist dan tambahkan parent document ev.id
-            for(let i =0; i < this.lists.length; i++) {
-                let record = JSON.parse(JSON.stringify(this.lists[i]))
-                delete record.itemName
-                delete record.selisih
-                delete record.problem2
-                // tunggu sampai update selesai
-                await this.$store.dispatch("update", {
-                    store: "BaseReportStock", 
-                    obj: Object.assign(record, { parentDocument: ev.id }),
-                    criteria: { id: record.id }
-                })
+            // lemparkan ke state saja biar gak bingung
+            // lempar data yang dibutuhkan, parent
+            let criteria = { 
+                parentDocument: ev, 
+                shift: this.shift,
+                parent: this.base?.id
             }
-
+            await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
+            await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
             // tutup loader
             this.$store.commit("Modal/active");
         },
         save(ev) {
             // lempar ke dispatch
+            // BaseReportClock/saveFromeExcel
             this.$store.dispatch(
                     `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}/saveFromExcelMode`, 
                     ev)

@@ -109,7 +109,6 @@ export default {
     },
     methods: {
         save() {
-            this.$emit("finished", {id: this.documentRecord?.id})
             this.$store.dispatch("Document/handleDocument",
                 {
                     action: "finished",
@@ -126,6 +125,7 @@ export default {
                 }
             )
             // console.log(this.document)
+            this.$emit("finished", this.documentRecord?.id)
             this.$emit('exit')
         },
     },

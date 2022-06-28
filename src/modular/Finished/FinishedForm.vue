@@ -5,7 +5,7 @@
             <Input :label="dat.title+':'" 
                 :placeholder="dat.title" 
                 class="w3-margin-bottom" 
-                :value="more[dat.valueFrom]" 
+                :value="more[dat.valueFrom] + ''" 
                 disabled 
                 type="text"
             />

@@ -46,6 +46,34 @@ const BaseReportStock = {
     },
   },
   actions: {
+    async markAsFinished({ dispatch, state }, payload) {
+      //payload { parentDocument: ev, shift: this.shift, parent: this.base?.id }
+      // iterate the state
+      for (let i = 0; i < state.lists.length; i++) {
+        // if state?.shift == payload.shift && payload?.parent
+        if (
+          state.lists[i]?.shift == payload?.shift &&
+          state.lists[i]?.parent == payload?.parent
+        ) {
+          // jika parentDocument kosong
+          if (!state.lists[i]?.parentDocument) {
+            // update recordnya
+            state.lists[i].parentDocument = payload?.parentDocument;
+            await dispatch(
+              "updateOnly",
+              {
+                store: "BaseReportStock",
+                obj: { parentDocument: payload?.parentDocument },
+                criteria: { id: state.lists[i]?.id },
+              },
+              { root: true }
+            );
+          }
+          // jika sudah terisi
+        }
+      }
+      return "Finished";
+    },
     deleteRecordByParent({ dispatch, commit }, payload) {
       // payload = parentId
       //delete baseReportstock from state
