@@ -152,14 +152,14 @@ export default {
 
                 let listLaporanText = ""
                 Object.keys(listLaporan).forEach((val) => {
-                    listLaporanText += `*${listLaporan[val].join(", ")}*`
+                    listLaporanText += `${listLaporan[val].join(", ")}`
                     listLaporanText += ` | ${this.$store.getters["Warehouses/warehouseId"](val)?.name}%0a`
                 })
                 // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
     			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
 
                     window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
-                     // console.log(pesan)
+                    //  console.log(pesan)
                     return
             }
             alert("Tidak ada laporan lebih dari H+2")
@@ -168,7 +168,7 @@ export default {
             // let nophone = window.prompt()
             // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
-            // get document by spv and iterate
+            // get document by spv and iterate, document by spv yang >= H+2
             this.$store.getters["Document/documentBySpv"](0).forEach((val) => {
                 if(val.documents) {
                 // daftar laporan yang melebihi H+2 dari sekarang
@@ -176,13 +176,22 @@ export default {
                 let listLaporan = []
                 val.documents.forEach((val) => {
                     if(sekarang - val.periode >= 172800000 ) {
-                        listLaporan.push(`* ${val.periode2} | ${val?.warehouseName}%0a`)
+                        listLaporan.push(`${val.periode2} | ${val?.warehouseName}%0a`)
                     }
                 })
                 if(listLaporan.length > 0)
                     result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
                 }
             })
+            // dockumen yang belum tanda tangan kabag
+            result += "%0aDokumen belum *approval* kapala bagian:%0a%0a"
+            let notApproval = this.$store.getters["Document/documentNotApproval"]
+            Object.keys(notApproval).forEach((val) => {
+                result += `*${notApproval[val]?.headName} (${notApproval[val]?.lists.length}) Dokumen* :%0a`
+                result += notApproval[val]?.lists.join("%0a")
+                result += "%0a%0a"
+            })
+
             window.open(`https://wa.me/${ev}?text=${result}`)
             // console.log(result)
             // }

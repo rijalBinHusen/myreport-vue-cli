@@ -162,11 +162,16 @@ const Uncollected = {
     async getDocumentByStatusFromDB({ state, commit, dispatch }) {
       // status = uncollected
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
-      if (state.allData) {
+      if (state.allData || !state.lists.length) {
         commit("document", []);
         await dispatch(
           "getDataByCriteriaAppend",
           { store: "Document", criteria: { shared: "false" } },
+          { root: true }
+        );
+        await dispatch(
+          "getDataByCriteriaAppend",
+          { store: "Document", criteria: { shared: false } },
           { root: true }
         );
       }
@@ -174,6 +179,33 @@ const Uncollected = {
     },
   },
   getters: {
+    documentNotApproval(state, getters, rootState, rootGetters) {
+      // expected result =  { headId: { headName: nameHead, lists:["Tanggal nama gudang shift nama karu"], ..... } }
+      // 21-Jun Gudang depan shift 2 karu eka resdian
+      let result = {};
+      if (state.lists.length) {
+        state.lists.forEach((val) => {
+          if (val?.status == 1) {
+            let tanggal = rootGetters["dateFormat"]({
+              format: "dateMonth",
+              time: val?.periode,
+            });
+            let namaKaru = rootGetters["Supervisors/spvId"](val?.name)?.name;
+            let text = `${tanggal} Shift ${val?.shift} Karu ${namaKaru}`;
+            // jika sudah exists diresult
+            result[val?.head]
+              ? result[val?.head].lists.push(text)
+              : (result[val?.head] = {
+                  headName: rootGetters["Headspv/headId"](val.head)["name"],
+                  lists: [text],
+                });
+            // jika belum exists diresult
+            // val.headName = this.$store.getters["Headspv/headId"](val.head)["name"]
+          }
+        });
+      }
+      return result;
+    },
     finished(state, getters, rootState, rootGetters) {
       return JSON.parse(JSON.stringify(state.lists)).filter((val) => {
         if (val?.isfinished !== "false" && val?.baseReportFile !== "false") {
@@ -304,16 +336,24 @@ const Uncollected = {
           ) {
             result[val?.warehouse]
               ? result[val?.warehouse].push(
-                  rootGetters["dateFormat"]({
-                    format: "dateMonth",
-                    time: val?.periode,
-                  })
+                  "*" +
+                    rootGetters["dateFormat"]({
+                      format: "dateMonth",
+                      time: val?.periode,
+                    }) +
+                    "* Shift (" +
+                    val?.shift +
+                    ")"
                 )
               : (result[val?.warehouse] = [
-                  rootGetters["dateFormat"]({
-                    format: "dateMonth",
-                    time: val?.periode,
-                  }),
+                  "*" +
+                    rootGetters["dateFormat"]({
+                      format: "dateMonth",
+                      time: val?.periode,
+                    }) +
+                    "* Shift (" +
+                    val?.shift +
+                    ")",
                 ]);
           }
         });
