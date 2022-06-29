@@ -11,6 +11,15 @@
             class="w3-right"
         />
 
+        <Dropdown
+            value="Belum approval"  
+            :lists="$store.state.Headspv.lists"
+            listsKey="phone"
+            listsValue="name"
+            @trig="notApproval($event)"
+            class="w3-right"
+        />
+
         <Button 
             class="w3-right" 
             primary 
@@ -60,7 +69,7 @@
                         type="button" 
                         @trig="pesan(prop)" 
 					/>
-
+                    
                     <Dropdown
                         v-if="viewByPeriode"
                         value="Collect"  
@@ -183,18 +192,23 @@ export default {
                     result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
                 }
             })
+
+            window.open(`https://wa.me/${ev}?text=${result}`)
+            // console.log(result)
+            // }
+        },
+        notApproval(ev) {
+            console.log(ev)
+            return
             // dockumen yang belum tanda tangan kabag
-            result += "%0aDokumen belum *approval* kapala bagian:%0a%0a"
+            let result = "Dokumen belum *approval* kapala bagian:%0a%0a"
             let notApproval = this.$store.getters["Document/documentNotApproval"]
             Object.keys(notApproval).forEach((val) => {
                 result += `*${notApproval[val]?.headName} (${notApproval[val]?.lists.length}) Dokumen* :%0a`
                 result += notApproval[val]?.lists.join("%0a")
                 result += "%0a%0a"
             })
-
             window.open(`https://wa.me/${ev}?text=${result}`)
-            // console.log(result)
-            // }
         },
         renewLists() {
             this.viewByPeriode
