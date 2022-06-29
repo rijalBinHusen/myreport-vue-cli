@@ -39,9 +39,6 @@ const Problem = {
     },
   },
   getters: {
-    store(state) {
-      return JSON.parse(JSON.stringify(state.store));
-    },
     lists(state, getters, rootState, rootGetters) {
       // let rec =
       if (state.lists.length < 1) {
@@ -95,6 +92,12 @@ const Problem = {
       }
       return result.join(", ");
     },
+    problemActiveBySpvAndPeriode:
+      (state, getters, rootState, rootGetters) => (spv, periode) => {
+        return [...state.lists].filter(
+          (val) => val?.nameSpv === spv && val?.tanggalMulai == periode
+        );
+      },
   },
 };
 

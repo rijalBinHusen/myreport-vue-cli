@@ -4,42 +4,42 @@
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['dateFormat']({ format: 'dateMonth', time: base?.periode }) + ' ' + warehouseName + ' / Shift ' + shift" disabled />
         <!-- Supervisors -->
         <label>Nama supervisors</label>
-        <Select
-            judul="supervisor" 
-            :options="names" 
-            value="id"
-            text="name"
-            @selected="name = $event"
-            :inselect="name"
-            disabled
-        />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Supervisors/spvId'](name)?.name" disabled />
         <!-- Head spv -->
         <label>Nama kabag</label>
-        <Select 
-            :options="headspv" 
-            judul="kabag"
-            value="id"
-            text="name"
-            @selected="headSpv = $event"
-            :inselect="headSpv"
-            disabled
-        />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Headspv/headId'](headSpv)?.name" disabled />
         <div class="w3-row">
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total do</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsClock.totalDo" />
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsClock.totalDo" />
             </div>
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total kendaraan</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsClock.totalKendaraan" />
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsClock.totalKendaraan" />
             </div>
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Total waktu</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsClock.totalWaktu" />
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsClock.totalWaktu" />
             </div>
             <div class="w3-col s2 w3-padding-top w3-margin-right">
                 <label class="w3-margin-top">Standart waktu</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="standartWaktu / 10" disabled />
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsStock.totalQTYOut / 10" disabled />
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Total item bergerak</label>
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsStock.totalItemMoving" disabled />
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Total produk masuk</label>
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsStock.totalQTYIn" disabled />
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Produk tidak FIFO</label>
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsStock.totalProductNotFIFO"/>
+            </div>
+            <div class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">Produk variance</label>
+                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="itemVariance"/>
             </div>
         </div>
         <Button 
@@ -77,6 +77,7 @@ export default {
             headSpv: null,
             documentRecord: null,
             warehouseName: "",
+            itemVariance: 0,
         }
     },
     methods: {},
@@ -94,24 +95,19 @@ export default {
             type: Object,
             required: true,
         },
-        standartWaktu: {
-            type: Number,
+        detailsStock: {
+            type: Object,
             required: true,
         }
     },
     methods: {
         save() {
             // console.log(this.document)
-            this.$emit("finished", this.documentRecord?.id)
+            this.$emit("finished", Object.assign({
+                parentDocument: this.documentRecord?.id,
+                itemVariance: this.itemVariance,
+            }, this.detailsClock, this.detailsStock))
             this.$emit('exit')
-        },
-    },
-    computed: {
-        names() {
-            return this.$store.state.Supervisors.lists
-        },        
-        headspv() {
-            return this.$store.state.Headspv.lists
         },
     },
     mounted() {
@@ -119,6 +115,7 @@ export default {
         this.name = this.documentRecord?.name
         this.headSpv = this.documentRecord?.head
         this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
+        this.itemVariance = this.$store.getters["Problem/problemActiveBySpvAndPeriode"](this.name, this.base.periode).length
         if(this.documentRecord?.collected === "false") {
             alert("The document record status not collected yet")
         }

@@ -152,7 +152,7 @@
             :base="base" 
             :shift="shift"
             :detailsClock="detailsClock"
-            :standartWaktu="standartWaktu"
+            :detailsStock="detailsStock"
             @exit="BaseFinishForm = false"
             @finished="markAsFinished($event)"
         />
@@ -190,7 +190,7 @@ export default {
             // totalDO, totalKendaraan, totalWaktu,
             detailsClock: "",
             // end of totalDO, totalKendaraan, totalWaktu,
-            standartWaktu: 0,
+            detailsStock: "",
             problem: {},
             unsubscribe: "",
             timeOut: "",
@@ -273,6 +273,7 @@ export default {
             });
         },
         async markAsFinished(ev) {
+            // console.log(ev)
             // buka loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // iterate baseReport stocklist dan tambahkan parent document ev.id
@@ -284,18 +285,15 @@ export default {
                 parent: this.base?.id
             }
             // tambahkan parent document pada basereportclock
-            // await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
+            await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
             // tambahkan parent document pada basereportstock
-            // await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
+            await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
             // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
             await this.$store.dispatch("Document/handleDocument",
                 {
                     action: "finished",
-                    val: {
-                        baseReportFile: this.base.id,
-                        standartWaktu: this.standartWaktu
-                    },
-                    rec: ev
+                    val: Object.assign({baseReportFile: this.base.id}, ev),
+                    rec: ev?.parentDocument
                 }
             )
             // tutup loader
@@ -332,14 +330,14 @@ export default {
         detailsDocument() {
             // total waktu, total kendaraan, total do
             if(this.shift && this.base && this.base.id) {
-                this.standartWaktu = this.STANDARTWAKTU(this.shift, this.base.id)
+                this.detailsStock = this.$store.getters["BaseReportStock/detailsByShiftAndParent"](this.shift, this.base.id)
                 this.detailsClock = this.$store.getters["BaseReportClock/detailsByShiftAndParent"](this.shift, this.base.id)
             }
         },
         renewLists() {
             if(this.shift && this.base) {
                 // console.log("renew lists")
-
+            this.detailsDocument()
               if(this.sheet === "stock") {
                 this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
                 return
@@ -368,7 +366,6 @@ export default {
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
             BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
             BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportClock/shiftAndParent",
-            STANDARTWAKTU: "BaseReportStock/standartWaktuByParentAndShift",
             BASEIDSELECTED: "BaseReportFile/getIdByPeriodeByWarehouse"
         }),
         originColumn() {
@@ -405,16 +402,13 @@ export default {
     watch: {
         shift(newVal, oldVal) {
           if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet || !newVal) { return }
-          this.detailsDocument()
           this.renewLists()
         },
         sheet(newVal, oldVal) {
           if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet || !newVal) { return }
-          this.detailsDocument()
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-            this.detailsDocument()
             this.listsWarehouse = this.WAREHOUSEBASEREPORT(newVal)
             this.sheet = ""
             this.shift = ""

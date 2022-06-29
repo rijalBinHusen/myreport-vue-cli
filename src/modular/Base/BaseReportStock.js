@@ -243,14 +243,29 @@ const BaseReportStock = {
           )
         : [];
     },
-    standartWaktuByParentAndShift: (state) => (shift, id) => {
-      let filtered = JSON.parse(JSON.stringify(state.lists)).filter(
-        (val) => val.shift == shift && val.parent == id
-      );
-      let result = 0;
-      filtered.forEach((val) => {
-        result += val.out;
+    detailsByShiftAndParent: (state) => (shift, id) => {
+      /*
+       expected result = {
+          totalIn: Number, 
+          totalItemMoving: Number, 
+          totalQtyOut: Number, 
+          totalProductNotFifo: Number 
+      }
+      */
+      let result = {
+        totalItemMoving: 0,
+        totalQTYIn: 0,
+        totalQTYOut: 0,
+        totalProductNotFIFO: 0,
+      };
+      state.lists.forEach((val) => {
+        if (val.shift == shift && val.parent == id) {
+          result["totalItemMoving"]++;
+          result["totalQTYIn"] = result["totalQTYIn"] + val.in;
+          result["totalQTYOut"] = result["totalQTYOut"] + val.out;
+        }
       });
+
       return result;
     },
     exportData(state, getters, rootState, rootGetters) {
