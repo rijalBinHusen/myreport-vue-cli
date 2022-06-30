@@ -30,7 +30,7 @@ export default {
             this.$store.dispatch("Document/handleDocument",
                 { action: "finished", val: this.more, rec: this.more?.id }
             )
-            this.edit = false
+            this.$store.commit("Modal/active");
         }
     },
     data() {

@@ -43,7 +43,7 @@ const Uncollected = {
               collected: false,
               approval: false,
               status: 0,
-              shared: "false",
+              shared: false,
               finished: false,
               totalDO: false,
               totalKendaraan: false,
@@ -217,11 +217,11 @@ const Uncollected = {
             val?.warehouse
           )?.name;
           val.periode2 = rootGetters["dateFormat"]({
-            format: "ddmmyyyy",
+            format: "dateMonth",
             time: val.periode,
           });
           val.finished2 = rootGetters["dateFormat"]({
-            format: "ddmmyyyy",
+            format: "dateMonth",
             time: val.finished,
           });
           // val.approval2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: val.approval })
