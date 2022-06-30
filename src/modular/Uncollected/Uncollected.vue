@@ -206,8 +206,8 @@ export default {
                 result += notApproval[val]?.lists.join("%0a")
                 result += "%0a%0a"
             })
-            console.log(result)
-            // window.open(`https://wa.me/${ev}?text=${result}`)
+            // console.log(result)
+            window.open(`https://wa.me/${ev}?text=${result}`)
         },
         renewLists() {
             this.viewByPeriode
