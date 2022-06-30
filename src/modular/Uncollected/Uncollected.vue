@@ -198,8 +198,6 @@ export default {
             // }
         },
         notApproval(ev) {
-            console.log(ev)
-            return
             // dockumen yang belum tanda tangan kabag
             let result = "Dokumen belum *approval* kapala bagian:%0a%0a"
             let notApproval = this.$store.getters["Document/documentNotApproval"]
@@ -208,7 +206,8 @@ export default {
                 result += notApproval[val]?.lists.join("%0a")
                 result += "%0a%0a"
             })
-            window.open(`https://wa.me/${ev}?text=${result}`)
+            console.log(result)
+            // window.open(`https://wa.me/${ev}?text=${result}`)
         },
         renewLists() {
             this.viewByPeriode

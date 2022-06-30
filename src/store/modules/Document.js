@@ -184,8 +184,9 @@ const Uncollected = {
       // 21-Jun Gudang depan shift 2 karu eka resdian
       let result = {};
       if (state.lists.length) {
+        let beforeToday = rootGetters["dateFormat"]({ format: "-2" });
         state.lists.forEach((val) => {
-          if (val?.status == 1) {
+          if (val?.status == 1 && val.collected < beforeToday) {
             let tanggal = rootGetters["dateFormat"]({
               format: "dateMonth",
               time: val?.periode,
