@@ -31,7 +31,7 @@ export default {
             type: String,
             required: true,
         },
-        value: String,
+        value: [String, Number],
         class: String,
         disabled: Boolean,
     },

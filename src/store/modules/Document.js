@@ -132,19 +132,20 @@ const Uncollected = {
       } else if (payload.action === "finished") {
         info["isfinished"] = true;
         info["finished"] = new Date().getTime();
-        delete info?.baseReportFile;
-        // baseReportClock
-        delete info?.totalDO;
-        delete info?.totalKendaraan;
-        delete info?.totalWaktu;
-        // end of baseReportClock
-        delete info?.standartWaktu;
-        // totalDO, totalKendaraan, totalWaktu,
-        let detailsClock = rootGetters[
-          "BaseReportClock/detailsByShiftAndParent"
-        ](info?.shift, payload.val.baseReportFile);
+        delete info.periode2;
+        delete info.spvName;
+        delete info.warehouseName;
+        delete info.shift;
+        delete info.totalDO;
+        delete info.totalKendaraan;
+        delete info.totalWaktu;
+        delete info.totalItemMoving;
+        delete info.totalQTYIn;
+        delete info.totalQTYOut;
+        delete info.totalProductNotFIFO;
+        delete info.itemVariance;
 
-        info = Object.assign(info, detailsClock, payload.val);
+        info = Object.assign(info, payload.val);
       }
       // console.log(info);
       dispatch(
