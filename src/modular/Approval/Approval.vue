@@ -73,9 +73,10 @@ export default {
     },
     methods: {
         async exportReport(obj) {
-            this.$store.dispatch("BaseReportStock/getDataToExportAsReport", { parent: obj.baseReportFile, shift: Number(obj.shift) })
-            // exportToXls(this.$store.getters["BaseReportStock/exportData"], "Bismillah")
-            console.log(obj)
+            let fileName = `${obj?.periode2} ${obj?.warehouseName} Shift ${obj.shift} ${obj.spvName} `
+            await this.$store.dispatch("BaseReportStock/getDataToExportAsReport", { parent: obj.baseReportFile, shift: Number(obj.shift) })
+            exportToXls(this.$store.getters["BaseReportStock/exportData"], fileName)
+            // console.log(obj)
         },
         approvalForm() {
             this.$store.commit("Modal/active", { 

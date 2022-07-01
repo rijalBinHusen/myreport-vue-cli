@@ -29,6 +29,9 @@ const Uncollected = {
         return val.id === value.id ? value : val;
       });
     },
+    allData(state, value) {
+      state.allData = value;
+    },
   },
   actions: {
     async append({ dispatch }, payload) {
@@ -76,6 +79,7 @@ const Uncollected = {
         { store: "Document", criteria: { isfinished: "false" } },
         { root: true }
       );
+      commit("allData", true);
       // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
       await dispatch("BaseReportFile/getDataByState", {}, { root: true });
       // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }

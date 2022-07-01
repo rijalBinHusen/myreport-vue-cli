@@ -222,14 +222,13 @@ const BaseReportStock = {
       // close loader
       commit("Modal/active", false, { root: true });
     },
-    async getDataToExportAsReport({ dispatch }, payload) {
+    getDataToExportAsReport({ dispatch }, payload) {
       // payload = { parent: "", shift: "" }
-      await dispatch(
+      return dispatch(
         "getDataByCriteria",
         { store: "BaseReportStock", criteria: payload },
         { root: true }
       );
-      return "Finished";
     },
   },
   getters: {
