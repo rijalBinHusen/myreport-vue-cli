@@ -40,6 +40,13 @@
                     : prop.shared
                  }}
                 </span>
+                <Button 
+                    v-if="!isNaN(prop.isfinished)"
+                    value="Export" 
+                    type="button" 
+                    secondary small 
+                    @trig="exportReport(prop)" 
+                />
             </Datatable>
 			<!-- </table> -->
 			
@@ -49,6 +56,7 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
+import exportToXls from "../../exportToXls"
 
 export default {
     name: "Collect",
@@ -64,13 +72,17 @@ export default {
         Datatable,
     },
     methods: {
+        async exportReport(obj) {
+            this.$store.dispatch("BaseReportStock/getDataToExportAsReport", { parent: obj.baseReportFile, shift: Number(obj.shift) })
+            // exportToXls(this.$store.getters["BaseReportStock/exportData"], "Bismillah")
+            console.log(obj)
+        },
         approvalForm() {
             this.$store.commit("Modal/active", { 
                 judul: "Set record to show", 
                 form: "ApprovalForm"
             });
         },
-
         handleAction(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
             this.$store.dispatch("Document/handleDocument", ev)

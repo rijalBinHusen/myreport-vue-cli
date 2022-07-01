@@ -94,7 +94,7 @@
                     @trig="excelMode = true" 
                 />
                 <!-- MArk as finished -->
-                    <!-- v-if="base && sheet === 'stock' && shift && lists.length && !lists[0]?.parentDocument" -->
+                    <!-- v-if="base?.isfinished" -->
                 <Button 
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
@@ -111,7 +111,7 @@
           option
           #default="{ prop }"
         >
-            <span v-if="(prop.selisih || prop.problem.length) && sheet === 'stock'">
+            <span v-if="(prop.selisih || (prop.problem && prop.problem.length)) && sheet === 'stock'">
                 <Dropdown
                     value="Pesan"  
                     :lists="[
@@ -280,7 +280,7 @@ export default {
             // lemparkan ke state saja biar gak bingung
             // lempar data yang dibutuhkan, parent
             let criteria = { 
-                parentDocument: ev, 
+                parentDocument: ev?.parentDocument, 
                 shift: this.shift,
                 parent: this.base?.id
             }
@@ -416,7 +416,7 @@ export default {
             this.lists = []
         },
         selectedWarehouse(newVal, oldVal) {
-            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.base = this.BASEIDSELECTED(this.selectedPeriode, newVal)
         },
     },
     async mounted() {

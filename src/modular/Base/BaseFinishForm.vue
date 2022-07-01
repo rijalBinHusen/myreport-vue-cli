@@ -116,7 +116,7 @@ export default {
         this.headSpv = this.documentRecord?.head
         this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
         this.itemVariance = this.$store.getters["Problem/problemActiveBySpvAndPeriode"](this.name, this.base.periode).length
-        if(this.documentRecord?.collected === "false") {
+        if(!isNaN(this.documentRecord?.collected)) {
             alert("The document record status not collected yet")
         }
     },
