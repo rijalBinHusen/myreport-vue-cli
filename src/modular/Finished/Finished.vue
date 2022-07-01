@@ -25,8 +25,6 @@
     >
         <!-- lihat info detail -->
         <Button value="Details" type="button" secondary small @trig="details(prop)"/>
-        <!-- edit in excel mode -->
-        <Button value="Edit" type="button" secondary small/>
         <!-- share detail -->
         <Button v-if="prop?.status === 2" @trig="share" value="Share" type="button" primary small/>
         

@@ -38,10 +38,12 @@ import PeriodePicker from "../parts/PeriodePicker.vue"
 import WarehouseSupervisorsForm from "../../modular/Warehouses/WarehouseSupervisorsForm.vue"
 import SupervisorWarehousesForm from "../../modular/Supervisors/SupervisorWarehousesForm.vue"
 import FinishedForm from "../../modular/Finished/FinishedForm.vue"
+import EditDocumentForm from "../../modular/EditDocument/EditDocumentForm.vue"
 
 export default {
   name: "Modal",
     components: {
+      EditDocumentForm,
       FinishedForm,
       SupervisorWarehousesForm,
       WarehouseSupervisorsForm,
