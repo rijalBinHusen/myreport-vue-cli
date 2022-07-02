@@ -38,7 +38,6 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import exportDailyReport from "../../excelReport/exportDailyReport";
 
 export default {
     name: "Finished",
@@ -58,7 +57,7 @@ export default {
 		},
         share(ev){
             // exportDailyReport()
-            this.$refs.importerBase.click();
+            // this.$refs.importerBase.click();
             // // console.log(ev)
             // let record = this.$store.getters["Document/getId"](ev)
             // //set shared to true with date
@@ -71,8 +70,7 @@ export default {
             //             })
         },
         readExcel(e) {
-			const file = e.target.files[0]
-            exportDailyReport(file)
+			// const file = e.target.files[0]
         }
     },
     mounted() {

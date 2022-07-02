@@ -95,7 +95,7 @@ const Problem = {
     problemActiveBySpvAndPeriode:
       (state, getters, rootState, rootGetters) => (spv, periode) => {
         return [...state.lists].filter(
-          (val) => val?.nameSpv === spv && val?.tanggalMulai == periode
+          (val) => val?.nameSpv === spv && val?.periode == periode
         );
       },
   },
