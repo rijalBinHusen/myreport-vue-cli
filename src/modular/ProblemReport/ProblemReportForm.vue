@@ -5,8 +5,8 @@
             <div class="w3-row">
                 <!-- Tanggal mulai -->
                 <div class="w3-col s3 w3-padding">
-                    <label for="tanggalMulai">Tanggal mulai: </label>
-                    <Datepicker id="tanggalMulai" class="w3-input w3-border w3-margin-top" v-model="tanggalMulaiModel" />
+                    <label for="periode">Tanggal mulai: </label>
+                    <Datepicker id="periode" class="w3-input w3-border w3-margin-top" v-model="periodeModel" />
                 </div>
 
                 <!-- Nama gudang -->
@@ -178,7 +178,7 @@ import Button from "../../components/elements/Button.vue"
 export default {
     data() {
         return {
-            tanggalMulaiModel: "",
+            periodeModel: "",
             dlModel: "",
             dlPanjangModel: "",
             tanggalSelesaiModel: "",
@@ -187,7 +187,7 @@ export default {
                 nameSpv: "",
                 nameHeadSpv: "",
                 item: "",
-                tanggalMulai: "",
+                periode: "",
                 shiftMulai: "",
                 pic: "",
                 dl: "",
@@ -241,14 +241,14 @@ export default {
         Select,
     },
     watch: {
-        tanggalMulaiModel(newVal, oldVal) {
+        periodeModel(newVal, oldVal) {
             if(newVal === oldVal) {
                 return
             }
-            this.problem.tanggalMulai = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
+            this.problem.periode = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
             // let tanggalSelesai = new Date(newVal.setFullYear(newVal.getFullYear() + 1))
             // this.problem.tanggalSelesai = this.GET_DATEFORMAT({format: "ymdTime", time: tanggalSelesai})
-            this.tanggalSelesaiModel = new Date(this.problem.tanggalMulai + 31536000000)
+            this.tanggalSelesaiModel = new Date(this.problem.periode + 31536000000)
         },
         dlModel(newVal, oldVal) {
             if(newVal === oldVal) {
@@ -270,13 +270,13 @@ export default {
         },
     },
     created() {
-        this.tanggalMulaiModel =  new Date();
+        this.periodeModel =  new Date();
         this.dlModel = new Date();
         this.dlPanjangModel = new Date();
         this.tanggalSelesaiModel = new Date();
         if(this.id) {
             this.problem = this.GET_PROBLEMID(this.id)
-            this.tanggalMulaiModel = new Date(this.problem.tanggalMulai)
+            this.periodeModel = new Date(this.problem.periode)
             this.dlModel = new Date(this.problem.dl)
             this.dlPanjangModel = new Date(this.problem.dlPanjang)
             this.tanggalSelesaiModel = new Date(this.problem.tanggalSelesai)

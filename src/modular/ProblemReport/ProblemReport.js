@@ -72,18 +72,10 @@ const Problem = {
     },
     problemActive: (state) => (time, warehouse, item) => {
       // this.$store.getters["Problem/problemActive"](new Date().getTime())
+      /* expected result = [itemId, itemId] */
       let result = [];
       JSON.parse(JSON.stringify(state.lists)).forEach((val) => {
-        /* object yang diharapkan
-          {
-            kodeItem: problemId
-          }
-          */
-        if (
-          (time >= val.tanggalMulai || time <= val.tanggalSelesai) &&
-          val.warehouse == warehouse &&
-          val.item == item
-        ) {
+        if (!val.isFinished && val.warehouse == warehouse && val.item == item) {
           result.push(val.id);
         }
       });

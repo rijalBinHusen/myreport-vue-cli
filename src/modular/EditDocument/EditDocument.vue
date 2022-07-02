@@ -10,7 +10,7 @@
                 :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
                 :keys="['spvName', 'warehouseName', 'periode2', 'collected2', 'headName', 'approval2']"
                 option
-                id="tableApproval"
+                id="tableEditDocument"
                 v-slot:default="{ prop }"
             >
 				<span>

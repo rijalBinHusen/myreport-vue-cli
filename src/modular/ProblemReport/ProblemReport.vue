@@ -2,12 +2,13 @@
     <div>
         <div v-if="!form">
             <Button primary value="Tambah" class="w3-right w3-margin-top" type="button" @trig="form = true"/>
+            <Button primary value="Set periode" class="w3-right w3-margin-top" type="button" @trig="pickPeriode" />
             <Datatable
                 :datanya="$store.getters['Problem/lists']"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Status']"
                 :keys="['namaGudang', 'namaItem', 'masalah', 'tanggalMulai', 'status']"
                 option
-                id="problemReport"
+                id="tableProblemReport"
                 #default="{ prop }"
             >
                 <Button 
@@ -44,6 +45,14 @@ export default {
         ProblemReportForm,
     },
     methods: {
+        pickPeriode() {
+            this.$store.commit("Modal/active", { 
+                judul: "Set record to show", 
+                form: "PeriodePicker", 
+                store: "Problem",
+                btnValue: "Show"
+            });
+        },
         edit(ev) {
             this.editId = ev
             this.form = true
@@ -68,8 +77,8 @@ export default {
             editId: "",
         }
     },
-    mounted() {
-        this.$store.dispatch("Problem/getProblemFromDB");
+    async mounted() {
+        await this.$store.dispatch("Problem/getProblemFromDB");
         this.$store.dispatch("Baseitem/getAllItem");
     },
     name: "ProblemReport",
