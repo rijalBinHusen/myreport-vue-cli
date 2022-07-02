@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import exportToXlsSeperateSheet from "../../exportToXlsSeperateSheet"
+import exportDailyReport from "../../excelReport/DailyReport"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 
@@ -73,17 +73,18 @@ export default {
     },
     methods: {
         async exportReport(obj) {
+            exportDailyReport({ ...obj })
             // Open loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            let fileName = `${obj?.periode2} ${obj?.warehouseName} Shift ${obj.shift} ${obj.spvName} `
-            await this.$store.dispatch("BaseReportStock/getDataToExportAsReport", { parent: obj.baseReportFile, shift: Number(obj.shift) })
-            // console.log(this.$store.getters["BaseReportStock/exportAsReport"])
-            exportToXlsSeperateSheet({ 
-                result: [{id: "Bismillah"}],
-                base: this.$store.getters["BaseReportStock/exportAsReport"] 
-            }, fileName)
-            // close loader
-            this.$store.commit("Modal/active");
+            // this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            // let fileName = `${obj?.periode2} ${obj?.warehouseName} Shift ${obj.shift} ${obj.spvName} `
+            // await this.$store.dispatch("BaseReportStock/getDataToExportAsReport", { parent: obj.baseReportFile, shift: Number(obj.shift) })
+            // // console.log(this.$store.getters["BaseReportStock/exportAsReport"])
+            // exportToXlsSeperateSheet({ 
+            //     result: [{id: "Bismillah"}],
+            //     base: this.$store.getters["BaseReportStock/exportAsReport"] 
+            // }, fileName)
+            // // close loader
+            // this.$store.commit("Modal/active");
         },
         approvalForm() {
             this.$store.commit("Modal/active", { 

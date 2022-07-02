@@ -322,38 +322,6 @@ const BaseReportStock = {
         };
       });
     },
-    exportAsReport(state, getters, rootState, rootGetters) {
-      // id, [v]
-      // parent,[v]
-      // parentdocument
-      // periode, [v]
-      // gudang, [v]
-      // shift, [v]
-      // item, [v]
-      // namaitem,
-      // awal, [v]
-      // in, [v]
-      // datein, [v]
-      // out, [v]
-      // dateout, [v]
-      // real, [v]
-      // dateend, [v]
-      // problem
-      return state.lists.map((val, index) => {
-        return {
-          row: index + 1,
-          namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
-          awal: val.awal,
-          Masuk: val.in,
-          TanggalMasuk: val.dateIn ? val.dateIn : "",
-          planKeluar: "",
-          Keluar: val.out,
-          TanggalKeluar: val.dateOut ? val.dateOut : "",
-          real: val.real,
-          TanggalAkhir: val.dateEnd ? val.dateEnd : "",
-        };
-      });
-    },
   },
 };
 
