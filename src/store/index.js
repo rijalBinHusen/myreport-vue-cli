@@ -18,8 +18,8 @@ import Document from "./modules/Document";
 
 export default createStore({
   modules: {
-    Document,
     Problem,
+    Document,
     Headspv,
     Baseitem,
     Navbar,
@@ -35,14 +35,7 @@ export default createStore({
     BaseReportStock,
   },
   state: {
-    store: [
-      "Warehouses",
-      "Backup",
-      "Supervisors",
-      "Headspv",
-      "Baseitem",
-      "Problem",
-    ],
+    store: ["Warehouses", "Backup", "Supervisors", "Headspv", "Baseitem"],
   },
   mutations: {},
   actions: {

@@ -3,7 +3,7 @@
         <div v-if="!form">
             <Button primary value="Tambah" class="w3-right w3-margin-top" type="button" @trig="form = true"/>
             <Datatable
-                :datanya="lists"
+                :datanya="$store.getters['Problem/lists']"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Status']"
                 :keys="['namaGudang', 'namaItem', 'masalah', 'tanggalMulai', 'status']"
                 option
@@ -62,11 +62,6 @@ export default {
             // console.log(Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record))
         }
     },
-    computed: {
-        lists() {
-            return this.$store.getters["Problem/lists"]
-        }
-    },
     data() {
         return {
             form: false,
@@ -75,6 +70,7 @@ export default {
     },
     mounted() {
         this.$store.dispatch("Problem/getProblemFromDB");
+        this.$store.dispatch("Baseitem/getAllItem");
     },
     name: "ProblemReport",
 }

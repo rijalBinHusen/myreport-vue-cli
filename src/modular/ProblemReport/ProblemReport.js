@@ -8,12 +8,15 @@ const Problem = {
   mutations: {
     // new data from localbase
     problem(state, value) {
+      state.unFinished = false;
       state.lists = value;
     },
     // add data to
     append(state, value) {
-      state.unFinished = true;
       state.lists.unshift(value);
+    },
+    unFinished(state, value) {
+      state.unFinished = value;
     },
     // update data
     update(state, value) {
@@ -27,34 +30,39 @@ const Problem = {
     async getProblemFromDB({ state, commit, dispatch }) {
       // status = uncollected
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
-      if (state.unFinished) {
-        commit("document", []);
+      if (!state.unFinished) {
         await dispatch(
-          "getDataByCriteriaAppend",
+          "getDataByCriteria",
           { store: "Problem", criteria: { isFinished: false } },
           { root: true }
         );
+        await dispatch(
+          "getDataByCriteria",
+          { store: "Problem", criteria: { isfinished: false } },
+          { root: true }
+        );
       }
+      commit("unFinished", true);
       return "Finished";
     },
   },
   getters: {
     lists(state, getters, rootState, rootGetters) {
       // let rec =
-      if (state.lists.length < 1) {
-        return [];
-      }
-      return state.lists.map((val) => ({
-        id: val.id,
-        namaGudang: rootGetters["Warehouses/warehouseId"](val.warehouse).name,
-        namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
-        masalah: val.masalah,
-        tanggalMulai: rootGetters["dateFormat"]({
-          format: "dateMonth",
-          time: val.tanggalMulai,
-        }),
-        status: val?.isfinished ? "Closed" : "Progress",
-      }));
+      return state.lists.length
+        ? state.lists.map((val) => ({
+            id: val.id,
+            namaGudang: rootGetters["Warehouses/warehouseId"](val.warehouse)
+              .name,
+            namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
+            masalah: val.masalah,
+            tanggalMulai: rootGetters["dateFormat"]({
+              format: "dateMonth",
+              time: val.tanggalMulai,
+            }),
+            status: val?.isFinished ? "Closed" : "Progress",
+          }))
+        : [];
     },
     problemId: (state, getters, rootState, rootGetters) => (id) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(
