@@ -56,9 +56,9 @@ const Problem = {
               .name,
             namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
             masalah: val.masalah,
-            tanggalMulai: rootGetters["dateFormat"]({
+            periode: rootGetters["dateFormat"]({
               format: "dateMonth",
-              time: val.tanggalMulai,
+              time: val.periode,
             }),
             status: val?.isFinished ? "Closed" : "Progress",
           }))

@@ -6,7 +6,7 @@
             <Datatable
                 :datanya="$store.getters['Problem/lists']"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Status']"
-                :keys="['namaGudang', 'namaItem', 'masalah', 'tanggalMulai', 'status']"
+                :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'status']"
                 option
                 id="tableProblemReport"
                 #default="{ prop }"
