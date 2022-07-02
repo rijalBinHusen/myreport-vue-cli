@@ -94,8 +94,8 @@
                     @trig="excelMode = true" 
                 />
                 <!-- MArk as finished -->
-                    <!-- v-if="base?.isfinished" -->
                 <Button 
+                    v-if="!lists[0]?.parentDocument"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
@@ -413,6 +413,7 @@ export default {
             this.listsWarehouse = this.WAREHOUSEBASEREPORT(newVal)
             this.sheet = ""
             this.shift = ""
+            this.selectedWarehouse = ""
             this.lists = []
         },
         selectedWarehouse(newVal, oldVal) {

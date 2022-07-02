@@ -269,8 +269,8 @@ const BaseReportStock = {
       state.lists.forEach((val) => {
         if (val.shift == shift && val.parent == id) {
           result["totalItemMoving"]++;
-          result["totalQTYIn"] = result["totalQTYIn"] + val.in;
-          result["totalQTYOut"] = result["totalQTYOut"] + val.out;
+          result["totalQTYIn"] = result["totalQTYIn"] + Number(val.in);
+          result["totalQTYOut"] = result["totalQTYOut"] + Number(val.out);
         }
       });
 
