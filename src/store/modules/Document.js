@@ -493,9 +493,9 @@ const Uncollected = {
           val.totalWaktu = rootGetters[
             "BaseReportClock/detailsByShiftAndParent"
           ](val.shift, val.baseReportFile).totalWaktu;
-          val.standartWaktu = rootGetters[
-            "BaseReportStock/standartWaktuByParentAndShift"
-          ](val.shift, val.baseReportFile);
+          // val.standartWaktu = rootGetters[
+          //   "BaseReportStock/standartWaktuByParentAndShift"
+          // ](val.shift, val.baseReportFile);
 
           val.periode2 = rootGetters["dateFormat"]({
             format: "ymdexcel",

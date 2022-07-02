@@ -54,9 +54,9 @@
 </template>
 
 <script>
+import exportToXlsSeperateSheet from "../../exportToXlsSeperateSheet"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import exportToXls from "../../exportToXls"
 
 export default {
     name: "Collect",
@@ -73,10 +73,17 @@ export default {
     },
     methods: {
         async exportReport(obj) {
+            // Open loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             let fileName = `${obj?.periode2} ${obj?.warehouseName} Shift ${obj.shift} ${obj.spvName} `
             await this.$store.dispatch("BaseReportStock/getDataToExportAsReport", { parent: obj.baseReportFile, shift: Number(obj.shift) })
-            exportToXls(this.$store.getters["BaseReportStock/exportData"], fileName)
-            // console.log(obj)
+            // console.log(this.$store.getters["BaseReportStock/exportAsReport"])
+            exportToXlsSeperateSheet({ 
+                result: [{id: "Bismillah"}],
+                base: this.$store.getters["BaseReportStock/exportAsReport"] 
+            }, fileName)
+            // close loader
+            this.$store.commit("Modal/active");
         },
         approvalForm() {
             this.$store.commit("Modal/active", { 
@@ -94,6 +101,7 @@ export default {
     },
     async mounted() {
         await await this.$store.dispatch("Document/getDocumentByStatusFromDB", "approval")
+        this.$store.dispatch("Baseitem/getAllItem");
         this.renewLists()
     // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
