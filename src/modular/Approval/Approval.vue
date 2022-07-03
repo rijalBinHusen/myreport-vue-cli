@@ -50,14 +50,12 @@
                 />
                 </template>
                 <template #th>
-                    <th>Group option</th>
+                    <th>Export group</th>
                 </template>
                 <template #td="{ obj }">
-                    <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push('grouped', obj.id, obj)" type="checkbox" />
+                    <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
                     <label :for="obj.id"> Group</label>
                     <br />
-                    <input :id="obj.id+1" v-model="noGroup" :value="obj.id" @input="push('noGroup', obj.id, obj)" type="checkbox" />
-                    <label :for="obj.id+1"> No group</label>
                 </template>
             </Datatable>
 			<!-- </table> -->
@@ -67,6 +65,7 @@
 
 <script>
 import exportDailyReport from "../../excelReport/DailyReport"
+import exportDailyReportGroup from "../../excelReport/DailyReportGroup"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
@@ -80,8 +79,6 @@ export default {
             timeOut: "",
             grouped: [],
             groupedObject: [],
-            noGroup: [],
-            noGroupObject: [],
         };
     },
     components: {
@@ -98,24 +95,34 @@ export default {
                 [{ baseReport }, { baseReport }],
             ]
             */
-           if(!this.groupedObject.length || !this.noGroupObject.length) {
+           if(!this.groupedObject.length) {
                return
            }
            let group = []
         //   grouped { spvperiode: index }
            let grouped = {}
-           this.groupedObject.forEach((val, index) => {
+           this.groupedObject.forEach((val) => {
             //    if the object was grouped, and else
-               if(grouped[val?.spv+val?.grouped]) {
-                //    group[index].push(val)
-                   group[grouped[val.spv+val.grouped]].push({ ...val })
+               if(grouped.hasOwnProperty(val?.name+val?.periode)) {
+                // //    console.log("ada sama")
+                //    console.log(val.name+val.periode)
+                //    console.log(grouped[val?.name+val?.periode])
+                   group[grouped[val.name+val.periode]].push({ ...val })
                } else {
-                   grouped[val.spv+val.grouped] = index
-                   group[grouped[val.spv+val.grouped]] = [{ ...val }]
+                   grouped[val.name+val.periode] = group.length
+                   group.push([{ ...val }])
+                // console.log(grouped)
+                // console.log("tidak sama")
                }
            })
+           console.log(group)
             // iterate semua yang sudah digroup
-            console.log(group)
+            // for (let i =0; i < group.length; i++ ) {
+            //     // console.log(group[i])
+            //  if(group[i].length > 1) {
+            //      exportDailyReportGroup(group[i])
+            //  }   
+            // }
         },
         async exportReport(obj) {
             // Open loader
@@ -138,15 +145,14 @@ export default {
         renewLists() {
                 this.lists = this.$store.getters["Document/documentByStatus"](2)
         },
-        push(type, id, obj) {
+        push(id, obj) {
             // if the id is exists,
-            if(this[type].includes(id)) {
-                this[type] = this[type].filter(val => val !== id)
-                this[type+'Object'] = this[type+'Object'].filter(val => val.id != id)
+            if(this.grouped.includes(id)) {
+                this.groupedObject = this.groupedObject.filter(val => val.id != id)
                 return
             } 
             // else
-            this[type+'Object'].push({ ...obj })
+            this.groupedObject.push({ ...obj })
         }
     },
     async mounted() {
