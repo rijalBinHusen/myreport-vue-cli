@@ -111,6 +111,8 @@ export default createStore({
           .getData({
             store: val.toLowerCase(),
             limit: 200,
+            orderBy: "id",
+            desc: true,
           })
           .then((result) => {
             if (result.length > 0) {

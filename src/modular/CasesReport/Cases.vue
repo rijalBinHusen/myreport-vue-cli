@@ -16,15 +16,15 @@
     </div>
 
             <Datatable
-                :datanya="$store.state.Cases.lists"
-                :heads="['Tanggal', 'Divisi', 'Bagian', 'Fokus', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2']"
-                :keys="['periode', 'divisi', 'bagian', 'fokus', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2']"
+                :datanya="$store.getters['Cases/imported']"
+                :heads="['Tanggal','Bagian', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2']"
+                :keys="['periode','bagian', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2']"
                 option
                 id="tableApproval"
             >
 			
                 <template #default="{ prop }">
-                    <Button value="Delete" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="remove($event)"/>
+                    <Button value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
                     <Button value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
                 </template>
             </Datatable> 
@@ -83,7 +83,8 @@ export default {
                     karu: d.sheet["I"+i]?.v , 
                     kabag: d.sheet["J"+i]?.v , 
                     keterangan1: d.sheet["L"+i]?.v , 
-                    keterangan2: d.sheet["M"+i]?.v 
+                    keterangan2: d.sheet["M"+i]?.v ,
+                    import: true,
                     }
                 })
             }
@@ -103,7 +104,6 @@ export default {
             })
         },
         insertCase(obj) {
-            console.log(obj)
             this.$store.commit("Modal/active", { 
                 judul: "Insert Case", 
                 form: "CaseInsertForm",
