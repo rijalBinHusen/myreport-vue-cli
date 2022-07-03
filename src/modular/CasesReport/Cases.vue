@@ -18,14 +18,14 @@
             <Datatable
                 :datanya="$store.state.Cases.lists"
                 :heads="['Tanggal', 'Divisi', 'Bagian', 'Fokus', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2']"
-                :keys="['tanggal', 'divisi', 'bagian', 'fokus', 'temuan', 'karu', 'kabag', 'keteranga1', 'keterangan2']"
+                :keys="['periode', 'divisi', 'bagian', 'fokus', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2']"
                 option
                 id="tableApproval"
             >
 			
                 <template #default="{ prop }">
                     <Button value="Delete" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="remove($event)"/>
-                    <Button value="Insert" primary type="button" class="w3-tiny"/>
+                    <Button value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
                 </template>
             </Datatable> 
 			
@@ -41,7 +41,7 @@ import * as XLSX from "xlsx";
 export default {
     name: "Cases",
     methods: {
-        readExcel(e) {
+    readExcel(e) {
     // bring the loader up
     this.$store.commit("Modal/active", {judul: "", form: "Loader"});
         const file = e.target.files[0]
@@ -75,7 +75,7 @@ export default {
             await this.$store.dispatch("append", { 
                 store: "Cases",
                 obj: { 
-                    tanggal: d.sheet["C"+i]?.w, 
+                    periode: d.sheet["C"+i]?.w, 
                     divisi: d.sheet["D"+i]?.v , 
                     bagian: d.sheet["E"+i]?.v , 
                     fokus: d.sheet["F"+i]?.v , 
@@ -101,6 +101,14 @@ export default {
                 store: "Cases", 
                 criteria: {id: ev}
             })
+        },
+        insertCase(obj) {
+            console.log(obj)
+            this.$store.commit("Modal/active", { 
+                judul: "Insert Case", 
+                form: "CaseInsertForm",
+                obj: obj
+            });
         },
     },
     components: {
