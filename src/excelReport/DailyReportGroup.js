@@ -4,7 +4,7 @@ import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 export default async function (baseReport) {
   // baseReport must be a group, e.g = [baseReport, baseReport]
   let details = detailsDocument(baseReport);
-  //   console.log(baseReport);
+  // console.log(details);
   let fileName = `${details?.periode2} ${details?.warehouseName} Shift ${details.shift} ${details.spvName} `;
   // tunggu
   let tunggu = [];
@@ -72,9 +72,12 @@ function detailsDocument(arrayOfDocumentDetails) {
     // iterate all key of current document detail
     Object.keys(val).forEach((val2) => {
       // save to result temprorary
-      resultTemp[val] ? (resultTemp += val2) : (resultTemp = val2);
+      resultTemp[val2]
+        ? (resultTemp[val2] += val[val2])
+        : (resultTemp[val2] = val[val2]);
     });
   });
+  console.log(resultTemp);
 
   // delete unneeded property
   const {
@@ -93,9 +96,22 @@ function detailsDocument(arrayOfDocumentDetails) {
     head,
     collected2,
     approval2,
+    headName,
+    parentDocument,
+    periode2,
+    shift,
+    spvName,
+    warehouseName,
     ...details
   } = resultTemp;
-  return details;
+
+  return Object.assign(details, {
+    shift: arrayOfDocumentDetails[0]?.shift,
+    spvName: arrayOfDocumentDetails[0]?.spvName,
+    warehouseName: arrayOfDocumentDetails[0]?.warehouseName,
+    periode2: arrayOfDocumentDetails[0]?.periode2,
+    headName: arrayOfDocumentDetails[0]?.headName,
+  });
 }
 
 async function getProblem(arrayOfProblemId) {

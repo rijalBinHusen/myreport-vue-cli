@@ -87,7 +87,9 @@ export default {
         Input,
     },
     methods: {
-        exportReportAll() {
+        async exportReportAll() {
+            // Open loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // group dulu yang spv dan periode yang sama
             /* expected object = [
                 [{ baseReport }, { baseReport }],
@@ -119,10 +121,14 @@ export default {
             // // iterate semua yang sudah digroup
             for (let i =0; i < group.length; i++ ) {
                 // console.log(group[i])
-             if(group[i].length > 1) {
-                 exportDailyReportGroup(group[i])
-             }   
+                if(group[i].length > 1) {
+                    await exportDailyReportGroup(group[i])
+                }   else {
+                    await exportDailyReport(group[i][0])
+                }
             }
+            // Close loader
+            this.$store.commit("Modal/active");
         },
         async exportReport(obj) {
             // Open loader

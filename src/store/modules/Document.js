@@ -48,7 +48,7 @@ const Uncollected = {
               status: 0,
               shared: false,
               finished: false,
-              totalDO: false,
+              totalDo: false,
               totalKendaraan: false,
               totalWaktu: false,
               // standartWaktu: false,

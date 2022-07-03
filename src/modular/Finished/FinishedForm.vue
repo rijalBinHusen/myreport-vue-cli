@@ -42,7 +42,7 @@ export default {
                 { title: "Supervisor Name", valueFrom: "spvName", editable: false },
                 { title: "Gudang", valueFrom: "warehouseName", editable: false },
                 { title: "Shift", valueFrom: "shift", editable: false  },
-                { title: "Total DO", valueFrom: "totalDO", editable: true},
+                { title: "Total DO", valueFrom: "totalDo", editable: true},
                 { title: "Total Kendaraan", valueFrom: "totalKendaraan", editable: true},
                 { title: "Total Waktu", valueFrom: "totalWaktu", editable: true},
                 { title: "Total item moving", valueFrom: "totalItemMoving", editable: true},
