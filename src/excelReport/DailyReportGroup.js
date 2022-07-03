@@ -2,38 +2,25 @@ import func from "../myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 
 export default async function (baseReport) {
-  // delete unneeded property
-  const {
-    id,
-    periode,
-    warehouse,
-    collected,
-    approval,
-    status,
-    shared,
-    finished,
-    finished2,
-    baseReportFile,
-    isfinished,
-    name,
-    head,
-    collected2,
-    approval2,
-    ...details
-  } = baseReport;
+  // baseReport must be a group, e.g = [baseReport, baseReport]
+  let details = detailsDocument(baseReport);
   //   console.log(baseReport);
-  let fileName = `${baseReport?.periode2} ${baseReport?.warehouseName} Shift ${baseReport.shift} ${baseReport.spvName} `;
+  let fileName = `${details?.periode2} ${details?.warehouseName} Shift ${details.shift} ${details.spvName} `;
   // tunggu
   let tunggu = [];
   let result = [];
   //   lists base report stock
-  let reportData = await func.findData({
-    store: "BaseReportStock",
-    criteria: {
-      parent: baseReport.baseReportFile,
-      shift: Number(baseReport.shift),
-    },
-  });
+  let reportData = await Promise.all(
+    baseReport.map((val) =>
+      func.findData({
+        store: "BaseReportStock",
+        criteria: {
+          parent: val.baseReportFile,
+          shift: Number(val.shift),
+        },
+      })
+    )
+  );
 
   for (let i = 0; i < reportData.length; i++) {
     //  add new promise
@@ -75,6 +62,40 @@ export default async function (baseReport) {
   );
 }
 
+function detailsDocument(arrayOfDocumentDetails) {
+  // { object of all key }
+  let resultTemp = {};
+  // iterate all document details
+  arrayOfDocumentDetails.forEach((val) => {
+    // iterate all key of current document detail
+    Object.keys(val).forEach((val2) => {
+      // save to result temprorary
+      resultTemp[val] ? (resultTemp += val2) : (resultTemp = val2);
+    });
+  });
+
+  // delete unneeded property
+  const {
+    id,
+    periode,
+    warehouse,
+    collected,
+    approval,
+    status,
+    shared,
+    finished,
+    finished2,
+    baseReportFile,
+    isfinished,
+    name,
+    head,
+    collected2,
+    approval2,
+    ...details
+  } = resultTemp;
+  return details;
+}
+
 async function getProblem(arrayOfProblemId) {
   // MASALAH SUMBER MASALAH SOLUSI JANGKA PENDEK		PIC	D/L	SOLUSI JANGKA PANJANG		PIC	D/L
   let result = {
@@ -96,13 +117,12 @@ async function getProblem(arrayOfProblemId) {
     );
     allProblem.forEach((val) => {
       result.pic += val.pic + "\r\n";
-      result.dl += func.dateFormat(["dateMonth", val.dl]) + "\r\n";
+      result.dl += val.dl + "\r\n";
       result.masalah += val.masalah + "\r\n";
       result.sumberMasalah += val.sumberMasalah + "\r\n";
       result.solusi += val.solusi + "\r\n";
       result.solusiPanjang += val.solusiPanjang + "\r\n";
-      result.dlPanjang +=
-        func.dateFormat(["dateMonth", val.dlPanjang]) + "\r\n";
+      result.dlPanjang += val.dlPanjang + "\r\n";
       result.picPanjang += val.picPanjang + "\r\n";
     });
   }

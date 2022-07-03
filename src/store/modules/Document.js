@@ -51,7 +51,7 @@ const Uncollected = {
               totalDO: false,
               totalKendaraan: false,
               totalWaktu: false,
-              standartWaktu: false,
+              // standartWaktu: false,
               baseReportFile: false,
               isfinished: false,
             },
@@ -547,7 +547,7 @@ const Uncollected = {
             totaldo: val.totalDo,
             totalkendaraan: val.totalKendaraan,
             totalwaktu: val.totalWaktu,
-            standartwaktu: val.standartWaktu,
+            // standartwaktu: val.standartWaktu,
             isfinished: val.isfinished,
           });
         }
