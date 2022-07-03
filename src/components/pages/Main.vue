@@ -25,10 +25,12 @@
 	import ProblemReport from "../../modular/ProblemReport/ProblemReport.vue"
 	import Finished from "../../modular/Finished/Finished.vue"
 	import EditDocument from "../../modular/EditDocument/EditDocument.vue"
+	import Cases from "../../modular/CasesReport/Cases.vue"
 
 	export default {
 		name: "Main",
 		components: {
+			Cases,
 			EditDocument,
 			Finished,
 			Approval,

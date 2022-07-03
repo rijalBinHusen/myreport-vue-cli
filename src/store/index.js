@@ -15,9 +15,11 @@ import Baseitem from "../modular/BaseItem/Baseitem";
 import Headspv from "../modular/Headspv/Headspv";
 import Problem from "../modular/ProblemReport/ProblemReport";
 import Document from "./modules/Document";
+import Cases from "../modular/CasesReport/Cases";
 
 export default createStore({
   modules: {
+    Cases,
     Problem,
     Document,
     Headspv,
