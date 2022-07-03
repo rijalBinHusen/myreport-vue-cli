@@ -10,7 +10,7 @@ export default async function (baseReport) {
   let tunggu = [];
   let result = [];
   //   lists base report stock
-  let reportData = await Promise.all(
+  let reportPromise = await Promise.all(
     baseReport.map((val) =>
       func.findData({
         store: "BaseReportStock",
@@ -21,6 +21,8 @@ export default async function (baseReport) {
       })
     )
   );
+  // console.log(reportData.flat());
+  let reportData = reportPromise.flat();
 
   for (let i = 0; i < reportData.length; i++) {
     //  add new promise

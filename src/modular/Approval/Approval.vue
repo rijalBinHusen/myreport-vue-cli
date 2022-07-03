@@ -115,14 +115,14 @@ export default {
                 // console.log("tidak sama")
                }
            })
-           console.log(group)
-            // iterate semua yang sudah digroup
-            // for (let i =0; i < group.length; i++ ) {
-            //     // console.log(group[i])
-            //  if(group[i].length > 1) {
-            //      exportDailyReportGroup(group[i])
-            //  }   
-            // }
+        //    console.log(group)
+            // // iterate semua yang sudah digroup
+            for (let i =0; i < group.length; i++ ) {
+                // console.log(group[i])
+             if(group[i].length > 1) {
+                 exportDailyReportGroup(group[i])
+             }   
+            }
         },
         async exportReport(obj) {
             // Open loader
