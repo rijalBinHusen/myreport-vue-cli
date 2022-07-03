@@ -2,7 +2,6 @@ const Cases = {
   namespaced: true,
   state: {
     lists: [],
-    importTemp: null,
     dataStarter: false,
   },
   mutations: {
@@ -27,8 +26,9 @@ const Cases = {
     cases(state, payload) {
       state.lists = payload;
     },
-    importTemp(state, payload) {
-      state.importTemp = payload;
+    delete(state, value) {
+      // value = { parameter: "parent", value: "c038" }
+      state.lists = state.lists.filter((val) => val.id !== value);
     },
   },
   actions: {},

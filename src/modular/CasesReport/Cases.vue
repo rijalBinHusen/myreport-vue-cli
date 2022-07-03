@@ -15,59 +15,19 @@
         />
     </div>
 
-            <!-- <Datatable
-                :datanya="lists"
-                :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
-                :keys="['spvName', 'warehouseName', 'periode2', 'collected2', 'headName', 'approval2']"
+            <Datatable
+                :datanya="$store.state.Cases.lists"
+                :heads="['Tanggal', 'Divisi', 'Bagian', 'Fokus', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2']"
+                :keys="['tanggal', 'divisi', 'bagian', 'fokus', 'temuan', 'karu', 'kabag', 'keteranga1', 'keterangan2']"
                 option
                 id="tableApproval"
             >
+			
                 <template #default="{ prop }">
-				<span v-if="prop.shared == 'false' || !prop.shared ">
-                    <Button 
-                        value="Batal" 
-                        type="button" 
-                        danger small 
-                        @trig="handleAction({ action: 'unapprove', rec: prop.id })" 
-                    />
-                    
-                    <Button 
-                        value="Share" 
-                        type="button" 
-                        primary small 
-                        @trig="handleAction({ action: 'share', rec: prop.id })" 
-                    />
-
-                </span>
-                <span v-else>
-                    {{
-                    !isNaN(prop.shared)
-                     ? "Shared at "+ this.$store.getters["dateFormat"](
-                         { 
-                            format: "dateMonth", 
-                            time: prop.shared 
-                         }) 
-                    : prop.shared
-                 }}
-                </span>
-                <Button 
-                    v-if="!isNaN(prop.isfinished)"
-                    value="Export" 
-                    type="button" 
-                    secondary small 
-                    @trig="exportReport(prop)" 
-                />
+                    <Button value="Delete" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="remove($event)"/>
+                    <Button value="Insert" primary type="button" class="w3-tiny"/>
                 </template>
-                <template #th>
-                    <th>Export group</th>
-                </template>
-                <template #td="{ obj }">
-                    <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
-                    <label :for="obj.id"> Group</label>
-                    <br />
-                </template>
-            </Datatable> -->
-			<!-- </table> -->
+            </Datatable> 
 			
         </div>
 </template>
@@ -109,33 +69,45 @@ export default {
         // insert to idb
         let infoRow = d.sheet["!ref"].split(":")
         let lengthRow = +infoRow[1].match(/\d+/)[0]
+        // console.log(d.sheet)
         for(let i = 1; i <= lengthRow; i++) {
-          if(d.sheet["B"+i]) {
+            if(d.sheet["B"+i]) {
             await this.$store.dispatch("append", { 
-              store: "Cases",
-              obj: { 
-                  tanggal: d.sheet["C"+i]?.v, 
-                  divisi: d.sheet["D"+i]?.v , 
-                  bagian: d.sheet["E"+i]?.v , 
-                  fokus: d.sheet["F"+i]?.v , 
-                  temuan: d.sheet["G"+i]?.v , 
-                  karu: d.sheet["I"+i]?.v , 
-                  kabag: d.sheet["J"+i]?.v , 
-                  keterangan1: d.sheet["L"+i]?.v , 
-                  keterangan2: d.sheet["M"+i]?.v 
-                  }
-             })
-          }
+                store: "Cases",
+                obj: { 
+                    tanggal: d.sheet["C"+i]?.w, 
+                    divisi: d.sheet["D"+i]?.v , 
+                    bagian: d.sheet["E"+i]?.v , 
+                    fokus: d.sheet["F"+i]?.v , 
+                    temuan: d.sheet["G"+i]?.v , 
+                    karu: d.sheet["I"+i]?.v , 
+                    kabag: d.sheet["J"+i]?.v , 
+                    keterangan1: d.sheet["L"+i]?.v , 
+                    keterangan2: d.sheet["M"+i]?.v 
+                    }
+                })
+            }
         }
         // close the loader
         this.$store.commit("Modal/active");
-			})
-		}
+            })
+        },
+        remove(ev){
+            let sure = confirm("Apakah anda yakin akan menghapusnya?")
+            if(!sure) {
+                return;
+            }
+            this.$store.dispatch("delete", { 
+                store: "Cases", 
+                criteria: {id: ev}
+            })
+        },
     },
     components: {
         Button,
         Datatable,
         Input,
+        Datatable,
     },
 }
 </script>

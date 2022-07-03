@@ -37,7 +37,14 @@ export default createStore({
     BaseReportStock,
   },
   state: {
-    store: ["Warehouses", "Backup", "Supervisors", "Headspv", "Baseitem"],
+    store: [
+      "Warehouses",
+      "Backup",
+      "Supervisors",
+      "Headspv",
+      "Baseitem",
+      "Cases",
+    ],
   },
   mutations: {},
   actions: {
