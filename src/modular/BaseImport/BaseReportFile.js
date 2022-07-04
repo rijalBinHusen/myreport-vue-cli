@@ -36,6 +36,17 @@ const BaseReportFile = {
     },
   },
   actions: {
+    someRecordFinished({ dispatch }, payload) {
+      return dispatch(
+        "updateOnly",
+        {
+          store: "BaseReportFile",
+          obj: { isRecordFinished: true },
+          criteria: { id: payload },
+        },
+        { root: true }
+      );
+    },
     recordStarter({ dispatch, state, commit, rootGetters }) {
       // if data starter false
       if (!state?.dataStarter) {

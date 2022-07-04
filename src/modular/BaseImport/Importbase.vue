@@ -32,7 +32,7 @@
                     <Button value="Import file" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="launch($event)" />
                 </div>
                 <div v-else>
-    				<Button value="Delete imported" type="button" :datanya="prop.id" danger class="w3-tiny" @trig="remove($event)" />
+    				<Button v-if="!prop?.isRecordFinished" value="Delete imported" type="button" :datanya="prop.id" danger class="w3-tiny" @trig="remove($event)" />
                 </div>
 
             </Datatable>

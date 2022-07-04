@@ -234,7 +234,7 @@ export default {
             if(ev === "apaBaru") {
                 pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift}, *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ (obj.awal + obj.in - obj.out) - obj.real }*, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
             } else if (ev === "tidakSama") {
-                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift}, *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* apakah ada selisih baru ya pak?%0%0aaSoalnya dicatatan saya untuk item tersebut ada selisih ${obj.problem2}, sedangkan dilaporan bapak selisihnya sebanyak *${ (obj.awal + obj.in - obj.out) - obj.real }*.`
+                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift}, *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* apakah ada selisih baru ya pak? %0a%0a Soalnya dicatatan saya untuk item tersebut ada selisih ${obj.problem2}, sedangkan dilaporan bapak selisihnya *${ (obj.awal + obj.in - obj.out) - obj.real }* Ctn.`
             }
             // console.log(spvInfo.phone)
             window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
@@ -296,6 +296,7 @@ export default {
                     rec: ev?.parentDocument
                 }
             )
+            await this.$store.dispatch("BaseReportFile/someRecordFinished", this.base.id)
             // tutup loader
             this.$store.commit("Modal/active");
         },
