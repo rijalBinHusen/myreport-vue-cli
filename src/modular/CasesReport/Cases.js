@@ -76,8 +76,23 @@ const Cases = {
     imported(state) {
       return state.lists.filter((val) => val.import);
     },
-    inserted(state) {
-      return state.lists.filter((val) => val.insert);
+    inserted(state, rootState, getters, rootGetters) {
+      return state.lists.filter((val) => {
+        if (val.insert) {
+          val.periode2 = rootGetters["dateFormat"]({
+            format: "dateMonth",
+            time: val.periode,
+          });
+          val.spvName = rootGetters["Supervisors/spvId"](val?.name)?.name;
+          val.headName = rootGetters["Headspv/headId"](val?.head)?.name;
+          return val;
+        }
+      });
+    },
+    caseId: (state) => (id) => {
+      return JSON.parse(JSON.stringify(state.lists)).find(
+        (val) => val.id == id
+      );
     },
   },
 };

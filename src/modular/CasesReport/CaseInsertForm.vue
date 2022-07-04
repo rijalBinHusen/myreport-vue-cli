@@ -43,7 +43,8 @@
             <label for="status">Status done?</label>
             <input type="checkbox" v-model="caseInput.status" />
 
-            <Button primary value="Submit" class="w3-right" type="button" @trig="appendCase"/>
+            <Button primary v-if="caseInput.id" value="Update" class="w3-right" type="button" @trig="updateCase"/>
+            <Button primary v-else value="Submit" class="w3-right" type="button" @trig="appendCase"/>
         </div>
     </div>
 </template>
@@ -80,11 +81,22 @@ export default {
         appendCase() {
             this.$store.dispatch("Cases/append", { ...this.caseInput })
             this.$store.commit("Modal/active")
+        },
+        updateCase() {
+            this.$store.dispatch("update",
+                { 
+                    store: "Cases", 
+                    obj: { ...this.caseInput }, 
+                    criteria: { id: this.caseInput.id }
+                }
+            )
+            this.$store.commit("Modal/active")
         }
     },
     watch: {
         periodeModel(newVal, oldVal) {
             this.caseInput.periode = this.$store.getters["dateFormat"]({format: "ymdTime", time: newVal})
+            this.dlModel = newVal
         },
         dlModel(newVal, oldVal) {
             this.caseInput.dl = this.$store.getters["dateFormat"]({format: "ymdTime", time: newVal})
@@ -92,6 +104,25 @@ export default {
     },
     created() {
         let obj = this.$store.getters["Modal/obj"].obj
+        if(obj?.edit) {
+            // delete unneeded keys
+            const {
+                periode2,
+                spvName,
+                headName,
+                edit,
+                ...details
+            } = obj;
+            // put to the caseinput
+            this.caseInput = details
+            this.periodeModel = new Date(obj?.periode)
+            this.dlModel = new Date(obj?.dl)
+            // get the parent record
+            let base = this.$store.getters["Cases/caseId"](obj.parent)
+            // show to the left view editor
+            this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
+            return
+        }
         this.caseInput.parent = obj?.id
         this.baseData = Object.keys(obj).map((val) => `${val}:<br> ${obj[val]}`).join(`<hr/>`)
         this.periodeModel = new Date()

@@ -24,8 +24,10 @@
             >
 			
                 <template #default="{ prop }">
-                    <Button v-if="!prop?.inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-                    <Button value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
+                    <Button v-if="!prop?.inserted && !inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
+                    <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
+                    <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
+                    
                 </template>
             </Datatable> 
 			
@@ -50,7 +52,7 @@ export default {
                 return {
                     lists: this.$store.getters["Cases/inserted"],
                     heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Solusi"],
-                    keys: ["periode", "name", "head", "masalah", "sumberMasalah", "solusi"],
+                    keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "solusi"],
                     id: "tableCasesInserted"
                 }
             }
@@ -65,7 +67,7 @@ export default {
     methods: {
         readExcel(e) {
             // bring the loader up
-    this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+        this.$store.commit("Modal/active", {judul: "", form: "Loader"});
         const file = e.target.files[0]
         let info = { fileName: file.name }
         
@@ -130,6 +132,14 @@ export default {
                 judul: "Insert Case", 
                 form: "CaseInsertForm",
                 obj: obj
+            });
+        },
+
+        edit(obj) {
+            this.$store.commit("Modal/active", { 
+                judul: "Edit Case", 
+                form: "CaseInsertForm",
+                obj: { ...obj, edit: true }
             });
         },
     },
