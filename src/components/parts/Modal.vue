@@ -40,10 +40,12 @@ import SupervisorWarehousesForm from "../../modular/Supervisors/SupervisorWareho
 import FinishedForm from "../../modular/Finished/FinishedForm.vue"
 import EditDocumentForm from "../../modular/EditDocument/EditDocumentForm.vue"
 import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"
+import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 
 export default {
   name: "Modal",
     components: {
+      Complains,
       CaseInsertForm,
       EditDocumentForm,
       FinishedForm,

@@ -9,7 +9,7 @@
         <label>Nama kabag</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Headspv/headId'](headSpv)?.name" disabled />
         <div class="w3-row">
-            <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-top w3-margin-right">
+            <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-large">
                 <label class="w3-margin-top">{{ inp.label }}</label>
                 <input v-if="inp.editable" type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="details[inp.valueFrom]"/>
                 <input v-else type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="details[inp.valueFrom]" disabled/>
@@ -90,8 +90,8 @@ export default {
                 { label: "Total produk masuk", valueFrom: "totalQTYIn", editable: false },
                 { label: "Coret DO", valueFrom: "planOut", editable: false },
                 { label: "Jumlah item keluar", valueFrom: "totalItemKeluar", editable: false },
-                { label: "Total waktu", valueFrom: "totalWaktu", editable: true },
                 { label: "Total DO", valueFrom: "totalDo", editable: true },
+                { label: "Total waktu", valueFrom: "totalWaktu", editable: true },
                 { label: "Total kendaraan", valueFrom: "totalKendaraan", editable: true },
                 { label: "Produk tidak FIFO",  valueFrom: "totalProductNotFIFO", editable: true},
                 { label: "Produk variance", valueFrom: "itemVariance", editable: true },
