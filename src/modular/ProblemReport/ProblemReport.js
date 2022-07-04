@@ -36,11 +36,6 @@ const Problem = {
           { store: "Problem", criteria: { isFinished: false } },
           { root: true }
         );
-        await dispatch(
-          "getDataByCriteria",
-          { store: "Problem", criteria: { isfinished: false } },
-          { root: true }
-        );
       }
       commit("unFinished", true);
       return "Finished";
