@@ -41,10 +41,12 @@ import FinishedForm from "../../modular/Finished/FinishedForm.vue"
 import EditDocumentForm from "../../modular/EditDocument/EditDocumentForm.vue"
 import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"
 import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
+import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
 
 export default {
   name: "Modal",
     components: {
+      ComplainImportForm,
       Complains,
       CaseInsertForm,
       EditDocumentForm,

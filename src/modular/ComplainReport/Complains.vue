@@ -81,7 +81,7 @@ export default {
             // const wb = XLSX.read(bufferArray, {type: "buffer"});
             const wb = XLSX.read(bufferArray);
             info.sheets = wb.SheetNames
-            info.sheet = wb.Sheets[info.sheets[0]]
+            info.sheet = wb.Sheets
                 
             resolve(info)
             };
@@ -90,7 +90,13 @@ export default {
         })
         
         promise.then(async (d) => {
-            console.log(d)
+            
+            // bring up the modal and the form and throw the data (d)
+            this.$store.commit("Modal/active", { 
+                judul: "Import complain", 
+                form: "ComplainImportForm",
+                obj: d
+            });
         // insert to idb
         // let infoRow = d.sheet["!ref"].split(":")
         // let lengthRow = +infoRow[1].match(/\d+/)[0]
@@ -130,8 +136,7 @@ export default {
         //         })
         //     }
         // }
-        // // close the loader
-        this.$store.commit("Modal/active");
+        
             })
         },
         remove(ev){
