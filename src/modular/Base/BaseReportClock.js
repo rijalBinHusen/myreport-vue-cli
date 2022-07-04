@@ -50,7 +50,7 @@ const BaseReportClock = {
             await dispatch(
               "updateOnly",
               {
-                store: "BaseReportStock",
+                store: "BaseReportClock",
                 obj: { parentDocument: payload?.parentDocument },
                 criteria: { id: state.lists[i]?.id },
               },

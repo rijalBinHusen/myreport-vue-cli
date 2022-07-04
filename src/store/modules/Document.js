@@ -119,14 +119,14 @@ const Uncollected = {
       else if (payload.action === "ijin") {
         info.collected = "Tidak masuk";
         info.approval = "Tidak masuk";
-        info.shared = "Tidak masuk";
+        info.shared = false;
         info.status = 2;
       }
       // laporan tidak ada
       else if (payload.action === "kosong") {
         info.collected = "Laporan tidak ada";
         info.approval = "Laporan tidak ada";
-        info.shared = "Laporan tidak ada";
+        info.shared = false;
         info.status = 2;
       } else if (payload.action === "share") {
         info.shared = rootGetters["dateFormat"]({ format: "time" });

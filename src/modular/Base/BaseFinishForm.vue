@@ -9,37 +9,11 @@
         <label>Nama kabag</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Headspv/headId'](headSpv)?.name" disabled />
         <div class="w3-row">
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total do</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsClock.totalDo" />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total kendaraan</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsClock.totalKendaraan" />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total waktu</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsClock.totalWaktu" />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Standart waktu</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsStock.totalQTYOut / 10" disabled />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total item bergerak</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsStock.totalItemMoving" disabled />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total produk masuk</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="detailsStock.totalQTYIn" disabled />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Produk tidak FIFO</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="detailsStock.totalProductNotFIFO"/>
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Produk variance</label>
-                <input type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="itemVariance"/>
+            <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-top w3-margin-right">
+                <label class="w3-margin-top">{{ inp.label }}</label>
+                <input v-if="inp.editable" type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="details[inp.valueFrom]"/>
+                <input v-else type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="details[inp.valueFrom]" disabled/>
+
             </div>
         </div>
         <Button 
@@ -77,10 +51,9 @@ export default {
             headSpv: null,
             documentRecord: null,
             warehouseName: "",
-            itemVariance: 0,
+            details: "",
         }
     },
-    methods: {},
     emits: ["exit", "finished"],
     props: {
         base: {
@@ -105,10 +78,25 @@ export default {
             // console.log(this.document)
             this.$emit("finished", Object.assign({
                 parentDocument: this.documentRecord?.id,
-                itemVariance: this.itemVariance,
-            }, this.detailsClock, this.detailsStock))
+            }, this.details))
             this.$emit('exit')
         },
+    },
+    computed: {
+        inputs() {
+            return [
+                { label: "Total produk keluar", valueFrom: "totalQTYOut", editable: false },
+                { label: "Total item bergerak", valueFrom: "totalItemMoving", editable: false },
+                { label: "Total produk masuk", valueFrom: "totalQTYIn", editable: false },
+                { label: "Coret DO", valueFrom: "planOut", editable: false },
+                { label: "Jumlah item keluar", valueFrom: "totalItemKeluar", editable: false },
+                { label: "Total waktu", valueFrom: "totalWaktu", editable: true },
+                { label: "Total DO", valueFrom: "totalDo", editable: true },
+                { label: "Total kendaraan", valueFrom: "totalKendaraan", editable: true },
+                { label: "Produk tidak FIFO",  valueFrom: "totalProductNotFIFO", editable: true},
+                { label: "Produk variance", valueFrom: "itemVariance", editable: true },
+            ]
+        }
     },
     mounted() {
         this.documentRecord = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.base?.periode, this.base?.warehouse, this.shift)
@@ -116,6 +104,7 @@ export default {
         this.headSpv = this.documentRecord?.head
         this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
         this.itemVariance = this.$store.getters["Problem/problemActiveBySpvAndPeriode"](this.name, this.base.periode).length
+        this.details = Object.assign(this.detailsClock, this.detailsStock, { itemVariance: 0})
         if(!this.documentRecord?.collected) {
             alert("The document record status not collected yet")
         }

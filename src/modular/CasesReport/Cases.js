@@ -30,9 +30,22 @@ const Cases = {
       // value = { parameter: "parent", value: "c038" }
       state.lists = state.lists.filter((val) => val.id !== value);
     },
+    updateParam(state, payload) {
+      // payload = { criteria: { id: stk22050003 }, obj: { problem: [] }}
+      state.lists = state.lists.map((val) => {
+        // val.id === stk22050003
+        if (
+          val[Object.keys(payload.criteria)] == Object.values(payload.criteria)
+        ) {
+          // val.problem = []
+          val[Object.keys(payload.obj)[0]] = Object.values(payload.obj)[0];
+        }
+        return val;
+      });
+    },
   },
   actions: {
-    async append({ dispatch }, payload) {
+    async append({ dispatch, commit }, payload) {
       //  update base imported record to inserted true
       await dispatch(
         "updateOnly",
@@ -52,6 +65,11 @@ const Cases = {
         },
         { root: true }
       );
+      // update state
+      commit("updateParam", {
+        criteria: { id: payload.parent },
+        obj: { inserted: true },
+      });
     },
   },
   getters: {

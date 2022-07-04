@@ -24,7 +24,7 @@
             >
 			
                 <template #default="{ prop }">
-                    <Button value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
+                    <Button v-if="!prop?.inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
                     <Button value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
                 </template>
             </Datatable> 

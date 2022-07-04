@@ -94,8 +94,7 @@
                     @trig="excelMode = true" 
                 />
                 <!-- MArk as finished -->
-                <Button 
-                    v-if="!lists[0]?.parentDocument"
+                <Button
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
