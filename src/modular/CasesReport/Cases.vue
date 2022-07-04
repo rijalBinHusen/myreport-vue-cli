@@ -4,8 +4,8 @@
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" />
         <Button primary class="w3-right" value="Import" @trig="$refs.importerCase.click();" type="button"/>
-        <Button primary class="w3-right" value="Imported" type="button"/>
-        <Button primary class="w3-right" value="Cases" type="button"/>
+        <Button primary :class="['w3-right', inserted ? '' : 'w3-disabled']" value="Imported" @trig="inserted = false" type="button"/>
+        <Button primary :class="['w3-right', inserted ? 'w3-disabled' : '']" value="Cases" @trig="inserted = true" type="button"/>
         <input
             class="w3-hide"
             @change.prevent="readExcel($event)"
@@ -16,11 +16,11 @@
     </div>
 
             <Datatable
-                :datanya="$store.getters['Cases/imported']"
-                :heads="['Tanggal','Bagian', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2']"
-                :keys="['periode','bagian', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2']"
+                :datanya="table?.lists"
+                :heads="table?.heads"
+                :keys="table?.keys"
                 option
-                id="tableApproval"
+                :id="table?.id"
             >
 			
                 <template #default="{ prop }">
@@ -39,10 +39,32 @@ import Input from '@/components/elements/Input.vue'
 import * as XLSX from "xlsx";
 
 export default {
-    name: "Cases",
+    data() {
+        return {
+            inserted: true,
+        }
+    },
+    computed: {
+        table() {
+            if(this.inserted) {
+                return {
+                    lists: this.$store.getters["Cases/inserted"],
+                    heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Solusi"],
+                    keys: ["periode", "name", "head", "masalah", "sumberMasalah", "solusi"],
+                    id: "tableCasesInserted"
+                }
+            }
+            return {
+                lists: this.$store.getters["Cases/imported"],
+                heads: ['Tanggal','Bagian', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2'],
+                keys: ['periode','bagian', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2'],
+                id: "tableCasesImported"
+            }
+        },
+    },
     methods: {
-    readExcel(e) {
-    // bring the loader up
+        readExcel(e) {
+            // bring the loader up
     this.$store.commit("Modal/active", {judul: "", form: "Loader"});
         const file = e.target.files[0]
         let info = { fileName: file.name }
@@ -117,5 +139,6 @@ export default {
         Input,
         Datatable,
     },
+    name: "Cases",
 }
 </script>

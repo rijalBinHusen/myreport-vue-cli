@@ -76,6 +76,9 @@ const Cases = {
     imported(state) {
       return state.lists.filter((val) => val.import);
     },
+    inserted(state) {
+      return state.lists.filter((val) => val.insert);
+    },
   },
 };
 
