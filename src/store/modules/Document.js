@@ -184,6 +184,35 @@ const Uncollected = {
     },
   },
   getters: {
+    allDocument(state, getters, rootState, rootGetters) {
+      return state.lists.length
+        ? [...state.lists].map((val) => {
+            let spvInfo = rootGetters["Supervisors/spvId"](val.name);
+            val.spvName = spvInfo.name;
+            val.warehouseName = rootGetters["Warehouses/warehouseId"](
+              val?.warehouse
+            )?.name;
+            val.headName = rootGetters["Headspv/headId"](val.head).name;
+            val.periode2 = rootGetters["dateFormat"]({
+              format: "dateMonth",
+              time: val.periode,
+            });
+            val.collected2 = val.collected
+              ? rootGetters["dateFormat"]({
+                  format: "dateMonth",
+                  time: val.collected,
+                })
+              : val.collected;
+            val.approval2 = val.approval
+              ? rootGetters["dateFormat"]({
+                  format: "dateMonth",
+                  time: val.approval,
+                })
+              : val.approval;
+            return val;
+          })
+        : [];
+    },
     documentNotApproval(state, getters, rootState, rootGetters) {
       // expected result =  { headId: { headName: nameHead, lists:["Tanggal nama gudang shift nama karu"], ..... } }
       // 21-Jun Gudang depan shift 2 karu eka resdian
@@ -384,9 +413,6 @@ const Uncollected = {
       return JSON.parse(JSON.stringify(state.lists)).find(
         (val) => val.id === id
       );
-    },
-    lastId(state) {
-      return state.lists.sort((a, b) => a.id < b.id)[0];
     },
     exportData(state, getters, rootState, rootGetters) {
       return state.lists.map((val) => {

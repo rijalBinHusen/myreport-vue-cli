@@ -165,6 +165,7 @@ export default {
             let base = this.$store.getters["Complains/complainId"](obj.parent)
             // show to the left view editor
             this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
+            this.baseDataObj = base
             return
         }
         this.ComplainInput.parent = obj?.id

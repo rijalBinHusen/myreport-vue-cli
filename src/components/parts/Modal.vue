@@ -39,6 +39,7 @@ import WarehouseSupervisorsForm from "../../modular/Warehouses/WarehouseSupervis
 import SupervisorWarehousesForm from "../../modular/Supervisors/SupervisorWarehousesForm.vue"
 import FinishedForm from "../../modular/Finished/FinishedForm.vue"
 import EditDocumentForm from "../../modular/EditDocument/EditDocumentForm.vue"
+import AddDocumentForm from "../../modular/EditDocument/AddDocumentForm.vue"
 import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"
 import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
@@ -52,6 +53,7 @@ export default {
       Complains,
       CaseInsertForm,
       EditDocumentForm,
+      AddDocumentForm,
       FinishedForm,
       SupervisorWarehousesForm,
       WarehouseSupervisorsForm,

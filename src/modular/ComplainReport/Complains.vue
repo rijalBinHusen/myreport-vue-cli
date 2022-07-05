@@ -30,11 +30,11 @@
                     <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
                 </template>
 
-                <template #th>
+                <template v-if="!inserted" #th>
                     <th>Mark to delete</th>
                 </template>
 
-                <template #td="{ obj }">
+                <template v-if="!inserted" #td="{ obj }">
                     <span v-if="!obj?.inserted" >
                         <input :id="obj.id" v-model="grouped" :value="obj.id" type="checkbox" />
                         <label :for="obj.id"> Remove</label>

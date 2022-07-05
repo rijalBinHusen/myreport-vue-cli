@@ -1,8 +1,9 @@
 <template>
 <div class="">
     <div class="w3-border w3-padding w3-container">
-        <label>Set record to show : </label>
-        <Button primary value="Set" type="button" @trig="pickPeriode" />
+        <label for="periode">Set record to show : </label>
+        <Button id="periode" primary value="Set" type="button" @trig="pickPeriode" />
+        <Button primary class="w3-right" value="Add" type="button" @trig="addDocument" />
     </div>
 
             <Datatable
@@ -64,8 +65,16 @@ export default {
                 obj: ev,
             });
         },
+        addDocument(ev) {
+            // EV =  {action: 'approve', val: -1, rec: doc22050003}
+            // this.$store.dispatch("Document/handleDocument", ev)
+            this.$store.commit("Modal/active", { 
+                judul: "Add document", 
+                form: "AddDocumentForm",
+            });
+        },
         renewLists() {
-                this.lists = this.$store.getters["Document/documentByStatus"](2)
+                this.lists = this.$store.getters["Document/allDocument"]
         },
     },
     async mounted() {

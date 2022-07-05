@@ -97,7 +97,6 @@
 import Select from "../../components/elements/Select.vue"
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
-import myfunction from "../../myfunction"
 
 export default {
     methods: {
