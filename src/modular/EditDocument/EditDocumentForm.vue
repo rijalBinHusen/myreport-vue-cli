@@ -1,4 +1,5 @@
 <template>
+<div>
     <div class="w3-row">
         <div class="w3-col s3 w3-padding-small" v-for="dat in dataToShow" :key="dat.title">
             <Input :label="dat.title+':'" 
@@ -10,7 +11,7 @@
                 type="text"
             />
         </div>
-        <div v-if="more.collected" class=" w3-col s3 w3-margin-right">
+        <div class=" w3-col s3 w3-margin-right">
             <label class="w3-margin-top">Collected</label>
             <datepicker 
                 class="w3-margin-top w3-border w3-input w3-round-large" 
@@ -19,7 +20,7 @@
                 >
             </datepicker>
         </div>
-        <div v-if="more.approval" class=" w3-col s3">
+        <div class=" w3-col s3">
             <label class="w3-margin-top">Approval</label>
             <datepicker 
                 class="w3-margin-top w3-border w3-input w3-round-large" 
@@ -28,9 +29,9 @@
                 >
             </datepicker>
         </div>
-
-        <Button primary :value="edit ?  'Update' : 'Edit'" class="w3-right" type="button" @trig="editButtonHandle"/>
     </div>
+    <Button primary :value="edit ?  'Update' : 'Edit'" class="w3-right" type="button" @trig="editButtonHandle"/>
+</div>
 </template>
 
 <script>
@@ -62,16 +63,19 @@ export default {
                 this.edit = true
                 return
             }
-            delete this.more.approval2 
-            delete this.more.collected2 
-            delete this.more.headName 
-            delete this.more.periode2 
-            delete this.more.spvName 
-            delete this.more.warehouseName
+              const {
+                collected2,
+                approval2,
+                headName,
+                periode2,
+                spvName,
+                warehouseName,
+                ...obj
+            } = this.more;
             this.$store.dispatch("update",
                 { 
                     store: "Document", 
-                    obj: this.more, 
+                    obj: { ...obj }, 
                     criteria: { id: this.more?.id }
                 }
             )
@@ -88,9 +92,11 @@ export default {
     watch: {
         collected(newVal, oldVal) {
             this.more.collected = newVal.getTime()
+            this.more.status = 2
         },
         approval(newVal, oldVal) {
             this.more.approval = newVal.getTime()
+            this.more.status = 2
         },
     },
     mounted() {
