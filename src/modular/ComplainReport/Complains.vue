@@ -55,7 +55,7 @@ import * as XLSX from "xlsx";
 export default {
     data() {
         return {
-            inserted: false,
+            inserted: true,
             grouped: [],
         }
     },

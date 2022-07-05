@@ -94,7 +94,7 @@ const Complain = {
         }
       });
     },
-    caseId: (state) => (id) => {
+    complainId: (state) => (id) => {
       return JSON.parse(JSON.stringify(state.lists)).find(
         (val) => val.id == id
       );

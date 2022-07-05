@@ -105,6 +105,7 @@ export default {
     },
     methods: {
         typeKesalahan(ev) {
+        this.ComplainInput.type = ev
         this.ComplainInput.masalah = `Komplain muat ${this.baseDataObj?.customer} nomor surat jalan ${this.baseDataObj?.nomorSJ}, item ${this.baseDataObj?.item} selisih ${this.baseDataObj?.selisih} Ctn.`
         this.ComplainInput.solusi = "Buat berita acara salah muat, tally diberi sanksi."
         this.ComplainInput.pic = "Gita"
@@ -161,7 +162,7 @@ export default {
             this.periodeModel = new Date(obj?.periode)
             this.dlModel = new Date(obj?.dl)
             // get the parent record
-            let base = this.$store.getters["Complain/complainId"](obj.parent)
+            let base = this.$store.getters["Complains/complainId"](obj.parent)
             // show to the left view editor
             this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
             return
