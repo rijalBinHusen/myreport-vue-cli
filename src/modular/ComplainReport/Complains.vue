@@ -97,45 +97,6 @@ export default {
                 form: "ComplainImportForm",
                 obj: d
             });
-        // insert to idb
-        // let infoRow = d.sheet["!ref"].split(":")
-        // let lengthRow = +infoRow[1].match(/\d+/)[0]
-        // // console.log(d.sheet)
-        // for(let i = 1; i <= lengthRow; i++) {
-        //     if(d.sheet["B"+i]) {
-        //         let typeKesalahan = "";
-
-        //         if(d.sheet["T"+i]?.v) { typeKesalahan += "Klaim" }
-        //         if(d.sheet["U"+i]?.v) { typeKesalahan += "Kurang muat" }
-        //         if(d.sheet["V"+i]?.v) { typeKesalahan += "Lebih muat" }
-        //         if(d.sheet["W"+i]?.v) { typeKesalahan += "Singsal muat" }
-        //         if(d.sheet["X"+i]?.v) { typeKesalahan += "Lain lain" }
-
-        //     await this.$store.dispatch("append", { 
-        //         store: "Complains",
-        //         obj: {
-        //             row: "", 
-        //             gudang: d.sheet["A"+i]?.v, 
-        //             tally: d.sheet["B"+i]?.v , 
-        //             spv: d.sheet["C"+i]?.v , 
-        //             kabag: d.sheet["D"+i]?.v , 
-        //             tanggalSuratJalan: d.sheet["E"+i]?.v , 
-        //             tanggalBongkar: d.sheet["F"+i]?.v , 
-        //             tanggalKomplain: d.sheet["G"+i]?.v , 
-        //             tanggalInfo: d.sheet["H"+i]?.v , 
-        //             customer: d.sheet["I"+i]?.v ,
-        //             nomorSJ: d.sheet["J"+i]?.v ,
-        //             nopol: d.sheet["L"+i]?.v ,
-        //             item: d.sheet["M"+i]?.v ,
-        //             do: d.sheet["N"+i]?.v ,
-        //             real: d.sheet["O"+i]?.v ,
-        //             nomorSJ: d.sheet["M"+i]?.v ,
-        //             type: typeKesalahan,
-        //             import: true,
-        //             }
-        //         })
-        //     }
-        // }
         
             })
         },
