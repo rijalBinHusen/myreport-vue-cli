@@ -50,7 +50,7 @@ const Complain = {
       await dispatch(
         "updateOnly",
         {
-          store: "Complain",
+          store: "Complains",
           criteria: { id: payload.parent },
           obj: { inserted: true },
         },
@@ -60,7 +60,7 @@ const Complain = {
       await dispatch(
         "append",
         {
-          store: "Complain",
+          store: "Complains",
           obj: payload,
         },
         { root: true }
@@ -74,7 +74,7 @@ const Complain = {
   },
   getters: {
     imported(state) {
-      return state.lists.filter((val) => {
+      return [...state.lists].filter((val) => {
         if (val.import) {
           val.selisih = val?.real - val?.do;
           return val;

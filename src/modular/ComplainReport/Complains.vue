@@ -3,7 +3,7 @@
     <div class="w3-border w3-padding w3-container">
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" />
-        <Button primary class="w3-right" value="Import" @trig="$refs.importerCase.click();" type="button"/>
+        <Button primary class="w3-right" value="Import" @trig="$refs.importerComplain.click();" type="button"/>
         <Button primary :class="['w3-right', inserted ? '' : 'w3-disabled']" value="Imported" @trig="inserted = false" type="button"/>
         <Button primary :class="['w3-right', inserted ? 'w3-disabled' : '']" value="Complains" @trig="inserted = true" type="button"/>
         <Button danger v-if="grouped.length" class="w3-right" value="Delete all" @trig="removeAll" type="button"/>
@@ -11,7 +11,7 @@
             class="w3-hide"
             @change.prevent="readExcel($event)"
             type="file"
-            ref="importerCase"
+            ref="importerComplain"
             accept=".xls, .ods"
         />
     </div>
@@ -26,7 +26,7 @@
 			
                 <template #default="{ prop }">
                     <Button v-if="!prop?.inserted && !inserted" value="Remove" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-                    <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
+                    <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertComplain(prop)"/>
                     <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
                 </template>
 
@@ -39,6 +39,7 @@
                         <input :id="obj.id" v-model="grouped" :value="obj.id" type="checkbox" />
                         <label :for="obj.id"> Remove</label>
                     </span>
+                    <p v-else>inserted</p>
                 </template>
             </Datatable> 
 			
@@ -139,21 +140,22 @@ export default {
                     criteria: {id: rec}
                 })
             }
+            this.grouped = []
             // close the modal
             this.$store.commit("Modal/active");
         },
-        insertCase(obj) {
+        insertComplain(obj) {
             this.$store.commit("Modal/active", { 
-                judul: "Insert Case", 
-                form: "CaseInsertForm",
+                judul: "Insert Complain", 
+                form: "ComplainInsertForm",
                 obj: obj
             });
         },
 
         edit(obj) {
             this.$store.commit("Modal/active", { 
-                judul: "Edit Case", 
-                form: "CaseInsertForm",
+                judul: "Edit Complain", 
+                form: "ComplainInsertForm",
                 obj: { ...obj, edit: true }
             });
         },

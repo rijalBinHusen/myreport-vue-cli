@@ -42,10 +42,12 @@ import EditDocumentForm from "../../modular/EditDocument/EditDocumentForm.vue"
 import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"
 import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
+import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
 
 export default {
   name: "Modal",
     components: {
+      ComplainInsertForm,
       ComplainImportForm,
       Complains,
       CaseInsertForm,

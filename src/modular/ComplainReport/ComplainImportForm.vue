@@ -69,7 +69,6 @@ export default {
                                 item: sheet["M"+i]?.v ,
                                 do: sheet["N"+i]?.v ,
                                 real: sheet["O"+i]?.v ,
-                                nomorSJ: sheet["M"+i]?.v ,
                                 type: typeKesalahan,
                                 import: true,
                                 }
