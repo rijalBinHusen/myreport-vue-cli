@@ -6,6 +6,7 @@
         <Button primary class="w3-right" value="Import" @trig="$refs.importerCase.click();" type="button"/>
         <Button primary :class="['w3-right', inserted ? '' : 'w3-disabled']" value="Imported" @trig="inserted = false" type="button"/>
         <Button primary :class="['w3-right', inserted ? 'w3-disabled' : '']" value="Complains" @trig="inserted = true" type="button"/>
+        <Button danger v-if="grouped.length" class="w3-right" value="Delete all" @trig="removeAll" type="button"/>
         <input
             class="w3-hide"
             @change.prevent="readExcel($event)"
@@ -24,10 +25,20 @@
             >
 			
                 <template #default="{ prop }">
-                    <Button v-if="!prop?.inserted && !inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
+                    <Button v-if="!prop?.inserted && !inserted" value="Remove" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
                     <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
                     <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
-                    
+                </template>
+
+                <template #th>
+                    <th>Mark to delete</th>
+                </template>
+
+                <template #td="{ obj }">
+                    <span v-if="!obj?.inserted" >
+                        <input :id="obj.id" v-model="grouped" :value="obj.id" type="checkbox" />
+                        <label :for="obj.id"> Remove</label>
+                    </span>
                 </template>
             </Datatable> 
 			
@@ -44,6 +55,7 @@ export default {
     data() {
         return {
             inserted: false,
+            grouped: [],
         }
     },
     computed: {
@@ -58,8 +70,8 @@ export default {
             }
             return {
                 lists: this.$store.getters["Complains/imported"],
-                heads: ['Row', 'Tanggal Komplain', 'Gudang', 'Karu', 'Item', 'Selisih'],
-                keys: ['row', 'tanggalKomplain', 'gudang', 'spv', 'item', 'selisih'],
+                heads: ['Tanggal Komplain', 'Gudang', 'Karu', 'Item', 'Selisih', 'Row'],
+                keys: ['tanggalKomplain', 'gudang', 'spv', 'item', 'selisih', 'row'],
                 id: "tableComplainsImported"
                 // "row", "gudang", "tally", "spv" , "kabag", "tanggalSuratJalan", "tanggalBongkar", "tanggalKomplain"
                 // "tanggalInfo", "customer", "nomorSJ", "nopol", "item", "do", "real", "nomorSJ", "type", "import"
@@ -111,6 +123,24 @@ export default {
                 store: "Complains", 
                 criteria: {id: ev}
             })
+        },
+        async removeAll(){
+            // open loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            let sure = confirm("Apakah anda yakin akan menghapusnya?")
+            if(!sure) {
+                return;
+            }
+            // iterate the selected record
+            for (let rec of this.grouped) {
+                // delete record
+                await this.$store.dispatch("delete", { 
+                    store: "Complains", 
+                    criteria: {id: rec}
+                })
+            }
+            // close the modal
+            this.$store.commit("Modal/active");
         },
         insertCase(obj) {
             this.$store.commit("Modal/active", { 

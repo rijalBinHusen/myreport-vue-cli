@@ -54,7 +54,7 @@ export default {
                         await this.$store.dispatch("append", { 
                             store: "Complains",
                             obj: {
-                                row: sheetName+i, 
+                                row: i < 9 ? sheetName+"0"+i : sheetName+i, 
                                 gudang: sheet["A"+i]?.v, 
                                 tally: sheet["B"+i]?.v , 
                                 spv: sheet["C"+i]?.v , 
