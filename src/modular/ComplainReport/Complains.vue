@@ -58,9 +58,11 @@ export default {
             }
             return {
                 lists: this.$store.getters["Complains/imported"],
-                heads: ['Tanggal','Bagian', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2'],
-                keys: ['periode','bagian', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2'],
+                heads: ['Row', 'Tanggal Komplain', 'Gudang', 'Karu', 'Item', 'Selisih'],
+                keys: ['row', 'tanggalKomplain', 'gudang', 'spv', 'item', 'selisih'],
                 id: "tableComplainsImported"
+                // "row", "gudang", "tally", "spv" , "kabag", "tanggalSuratJalan", "tanggalBongkar", "tanggalKomplain"
+                // "tanggalInfo", "customer", "nomorSJ", "nopol", "item", "do", "real", "nomorSJ", "type", "import"
             }
         },
     },

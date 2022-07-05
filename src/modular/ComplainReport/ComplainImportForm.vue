@@ -30,6 +30,7 @@ export default {
     },
     methods: {
         async startImport() {
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // sheetsSelected = ["Januari", "Februari", .......]
             // importTemp = {}
             // iterate the sheet
@@ -53,7 +54,7 @@ export default {
                         await this.$store.dispatch("append", { 
                             store: "Complains",
                             obj: {
-                                row: "", 
+                                row: sheetName+i, 
                                 gudang: sheet["A"+i]?.v, 
                                 tally: sheet["B"+i]?.v , 
                                 spv: sheet["C"+i]?.v , 
@@ -76,6 +77,7 @@ export default {
                     }
                 }
             }
+            this.$store.commit("Modal/active");
         },
     },
     computed: {},

@@ -23,7 +23,7 @@ const Complain = {
         return val.id === value.id ? value : val;
       });
     },
-    complain(state, payload) {
+    complains(state, payload) {
       state.lists = payload;
     },
     delete(state, value) {
@@ -74,7 +74,12 @@ const Complain = {
   },
   getters: {
     imported(state) {
-      return state.lists.filter((val) => val.import);
+      return state.lists.filter((val) => {
+        if (val.import) {
+          val.selisih = val?.real - val?.do;
+          return val;
+        }
+      });
     },
     inserted(state, rootState, getters, rootGetters) {
       return state.lists.filter((val) => {
