@@ -427,25 +427,25 @@ const Uncollected = {
             time: val.periode,
           }));
 
-        val.collected = !isNaN(val.collected)
+        val.collected = !isNaN(val.collected + "")
           ? rootGetters["dateFormat"]({
               format: "ymdexcel",
               time: val.collected,
             })
           : val.collected;
 
-        val.approval = !isNaN(val.approval)
+        val.approval = !isNaN(val.approval + "")
           ? rootGetters["dateFormat"]({
               format: "ymdexcel",
               time: val.approval,
             })
           : val.approval;
 
-        val.shared = !isNaN(val.shared)
+        val.shared = !isNaN(val.shared + "")
           ? rootGetters["dateFormat"]({ format: "ymdexcel", time: val.shared })
           : val.shared;
 
-        val.finished = !isNaN(val.finished)
+        val.finished = !isNaN(val.finished + "")
           ? rootGetters["dateFormat"]({
               format: "ymdexcel",
               time: val.finished,

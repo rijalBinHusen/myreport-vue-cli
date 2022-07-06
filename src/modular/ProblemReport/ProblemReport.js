@@ -27,18 +27,17 @@ const Problem = {
   },
 
   actions: {
-    async getProblemFromDB({ state, commit, dispatch }) {
+    getProblemFromDB({ state, commit, dispatch }) {
       // status = uncollected
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
       if (!state.unFinished) {
-        await dispatch(
+        return dispatch(
           "getDataByCriteria",
           { store: "Problem", criteria: { isFinished: false } },
           { root: true }
         );
       }
       commit("unFinished", true);
-      return "Finished";
     },
   },
   getters: {

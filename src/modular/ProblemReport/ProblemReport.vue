@@ -78,8 +78,8 @@ export default {
         }
     },
     async mounted() {
+        await this.$store.dispatch("Baseitem/getAllItem");
         await this.$store.dispatch("Problem/getProblemFromDB");
-        this.$store.dispatch("Baseitem/getAllItem");
     },
     name: "ProblemReport",
 }

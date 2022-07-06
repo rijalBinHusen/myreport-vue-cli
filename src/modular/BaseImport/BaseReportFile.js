@@ -4,7 +4,6 @@ const BaseReportFile = {
     baseId: null,
     lists: [],
     importTemp: null,
-    dataStarter: false,
   },
   mutations: {
     // add data to
@@ -14,10 +13,6 @@ const BaseReportFile = {
       } else {
         state.lists.unshift(value);
       }
-    },
-    // data starter status
-    dataStarter(state) {
-      state.dataStarter = true;
     },
     // update data
     update(state, value) {
@@ -48,8 +43,8 @@ const BaseReportFile = {
       );
     },
     recordStarter({ dispatch, state, commit, rootGetters }) {
-      // if data starter false
-      if (!state?.dataStarter) {
+      // if lisrs is 0
+      if (!state.lists.length) {
         // get today
         let today = new Date();
         // get 3 days before
@@ -66,8 +61,6 @@ const BaseReportFile = {
           },
           { root: true }
         );
-        // set data starter to true
-        commit("dataStarter");
       }
     },
     async getDataByState({ commit, rootGetters, dispatch }) {
