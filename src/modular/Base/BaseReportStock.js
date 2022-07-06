@@ -46,7 +46,7 @@ const BaseReportStock = {
     },
   },
   actions: {
-    async markAsFinished({ dispatch, state }, payload) {
+    async markAsFinished({ dispatch, state, commit }, payload) {
       //payload { parentDocument: ev, shift: this.shift, parent: this.base?.id }
       // iterate the state
       for (let i = 0; i < state.lists.length; i++) {
@@ -58,16 +58,27 @@ const BaseReportStock = {
           // jika parentDocument kosong
           if (!state.lists[i]?.parentDocument) {
             // update recordnya
-            state.lists[i].parentDocument = payload?.parentDocument;
+            let objToUpdate = { parentDocument: payload?.parentDocument };
+            if (payload?.generateReport) {
+              objToUpdate["dateIn"] = state.lists[i].in ? "01/07/22" : "";
+              objToUpdate["dateOut"] = state.lists[i].out ? "01/07/22" : "";
+              objToUpdate["dateEnd"] = state.lists[i].real ? "01/07/22" : "";
+            }
             await dispatch(
               "updateOnly",
               {
                 store: "BaseReportStock",
-                obj: { parentDocument: payload?.parentDocument },
+                obj: objToUpdate,
                 criteria: { id: state.lists[i]?.id },
               },
               { root: true }
             );
+            Object.keys(objToUpdate).forEach((val) => {
+              commit("updateParam", {
+                criteria: { id: state.lists[i]?.id },
+                obj: { [val]: objToUpdate[val] },
+              });
+            });
           }
           // jika sudah terisi
         }

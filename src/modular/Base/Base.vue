@@ -278,11 +278,10 @@ export default {
             // iterate baseReport stocklist dan tambahkan parent document ev.id
             // lemparkan ke state saja biar gak bingung
             // lempar data yang dibutuhkan, parent
-            let criteria = { 
-                parentDocument: ev?.parentDocument, 
+            let criteria = Object.assign(ev, {
                 shift: this.shift,
                 parent: this.base?.id
-            }
+            })
             // tambahkan parent document pada basereportclock
             await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
             // tambahkan parent document pada basereportstock
@@ -418,6 +417,9 @@ export default {
         },
         selectedWarehouse(newVal, oldVal) {
             this.base = this.BASEIDSELECTED(this.selectedPeriode, newVal)
+            this.sheet = ""
+            this.shift = ""
+            this.lists = []
         },
     },
     async mounted() {

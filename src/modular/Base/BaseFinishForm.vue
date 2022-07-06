@@ -25,7 +25,7 @@
             @trig="this.$emit('exit')" 
         />
         <Button 
-            v-if="documentRecord?.collected"
+            v-if="documentRecord?.collected && !documentRecord.isfinished"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -33,6 +33,10 @@
             small
             @trig="save" 
         />
+        <div class="w3-right w3-large w3-margin-right">
+            <label for="generate">Generate report </label>
+            <input type="checkbox" id="generate" v-model="generateReport" />
+        </div>
     </div>
 </template>
 
@@ -52,6 +56,7 @@ export default {
             documentRecord: null,
             warehouseName: "",
             details: "",
+            generateReport: false,
         }
     },
     emits: ["exit", "finished"],
@@ -78,6 +83,7 @@ export default {
             // console.log(this.document)
             this.$emit("finished", Object.assign({
                 parentDocument: this.documentRecord?.id,
+                generateReport: this.generateReport,
             }, this.details))
             this.$emit('exit')
         },
