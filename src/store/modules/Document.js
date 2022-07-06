@@ -415,7 +415,7 @@ const Uncollected = {
       );
     },
     exportData(state, getters, rootState, rootGetters) {
-      return state.lists.map((val) => {
+      return [...state.lists].map((val) => {
         let spvInfo = rootGetters["Supervisors/spvId"](val.name);
         val.name = spvInfo.name;
         val.warehouseName = rootGetters["Warehouses/warehouseId"](
@@ -451,12 +451,40 @@ const Uncollected = {
               time: val.finished,
             })
           : val.finished;
+        const {
+          id,
+          status,
+          warehouse,
+          totalDO,
+          totalDo,
+          totalKendaraan,
+          totalWaktu,
+          standartWaktu,
+          baseReportFile,
+          isFinished,
+          parentDocument,
+          itemVariance,
+          totalItemMoving,
+          totalQTYIn,
+          totalQTYOut,
+          totalProductNotFIFO,
+          planOut,
+          totalItemKeluar,
+          isfinished,
+          ...details
+        } = val;
 
-        delete val.id;
-        delete val.status;
-        delete val.warehouse;
-
-        return val;
+        return {
+          Periode: details?.periode,
+          Supervisor: details?.name,
+          Bagian: details?.warehouseName,
+          Kabag: details?.head,
+          Shift: details?.shift,
+          Dikumpulkan: details?.collected,
+          Selesai: details?.finished,
+          Diparaf: details?.approval,
+          Share: details?.shared,
+        };
       });
     },
     dateDocument(state, getters, rootState, rootGetters) {
