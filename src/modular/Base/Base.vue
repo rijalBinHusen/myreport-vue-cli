@@ -33,7 +33,7 @@
             />
                 <!-- Date Base report -->
                 <Select 
-                  v-if="listsPeriode.length > 0"
+                  v-if="listsPeriode.length"
                   class="w3-col s1 w3-margin-right"
                   :options="listsPeriode" 
                   value="periode"
@@ -45,7 +45,7 @@
 
                 <!-- Warehouse Base report -->
                 <Select 
-                  v-if="listsWarehouse.length > 0"
+                  v-if="listsWarehouse.length"
                   class="w3-col s2 w3-margin-right"
                   :options="listsWarehouse" 
                   value="warehouse"
@@ -422,7 +422,7 @@ export default {
     },
     async mounted() {
         // getAllDocumentNotFinished
-        await this.$store.dispatch("Document/getAllDocumentNotFinished")
+        await this.$store.dispatch("Document/getBaseReportStarter")
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
         // subscribe the mutation,, and renew lists when data updated
@@ -434,6 +434,7 @@ export default {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {
                     this.renewLists()
+                    this.listsPeriode = this.DATEBASEREPORT
                 } , 600 )
             }
         });

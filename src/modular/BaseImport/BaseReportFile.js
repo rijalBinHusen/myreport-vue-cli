@@ -42,20 +42,29 @@ const BaseReportFile = {
         { root: true }
       );
     },
-    recordStarter({ dispatch, state, commit, rootGetters }) {
+    async recordStarter({ dispatch, state, commit, rootGetters }) {
       // if lisrs is 0
       if (!state.lists.length) {
         // get today
         let today = new Date();
-        // get 3 days before
-        let daybefore = rootGetters["dateFormat"]({ format: -3 });
+        // get 5 days before
+        let daybefore = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 5);
         // get all 3 days before as array
         let days = rootGetters["getDaysArray"](daybefore, today);
         // get data all 3 days
-        dispatch(
+        await dispatch(
           "findDataByDateArrays",
           {
             store: "BaseReportFile",
+            date: days,
+            criteria: {},
+          },
+          { root: true }
+        );
+        await dispatch(
+          "findDataByDateArrays",
+          {
+            store: "Document",
             date: days,
             criteria: {},
           },
@@ -190,7 +199,7 @@ const BaseReportFile = {
       // get the uniquee date
       let result = [];
       state.lists.forEach((val) => {
-        if (val.periode == periode) {
+        if (val.periode == periode && val.imported) {
           result.push({
             warehouse: val?.warehouse,
             warehouseName: rootGetters["Warehouses/warehouseId"](val?.warehouse)

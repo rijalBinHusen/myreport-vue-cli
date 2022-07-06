@@ -63,25 +63,15 @@ const Uncollected = {
       // return a true value, so the promise would be resolved
       return "finished";
     },
-    async getAllDocumentNotFinished({ state, commit, dispatch }) {
+    async getBaseReportStarter({ state, commit, dispatch }) {
       if (state.allData) {
         return;
       }
       commit("Modal/active", { judul: "", form: "Loader" }, { root: true });
       // cari document dengan criteria { isFinished: false }
-      await dispatch(
-        "getDataByCriteria",
-        { store: "Document", criteria: { isfinished: false } },
-        { root: true }
-      );
-      await dispatch(
-        "getDataByCriteriaAppend",
-        { store: "Document", criteria: { isfinished: "false" } },
-        { root: true }
-      );
       commit("allData", true);
       // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
-      await dispatch("BaseReportFile/getDataByState", {}, { root: true });
+      await dispatch("BaseReportFile/recordStarter", {}, { root: true });
       // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
       await dispatch("BaseReportStock/getDataByParent", {}, { root: true });
       // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
