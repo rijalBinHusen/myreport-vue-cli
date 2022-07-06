@@ -241,7 +241,9 @@ const BaseReportStock = {
                   val.itemName = rootGetters["Baseitem/baseItemKode"](
                     val.item
                   ).name;
-                  val.selisih = val.real - (val.awal + val.in - val.out);
+                  val.selisih =
+                    Number(val.real) -
+                    (Number(val.awal) + Number(val.in) - Number(val.out));
                   val.problem2 = rootGetters["Problem/masalah"](val.problem);
                   val.planOut = "";
                   return val;
