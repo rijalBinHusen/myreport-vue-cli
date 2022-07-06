@@ -69,6 +69,10 @@ const Uncollected = {
       }
       commit("Modal/active", { judul: "", form: "Loader" }, { root: true });
       // cari document dengan criteria { isFinished: false }
+      // get all item
+      await dispatch("Baseitem/getAllItem", false, { root: true });
+      // cari problem yang belum solve
+      await dispatch("Problem/getProblemFromDB", true, { root: true });
       commit("allData", true);
       // looping cari baseReportFile dengan criteria { periode: document.periode, imported: true }
       await dispatch("BaseReportFile/recordStarter", {}, { root: true });
@@ -76,10 +80,6 @@ const Uncollected = {
       await dispatch("BaseReportStock/getDataByParent", {}, { root: true });
       // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
       await dispatch("BaseReportClock/getDataByParent", {}, { root: true });
-      // get all item
-      await dispatch("Baseitem/getAllItem", false, { root: true });
-      // cari problem yang belum solve
-      await dispatch("Problem/getProblemFromDB", true, { root: true });
 
       //
       commit("Modal/active", false, { root: true });

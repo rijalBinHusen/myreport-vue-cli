@@ -431,12 +431,23 @@ export default {
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika base report ada yang di update
             // console.log(mutation)
-            if (mutation.type.includes('BaseReport')) {
+            if (mutation.type.includes('BaseReportStock')) {
                 // console.log("Tunggu 1 detik")
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {
                     this.renewLists()
                     this.listsPeriode = this.DATEBASEREPORT
+                } , 600 )
+                return
+            }
+            // jika cari berdasarkan periode
+            if(mutation.type == "BaseReportFile/append") {
+                clearTimeout(this.timeOut)
+                this.timeOut = setTimeout(async () => {
+                    // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+                    await this.$store.dispatch("BaseReportStock/getDataByParent");
+                    // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+                    await this.$store.dispatch("BaseReportClock/getDataByParent");
                 } , 600 )
             }
         });

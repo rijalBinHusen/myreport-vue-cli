@@ -47,8 +47,8 @@ const BaseReportFile = {
       if (!state.lists.length) {
         // get today
         let today = new Date();
-        // get 5 days before
-        let daybefore = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 5);
+        // get 3 days before
+        let daybefore = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 3);
         // get all 3 days before as array
         let days = rootGetters["getDaysArray"](daybefore, today);
         // get data all 3 days
