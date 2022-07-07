@@ -77,7 +77,7 @@ function detailsDocument(arrayOfDocumentDetails) {
         : (resultTemp[val2] = val[val2]);
     });
   });
-  console.log(resultTemp);
+  // console.log(resultTemp);
 
   // delete unneeded property
   const {

@@ -9,7 +9,7 @@
         <label>Nama kabag</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Headspv/headId'](headSpv)?.name" disabled />
         <div class="w3-row">
-            <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-large">
+            <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-small">
                 <label class="w3-margin-top">{{ inp.label }}</label>
                 <input v-if="inp.editable" type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="details[inp.valueFrom]"/>
                 <input v-else type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="details[inp.valueFrom]" disabled/>

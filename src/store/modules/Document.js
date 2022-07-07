@@ -236,6 +236,7 @@ const Uncollected = {
         if (val?.isfinished !== "false" && val?.baseReportFile !== "false") {
           let spvInfo = rootGetters["Supervisors/spvId"](val.name);
           val.spvName = spvInfo.name;
+          val.headName = rootGetters["Headspv/headId"](val.head).name;
           val.warehouseName = rootGetters["Warehouses/warehouseId"](
             val?.warehouse
           )?.name;

@@ -1,19 +1,25 @@
 <template>
 <div class="">
-    <input
-            class="w3-hide"
-            @change.prevent="readExcel($event)"
-            type="file"
-            ref="importerBase"
-            accept=".xls, .ods"
+
+    <div class="w3-border w3-padding w3-container">
+        <input
+                class="w3-hide"
+                @change.prevent="readExcel($event)"
+                type="file"
+                ref="importerBase"
+                accept=".xls, .ods"
+            />
+        <label for="periode">Set record to show : </label>
+        <Button 
+            id="periode"
+            class="w3-col s2 w3-right" 
+            primary 
+            value="Set periode" 
+            type="button" 
+            @trig="pickPeriode" 
         />
-    <Button 
-        class="w3-left w3-col s2 w3-margin-top w3-right" 
-        primary 
-        value="Set periode" 
-        type="button" 
-        @trig="pickPeriode" 
-    />
+        <Button primary v-if="grouped.length" class="w3-right" value="Export Weekly report" type="button" @trig="exportReportWeekly" />
+    </div>
 
     <Datatable
         :datanya="$store.getters['Document/finished']"
@@ -21,12 +27,23 @@
         :keys="['periode2', 'spvName', 'warehouseName', 'shift', 'finished2']"
         option
         id="tableFinished"
-        #default="{ prop }"
     >
-        <!-- lihat info detail -->
-        <Button value="Details" type="button" secondary small @trig="details(prop)"/>
-        <!-- share detail -->
-        <Button v-if="prop?.status === 2" @trig="share" value="Share" type="button" primary small/>
+        <template #default="{ prop }">
+            <!-- lihat info detail -->
+            <Button value="Details" type="button" secondary small @trig="details(prop)"/>
+            <!-- share detail -->
+            <Button v-if="prop?.status === 2" @trig="share(prop)" value="Share" type="button" primary small/>
+        </template>
+        <!-- checkbox -->
+        <template #th>
+            <th>Mark</th>
+        </template>
+        <template #td="{ obj }">
+            <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
+            <label :for="obj.id"> Mark</label>
+            <br />
+        </template>
+        <!-- chekcbox -->
         
         
     </Datatable>
@@ -38,17 +55,74 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
+import exportWeeklyReportToExcel from "../../excelReport/WeeklyReport"
 
 export default {
     name: "Finished",
     data() {
-        return {};
+        return {
+            grouped: [],
+            groupedObject: [],
+        };
     },
     components: {
         Button,
         Datatable,
     },
     methods: {
+        async exportReportWeekly() {
+            // Open loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            // group dulu yang spv dan periode yang sama
+            /* expected object = [
+                [{ baseReport }, { baseReport }],
+                [{ baseReport }, { baseReport }],
+                [{ baseReport }, { baseReport }],
+            ]
+            */
+           if(!this.groupedObject.length) {
+               return
+           }
+           let group = []
+        //   grouped { spv: index } //seperate by name
+           let grouped = {}
+           this.groupedObject.forEach((val) => {
+            //    if the object was grouped, and else
+               if(grouped.hasOwnProperty(val?.name)) {
+                // //    console.log("ada sama")
+                //    console.log(val.name+val.periode)
+                //    console.log(grouped[val?.name+val?.periode])
+                   group[grouped[val.name]].push({ ...val })
+               } else {
+                   grouped[val.name] = group.length
+                   group.push([{ ...val }])
+                // console.log(grouped)
+                // console.log("tidak sama")
+               }
+           })
+        //    console.log(group)
+        exportWeeklyReportToExcel(group)
+            // // iterate semua yang sudah digroup
+            // for (let i =0; i < group.length; i++ ) {
+            //     // console.log(group[i])
+            //     if(group[i].length > 1) {
+            //         await exportDailyReportGroup(group[i])
+            //     }   else {
+            //         await exportDailyReport(group[i][0])
+            //     }
+            // }
+            // Close loader
+            this.$store.commit("Modal/active");
+        },
+        push(id, obj) {
+            // if the id is exists,
+            if(this.grouped.includes(id)) {
+                this.groupedObject = this.groupedObject.filter(val => val.id != id)
+                return
+            } 
+            // else
+            this.groupedObject.push({ ...obj })
+        },
         pickPeriode() {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show", criteria: {isfinished: true}});
         },
@@ -68,6 +142,7 @@ export default {
             //                 obj: record,
             //                 criteria: { id: ev }
             //             })
+            console.log(ev)
         },
         readExcel(e) {
 			// const file = e.target.files[0]

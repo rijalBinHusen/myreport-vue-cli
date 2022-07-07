@@ -373,7 +373,7 @@ export default {
   created() {
     this.deData = this.getData()
   },
-  unnmounted() {
+  beforeUnmount() {
     this.saveData()
   },
 };
