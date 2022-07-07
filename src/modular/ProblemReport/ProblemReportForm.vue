@@ -248,7 +248,10 @@ export default {
             this.problem.periode = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
             // let tanggalSelesai = new Date(newVal.setFullYear(newVal.getFullYear() + 1))
             // this.problem.tanggalSelesai = this.GET_DATEFORMAT({format: "ymdTime", time: tanggalSelesai})
-            this.tanggalSelesaiModel = new Date(this.problem.periode + 31536000000)
+            // 1 add 1 year
+            this.tanggalSelesaiModel = new Date(newVal.getTime() + 31536000000)
+            this.dlModel = new Date(newVal.getTime() + (1000*60*60*24*7))
+            this.dlPanjangModel = new Date(newVal.getTime() + (1000*60*60*24*14))
         },
         dlModel(newVal, oldVal) {
             if(newVal === oldVal) {

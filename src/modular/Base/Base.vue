@@ -431,7 +431,7 @@ export default {
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika base report ada yang di update
             // console.log(mutation)
-            if (mutation.type.includes('BaseReportStock')) {
+            if (mutation.type.includes('BaseReportStock') || mutation.type.includes('BaseReportClock')) {
                 // console.log("Tunggu 1 detik")
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {

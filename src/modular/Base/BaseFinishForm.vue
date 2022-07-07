@@ -33,7 +33,7 @@
             small
             @trig="save" 
         />
-        <div class="w3-right w3-large w3-margin-right">
+        <div v-if="documentRecord?.collected && !documentRecord.isfinished" class="w3-right w3-large w3-margin-right">
             <label for="generate">Generate report </label>
             <input type="checkbox" id="generate" v-model="generateReport" />
         </div>

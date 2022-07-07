@@ -49,15 +49,21 @@ export default async function (baseReport) {
       Object.assign(
         {
           row: i + 1,
-          namaItem: item[0]?.name,
-          awal: reportData[i].awal,
-          Masuk: reportData[i].in,
-          TanggalMasuk: reportData[i].dateIn ? reportData[i].dateIn : 0,
-          planKeluar: 0,
-          Keluar: reportData[i].out,
-          TanggalKeluar: reportData[i].dateOut ? reportData[i].dateOut : 0,
-          real: reportData[i].real,
-          TanggalAkhir: reportData[i].dateEnd ? reportData[i].dateEnd : 0,
+          "Nama item": item[0]?.name,
+          "Stock awal": +reportData[i].awal,
+          "Produk masuk": +reportData[i].in,
+          "Tanggal produk masuk": reportData[i]?.dateIn
+            ? reportData[i].dateIn
+            : "-",
+          "Coret DO": +reportData[i]?.planOut ? reportData[i].planOut : 0,
+          "Produk keluar": +reportData[i].out,
+          "Tanggal produk keluar": reportData[i]?.dateOut
+            ? reportData[i].dateOut
+            : "-",
+          "Real stock": +reportData[i].real,
+          "Tanggal produk akhir": reportData[i]?.dateEnd
+            ? reportData[i].dateEnd
+            : "-",
         },
         problem
       )

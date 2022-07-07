@@ -9,7 +9,7 @@ const BaseReportStock = {
       if (Array.isArray(value) && value.length > 0) {
         value.forEach((val) => state.lists.push(val));
       } else {
-        state.lists.unshift(value);
+        state.lists.push(value);
       }
     },
     basereportstock(state, payload) {

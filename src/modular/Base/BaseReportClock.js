@@ -102,13 +102,13 @@ const BaseReportClock = {
 
       for (let i = 0; i < arrayOfRecord.length; i++) {
         commit("update", arrayOfRecord[i]);
-        let record = Object.assign({}, arrayOfRecord[i]);
+        // let record = Object.assign({}, arrayOfRecord[i]);
         await dispatch(
-          "updateOnly",
+          "update",
           {
             store: "BaseReportClock",
             criteria: { id: arrayOfRecord[i].id },
-            obj: record,
+            obj: { ...arrayOfRecord[i] },
           },
           { root: true }
         );
