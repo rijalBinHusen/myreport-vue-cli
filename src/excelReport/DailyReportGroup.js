@@ -102,6 +102,12 @@ function detailsDocument(arrayOfDocumentDetails) {
     shift,
     spvName,
     warehouseName,
+    parentDocument,
+    totalItemMoving,
+    totalQTYIn,
+    totalQTYOut,
+    totalItemKeluar,
+    standartWaktu,
     ...details
   } = resultTemp;
 

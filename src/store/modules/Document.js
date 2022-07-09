@@ -97,7 +97,7 @@ const Uncollected = {
       }
       // uncollect documment
       else if (payload.action === "uncollect") {
-        info.collected = "false";
+        info.collected = false;
         info.status = 0;
       }
       // collect document
@@ -121,7 +121,7 @@ const Uncollected = {
       } else if (payload.action === "share") {
         info.shared = rootGetters["dateFormat"]({ format: "time" });
       } else if (payload.action === "unapprove") {
-        info.approval = "false";
+        info.approval = false;
         info.status = 1;
       } else if (payload.action === "finished") {
         info["isfinished"] = true;
@@ -161,7 +161,7 @@ const Uncollected = {
         commit("document", []);
         await dispatch(
           "getDataByCriteriaAppend",
-          { store: "Document", criteria: { shared: "false" } },
+          { store: "Document", criteria: { shared: false } },
           { root: true }
         );
         await dispatch(

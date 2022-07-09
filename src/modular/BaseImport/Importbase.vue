@@ -79,6 +79,9 @@ export default {
         },
         // read file and put to the state
         readExcel(e) {
+            // if(!e.target.files[0]) {
+            //     return
+            // }
             // info of record
             let infobase = this.BASEID(this.importId)
             // bring the loader up

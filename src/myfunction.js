@@ -260,7 +260,7 @@ export default {
       return a001.getTime() - 25200000;
     } // hari yang tersebut pada jam 00:00
     else if (a[0] == "dateMonth") {
-      return a002 + "-" + a007[a003];
+      return (a002 > 9 ? a002 : "0" + a002) + "-" + a007[a003];
     } //dapatkan tanggal bulan dd-mmm
     else if (a[0] === "yearMonth") {
       return a004 + (a003 + 1 > 9 ? a003 : "0" + (a003 + 1));

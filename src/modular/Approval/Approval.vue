@@ -42,7 +42,7 @@
                  }}
                 </span>
                 <Button 
-                    v-if="!isNaN(prop.isfinished)"
+                    v-if="!isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile"
                     value="Export" 
                     type="button" 
                     secondary small 

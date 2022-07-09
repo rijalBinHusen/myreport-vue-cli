@@ -323,8 +323,10 @@ export default {
             this.$store.commit("Modal/active", { 
                 judul: "Set record to show", 
                 form: "PeriodePicker", 
-                store: "BaseReportFile",
-                criteria: { imported: true },
+                store: [ 
+                    { storeName: "BaseReportFile", criteria: { imported: true } },
+                    { storeName: "Document"}
+                ],
                 btnValue: "Show"
             });
         },

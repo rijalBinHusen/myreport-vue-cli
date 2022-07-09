@@ -19,6 +19,12 @@ export default async function (baseReport) {
     head,
     collected2,
     approval2,
+    parentDocument,
+    totalItemMoving,
+    totalQTYIn,
+    totalQTYOut,
+    totalItemKeluar,
+    standartWaktu,
     ...details
   } = baseReport;
   //   console.log(baseReport);
