@@ -1,41 +1,69 @@
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 
+/*
+  periode
+  totalKendaraan
+  totalWaktu
+  shift
+  spvName
+  warehouseName
+  itemVariance
+  totalItemMoving
+  totalQTYIn
+  totalQTYOut
+  totalProductNotFIFO
+  headName
+  totalDo
+  planOut
+  totalItemKeluar 
+*/
+
 export default function (arrayOfArrayOfDocuments) {
-  let arrProblem = [];
-  let newArrayOfArrayOfdocuments = arrayOfArrayOfDocuments.map((val) => {
-    let newArrayOfDocuments = val.map(
-      ({
-        id,
-        periode,
-        warehouse,
-        collected,
-        approval,
-        status,
-        shared,
-        finished,
-        baseReportFile,
-        isfinished,
-        name,
-        head,
-        parentDocument,
-        periode2,
-        ...resultTemp
-      }) => {
-        arrProblem.push(getProblem(periode, name));
-        resultTemp.periode = periode2.match(/\d+/)[0];
-        return resultTemp;
-      }
-    );
-    return newArrayOfDocuments;
+  let newArrayOfArrayOfdocuments = arrayOfArrayOfDocuments.map(async (val) => {
+    let arrProblem = [];
+    let newArrayOfDocuments = [];
+    val.forEach((val) => {
+      arrProblem.push(getProblem(val.periode, val.name));
+      // new details document
+      newArrayOfDocuments.push({
+        periode: val.periode2.match(/\d+/)[0],
+        totalKendaraan: val.totalKendaraan,
+        totalWaktu: val.totalWaktu,
+        shift: val.shift,
+        spvName: val.spvName,
+        warehouseName: val.warehouseName,
+        itemVariance: val.itemVariance,
+        totalItemMoving: val.totalItemMoving,
+        totalQTYIn: val.totalQTYIn,
+        totalQTYOut: val.totalQTYOut,
+        totalProductNotFIFO: val.totalProductNotFIFO,
+        headName: val.headName,
+        totalDo: val.totalDo,
+        planOut: val.planOut,
+        totalItemKeluar: val.totalItemKeluar,
+      });
+    });
+    let waitAllProblem = await Promise.all(arrProblem);
+    return {
+      base: newArrayOfDocuments,
+      problem: waitAllProblem.flat(),
+    };
   });
+
   newArrayOfArrayOfdocuments.forEach((val) => {
-    exportToXlsSeperateSheet(
-      {
-        result: [{ id: "Bismillah" }],
-        base: val,
-      },
-      "Bismillah 2"
-    );
+    val.then((result) => {
+      console.log(result);
+    });
   });
+
+  // newArrayOfArrayOfdocuments.forEach((val) => {
+  //   exportToXlsSeperateSheet(
+  //     {
+  //       result: [{ id: "Bismillah" }],
+  //       base: val,
+  //     },
+  //     "Bismillah 2"
+  //   );
+  // });
 }

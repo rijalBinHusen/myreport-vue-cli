@@ -164,11 +164,6 @@ const Uncollected = {
           { store: "Document", criteria: { shared: false } },
           { root: true }
         );
-        await dispatch(
-          "getDataByCriteriaAppend",
-          { store: "Document", criteria: { shared: false } },
-          { root: true }
-        );
       }
       return "Finished";
     },

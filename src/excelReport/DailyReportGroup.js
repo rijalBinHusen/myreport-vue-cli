@@ -1,5 +1,6 @@
 import func from "../myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
+import getProblem from "./GetProblemByArrayId";
 
 export default async function (baseReport) {
   // baseReport must be a group, e.g = [baseReport, baseReport]
@@ -41,12 +42,12 @@ export default async function (baseReport) {
           namaItem: item[0]?.name,
           awal: reportData[i].awal,
           Masuk: reportData[i].in,
-          TanggalMasuk: reportData[i].dateIn ? reportData[i].dateIn : 0,
+          TanggalMasuk: reportData[i].dateIn ? reportData[i].dateIn : "-",
           planKeluar: 0,
           Keluar: reportData[i].out,
-          TanggalKeluar: reportData[i].dateOut ? reportData[i].dateOut : 0,
+          TanggalKeluar: reportData[i].dateOut ? reportData[i].dateOut : "-",
           real: reportData[i].real,
-          TanggalAkhir: reportData[i].dateEnd ? reportData[i].dateEnd : 0,
+          TanggalAkhir: reportData[i].dateEnd ? reportData[i].dateEnd : "-",
         },
         problem
       )
@@ -107,6 +108,9 @@ function detailsDocument(arrayOfDocumentDetails) {
     totalQTYOut,
     totalItemKeluar,
     standartWaktu,
+    generateReport,
+    parent,
+    planOut,
     ...details
   } = resultTemp;
 
@@ -117,37 +121,4 @@ function detailsDocument(arrayOfDocumentDetails) {
     periode2: arrayOfDocumentDetails[0]?.periode2,
     headName: arrayOfDocumentDetails[0]?.headName,
   });
-}
-
-async function getProblem(arrayOfProblemId) {
-  // MASALAH SUMBER MASALAH SOLUSI JANGKA PENDEK		PIC	D/L	SOLUSI JANGKA PANJANG		PIC	D/L
-  let result = {
-    masalah: "",
-    sumberMasalah: "",
-    solusi: "",
-    pic: "",
-    dl: "",
-    solusiPanjang: "",
-    picPanjang: "",
-    dlPanjang: "",
-  };
-
-  if (arrayOfProblemId.length) {
-    let allProblem = await Promise.all(
-      arrayOfProblemId.map((val) =>
-        func.findData({ store: "Problem", criteria: val })
-      )
-    );
-    allProblem.forEach((val) => {
-      result.pic += val.pic + "\r\n";
-      result.dl += val.dl + "\r\n";
-      result.masalah += val.masalah + "\r\n";
-      result.sumberMasalah += val.sumberMasalah + "\r\n";
-      result.solusi += val.solusi + "\r\n";
-      result.solusiPanjang += val.solusiPanjang + "\r\n";
-      result.dlPanjang += val.dlPanjang + "\r\n";
-      result.picPanjang += val.picPanjang + "\r\n";
-    });
-  }
-  return result;
 }
