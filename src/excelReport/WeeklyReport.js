@@ -1,6 +1,8 @@
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
+import getProblem from "./GetProblemByPeriodeBySpv";
 
 export default function (arrayOfArrayOfDocuments) {
+  let arrProblem = [];
   let newArrayOfArrayOfdocuments = arrayOfArrayOfDocuments.map((val) => {
     let newArrayOfDocuments = val.map(
       ({
@@ -20,6 +22,7 @@ export default function (arrayOfArrayOfDocuments) {
         periode2,
         ...resultTemp
       }) => {
+        arrProblem.push(getProblem(periode, name));
         resultTemp.periode = periode2.match(/\d+/)[0];
         return resultTemp;
       }

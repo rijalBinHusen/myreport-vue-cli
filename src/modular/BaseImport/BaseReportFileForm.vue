@@ -86,8 +86,10 @@ export default {
                 let clockNo = clockSheet["D"+i] ? clockSheet["D"+ (i)].v : 0
                 // nomor do sebelumnya (atasnya)
                 let clockNoBefore = clockSheet["D"+ (i-1)] ? clockSheet["D"+ (i-1)].v : false
+                // shift
+                let shift = clockSheet["B"+i]?.v > 0 ? true : false
                 // status untuk diimport true or false
-                let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
+                let clockStatus = shift && clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
                     await this.$store.dispatch("append", {
