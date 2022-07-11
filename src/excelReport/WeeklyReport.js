@@ -1,3 +1,4 @@
+import myfunction from "@/myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 
@@ -20,10 +21,12 @@ import getProblem from "./GetProblemByPeriodeBySpv";
 */
 
 export default function (arrayOfArrayOfDocuments) {
+  let tunggu = [];
   let newArrayOfArrayOfdocuments = arrayOfArrayOfDocuments.map(async (val) => {
     let arrProblem = [];
     let newArrayOfDocuments = [];
     val.forEach((val) => {
+      tunggu.push(myfunction.tunggu(400));
       arrProblem.push(getProblem(val.periode, val.name));
       // new details document
       newArrayOfDocuments.push({

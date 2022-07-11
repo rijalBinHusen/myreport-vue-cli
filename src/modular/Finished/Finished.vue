@@ -18,6 +18,7 @@
             type="button" 
             @trig="pickPeriode" 
         />
+        <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
         <Button primary v-if="grouped.length" class="w3-right" value="Export Weekly report" type="button" @trig="exportReportWeekly" />
     </div>
 
@@ -70,6 +71,17 @@ export default {
         Datatable,
     },
     methods: {
+        markAll() {
+            if(this.grouped.length) {
+                this.grouped = []
+                this.groupedObject = []
+                return
+            }
+            this.$store.getters["Document/finished"].forEach((val) => {
+                this.grouped.push(val.id)
+                this.groupedObject.push(val)
+            })
+        },
         async exportReportWeekly() {
             // Open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
