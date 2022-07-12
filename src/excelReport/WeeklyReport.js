@@ -1,6 +1,7 @@
 import myfunction from "@/myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
+import getCases from "./GetCasesByPeriodeBySpv";
 
 /*
   periode
@@ -28,6 +29,7 @@ export default function (arrayOfArrayOfDocuments) {
     val.forEach((val) => {
       tunggu.push(myfunction.tunggu(400));
       arrProblem.push(getProblem(val.periode, val.name));
+      arrProblem.push(getCases(val.periode, val.name));
       // new details document
       newArrayOfDocuments.push({
         periode: val.periode2.match(/\d+/)[0],

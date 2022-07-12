@@ -33,16 +33,18 @@
             <!-- lihat info detail -->
             <Button value="Details" type="button" secondary small @trig="details(prop)"/>
             <!-- share detail -->
-            <Button v-if="prop?.status === 2" @trig="share(prop)" value="Share" type="button" primary small/>
+            <Button v-if="prop?.isfinished" @trig="share(prop)" value="Share" type="button" primary small/>
         </template>
         <!-- checkbox -->
         <template #th>
             <th>Mark</th>
         </template>
         <template #td="{ obj }">
-            <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
-            <label :for="obj.id"> Mark</label>
-            <br />
+            <span  v-if="obj?.isfinished">
+                <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
+                <label :for="obj.id"> Mark</label>
+            </span>
+            <p v-else>Unfinish</p>
         </template>
         <!-- chekcbox -->
         
@@ -78,8 +80,10 @@ export default {
                 return
             }
             this.$store.getters["Document/finished"].forEach((val) => {
-                this.grouped.push(val.id)
-                this.groupedObject.push(val)
+                if(val.isfinished) {
+                    this.grouped.push(val.id)
+                    this.groupedObject.push(val)
+                }
             })
         },
         async exportReportWeekly() {
@@ -161,11 +165,7 @@ export default {
         }
     },
     mounted() {
-        this.$store.dispatch(
-          "getDataByCriteria",
-          { store: "Document", criteria: { isfinished: true } },
-          { root: true }
-        );
+        this.$store.dispatch("Document/getDocumentByStatusFromDB");
     }
 }
 </script>
