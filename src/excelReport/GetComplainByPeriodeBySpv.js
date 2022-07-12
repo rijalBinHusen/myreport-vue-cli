@@ -3,7 +3,7 @@ import myfunction from "../myfunction";
 export default function (periode, spv) {
   return myfunction
     .findData({
-      store: "Cases",
+      store: "Complains",
       criteria: {
         periode: periode,
         name: spv,
@@ -12,7 +12,7 @@ export default function (periode, spv) {
     .then((data) => {
       if (data && data.length) {
         return data.map((val) => ({
-          masalah: "*[Kasus]*" + val?.masalah,
+          masalah: val?.masalah,
           sumberMasalah: val?.sumberMasalah,
           solusi: val?.solusi,
           pic: val?.pic,
