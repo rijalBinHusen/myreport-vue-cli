@@ -48,7 +48,6 @@ export default function (arrayOfArrayOfDocuments) {
       });
     });
     let waitAllProblem = await Promise.all(arrProblem);
-    console.log(arrProblem);
     return {
       base: newArrayOfDocuments,
       problem: waitAllProblem.flat(),
