@@ -41,7 +41,7 @@ export default {
                 let totalRowNumber = +totalRow[1].match(/\d+/)[0]
                 let sheet = this.importTemp.sheet[sheetName]
                 for( let i = 5; i <= totalRowNumber; i++) {
-                    if(sheet["P"+i].v) {
+                    if(sheet["P"+i] && sheet["P"+i]?.v) {
                         // insert to idb
                         let typeKesalahan = "";
 
@@ -82,7 +82,6 @@ export default {
     computed: {},
     created() {
         this.importTemp = this.$store.getters["Modal/obj"]?.obj
-        console.log(this.importTemp)
     }
 }
 </script>

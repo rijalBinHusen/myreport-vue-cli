@@ -451,6 +451,7 @@ export default {
                     await this.$store.dispatch("BaseReportStock/getDataByParent");
                     // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
                     await this.$store.dispatch("BaseReportClock/getDataByParent");
+                    this.listsPeriode = this.DATEBASEREPORT
                 } , 600 )
             }
         });

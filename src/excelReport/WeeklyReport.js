@@ -25,14 +25,32 @@ import GetComplains from "./GetComplainByPeriodeBySpv";
 export default function (arrayOfArrayOfDocuments) {
   let newArrayOfArrayOfdocuments = arrayOfArrayOfDocuments.map(async (val) => {
     let arrProblem = [];
-    let newArrayOfDocuments = [];
+    let newArrayOfDocuments = [
+      {
+        periode: 1,
+        totalKendaraan: 2,
+        totalWaktu: 3,
+        shift: 4,
+        spvName: 5,
+        warehouseName: 6,
+        itemVariance: 7,
+        totalItemMoving: 8,
+        totalQTYIn: 9,
+        totalQTYOut: 10,
+        totalProductNotFIFO: 11,
+        headName: 12,
+        totalDo: 13,
+        planOut: 14,
+        totalItemKeluar: 15,
+      },
+    ];
     val.forEach((val) => {
       arrProblem.push(getProblem(val.periode, val.name));
       arrProblem.push(getCases(val.periode, val.name));
       arrProblem.push(GetComplains(val.periode, val.name));
       // new details document
       newArrayOfDocuments.push({
-        periode: val.periode2.match(/\d+/)[0],
+        periode: +val.periode2.match(/\d+/)[0],
         totalKendaraan: val.totalKendaraan,
         totalWaktu: val.totalWaktu,
         shift: val.shift,
@@ -66,13 +84,13 @@ export default function (arrayOfArrayOfDocuments) {
           },
           result
         ),
-        result?.base[0]?.periode +
+        result?.base[1]?.periode +
           " - " +
           result?.base.slice(-1)[0]?.periode +
           " " +
-          result?.base[0]?.warehouseName +
+          result?.base[1]?.warehouseName +
           " " +
-          result?.base[0]?.spvName
+          result?.base[1]?.spvName
       );
     });
   });

@@ -2,21 +2,20 @@ const Problem = {
   namespaced: true,
   state: {
     lists: [],
-    unFinished: false,
   },
 
   mutations: {
     // new data from localbase
     problem(state, value) {
-      state.unFinished = false;
       state.lists = value;
     },
     // add data to
     append(state, value) {
-      state.lists.unshift(value);
-    },
-    unFinished(state, value) {
-      state.unFinished = value;
+      if (Array.isArray(value)) {
+        value.forEach((val) => state.lists.push(val));
+        return;
+      }
+      state.lists.push(value);
     },
     // update data
     update(state, value) {
@@ -30,14 +29,13 @@ const Problem = {
     getProblemFromDB({ state, commit, dispatch }) {
       // status = uncollected
       // jika sebelumnya belum diambil, atau sudah direplace ( state[statue] === false)
-      if (!state.unFinished) {
+      if (!state.lists.length) {
         return dispatch(
           "getDataByCriteria",
           { store: "Problem", criteria: { isFinished: false } },
           { root: true }
         );
       }
-      commit("unFinished", true);
     },
   },
   getters: {
