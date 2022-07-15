@@ -46,7 +46,7 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import { mapGetters} from "vuex"
 import periodePickerProps from "../../composable/periodePickerProps"
-import * as XLSX from "xlsx";
+import readExcelFile from "../../composable/readExcel"
 
 export default {
     name: "Collect",
@@ -84,28 +84,7 @@ export default {
             let infobase = this.BASEID(this.importId)
             // bring the loader up
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-			const file = e.target.files[0]
-			let info = { fileName: file.name }
-			
-			const promise = new Promise ((resolve, reject) => {
-				const fileReader = new FileReader();
-				fileReader.readAsArrayBuffer(file);
-				
-				fileReader.onload = (e) => {
-					const bufferArray = e.target.result;
-					
-					// const wb = XLSX.read(bufferArray, {type: "buffer"});
-					const wb = XLSX.read(bufferArray);
-					info.sheetNames = wb.SheetNames
-					info.sheets = wb.Sheets
-					
-					resolve(info)
-				};
-				
-				fileReader.onerror=((error) => { reject(error) })
-			})
-			
-			promise.then((d) => {
+            readExcelFile(e.target.files[0]).then((d) => {
                 let warehouseName = this.$store.getters["Warehouses/warehouseId"](infobase?.warehouse)?.name
                 let periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: infobase?.periode })
                 // send data excel to vuex
