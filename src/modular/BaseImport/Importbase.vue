@@ -126,11 +126,13 @@ export default {
             BASEID: "BaseReportFile/baseId"
         }),
     },
-    async created() {
+    async mounted() {
         // get all item name
-        this.$store.dispatch("Baseitem/getAllItem")
+        await this.$store.dispatch("Baseitem/getAllItem")
         // get the 3 days before today basereportfile record
-        this.$store.dispatch("BaseReportFile/recordStarter")
+        await this.$store.dispatch("BaseReportFile/recordStarter")
+        // get all problem guys
+        await this.$store.dispatch("Problem/getProblemFromDB");
     },
 }
 </script>

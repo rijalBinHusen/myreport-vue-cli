@@ -187,7 +187,7 @@ const BaseReportStock = {
               item: record.item,
               awal: record.awal,
               in: record.in,
-              planOut: record.planOut,
+              planOut: +record.planOut,
               out: record.out,
               real: record.real,
               dateIn: record.dateIn,
@@ -256,7 +256,7 @@ const BaseReportStock = {
                     Number(val.real) -
                     (Number(val.awal) + Number(val.in) - Number(val.out));
                   val.problem2 = rootGetters["Problem/masalah"](val.problem);
-                  val.planOut = "";
+                  val.planOut = 0;
                   return val;
                 }
               })
@@ -289,7 +289,7 @@ const BaseReportStock = {
           result["totalItemMoving"]++;
           result["totalQTYIn"] = result["totalQTYIn"] + Number(val.in);
           result["totalQTYOut"] = result["totalQTYOut"] + Number(val.out);
-          result["planOut"] = result["planOut"] + Number(val?.planOut);
+          result["planOut"] = +result["planOut"] + Number(val?.planOut);
         }
       });
 

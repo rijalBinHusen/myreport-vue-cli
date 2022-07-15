@@ -3,7 +3,7 @@
     <div class="w3-border w3-padding w3-container">
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" @trig="approvalForm" />
-        <Button primary class="w3-right" value="Export all" type="button" @trig="exportReportAll" />
+        <Button primary class="w3-right" v-if="grouped.length" value="Export all" type="button" @trig="exportReportAll" />
     </div>
 
             <Datatable
@@ -104,6 +104,7 @@ export default {
         //   grouped { spvperiode: index }
            let grouped = {}
            this.groupedObject.forEach((val) => {
+               this.handleAction({ action: 'share', rec: val?.id })
             //    if the object was grouped, and else
                if(grouped.hasOwnProperty(val?.name+val?.periode)) {
                 // //    console.log("ada sama")
@@ -127,6 +128,9 @@ export default {
                     await exportDailyReport(group[i][0])
                 }
             }
+            // empty the grouped
+            this.groupedObject = []
+            this.grouped = []
             // Close loader
             this.$store.commit("Modal/active");
         },

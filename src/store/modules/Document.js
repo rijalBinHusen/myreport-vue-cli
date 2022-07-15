@@ -126,20 +126,24 @@ const Uncollected = {
       } else if (payload.action === "finished") {
         info["isfinished"] = true;
         info["finished"] = new Date().getTime();
-        delete info.periode2;
-        delete info.spvName;
-        delete info.warehouseName;
-        delete info.shift;
-        delete info.totalDO;
-        delete info.totalKendaraan;
-        delete info.totalWaktu;
-        delete info.totalItemMoving;
-        delete info.totalQTYIn;
-        delete info.totalQTYOut;
-        delete info.totalProductNotFIFO;
-        delete info.itemVariance;
 
-        info = Object.assign(info, payload.val);
+        const {
+          periode2,
+          spvName,
+          warehouseName,
+          shift,
+          totalDO,
+          totalKendaraan,
+          totalWaktu,
+          totalItemMoving,
+          totalQTYIn,
+          totalQTYOut,
+          totalProductNotFIFO,
+          itemVariance,
+          ...details
+        } = info;
+
+        info = Object.assign(details, payload.val);
       }
       // console.log(info);
       dispatch(

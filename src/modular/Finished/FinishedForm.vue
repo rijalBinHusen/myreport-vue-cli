@@ -48,6 +48,7 @@ export default {
                 { title: "Total item moving", valueFrom: "totalItemMoving", editable: true},
                 { title: "Total product in", valueFrom: "totalQTYIn", editable: true},
                 { title: "Total output", valueFrom: "totalQTYOut", editable: true},
+                { title: "Coret DO", valueFrom: "planOut", editable: true},
                 { title: "Total Not FIFO", valueFrom: "totalProductNotFIFO", editable: true},
                 { title: "Total item variance", valueFrom: "itemVariance", editable: true}
             ],
