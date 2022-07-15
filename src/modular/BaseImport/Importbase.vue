@@ -44,7 +44,8 @@
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import { mapState, mapGetters} from "vuex"
+import { mapGetters} from "vuex"
+import periodePickerProps from "../../composable/periodePickerProps"
 import * as XLSX from "xlsx";
 
 export default {
@@ -62,7 +63,7 @@ export default {
     },
     methods: {
         pickPeriode() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
+            this.$store.commit("Modal/active", periodePickerProps('BaseReportFile'));
         },
         launch(ev) {
             this.$refs.importerBase.click();
@@ -71,10 +72,7 @@ export default {
         // remove all data that was imported
         async remove(ev) {
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
-            }
-
+            if(!sure) { return; }
             this.$store.dispatch("BaseReportFile/emptyRecord", ev)
         },
         // read file and put to the state
