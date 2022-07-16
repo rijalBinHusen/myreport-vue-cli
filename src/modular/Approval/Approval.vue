@@ -14,40 +14,14 @@
                 id="tableApproval"
             >
                 <template #default="{ prop }">
-				<span v-if="prop.shared == 'false' || !prop.shared ">
-                    <Button 
-                        value="Batal" 
-                        type="button" 
-                        danger small 
-                        @trig="handleAction({ action: 'unapprove', rec: prop.id })" 
+                    <Dropdown
+                        value="Options"  
+                        :lists="dropDownOptions(prop)"
+                        listsKey="id"
+                        listsValue="isi"
+                        @trig="handleAction({action: $event, id: prop?.id})"
+                        class="w3-small"
                     />
-                    
-                    <Button 
-                        value="Share" 
-                        type="button" 
-                        primary small 
-                        @trig="handleAction({ action: 'share', rec: prop.id })" 
-                    />
-
-                </span>
-                <span v-else>
-                    {{
-                    !isNaN(prop.shared)
-                     ? "Shared at "+ this.$store.getters["dateFormat"](
-                         { 
-                            format: "dateMonth", 
-                            time: prop.shared 
-                         }) 
-                    : prop.shared
-                 }}
-                </span>
-                <Button 
-                    v-if="!isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile"
-                    value="Export" 
-                    type="button" 
-                    secondary small 
-                    @trig="exportReport(prop)" 
-                />
                 </template>
                 <template #th>
                     <th>Export group</th>
@@ -67,6 +41,7 @@
 import exportDailyReport from "../../excelReport/DailyReport"
 import exportDailyReportGroup from "../../excelReport/DailyReportGroup"
 import Button from "../../components/elements/Button.vue"
+import Dropdown from "../../components/elements/Dropdown.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
 
@@ -85,8 +60,28 @@ export default {
         Button,
         Datatable,
         Input,
+        Dropdown,
     },
     methods: {
+        dropDownOptions(prop) {
+            // v-if="prop.shared == 'false' || !prop.shared "
+            // !isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile
+            let options = [{ id: '', isi: "Shared" }]
+            if(!prop?.shared) {
+                // action: 'unapprove', rec: prop.id }
+                // { action: 'share', rec: prop.id }
+                //detele the index 0 array
+                options.shift()
+                options.push(
+                    { id: 'unapprove', isi: 'Batal' },
+                    { id: 'share', isi: 'Share' }
+                )
+            }
+            if(!isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile) {
+                options.push({ id: 'exportReport', isi: 'Export' })
+            }
+            return options
+        },
         async exportReportAll() {
             // Open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -104,9 +99,9 @@ export default {
         //   grouped { spvperiode: index }
            let grouped = {}
            this.groupedObject.forEach((val) => {
-            //    if(!val?.shared) {
-            //        this.handleAction({ action: 'share', rec: val?.id })
-            //    }
+               if(!val?.shared) {
+                   this.handleAction({ action: 'share', rec: val?.id })
+               }
             //    if the object was grouped, and else
                if(grouped.hasOwnProperty(val?.name+val?.periode)) {
                 // //    console.log("ada sama")
@@ -136,11 +131,11 @@ export default {
             // Close loader
             this.$store.commit("Modal/active");
         },
-        async exportReport(obj) {
+        async exportReport(ev) {
             // Open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // wating for process
-            await exportDailyReport({ ...obj })
+            await exportDailyReport([ ...this.lists ].find((val) => val?.id === ev) )
             // close loader
             this.$store.commit("Modal/active");
         },
@@ -151,7 +146,12 @@ export default {
             });
         },
         handleAction(ev) {
-            // EV =  {action: 'approve', val: -1, rec: doc22050003}
+            console.log(ev)
+            if(ev?.action === 'exportReport') {
+                this.exportReport(ev?.rec)
+                return
+            }
+            // EV =  {action: 'approve', rec: doc22050003}
             this.$store.dispatch("Document/handleDocument", ev)
         },
         renewLists() {
