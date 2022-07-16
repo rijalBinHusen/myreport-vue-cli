@@ -104,7 +104,9 @@ export default {
         //   grouped { spvperiode: index }
            let grouped = {}
            this.groupedObject.forEach((val) => {
-               this.handleAction({ action: 'share', rec: val?.id })
+            //    if(!val?.shared) {
+            //        this.handleAction({ action: 'share', rec: val?.id })
+            //    }
             //    if the object was grouped, and else
                if(grouped.hasOwnProperty(val?.name+val?.periode)) {
                 // //    console.log("ada sama")

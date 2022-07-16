@@ -39,7 +39,7 @@ export default async function (baseReport) {
       Object.assign(
         {
           row: i + 1,
-          namaItem: item[0]?.name,
+          namaItem: item?.length ? item[0]?.name : "Item tidak ditemukan",
           awal: reportData[i].awal,
           Masuk: reportData[i].in,
           TanggalMasuk: reportData[i].dateIn ? reportData[i].dateIn : "-",

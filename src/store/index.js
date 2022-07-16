@@ -56,17 +56,15 @@ export default createStore({
       // await dispatch("Backup/check", {}, { root: true });
 
       // insert record to indexeddb and return as promise
-      myfunction.append(value).then((result) => {
+      return myfunction.append(value).then((result) => {
         // commit to module e.g 'Group/append
         commit(`${value.store}/append`, result.data, { root: true });
       });
       //return promise 130 ms and then resolve
-      return myfunction.tunggu(130);
     },
 
     appendWoutGenerateId({}, value) {
-      myfunction.append(value);
-      return myfunction.tunggu(130);
+      return myfunction.append(value);
     },
 
     delete({ commit, rootGetters }, value) {

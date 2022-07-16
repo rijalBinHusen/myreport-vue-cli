@@ -16,10 +16,10 @@ export default async function (arrayOfProblemId) {
   if (arrayOfProblemId.length) {
     let allProblem = await Promise.all(
       arrayOfProblemId.map((val) =>
-        func.findData({ store: "Problem", criteria: val })
+        func.findData({ store: "Problem", criteria: { id: val } })
       )
     );
-    allProblem.forEach((val) => {
+    allProblem.flat().forEach((val) => {
       result.pic += val.pic + "\r\n";
       result.dl += func.dateFormat(["dateMonth", val.dl]) + "\r\n";
       result.masalah += val.masalah + "\r\n";
@@ -31,5 +31,6 @@ export default async function (arrayOfProblemId) {
       result.picPanjang += val.picPanjang + "\r\n";
     });
   }
+  // console.log(result);
   return result;
 }
