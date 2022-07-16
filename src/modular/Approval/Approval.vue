@@ -19,7 +19,7 @@
                         :lists="dropDownOptions(prop)"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="handleAction({action: $event, id: prop?.id})"
+                        @trig="handleAction({action: $event, rec: prop?.id})"
                         class="w3-small"
                     />
                 </template>
@@ -135,7 +135,7 @@ export default {
             // Open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             // wating for process
-            await exportDailyReport([ ...this.lists ].find((val) => val?.id === ev) )
+            await exportDailyReport(JSON.parse(JSON.stringify(this.lists)).find((val) => val?.id == ev))
             // close loader
             this.$store.commit("Modal/active");
         },
@@ -146,7 +146,6 @@ export default {
             });
         },
         handleAction(ev) {
-            console.log(ev)
             if(ev?.action === 'exportReport') {
                 this.exportReport(ev?.rec)
                 return
