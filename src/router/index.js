@@ -18,10 +18,10 @@ const routes = [
     component: () => import("../components/pages/Login.vue"),
   },
   {
-    path: '/:catchAll(.*)',
-    name: 'NotFound',
-    component: NotFound
-  }
+    path: "/:catchAll(.*)",
+    name: "NotFound",
+    component: NotFound,
+  },
 ];
 
 const router = createRouter({
