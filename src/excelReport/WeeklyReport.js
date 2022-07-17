@@ -84,13 +84,13 @@ export default function (arrayOfArrayOfDocuments) {
           },
           result
         ),
-        result?.base[1]?.periode +
-          " - " +
-          result?.base.slice(-1)[0]?.periode +
+        result?.base[1]?.spvName +
           " " +
           result?.base[1]?.warehouseName +
           " " +
-          result?.base[1]?.spvName
+          result?.base[1]?.periode +
+          " - " +
+          result?.base.slice(-1)[0]?.periode
       );
     });
   });
