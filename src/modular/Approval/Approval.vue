@@ -134,8 +134,13 @@ export default {
         async exportReport(ev) {
             // Open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            let record = JSON.parse(JSON.stringify(this.lists)).find((val) => val?.id == ev)
             // wating for process
-            await exportDailyReport(JSON.parse(JSON.stringify(this.lists)).find((val) => val?.id == ev))
+            await exportDailyReport(record)
+            // set document as shared
+            if(!record?.shared) {
+                this.handleAction({ action: 'share', rec: ev })
+            }
             // close loader
             this.$store.commit("Modal/active");
         },
