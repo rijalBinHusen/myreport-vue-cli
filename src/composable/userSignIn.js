@@ -1,23 +1,37 @@
+/* eslint-disable */
+import { ref } from "vue";
 import { auth } from "../firebase/firebaseApp";
-// import { signInWithEmailAndPassword } from "@firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
-export default async function (details) {
-  const { email, password } = details;
+const error = ref(null);
+
+const signin = async (email, password) => {
+  error.value = null;
   try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    switch (error.code) {
+    const res = await signInWithEmailAndPassword(auth, email, password);
+    if (!res) {
+      throw new Error("Could not complete the signin");
+    }
+    error.value = null;
+    console.log(res);
+    return res;
+  } catch (err) {
+    switch (err.code) {
       case "auth/user-not-found":
-        alert("User not found");
+        error.value = "User not found";
         break;
       case "auth/wrong-password":
-        alert("Wrong password");
+        error.value = "Wrong password";
         break;
       default:
-        alert(`Something went wrong`);
+        error.value = `Something went wrong`;
     }
     return;
   }
-  console.log("Success login");
-}
+};
+
+const userSignin = () => {
+  return { error, signin };
+};
+
+export default userSignin;
