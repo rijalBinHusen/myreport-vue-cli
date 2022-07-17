@@ -1,16 +1,20 @@
 <script>
 	import { ref } from "@vue/reactivity"
 	import userSignin from "../../composable/userSignIn"
+	import { useRouter } from 'vue-router'
 
 	export default {
 		setup() {
 		const { error, signin } = userSignin()
+		const router = useRouter();
+
 		const email = ref('');
 		const password = ref('');
 
 		const handleSignIn = async () => {
 			let signProcess = await signin(email.value, password.value)
-			console.log(signProcess)
+			router.push({ name: "Main"})
+			// console.log(signProcess)
 		};
 
 		return { email, password, handleSignIn, error }

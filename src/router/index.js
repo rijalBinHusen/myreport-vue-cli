@@ -3,14 +3,22 @@ import Main from "../components/pages/Main.vue";
 import NotFound from "../components/pages/NotFound.vue";
 import { auth } from "../firebase/firebaseApp";
 
+const requiredAuth = (to, from, next) => {
+  const user = auth.currentUser;
+  console.log(user);
+  if (!user) {
+    next("/login");
+    return;
+  }
+  next();
+};
+
 const routes = [
   {
     path: "/admin-totalan-",
     name: "Main",
     component: Main,
-    meta: {
-      requiresAuth: true,
-    },
+    beforeEnter: requiredAuth,
   },
   {
     path: "/login",
@@ -27,23 +35,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-});
-
-router.beforeEach((to, from, next) => {
-  if (to.path === "/login" && auth.currentUser) {
-    next({ name: "Main" });
-    return;
-  }
-
-  if (
-    to.matched.some((record) => record.meta.requiresAuth) &&
-    !auth.currentUser
-  ) {
-    next("/login");
-    return;
-  }
-
-  next();
 });
 
 export default router;
