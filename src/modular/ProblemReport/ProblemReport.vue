@@ -60,12 +60,13 @@ export default {
         duplicate(ev){
             let confirm = window.confirm("Apakah anda yakin akan menduplikat record tersebut?")
             if(!confirm) { return }
-            let record = this.$store.getters["Problem/problemId"](ev)
-            delete record.id
+
+            const { id, periode, ...record } = this.$store.getters["Problem/problemId"](ev)
+
             this.$store.dispatch("append",
             {
                 store: "Problem",
-                obj: record
+                obj: Object.assign(record, { periode: new Date().getTime() })
             })
             // delete record.id
             // console.log(Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record))

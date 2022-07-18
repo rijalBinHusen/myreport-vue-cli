@@ -117,18 +117,8 @@ export default {
                }
            })
         //    console.log(group)
-        exportWeeklyReportToExcel(group)
-            // // iterate semua yang sudah digroup
-            // for (let i =0; i < group.length; i++ ) {
-            //     // console.log(group[i])
-            //     if(group[i].length > 1) {
-            //         await exportDailyReportGroup(group[i])
-            //     }   else {
-            //         await exportDailyReport(group[i][0])
-            //     }
-            // }
-            // Close loader
-            this.$store.commit("Modal/active");
+        await exportWeeklyReportToExcel(group)
+        this.$store.commit("Modal/active");
         },
         push(id, obj) {
             // if the id is exists,

@@ -221,9 +221,9 @@ export default {
             this.$emit("exit")
             if(this.id) {
                 this.UPDATE({
-                store: "Problem",
-                obj: this.problem,
-                criteria: { id: this.id }
+                    store: "Problem",
+                    obj: this.problem,
+                    criteria: { id: this.id }
                 })
                 return
             }
@@ -242,7 +242,7 @@ export default {
     },
     watch: {
         periodeModel(newVal, oldVal) {
-            if(newVal === oldVal) {
+            if(newVal === oldVal || this.problem.id) {
                 return
             }
             this.problem.periode = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})

@@ -11,7 +11,8 @@
             <datepicker id="dl" class="w3-margin-bottom w3-border w3-input" v-model="dlModel"></datepicker>
             <!-- Masalah -->
             <label for="masalah">Masalah: </label><br>
-            <textarea v-model="caseInput.masalah" id="masalah" style="width:100%; height:60px;"></textarea>
+            <textarea v-model="caseInput.masalah" rows="6" id="masalah" style="width:100%;"></textarea>
+            
             <!-- Supervisor -->
             <label for="name">Supervisor:</label>
             <Select 
@@ -39,6 +40,9 @@
 
             <label for="solusi">solusi: </label><br>
             <textarea v-model="caseInput.solusi" id="solusi" style="width:100%; height:60px;"></textarea>
+
+            <label for="pic">PIC</label>
+            <textarea id="pic" v-model="caseInput.pic" placeholder="Name PIC" style="width:100%;"></textarea>
 
             <label for="status">Status done?</label>
             <input type="checkbox" v-model="caseInput.status" />

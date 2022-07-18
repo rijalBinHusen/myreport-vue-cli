@@ -12,7 +12,7 @@ export default function (periode, spv) {
     .then((data) => {
       if (data && data.length) {
         return data.map((val) => ({
-          masalah: "*[Kasus]*" + val?.masalah,
+          masalah: "[Kasus] " + val?.masalah,
           sumberMasalah: val?.sumberMasalah,
           solusi: val?.solusi,
           pic: val?.pic,

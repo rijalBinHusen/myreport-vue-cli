@@ -232,7 +232,7 @@ const Uncollected = {
     },
     finished(state, getters, rootState, rootGetters) {
       return JSON.parse(JSON.stringify(state.lists)).filter((val) => {
-        if (val?.isfinished !== "false" && val?.baseReportFile !== "false") {
+        if (val?.isfinished && val?.baseReportFile) {
           let spvInfo = rootGetters["Supervisors/spvId"](val.name);
           val.spvName = spvInfo.name;
           val.headName = rootGetters["Headspv/headId"](val.head).name;
