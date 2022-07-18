@@ -366,12 +366,6 @@ export default {
                 // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
                 await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
                 this.$store.commit("Modal/active");
-                //empty all
-                this.sheet = ""
-                this.shift = ""
-                this.selectedWarehouse = ""
-                this.lists = []
-                //end of empty all
                 this.renewLists()
             }
         }
@@ -436,6 +430,12 @@ export default {
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
+            //empty all
+            this.sheet = ""
+            this.shift = ""
+            this.selectedWarehouse = ""
+            this.lists = []
+                //end of empty all
             this.renewLists()
         },
         selectedWarehouse(newVal, oldVal) {
