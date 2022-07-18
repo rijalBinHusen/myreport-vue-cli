@@ -16,17 +16,15 @@ const Modal = {
       }
       // jika tidak, tutup modal, judul kosongi, form kosongi
       else {
-        
-
         if (state.more.form === "Loader") {
           setTimeout(() => {
             state.active = false;
-            state.more = { judul: '', form: '' }
-          }, 1500);
+            state.more = { judul: "", form: "" };
+          }, 500);
           return;
         }
         state.active = false;
-        state.more = { judul: '', form: '' }
+        state.more = { judul: "", form: "" };
       }
     },
   },

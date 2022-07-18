@@ -34,6 +34,19 @@ const BaseReportClock = {
     },
   },
   actions: {
+    getDataByParentAndShift({ dispatch, state, commit }, payload) {
+      return new Promise(async (resolve) => {
+        await dispatch(
+          "getDataByCriteriaAppend",
+          {
+            store: "BaseReportClock",
+            criteria: { ...payload },
+          },
+          { root: true }
+        );
+        resolve();
+      });
+    },
     async markAsFinished({ dispatch, state }, payload) {
       //payload { parentDocument: ev, shift: this.shift, parent: this.base?.id }
       // iterate the state
@@ -169,6 +182,11 @@ const BaseReportClock = {
           totalWaktu: totalWaktu,
         };
       },
+    isRecordExistsByParentAndShift: (state) => (parent, shift) => {
+      return state.lists.some(
+        (val) => val.parent == parent && val.shift == shift
+      );
+    },
   },
 };
 

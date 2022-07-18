@@ -46,6 +46,19 @@ const BaseReportStock = {
     },
   },
   actions: {
+    getDataByParentAndShift({ dispatch }, payload) {
+      return new Promise(async (resolve) => {
+        await dispatch(
+          "getDataByCriteriaAppend",
+          {
+            store: "BaseReportStock",
+            criteria: { ...payload },
+          },
+          { root: true }
+        );
+        resolve();
+      });
+    },
     async markAsFinished({ dispatch, state, commit }, payload) {
       //payload { parentDocument: ev, shift: this.shift, parent: this.base?.id }
       // iterate the state
@@ -243,6 +256,11 @@ const BaseReportStock = {
     },
   },
   getters: {
+    isRecordExistsByParentAndShift: (state) => (parent, shift) => {
+      return state.lists.some(
+        (val) => val.parent == parent && val.shift == shift
+      );
+    },
     shiftAndParent: (state, getters, rootState, rootGetters) => (shift, id) => {
       return state.lists.length > 0
         ? JSON.parse(

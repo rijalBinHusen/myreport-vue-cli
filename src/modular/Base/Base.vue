@@ -95,6 +95,7 @@
                 />
                 <!-- MArk as finished -->
                 <Button
+                    v-if="lists.length"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
@@ -302,25 +303,25 @@ export default {
             // tutup loader
             this.$store.commit("Modal/active");
         },
-        save(ev) {
+        async save(ev) {
             // lempar ke dispatch
-            // BaseReportClock/saveFromeExcel
-            this.$store.dispatch(
+            // BaseReportClock/saveFromeExcel and renew the lists
+            await this.$store.dispatch(
                     `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}/saveFromExcelMode`, 
                     ev)
+            this.renewLists()
             
         },
-        remove(ev){
+        async remove(ev){
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
-            }
-            let store = this.sheet === "stock" ? 'BaseReportStock' : 'BaseReportClock'
-            //delete from idb
-                this.$store.dispatch("delete", { 
-                    store: store, 
-                    criteria: {id: ev}
+            if(sure) {
+                //delete from idb
+                await this.$store.dispatch("delete", {  
+                    store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
+                    criteria: {id: ev} 
                 })
+                this.renewLists()
+            }
         },
         pickPeriode() {
             this.$store.commit("Modal/active", { 
@@ -340,18 +341,38 @@ export default {
                 this.detailsClock = this.$store.getters["BaseReportClock/detailsByShiftAndParent"](this.shift, this.base.id)
             }
         },
-        renewLists() {
-            if(this.shift && this.base) {
-                // console.log("renew lists")
-            this.detailsDocument()
-              if(this.sheet === "stock") {
-                this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
-                return
-              }
-
-              if(this.sheet === "clock") {
-               this.lists = this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id)
-              }
+        async renewLists() {
+            //  || !this.shift || !this.sheet) { return }
+            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.listsWarehouse = this.WAREHOUSEBASEREPORT(this.selectedPeriode)
+            // console.log(this.base)
+            
+            if(this.selectedPeriode && this.selectedWarehouse && this.shift) {
+                // check dulu apakah somerecord exists, 
+                let isExists = 
+                    this.ISCLOCKEXISTS(this.base.id, this.shift) 
+                    && this.ISSTOCKEXISTS( this.base.id, this.shift)
+                // jika exists
+                if(isExists) {
+                    this.detailsDocument()
+                    // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
+                    this.lists = this[`BASEREPORT${this.sheet.toUpperCase()}SHIFTANDPARENT`](this.shift, this.base.id)
+                    return
+                }
+                // // jika tidak exists
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+                // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+                await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+                // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+                await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+                this.$store.commit("Modal/active");
+                //empty all
+                this.sheet = ""
+                this.shift = ""
+                this.selectedWarehouse = ""
+                this.lists = []
+                //end of empty all
+                this.renewLists()
             }
         }
     },
@@ -363,6 +384,8 @@ export default {
             _BASEID: state => JSON.parse(JSON.stringify(state.BaseReportFile.baseId)),
         }),
         ...mapGetters({
+            ISCLOCKEXISTS: "BaseReportClock/isRecordExistsByParentAndShift",
+            ISSTOCKEXISTS: "BaseReportStock/isRecordExistsByParentAndShift",
             WAREHOUSE_ID: "Warehouses/warehouseId",
             DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId",
@@ -407,53 +430,29 @@ export default {
     },
     watch: {
         shift(newVal, oldVal) {
-          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet || !newVal) { return }
           this.renewLists()
         },
         sheet(newVal, oldVal) {
-          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet || !newVal) { return }
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-            this.listsWarehouse = this.WAREHOUSEBASEREPORT(newVal)
-            this.sheet = ""
-            this.shift = ""
-            this.selectedWarehouse = ""
-            this.lists = []
+            this.renewLists()
         },
         selectedWarehouse(newVal, oldVal) {
-            this.base = this.BASEIDSELECTED(this.selectedPeriode, newVal)
-            this.sheet = ""
-            this.shift = ""
-            this.lists = []
+            this.renewLists()
         },
     },
     async mounted() {
-        // getAllDocumentNotFinished
-        await this.$store.dispatch("Document/getBaseReportStarter")
+        // get all item
+        await this.$store.dispatch("Baseitem/getAllItem");
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         this.listsPeriode = this.DATEBASEREPORT
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
-            // jika base report ada yang di update
-            // console.log(mutation)
-            if (mutation.type.includes('BaseReportStock') || mutation.type.includes('BaseReportClock')) {
-                // console.log("Tunggu 1 detik")
-                clearTimeout(this.timeOut)
-                this.timeOut = setTimeout( () => {
-                    this.renewLists()
-                    this.listsPeriode = this.DATEBASEREPORT
-                } , 600 )
-                return
-            }
             // jika cari berdasarkan periode
-            if(mutation.type == "BaseReportFile/append") {
+            if(mutation.type == "Document/append") {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout(async () => {
-                    // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
-                    await this.$store.dispatch("BaseReportStock/getDataByParent");
-                    // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
-                    await this.$store.dispatch("BaseReportClock/getDataByParent");
                     this.listsPeriode = this.DATEBASEREPORT
                 } , 600 )
             }
