@@ -9,7 +9,7 @@
                 type="text"
             />
 
-            <div v-if="more?.mode === 'edit'">
+            <div v-if="more?.mode === 'edit' && more?.next">
                 <label for="next">Langkah selanjutnya:</label>
                 <Select 
                     id="next"

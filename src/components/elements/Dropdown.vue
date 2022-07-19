@@ -1,8 +1,7 @@
 <template>
     <div class="w3-dropdown-hover w3-white">
-      <Button primary :value="value" type="button"/>
+      <Button :secondary="secondary" :primary="primary" :danger="danger" :value="value" type="button"/>
       <div class="w3-dropdown-content w3-bar-block w3-card-4">
-    
         <Button 
             type="button"
             v-for="list in lists" 
@@ -45,7 +44,10 @@ export default {
         listsValue: {
             type: String,
             required: true,
-        }
+        },
+        secondary: Boolean,
+        primary: Boolean,
+        danger: Boolean,
     },
     methods: {
         send(e) {

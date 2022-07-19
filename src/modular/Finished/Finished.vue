@@ -3,12 +3,12 @@
 
     <div class="w3-border w3-padding w3-container">
         <input
-                class="w3-hide"
-                @change.prevent="readExcel($event)"
-                type="file"
-                ref="importerBase"
-                accept=".xls, .ods"
-            />
+            class="w3-hide"
+            @change.prevent="readExcel($event)"
+            type="file"
+            ref="importerBase"
+            accept=".xls, .ods"
+        />
         <label for="periode">Set record to show : </label>
         <Button 
             id="periode"
@@ -18,12 +18,13 @@
             type="button" 
             @trig="pickPeriode" 
         />
+        <Button primary class="w3-right" :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
         <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
         <Button primary v-if="grouped.length" class="w3-right" value="Export Weekly report" type="button" @trig="exportReportWeekly" />
     </div>
 
     <Datatable
-        :datanya="$store.getters['Document/finished']"
+        :datanya="lists"
         :heads="['Periode', 'Nama', 'Gudang', 'Shift', 'Finished']"
         :keys="['periode2', 'spvName', 'warehouseName', 'shift', 'finished2']"
         option
@@ -66,6 +67,7 @@ export default {
         return {
             grouped: [],
             groupedObject: [],
+            unfinished: false,
         };
     },
     components: {
@@ -152,6 +154,11 @@ export default {
         },
         readExcel(e) {
 			// const file = e.target.files[0]
+        }
+    },
+    computed: {
+        lists() {
+            return this.unfinished ? this.$store.getters["Document/unfinished"] : this.$store.getters["Document/finished"]
         }
     },
     mounted() {

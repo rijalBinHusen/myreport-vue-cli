@@ -15,12 +15,16 @@
             >
                 <template #default="{ prop }">
                     <Dropdown
-                        value="Options"  
+                        :value="prop?.shared ? 
+                                `${$store.getters['dateFormat']({format: 'dateMonth', time: prop.shared})} Shared` 
+                                :'Options'"  
                         :lists="dropDownOptions(prop)"
                         listsKey="id"
                         listsValue="isi"
                         @trig="handleAction({action: $event, rec: prop?.id})"
                         class="w3-small"
+                        :danger="!!prop?.shared"
+                        :primary="!!!prop?.shared"
                     />
                 </template>
                 <template #th>
@@ -66,19 +70,17 @@ export default {
         dropDownOptions(prop) {
             // v-if="prop.shared == 'false' || !prop.shared "
             // !isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile
-            let options = [{ id: '', isi: "Shared" }]
+            let options = []
+            if(!isNaN(prop.isfinished) &&  prop?.baseReportFile) {
+                options.push({ id: 'exportReport', isi: 'Export' })
+            }
             if(!prop?.shared) {
                 // action: 'unapprove', rec: prop.id }
                 // { action: 'share', rec: prop.id }
-                //detele the index 0 array
-                options.shift()
                 options.push(
                     { id: 'unapprove', isi: 'Batal' },
                     { id: 'share', isi: 'Share' }
                 )
-            }
-            if(!isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile) {
-                options.push({ id: 'exportReport', isi: 'Export' })
             }
             return options
         },

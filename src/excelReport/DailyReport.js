@@ -59,7 +59,7 @@ export default async function (baseReport) {
       Object.assign(
         {
           row: i + 1,
-          "Nama item": item[0]?.name,
+          "Nama item": item?.length ? item[0]?.name : "Item tidak ditemukan",
           "Stock awal": +reportData[i].awal,
           "Produk masuk": +reportData[i].in,
           "Tanggal produk masuk": reportData[i]?.dateIn

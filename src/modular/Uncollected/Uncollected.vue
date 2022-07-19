@@ -77,11 +77,13 @@
                             { id: -1, isi: '-1 Hari'},
                             { id: -2, isi: '-2 Hari'},
                             { id: -3, isi: '-3 Hari'},
-                            { id: 0, isi: '0 Hari' }
+                            { id: 0, isi: '0 Hari' },
+                            { id: 'ijin', isi: 'Tidak masuk'},
+                            { id: 'kosong', isi: 'Laporan tidak ada'},
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="collect({action: 'collect', val: $event, rec: prop.id})"
+                        @trig="collect({ action: 'collect', val: $event, rec: prop.id })"
                         class="w3-small"
                     />
 
@@ -148,7 +150,12 @@ export default {
 		},
         collect(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            this.$store.dispatch("Document/handleDocument", ev)
+            if(isNaN(ev.val)) {
+                this.$store.dispatch("Document/handleDocument", { action: ev.val, rec: ev.rec })
+                return
+            }
+                this.$store.dispatch("Document/handleDocument", ev)
+            // console.log(ev)
         },
 		pesan(ev) {
 			// slice the data
