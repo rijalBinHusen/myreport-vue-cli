@@ -34,6 +34,7 @@
                     listsKey="id"
                     listsValue="isi"
                     @trig="handleAction({action: 'approve', val: $event, rec: prop.id})"
+                    primary
                 />
             </template>
 
@@ -56,6 +57,7 @@
                         listsValue="isi"
                         @trig="handleAction({action: 'approve', val: $event, rec: doc?.id})"
                         class="w3-small"
+                        primary
                     />
                 </td>
             </template>

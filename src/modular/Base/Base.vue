@@ -33,9 +33,8 @@
             />
                 <!-- Date Base report -->
                 <Select 
-                  v-if="listsPeriode.length"
                   class="w3-col s1 w3-margin-right"
-                  :options="listsPeriode" 
+                  :options="$store.getters['BaseReportFile/dateReport']" 
                   value="periode"
                   text="periode2"
                   @selected="selectedPeriode = $event"
@@ -123,6 +122,7 @@
                     listsKey="id"
                     listsValue="isi"
                     @trig="message($event, prop)"
+                    secondary
                 />
 
                 <Dropdown
@@ -135,6 +135,7 @@
                     listsKey="id"
                     listsValue="isi"
                     @trig="handleProblem($event, prop)"
+                    primary
                 />
             </span>
             
@@ -234,13 +235,13 @@ export default {
             let warehouseName = this.$store.getters["Warehouses/warehouseId"](this.selectedWarehouse)?.name
             let pesan;
             if(ev === "apaBaru") {
-                pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ (+obj.awal + +obj.in - +obj.out) - +obj.real }*, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
+                pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
             } else if (ev === "tidakSama") {
-                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* apakah ada selisih baru ya pak? %0a%0a Soalnya dicatatan saya untuk item tersebut ada selisih ${obj.problem2}, sedangkan dilaporan bapak selisihnya *${ (+obj.awal + +obj.in - +obj.out) - +obj.real }* Ctn.`
+                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* apakah ada selisih baru ya pak? %0a%0aSoalnya dicatatan saya untuk item tersebut ada selisih ${obj.problem2}, sedangkan dilaporan bapak selisihnya *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn.`
             } else if (ev === "selesai") {
-                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* selisih *${ (+obj.awal + +obj.in - +obj.out) - +obj.real }* Ctn. %0a Apakah ada selisih stock yang sudah tersolusikan? %0aSoalnya dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2}.`
+                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* selisih *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn. %0a%0aApakah ada selisih stock yang sudah tersolusikan? %0aSoalnya dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2}`
             }
-            // console.log(spvInfo.phone)
+            // console.log(pesan)
             window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         },
         handleProblem(ev, obj) {
@@ -385,7 +386,6 @@ export default {
             BASEID: "BaseReportFile/baseId",
             BASEITEMKODE: "Baseitem/baseItemKode",
             GETTIME: "dateFormat",
-            DATEBASEREPORT: "BaseReportFile/dateReport",
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
             BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
             BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportClock/shiftAndParent",
@@ -430,12 +430,15 @@ export default {
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-            //empty all
-            this.sheet = ""
-            this.shift = ""
-            this.selectedWarehouse = ""
-            this.lists = []
-                //end of empty all
+            let isExists = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            if(!isExists) {
+                //empty all
+                this.sheet = ""
+                this.shift = ""
+                this.selectedWarehouse = ""
+                this.lists = []
+                    //end of empty all
+            }
             this.renewLists()
         },
         selectedWarehouse(newVal, oldVal) {
@@ -445,15 +448,15 @@ export default {
     async mounted() {
         // get all item
         await this.$store.dispatch("Baseitem/getAllItem");
+        // get all problem
+        await this.$store.dispatch("Problem/getProblemFromDB");
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
-        this.listsPeriode = this.DATEBASEREPORT
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
-            // jika cari berdasarkan periode
-            if(mutation.type == "Document/append") {
+            if(mutation.type == "BaseReportStock/updateParam" ) {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout(async () => {
-                    this.listsPeriode = this.DATEBASEREPORT
+                    this.listsPeriode = this.renewLists()
                 } , 600 )
             }
         });

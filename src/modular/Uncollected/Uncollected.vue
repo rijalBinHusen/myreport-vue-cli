@@ -9,6 +9,7 @@
             listsValue="name"
             @trig="pesanSemua($event)"
             class="w3-right"
+            secondary
         />
 
         <Dropdown
@@ -18,6 +19,7 @@
             listsValue="name"
             @trig="notApproval($event)"
             class="w3-right"
+            secondary
         />
 
         <Button 
@@ -55,6 +57,7 @@
                             listsValue="isi"
                             @trig="check({val: $event, id: doc?.id})"
                             class="w3-small"
+                            primary
                         />
                     </td>
                 </template>
@@ -85,6 +88,7 @@
                         listsValue="isi"
                         @trig="collect({ action: 'collect', val: $event, rec: prop.id })"
                         class="w3-small"
+                        primary
                     />
 
                     <Button

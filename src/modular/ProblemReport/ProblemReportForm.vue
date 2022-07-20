@@ -222,14 +222,14 @@ export default {
             if(this.id) {
                 this.UPDATE({
                     store: "Problem",
-                    obj: this.problem,
+                    obj: { ...this.problem },
                     criteria: { id: this.id }
                 })
                 return
             }
             this.APPEND({
                 store: "Problem",
-                obj: this.problem,
+                obj: { ...this.problem },
             })
         }
     },
@@ -242,9 +242,6 @@ export default {
     },
     watch: {
         periodeModel(newVal, oldVal) {
-            if(newVal === oldVal || this.problem.id) {
-                return
-            }
             this.problem.periode = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
             // let tanggalSelesai = new Date(newVal.setFullYear(newVal.getFullYear() + 1))
             // this.problem.tanggalSelesai = this.GET_DATEFORMAT({format: "ymdTime", time: tanggalSelesai})

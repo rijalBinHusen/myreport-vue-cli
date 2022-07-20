@@ -11,6 +11,7 @@
             <datepicker id="dl" class="w3-margin-bottom w3-border w3-input" v-model="dlModel"></datepicker>
             <!-- Masalah -->
             <label for="masalah">Masalah: </label><br>
+            <label for="masalah">Max length(255) {{ caseInput.masalah.length }} </label><br>
             <textarea v-model="caseInput.masalah" rows="6" id="masalah" style="width:100%;"></textarea>
             
             <!-- Supervisor -->

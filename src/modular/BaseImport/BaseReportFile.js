@@ -29,15 +29,32 @@ const BaseReportFile = {
     baseId(state, payload) {
       state.baseId = payload;
     },
+    updateParam(state, payload) {
+      // payload = { criteria: { id: stk22050003 }, obj: { problem: [] }}
+      state.lists = state.lists.map((val) => {
+        // val.id === stk22050003
+        if (
+          val[Object.keys(payload.criteria)] == Object.values(payload.criteria)
+        ) {
+          // val.problem = []
+          val[Object.keys(payload.obj)[0]] = Object.values(payload.obj)[0];
+        }
+        return val;
+      });
+    },
   },
   actions: {
-    someRecordFinished({ dispatch }, payload) {
+    someRecordFinished({ dispatch, commit }, payload) {
+      commit("updateParam", {
+        criteria: { id: payload },
+        obj: { isRecordFinished: true },
+      });
       return dispatch(
         "updateOnly",
         {
           store: "BaseReportFile",
-          obj: { isRecordFinished: true },
           criteria: { id: payload },
+          obj: { isRecordFinished: true },
         },
         { root: true }
       );
