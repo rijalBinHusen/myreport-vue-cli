@@ -234,15 +234,20 @@ export default {
             let spvInfo = this.$store.getters["Document/spvByPeriodeAndWarehouseAndShift"](this.selectedPeriode, this.selectedWarehouse, this.shift)
             let warehouseName = this.$store.getters["Warehouses/warehouseId"](this.selectedWarehouse)?.name
             let pesan;
+            let salam = `Assalamu alaikum pak ${spvInfo.name}%0a%0a`
+            let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} ${warehouseName}, untuk item ${obj.itemName}`
+            let selisih = `terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn`
+            let problem = `Dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2.replace('.', ',')}`
+            
             if(ev === "apaBaru") {
-                pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
+                pesan = salam+pembuka+' '+selisih+`%0a%0aapakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
             } else if (ev === "tidakSama") {
-                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* apakah ada selisih baru ya pak? %0a%0aSoalnya dicatatan saya untuk item tersebut ada selisih ${obj.problem2}, sedangkan dilaporan bapak selisihnya *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn.`
+                pesan =  salam+pembuka+` apakah ada selisih baru ya pak? %0a%0a${problem} sedangkan dilaporan bapak `+selisih
             } else if (ev === "selesai") {
-                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} *${warehouseName}*, untuk item *${obj.itemName}* selisih *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn. %0a%0aApakah ada selisih stock yang sudah tersolusikan? %0aSoalnya dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2}`
+                pesan =  salam+pembuka+' '+selisih+`%0a%0aApakah ada selisih stock yang sudah tersolusikan? %0a${problem}`
             }
-            // console.log(pesan)
-            window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            console.log(pesan)
+            // window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {

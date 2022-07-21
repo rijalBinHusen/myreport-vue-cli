@@ -27,10 +27,12 @@
 	import EditDocument from "../../modular/EditDocument/EditDocument.vue"
 	import Cases from "../../modular/CasesReport/Cases.vue"
 	import Complains from "../../modular/ComplainReport/Complains.vue"
+	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
 
 	export default {
 		name: "Main",
 		components: {
+			FollowUp,
 			Complains,
 			Cases,
 			EditDocument,
