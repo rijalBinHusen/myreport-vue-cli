@@ -246,7 +246,9 @@ export default {
             } else if (ev === "selesai") {
                 pesan =  salam+pembuka+' '+selisih+`%0a%0aApakah ada selisih stock yang sudah tersolusikan? %0a${problem}`
             }
-            console.log(pesan)
+            this.$store.dispatch("FollowUp/append", { pesan: pembuka+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
+            // console.log(pesan)
+            // save to the followup
             // window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         },
         handleProblem(ev, obj) {

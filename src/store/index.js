@@ -17,9 +17,11 @@ import Problem from "../modular/ProblemReport/ProblemReport";
 import Document from "./modules/Document";
 import Cases from "../modular/CasesReport/Cases";
 import Complains from "../modular/ComplainReport/Complains";
+import FollowUp from "../modular/FollowUp/FollowUp";
 
 export default createStore({
   modules: {
+    FollowUp,
     Complains,
     Cases,
     Problem,
