@@ -351,6 +351,7 @@ const Uncollected = {
                 warehouseName: rootGetters["Warehouses/warehouseId"](
                   val?.warehouse
                 )?.name,
+                itemVariance: val.itemVariance,
               });
             }
           });

@@ -249,7 +249,7 @@ export default {
             this.$store.dispatch("FollowUp/append", { pesan: pembuka+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
             // console.log(pesan)
             // save to the followup
-            // window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {

@@ -33,7 +33,7 @@
                     class="w3-small"
                     listsKey="id"
                     listsValue="isi"
-                    @trig="handleAction({action: 'approve', val: $event, rec: prop.id})"
+                    @trig="handleAction({action: 'approve', val: $event, rec: prop?.id, obj: prop })"
                     primary
                 />
             </template>
@@ -55,7 +55,7 @@
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="handleAction({action: 'approve', val: $event, rec: doc?.id})"
+                        @trig="handleAction({action: 'approve', val: $event, rec: doc?.id, obj: doc })"
                         class="w3-small"
                         primary
                     />
@@ -98,7 +98,28 @@ export default {
         },
         handleAction(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            this.$store.dispatch("Document/handleDocument", ev)
+            // konfirm dulu, kalau ada selisih stock biar diforo dulu
+            let promise = new Promise(resolve => {
+                console.log(ev?.obj)
+                if(ev?.obj?.itemVariance) {
+                    let confirm = window.confirm("Terdapat selisih stock, silahkan difoto dulu")
+                    if(confirm) {
+                        resolve(true)
+                    }
+                    resolve(false)
+                }
+                resolve(true)
+            }) 
+            
+            const { obj, ...record } = ev
+            // console.log(record, confirm)
+            promise.then((val) => {
+                if(val) {
+                    this.$store.dispatch("Document/handleDocument",  record)
+                    // console.log(val)
+                }
+            })
+            // console.log(confirm)
         },
         renewLists() {
             this.viewByPeriode
