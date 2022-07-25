@@ -112,6 +112,7 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { mapGetters } from "vuex";
+// import { shell } from 'electron';
 
 export default {
     name: "Uncollected",
@@ -178,8 +179,8 @@ export default {
                 // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
     			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
 
-                    // window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
-                    require("shell").openExternal(`https://wa.me/${ev.phone}?text=${pesan}`)
+                    window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
+                    // shell.openExternal(`https://wa.me/${ev.phone}?text=${pesan}`)
                     //  console.log(pesan)
                     return
             }
@@ -205,8 +206,8 @@ export default {
                 }
             })
 
-            // window.open(`https://wa.me/${ev}?text=${result}`)
-            require("shell").openExternal(`https://wa.me/${ev}?text=${result}`)
+            window.open(`https://wa.me/${ev}?text=${result}`)
+            // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
             // console.log(result)
             // }
         },
@@ -220,8 +221,8 @@ export default {
                 result += "%0a%0a"
             })
             // console.log(result)
-            // window.open(`https://wa.me/${ev}?text=${result}`)
-            require("shell").openExternal(`https://wa.me/${ev}?text=${result}`)
+            window.open(`https://wa.me/${ev}?text=${result}`)
+            // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
         },
         renewLists() {
             this.viewByPeriode

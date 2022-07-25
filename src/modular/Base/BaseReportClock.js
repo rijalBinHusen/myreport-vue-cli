@@ -147,6 +147,7 @@ const BaseReportClock = {
           if (
             val.shift == shift &&
             val.parent == id &&
+            val?.start && val?.finish &&
             val.start.length == 5 &&
             val.finish.length == 5
           ) {

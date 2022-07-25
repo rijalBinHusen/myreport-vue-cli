@@ -171,6 +171,7 @@ import { mapState, mapGetters, mapActions } from "vuex"
 import AGGrid from "../../components/parts/AGGrid.vue"
 import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
+// import { shell } from 'electron'
 
 export default {
     components: {
@@ -249,8 +250,8 @@ export default {
             this.$store.dispatch("FollowUp/append", { pesan: pembuka+' '+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
             // console.log(pesan)
             // save to the followup
-            // window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
-            require("shell").openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            // shell.openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {
