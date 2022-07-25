@@ -21,6 +21,7 @@ const Navbar = {
       { id: "ImportData", title: "Import data", group: "setting" },
       { id: "Report", title: "Export report", group: "setting" },
       { id: "EditDocument", title: "Edit document", group: "setting" },
+      { id: "SyncToFirebase", title: "Sync data", group: "setting" },
     ],
   },
   mutations: {

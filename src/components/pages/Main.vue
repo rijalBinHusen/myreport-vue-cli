@@ -28,10 +28,12 @@
 	import Cases from "../../modular/CasesReport/Cases.vue"
 	import Complains from "../../modular/ComplainReport/Complains.vue"
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
+	import SyncToFirebase from "./SyncToFirebase.vue"
 
 	export default {
 		name: "Main",
 		components: {
+			SyncToFirebase,
 			FollowUp,
 			Complains,
 			Cases,
