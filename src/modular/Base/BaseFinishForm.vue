@@ -111,7 +111,7 @@ export default {
         this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
         this.itemVariance = this.$store.getters["Problem/problemActiveBySpvAndPeriode"](this.name, this.base.periode).length
         this.details = Object.assign(this.detailsClock, this.detailsStock, { itemVariance: 0})
-        console.log(this.documentRecord,this.base?.periode, this.base?.warehouse, this.shift)
+        // console.log(this.documentRecord,this.base?.periode, this.base?.warehouse, this.shift)
         if(!this.documentRecord?.collected) {
             alert("The document record status not collected yet")
         }

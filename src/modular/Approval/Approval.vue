@@ -31,9 +31,11 @@
                     <th>Export group</th>
                 </template>
                 <template #td="{ obj }">
-                    <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
-                    <label :for="obj.id"> Group</label>
-                    <br />
+                    <span v-if="obj.isfinished">
+                        <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
+                        <label :for="obj.id"> Group</label>
+                    </span>
+                    <p v-else>Unfinished</p>
                 </template>
             </Datatable>
 			<!-- </table> -->

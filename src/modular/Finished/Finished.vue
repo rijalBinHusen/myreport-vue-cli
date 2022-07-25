@@ -34,7 +34,7 @@
             <!-- lihat info detail -->
             <Button value="Details" type="button" secondary small @trig="details(prop)"/>
             <!-- share detail -->
-            <Button v-if="prop?.isfinished" @trig="share(prop)" value="Share" type="button" primary small/>
+            <!-- <Button v-if="prop?.isfinished" @trig="share(prop)" value="Share" type="button" primary small/> -->
         </template>
         <!-- checkbox -->
         <template #th>
@@ -132,7 +132,7 @@ export default {
             this.groupedObject.push({ ...obj })
         },
         pickPeriode() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show", criteria: {isfinished: true}});
+            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show"});
         },
 		details(ev) {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});

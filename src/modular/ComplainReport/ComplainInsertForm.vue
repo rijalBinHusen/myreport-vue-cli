@@ -7,7 +7,7 @@
             <label for="name">Supervisor:</label>
             <Select 
                 id="name"
-                :options="$store.getters['Supervisors/enabled']" 
+                :options="$store.state.Supervisors.lists" 
                 judul="Supervisor"
                 value="id"
                 text="name"

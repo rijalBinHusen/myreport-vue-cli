@@ -17,6 +17,7 @@
     </div>
 
             <Datatable
+                v-if="renderTable"
                 :datanya="table?.lists"
                 :heads="table?.heads"
                 :keys="table?.keys"
@@ -56,6 +57,7 @@ export default {
     data() {
         return {
             inserted: true,
+            renderTable: true,
             grouped: [],
         }
     },
@@ -159,6 +161,14 @@ export default {
                 obj: { ...obj, edit: true }
             });
         },
+    },
+    watch: {
+        inserted() {
+            this.renderTable = false
+            setTimeout(() => {
+                this.renderTable = true
+            }, 300)
+        }
     },
     components: {
         Button,
