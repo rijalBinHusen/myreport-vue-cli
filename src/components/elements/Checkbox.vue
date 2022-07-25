@@ -1,6 +1,6 @@
 <template>
-    <input class="w3-check" type="checkbox" @click="check()">
-    <label class="w3-margin-left"> {{ label }}</label>
+    <input :id="label" class="w3-check" type="checkbox" @click="check()">
+    <label :for="label" class="w3-margin-left"> {{ label }}</label>
     <p></p>
 </template>
 

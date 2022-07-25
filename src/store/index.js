@@ -15,11 +15,17 @@ import Baseitem from "../modular/BaseItem/Baseitem";
 import Headspv from "../modular/Headspv/Headspv";
 import Problem from "../modular/ProblemReport/ProblemReport";
 import Document from "./modules/Document";
+import Cases from "../modular/CasesReport/Cases";
+import Complains from "../modular/ComplainReport/Complains";
+import FollowUp from "../modular/FollowUp/FollowUp";
 
 export default createStore({
   modules: {
-    Document,
+    FollowUp,
+    Complains,
+    Cases,
     Problem,
+    Document,
     Headspv,
     Baseitem,
     Navbar,
@@ -41,8 +47,8 @@ export default createStore({
       "Supervisors",
       "Headspv",
       "Baseitem",
-      "Problem",
-      "Document",
+      "Cases",
+      "Complains",
     ],
   },
   mutations: {},
@@ -52,17 +58,15 @@ export default createStore({
       // await dispatch("Backup/check", {}, { root: true });
 
       // insert record to indexeddb and return as promise
-      myfunction.append(value).then((result) => {
+      return myfunction.append(value).then((result) => {
         // commit to module e.g 'Group/append
         commit(`${value.store}/append`, result.data, { root: true });
       });
       //return promise 130 ms and then resolve
-      return myfunction.tunggu(130);
     },
 
     appendWoutGenerateId({}, value) {
-      myfunction.append(value);
-      return myfunction.tunggu(130);
+      return myfunction.append(value);
     },
 
     delete({ commit, rootGetters }, value) {
@@ -88,14 +92,19 @@ export default createStore({
       // update indexeddb
       myfunction.update(value);
       // send to module
-      commit(`${value.store}/update`, value.obj, { root: true });
+      commit(
+        `${value.store}/update`,
+        { ...value.obj, id: value?.criteria?.id },
+        { root: true }
+      );
       // tunggu 130 ms
       return myfunction.tunggu(130);
     },
 
     updateOnly({}, payload) {
       // payload = {store: "BaseReportStock", criteria: { id: stk22050003 }, obj: { problem: [] }}
-      myfunction.update(payload)
+      myfunction.update(payload);
+      return myfunction.tunggu(130);
     },
 
     getStart({ commit, state, rootGetters }) {
@@ -105,6 +114,8 @@ export default createStore({
           .getData({
             store: val.toLowerCase(),
             limit: 200,
+            orderBy: "id",
+            desc: true,
           })
           .then((result) => {
             if (result.length > 0) {
@@ -134,21 +145,21 @@ export default createStore({
             if (result?.length > 0) {
               commit(`${value.store}/${value.store.toLowerCase()}`, result, {
                 root: true,
-              }); 
+              });
             }
           });
+      } else {
+        // call the get data functions
+        return myfunction.findData(value).then((result) => {
+          commit(
+            `${value.store}/${value.store.toLowerCase()}`,
+            result ? result : [],
+            {
+              root: true,
+            }
+          );
+        });
       }
-
-      // call the get data functions
-      return myfunction.findData(value).then((result) => {
-        commit(
-          `${value.store}/${value.store.toLowerCase()}`,
-          result ? result : [],
-          {
-            root: true,
-          }
-        );
-      });
     },
     getDataByCriteriaAppend({ commit, rootGetters }, value) {
       // the first letter of value.store must be capital e.g 'Group'
@@ -158,8 +169,8 @@ export default createStore({
           }
       } */
       return myfunction.findData(value).then((result) => {
-        if(result) {
-        commit(`${value.store}/append`, result, { root: true } );
+        if (result) {
+          commit(`${value.store}/append`, result, { root: true });
         }
       });
     },
@@ -191,10 +202,13 @@ export default createStore({
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
       myfunction.reWriteStoreWithKey(payload);
       // setelah store di write biar nunggu dulu, agar browser tidak freez
-      return myfunction.tunggu(8000);
+      if (payload.obj.length < 30) {
+        return myfunction.tunggu(3000);
+      }
+      return myfunction.tunggu(payload.obj.length * 25);
     },
     emptyStore({}, payload) {
-      myfunction.deleteCollection(payload);
+      myfunction.deleteCollection(payload.toLowerCase());
       // setelah store dihapus biar nunggu 4 detik, agar browser tidak freez
       return myfunction.tunggu(4000);
     },

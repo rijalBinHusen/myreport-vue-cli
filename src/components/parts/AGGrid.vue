@@ -1,32 +1,40 @@
 <template>
 <div>
-  <div class="w3-padding w3-teal w3-center w3-margin-bottom">
-    <slot></slot>
-  <Button class="w3-bar-item" small primary value="Export" type="button" />
-  <span class="w3-dropdown-hover">
-  <Button  class="w3-bar-item w3-margin-right" small primary value="Show column" type="button" />
-    <span class="w3-small w3-dropdown-content w3-bar-block w3-border">
-      <label
-        class="w3-bar-item w3-button w3-hover-pale-blue"
-        v-for="col in originColumn"
-        :key="col.headerName"
-      >
-        <input
-          type="checkbox"
-          :value="col.headerName"
-          :checked="columnShow.includes(col.headerName)"
-          @click="toggleColumn(col.headerName)"
-        />
-        {{ col.headerName }}
-      </label>
+  <div class="w3-padding-large w3-teal w3-center w3-margin-bottom">
+    <slot name="button"></slot>
+    <span class="w3-dropdown-hover">
+    <Button  class="w3-bar-item w3-margin-right" small primary value="Show column" type="button" />
+      <span class="w3-small w3-dropdown-content w3-bar-block w3-border">
+        <label
+          class="w3-bar-item w3-button w3-hover-pale-blue"
+          v-for="col in originColumn"
+          :key="col.headerName"
+        >
+          <input
+            type="checkbox"
+            :value="col.headerName"
+            :checked="columnShow.includes(col.headerName)"
+            @click="toggleColumn(col.headerName)"
+          />
+          {{ col.headerName }}
+        </label>
+      </span>
     </span>
-  </span>
-  <Button class="w3-bar-item w3-white" small value="-" type="button"  @trig="width = width - 10" />
-  <span class="w3-margin-right w3-bar-item">Width</span>
-  <input type="number" step="10" v-model="width" class="w3-white w3-margin-right w3-bar-item" style="width:100px;"  />
-  <Button class="w3-bar-item w3-white" small primary value="+" type="button" @trig="width = width + 10" />
-  <Button v-if="edited.length > 0" class="w3-bar-item" small primary value="Save" @trig="saveChanged" type="button" />
-  <Button v-else class="w3-bar-item" small danger value="Exit" type="button" @trig="exit" />
+    <!-- Width excel -->
+    <!-- <Button class="w3-bar-item w3-white" small value="-" type="button"  @trig="width = width - 10" /> -->
+    <span class="w3-margin-right w3-bar-item">Width</span>
+    <input type="number" step="10" v-model="width" class="w3-white w3-padding w3-round-large w3-margin-right w3-bar-item" style="width:100px;"  />
+    <!-- <Button class="w3-bar-item w3-white" small primary value="+" type="button" @trig="width = width + 10" /> -->
+    <!-- Width excel -->
+    <!-- Height excel -->
+    <!-- <Button class="w3-bar-item w3-white" small value="-" type="button"  @trig="height = height - 10" /> -->
+    <span class="w3-margin-right w3-bar-item">Height</span>
+    <input type="number" step="10" v-model="height" class="w3-white w3-padding w3-round-large w3-margin-right w3-bar-item" style="width:100px;"  />
+    <!-- <Button class="w3-bar-item w3-white" small primary value="+" type="button" @trig="height = height + 10" /> -->
+    <!-- Height excel -->
+    <Button v-if="edited.length > 0" class="w3-bar-item" small primary value="Save" @trig="saveChanged" type="button" />
+    <Button v-else class="w3-bar-item" small danger value="Exit" type="button" @trig="exit" />
+      <slot name="text"></slot>
   </div>
   <ag-grid-vue
     :style="{ 
@@ -151,6 +159,8 @@ export default {
         this.columnShow = tableInfo.column.map((val) => val.headerName)
         // ag grid width
         this.width = tableInfo.width
+        // ag grid height
+        this.height = tableInfo.height
         return
       }
       // else
@@ -165,6 +175,7 @@ export default {
       localStorage.setItem(this.tableName, JSON.stringify({
           column: this.columnDefs,
           width: this.width,
+          height: this.height,
         })
       )
     },
@@ -180,6 +191,9 @@ export default {
   },
   watch: {
     width() {
+      this.saveTableInfo()
+    },
+    height() {
       this.saveTableInfo()
     }
   },

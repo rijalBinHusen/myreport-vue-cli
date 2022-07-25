@@ -3,10 +3,11 @@
         <div>
             <label>Masukkan nama</label>
             <Select 
-            :options="names" 
-            value="id"
-            text="name"
-            @selected="name = $event"
+                judul="Nama"
+                :options="names" 
+                value="id"
+                text="name"
+                @selected="name = $event"
             />
 
             <label class="w3-margin-top">Dari tanggal</label>
@@ -50,7 +51,7 @@ export default {
                     }
                 if(this.name !== 'semua') {
                     if(this.name === "unshared") {
-                        objToSend.criteria.shared = false
+                        objToSend.criteria.shared = "false"
                     } else {
                         objToSend.criteria.name = this.name
                     }
@@ -71,7 +72,6 @@ export default {
             let options = Array.from(this.$store.state.Supervisors.lists)
             // tambahkan option lain
             options.unshift({id: "semua", name: "Semua SPV" })
-            options.unshift({id: "", name: "Pilih nama" })
             options.push({id: "unshared", name: "Cari periode yang belu dishare"})
             // kembalikan agar tidak reactive
             return JSON.parse(JSON.stringify(options))

@@ -33,7 +33,8 @@
                     class="w3-small"
                     listsKey="id"
                     listsValue="isi"
-                    @trig="handleAction({action: 'approve', val: $event, rec: prop.id})"
+                    @trig="handleAction({action: 'approve', val: $event, rec: prop?.id, obj: prop })"
+                    primary
                 />
             </template>
 
@@ -45,7 +46,7 @@
                 <td>
                     <Dropdown
                         v-for="doc in obj.documents" :key="doc.periode2"
-                        :value="doc.periode2"  
+                        :value="doc?.periode2+' | '+doc?.warehouseName.replace('Gudang jadi ', '')"  
                         :lists="[
                             { id: -1, isi: '-1 Hari'},
                             { id: -2, isi: '-2 Hari'},
@@ -54,8 +55,9 @@
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="handleAction({action: 'approve', val: $event, rec: doc?.id})"
+                        @trig="handleAction({action: 'approve', val: $event, rec: doc?.id, obj: doc })"
                         class="w3-small"
+                        primary
                     />
                 </td>
             </template>
@@ -96,7 +98,32 @@ export default {
         },
         handleAction(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            this.$store.dispatch("Document/handleDocument", ev)
+            // konfirm dulu, kalau ada selisih stock biar diforo dulu
+            let promise = new Promise(resolve => {
+                // console.log(ev?.obj)
+                if(ev?.obj?.itemVariance) {
+                    let confirm = window.confirm("Terdapat selisih stock, silahkan difoto dulu")
+                    if(confirm) {
+                        resolve(true)
+                    }
+                    resolve(false)
+                }
+                if(!ev?.obj?.isfinished) {
+                    window.alert("Laporan masih belum selesai!")
+                    resolve(false)
+                }
+                resolve(true)
+            }) 
+            
+            const { obj, ...record } = ev
+            // console.log(record, confirm)
+            promise.then((val) => {
+                if(val) {
+                    this.$store.dispatch("Document/handleDocument",  record)
+                    // console.log(val)
+                }
+            })
+            // console.log(confirm)
         },
         renewLists() {
             this.viewByPeriode

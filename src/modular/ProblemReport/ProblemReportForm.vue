@@ -5,8 +5,8 @@
             <div class="w3-row">
                 <!-- Tanggal mulai -->
                 <div class="w3-col s3 w3-padding">
-                    <label for="tanggalMulai">Tanggal mulai: </label>
-                    <Datepicker id="tanggalMulai" class="w3-input w3-border w3-margin-top" v-model="tanggalMulaiModel" />
+                    <label for="periode">Tanggal mulai: </label>
+                    <Datepicker id="periode" class="w3-input w3-border w3-margin-top" v-model="periodeModel" />
                 </div>
 
                 <!-- Nama gudang -->
@@ -15,7 +15,8 @@
                     <Select 
                         id="warehouse"
                         class="w3-border"
-                        :options="warehouses"
+                        :options="$store.state.Warehouses.lists"
+                        judul="Gudang"
                         value="id"
                         text="name"
                         :inselect="problem.warehouse"
@@ -28,8 +29,9 @@
                     <label for="nameSpv">Nama supervisor</label>
                     <Select 
                         id="nameSpv"
-                        :options="names" 
+                        :options="$store.getters['Supervisors/enabled']" 
                         class="w3-border"
+                        judul="Supervisor"
                         value="id"
                         text="name"
                         :inselect="problem.nameSpv"
@@ -57,8 +59,8 @@
                     <Select 
                         class="w3-border"
                         id="shiftMulai"
+                        judul="Shift"
                         :options="[
-                            { id: '', title: 'Pilih shift' }, 
                             { id:1, title: 'Shift 1'},
                             { id:2, title: 'Shift 2'},
                             { id:3, title: 'Shift 3'},
@@ -79,7 +81,8 @@
                     <label>Nama kabag</label>
                     <Select 
                         class="w3-border"
-                        :options="headspv" 
+                        judul="Kabag"
+                        :options="$store.getters['Headspv/enabled']" 
                         value="id"
                         text="name"
                         :inselect="problem.nameHeadSpv"
@@ -113,8 +116,8 @@
                     <Select 
                         class="w3-border"
                         id="shiftMulai"
+                        judul="Shift"
                         :options="[
-                            { id: '', title: 'Pilih shift' }, 
                             { id:1, title: 'Shift 1'},
                             { id:2, title: 'Shift 2'},
                             { id:3, title: 'Shift 3'},
@@ -157,8 +160,8 @@
             <Button danger value="Exit" class="w3-right" type="button" @trig="$emit('exit')"/>
             <Button primary :value="id ? 'Update' : 'Submit'" class="w3-right" type="button"/>
             <span class="w3-xlarge">
-                <label for="isfinished">Finished?</label>
-                <input type="checkbox" class="w3-xlarge" v-model="problem.isfinished" id="isfinished">
+                <label for="isFinished">Finished?</label>
+                <input type="checkbox" class="w3-xlarge" v-model="problem.isFinished" id="isFinished">
             </span>
         </form>
     </div>
@@ -175,7 +178,7 @@ import Button from "../../components/elements/Button.vue"
 export default {
     data() {
         return {
-            tanggalMulaiModel: "",
+            periodeModel: "",
             dlModel: "",
             dlPanjangModel: "",
             tanggalSelesaiModel: "",
@@ -184,7 +187,7 @@ export default {
                 nameSpv: "",
                 nameHeadSpv: "",
                 item: "",
-                tanggalMulai: "",
+                periode: "",
                 shiftMulai: "",
                 pic: "",
                 dl: "",
@@ -196,45 +199,18 @@ export default {
                 picPanjang: "",
                 tanggalSelesai: "",
                 shiftSelesai: "",
-                isfinished: "false",
+                isFinished: false,
             }
         }
     },
     computed: {
         ...mapState({
-            _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
             _PROBLEM: state => JSON.parse(JSON.stringify(state.Problem.lists))
         }),        
         ...mapGetters({
-            GET_SPVENABLE: "Supervisors/enabled",
             GET_DATEFORMAT: "dateFormat",
-            GET_HEADSPVENABLE: "Headspv/enabled",
             GET_PROBLEMID: "Problem/problemId"
         }),
-        names() {
-            // ambil semua nama dari state
-            let options = Array.from(this.GET_SPVENABLE)
-            // tambahkan option lain
-            options.unshift({id: "", name: "Pilih nama" })
-            // kembalikan agar tidak reactive
-            return options
-        },
-        warehouses() {
-            let rec = this._WAREHOUSES
-            rec.unshift({
-                id: "",
-                name: "Select warehouse"
-            })
-            return rec
-        },        
-        headspv() {
-            // ambil semua nama dari state
-            let options = this.GET_HEADSPVENABLE
-            // tambahkan option lain
-            options.unshift({id: "", name: "Pilih nama" })
-            // kembalikan agar tidak reactive
-            return options
-        },
     },
     methods: {
         ...mapActions({
@@ -245,15 +221,15 @@ export default {
             this.$emit("exit")
             if(this.id) {
                 this.UPDATE({
-                store: "Problem",
-                obj: this.problem,
-                criteria: { id: this.id }
+                    store: "Problem",
+                    obj: { ...this.problem },
+                    criteria: { id: this.id }
                 })
                 return
             }
             this.APPEND({
                 store: "Problem",
-                obj: Object.assign( { id: this._PROBLEM[0] ? this._PROBLEM[0].id : "PRB22050000" }, this.problem)
+                obj: { ...this.problem },
             })
         }
     },
@@ -265,14 +241,14 @@ export default {
         Select,
     },
     watch: {
-        tanggalMulaiModel(newVal, oldVal) {
-            if(newVal === oldVal) {
-                return
-            }
-            this.problem.tanggalMulai = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
+        periodeModel(newVal, oldVal) {
+            this.problem.periode = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
             // let tanggalSelesai = new Date(newVal.setFullYear(newVal.getFullYear() + 1))
             // this.problem.tanggalSelesai = this.GET_DATEFORMAT({format: "ymdTime", time: tanggalSelesai})
-            this.tanggalSelesaiModel = new Date(this.problem.tanggalMulai + 31536000000)
+            // 1 add 1 year
+            this.tanggalSelesaiModel = new Date(newVal.getTime() + 31536000000)
+            this.dlModel = new Date(newVal.getTime() + (1000*60*60*24*7))
+            this.dlPanjangModel = new Date(newVal.getTime() + (1000*60*60*24*14))
         },
         dlModel(newVal, oldVal) {
             if(newVal === oldVal) {
@@ -294,13 +270,13 @@ export default {
         },
     },
     created() {
-        this.tanggalMulaiModel =  new Date();
+        this.periodeModel =  new Date();
         this.dlModel = new Date();
         this.dlPanjangModel = new Date();
         this.tanggalSelesaiModel = new Date();
         if(this.id) {
             this.problem = this.GET_PROBLEMID(this.id)
-            this.tanggalMulaiModel = new Date(this.problem.tanggalMulai)
+            this.periodeModel = new Date(this.problem.periode)
             this.dlModel = new Date(this.problem.dl)
             this.dlPanjangModel = new Date(this.problem.dlPanjang)
             this.tanggalSelesaiModel = new Date(this.problem.tanggalSelesai)

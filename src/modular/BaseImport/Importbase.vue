@@ -19,21 +19,30 @@
         />
 
             <Datatable
-            :datanya="lists"
-            :heads="['Periode', 'Gudang', 'Nama file', 'Shee stock', 'Sheet clock']"
-            :keys="['periode2', 'warehouseName', 'fileName', 'stock', 'clock']"
-            option
-            id="tableImportBase"
-            v-slot:default="slotProp"
-            v-if="!periode"
+                :datanya="$store.getters['BaseReportFile/lists']"
+                :heads="['Periode', 'Gudang', 'Nama file', 'Shee stock', 'Sheet clock']"
+                :keys="['periode2', 'warehouseName', 'fileName', 'stock', 'clock']"
+                option
+                id="tableImportBase"
+                #default="{ prop }"
+                v-if="!periode"
             >
 
-            <div v-if="!slotProp.prop.imported">
-                <Button value="Import file" :datanya="slotProp.prop.id" primary type="button" small @trig="launch($event)" />
-            </div>
-            <div v-else>
-				<Button value="Delete imported" type="button" :datanya="slotProp.prop.id" danger small @trig="remove($event)" />
-            </div>
+                <div v-if="!prop.imported">
+                    <Button value="Import file" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="launch($event)" />
+                </div>
+                <div v-else>
+    				<Button 
+                        v-if="!prop?.isRecordFinished" 
+                        value="Delete imported" 
+                        type="button" 
+                        :datanya="prop.id" 
+                        danger 
+                        class="w3-tiny" 
+                        @trig="remove($event)" 
+                    />
+                </div>
+
             </Datatable>
 			
         </div>
@@ -43,8 +52,9 @@
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import { mapState, mapGetters} from "vuex"
-import * as XLSX from "xlsx";
+import { mapGetters} from "vuex"
+import periodePickerProps from "../../composable/periodePickerProps"
+import readExcelFile from "../../composable/readExcel"
 
 export default {
     name: "Collect",
@@ -61,7 +71,7 @@ export default {
     },
     methods: {
         pickPeriode() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "BaseReportFile", btnValue: "Show"});
+            this.$store.commit("Modal/active", periodePickerProps('BaseReportFile'));
         },
         launch(ev) {
             this.$refs.importerBase.click();
@@ -70,88 +80,26 @@ export default {
         // remove all data that was imported
         async remove(ev) {
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
-            }
-
-            let infobase = this.BASEID(ev)
-
-            // bring up the loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-
-            //delete from state
-            this.$store.commit("BaseReportStock/deleteByParam", {
-                parameter: "parent",
-                value: ev
-            })
-            //delete from idb
-            await this.$store.dispatch("deleteByParam", { 
-                store: "BaseReportStock", 
-                parameter: "parent", 
-                value: ev,
-                period: infobase.periode
-            })
-            //delete from state
-            this.$store.commit("BaseReportClock/deleteByParam", {
-                parameter: "parent",
-                value: ev
-            })
-            //delete from idb
-            await this.$store.dispatch("deleteByParam", { 
-                store: "BaseReportClock", 
-                parameter: "parent", 
-                value: ev,
-                period: infobase.periode
-            })
-
-            // update the baseReport file record
-            infobase.fileName = false
-            infobase.stock = false
-            infobase.clock = false
-            infobase.imported = false
-            this.$store.dispatch("update", {
-                store: "BaseReportFile", 
-                obj: infobase,
-                criteria: { id: infobase.id }
-            })
-
-            
-            // close the loader
-            this.$store.commit("Modal/active");
+            if(!sure) { return; }
+            this.$store.dispatch("BaseReportFile/emptyRecord", ev)
         },
         // read file and put to the state
         readExcel(e) {
+            // if(!e.target.files[0]) {
+            //     return
+            // }
             // info of record
-            let infobase = this.lists.find((val) => val.id === this.importId)
+            let infobase = this.BASEID(this.importId)
             // bring the loader up
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-			const file = e.target.files[0]
-			let info = { fileName: file.name }
-			
-			const promise = new Promise ((resolve, reject) => {
-				const fileReader = new FileReader();
-				fileReader.readAsArrayBuffer(file);
-				
-				fileReader.onload = (e) => {
-					const bufferArray = e.target.result;
-					
-					// const wb = XLSX.read(bufferArray, {type: "buffer"});
-					const wb = XLSX.read(bufferArray);
-					info.sheetNames = wb.SheetNames
-					info.sheets = wb.Sheets
-					
-					resolve(info)
-				};
-				
-				fileReader.onerror=((error) => { reject(error) })
-			})
-			
-			promise.then((d) => {
+            readExcelFile(e.target.files[0]).then((d) => {
+                let warehouseName = this.$store.getters["Warehouses/warehouseId"](infobase?.warehouse)?.name
+                let periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: infobase?.periode })
                 // send data excel to vuex
                 this.$store.commit("BaseReportFile/importTemp", d)
                 // bring the form up and send the baseid info to the modal state
                 this.$store.commit("Modal/active", {
-                    judul: infobase.warehouseName + " " + infobase.periode2, 
+                    judul: warehouseName + " " + periode2, 
                     form: "BaseReportFile",
                     obj: infobase,
                 });
@@ -159,31 +107,17 @@ export default {
 		}
     },
     computed: {
-        ...mapState({
-            _BASEREPORT: state => JSON.parse(JSON.stringify(state.BaseReportFile.lists)),
-        }),
         ...mapGetters({
-            WAREHOUSE_ID: "Warehouses/warehouseId",
-            DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId"
         }),
-        lists() {
-			let result = []
-			this._BASEREPORT.forEach((val) => {
-                if(val) {
-                    val.warehouseName = this.WAREHOUSE_ID(val.warehouse).name
-                    val.periode2 = this.DATEFORMAT({ format: "dateMonth", time: val.periode})
-                    val.fileName = val.fileName ? val.fileName : "Not imported yet"
-                    val.stock = val.fileName ? val.stock : "Not imported yet"
-                    val.clock = val.fileName ? val.clock : "Not imported yet"
-                    result.push(val)
-                }
-			})
-            return result
-        },
     },
-    created() {
-        this.$store.dispatch("Baseitem/getAllItem")
+    async mounted() {
+        // get all item name
+        await this.$store.dispatch("Baseitem/getAllItem")
+        // get the 3 days before today basereportfile record
+        await this.$store.dispatch("BaseReportFile/recordStarter")
+        // get all problem guys
+        await this.$store.dispatch("Problem/getProblemFromDB");
     },
 }
 </script>

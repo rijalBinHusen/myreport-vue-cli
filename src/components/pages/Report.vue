@@ -44,11 +44,10 @@ export default {
     },
     methods: {
         launch(id) {
-            if(id === "repot001") {
+            if(id === "report001") {
             this.reportNow = id
             // luncurkan periode picker
             this.$store.commit("Modal/active", { judul: "Set record to export", form: "PeriodePicker", store: "Document", btnValue: "Export"});
-
             } else if (id === "report002") {
                 this.exportBaseReport()        
             }

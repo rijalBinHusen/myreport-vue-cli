@@ -1,44 +1,19 @@
 <template>
     <div>
         <label class="w3-margin-top">Nama gudang</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="base.warehouseName + ' / Shift ' + shift" disabled />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['dateFormat']({ format: 'dateMonth', time: base?.periode }) + ' ' + warehouseName + ' / Shift ' + shift" disabled />
         <!-- Supervisors -->
-        <label>Pilih nama supervisors</label>
-        <Select
-        judul="supervisor" 
-        :options="names" 
-        value="id"
-        text="name"
-        @selected="name = $event"
-        />
+        <label>Nama supervisors</label>
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Supervisors/spvId'](name)?.name" disabled />
         <!-- Head spv -->
-        <label>Pilih nama kabag</label>
-        <Select 
-            :options="headspv" 
-            judul="kabag"
-            value="id"
-            text="name"
-            @selected="headSpv = $event"
-            :inselect="headSpv"
-        />
-        <label class="w3-margin-top">Nama document report</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="nameReport" disabled />
+        <label>Nama kabag</label>
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="$store.getters['Headspv/headId'](headSpv)?.name" disabled />
         <div class="w3-row">
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total do</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalDo" />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total kendaraan</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalKendaraan" />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Total waktu</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="totalWaktu" />
-            </div>
-            <div class="w3-col s2 w3-padding-top w3-margin-right">
-                <label class="w3-margin-top">Standart waktu</label>
-                <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="standartWaktu / 10" disabled />
+            <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-small">
+                <label class="w3-margin-top">{{ inp.label }}</label>
+                <input v-if="inp.editable" type="number" class="w3-input w3-margin-top w3-margin-bottom" v-model="details[inp.valueFrom]"/>
+                <input v-else type="number" class="w3-input w3-margin-top w3-margin-bottom" :value="details[inp.valueFrom]" disabled/>
+
             </div>
         </div>
         <Button 
@@ -50,7 +25,7 @@
             @trig="this.$emit('exit')" 
         />
         <Button 
-            v-if="nameReport && nameReport !== 'Not found'"
+            v-if="documentRecord?.collected && !documentRecord.isfinished"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -58,13 +33,16 @@
             small
             @trig="save" 
         />
+        <div v-if="documentRecord?.collected && !documentRecord.isfinished" class="w3-right w3-large w3-margin-right">
+            <label for="generate">Generate report </label>
+            <input type="checkbox" id="generate" v-model="generateReport" />
+        </div>
     </div>
 </template>
 
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
-import myfunction from "../../myfunction"
 
 export default {
     components: {
@@ -74,12 +52,13 @@ export default {
     data() {
         return {
             name: null,
-            nameReport: null,
             headSpv: null,
-            document: null,
+            documentRecord: null,
+            warehouseName: "",
+            details: "",
+            generateReport: false,
         }
     },
-    methods: {},
     emits: ["exit", "finished"],
     props: {
         base: {
@@ -90,84 +69,51 @@ export default {
             type: String,
             required: true,
         },
-        totalDo: {
-            type: Number,
+        detailsClock: {
+            type: Object,
             required: true,
         },
-        totalKendaraan: {
-            type: Number,
-            required: true,
-        },
-        totalWaktu: {
-            type: Number,
-            required: true,
-        },
-        standartWaktu: {
-            type: Number,
+        detailsStock: {
+            type: Object,
             required: true,
         }
     },
     methods: {
         save() {
-            this.$emit("finished", {id: this.document?.id})
-            this.$store.dispatch("Document/handleDocument",
-                {
-                    action: "finished",
-                    val: {
-                        isfinished: true,
-                        finished: new Date().getTime(),
-                        baseReportFile: this.base.id,
-                        totalDO: this.totalDo,
-                        totalKendaraan: this.totalKendaraan,
-                        totalWaktu: this.totalWaktu,
-                        standartWaktu: this.standartWaktu
-                    },
-                    rec: this.document?.id
-                }
-            )
             // console.log(this.document)
+            this.$emit("finished", Object.assign({
+                parentDocument: this.documentRecord?.id,
+                generateReport: this.generateReport,
+            }, this.details))
+            this.$emit('exit')
         },
     },
     computed: {
-        names() {
-            return this.$store.getters["Supervisors/enabled"].filter((val) => val.warehouse === this.base.warehouse)
-        },        
-        headspv() {
-            return this.$store.getters["Headspv/enabled"]
-        },
+        inputs() {
+            return [
+                { label: "Total produk keluar", valueFrom: "totalQTYOut", editable: false },
+                { label: "Total item bergerak", valueFrom: "totalItemMoving", editable: false },
+                { label: "Total produk masuk", valueFrom: "totalQTYIn", editable: false },
+                { label: "Coret DO", valueFrom: "planOut", editable: false },
+                { label: "Jumlah item keluar", valueFrom: "totalItemKeluar", editable: false },
+                { label: "Total DO", valueFrom: "totalDo", editable: true },
+                { label: "Total waktu", valueFrom: "totalWaktu", editable: true },
+                { label: "Total kendaraan", valueFrom: "totalKendaraan", editable: true },
+                { label: "Produk tidak FIFO",  valueFrom: "totalProductNotFIFO", editable: true},
+                { label: "Produk variance", valueFrom: "itemVariance", editable: true },
+            ]
+        }
     },
-    watch: {
-        name(newVal, oldVal) {
-            if(newVal === oldVal) {
-                return
-            }
-            myfunction.findData({
-                store: "Document",
-                criteria: { 
-                    periode: this.base.periode,
-                    name: newVal,
-                    shift: this.shift,
-                }
-            }).then((result) => {
-                if(!result) {
-                    this.nameReport = "Not found"
-                    return
-                }
-                this.document = result[0]
-                // periode
-                this.nameReport = this.$store.getters["dateFormat"]({format: 'dateMonth', time: result[0].periode})
-                //dapatkan info supervisors
-                let info = this.$store.getters["Supervisors/spvId"](result[0].name)
-                // nama gudang
-                this.nameReport += " / "+info.warehouseName
-                // nama karu
-                this.nameReport += " / Supervisors "+info.name
-                // shift
-                this.nameReport += " / Shift "+info.shift
-                // head spv
-                this.headSpv = this.document.head
-
-            })
+    mounted() {
+        this.documentRecord = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.base?.periode, this.base?.warehouse, this.shift)
+        this.name = this.documentRecord?.name
+        this.headSpv = this.documentRecord?.head
+        this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
+        this.itemVariance = this.$store.getters["Problem/problemActiveBySpvAndPeriode"](this.name, this.base.periode).length
+        this.details = Object.assign(this.detailsClock, this.detailsStock, { itemVariance: 0})
+        // console.log(this.documentRecord,this.base?.periode, this.base?.warehouse, this.shift)
+        if(!this.documentRecord?.collected) {
+            alert("The document record status not collected yet")
         }
     },
 }

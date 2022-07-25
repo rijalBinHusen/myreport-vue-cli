@@ -2,12 +2,13 @@
     <div>
         <div v-if="!form">
             <Button primary value="Tambah" class="w3-right w3-margin-top" type="button" @trig="form = true"/>
+            <Button primary value="Set periode" class="w3-right w3-margin-top" type="button" @trig="pickPeriode" />
             <Datatable
-                :datanya="lists"
+                :datanya="$store.getters['Problem/lists']"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Status']"
-                :keys="['namaGudang', 'namaItem', 'masalah', 'tanggalMulai', 'status']"
+                :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'status']"
                 option
-                id="problemReport"
+                id="tableProblemReport"
                 #default="{ prop }"
             >
                 <Button 
@@ -44,6 +45,14 @@ export default {
         ProblemReportForm,
     },
     methods: {
+        pickPeriode() {
+            this.$store.commit("Modal/active", { 
+                judul: "Set record to show", 
+                form: "PeriodePicker", 
+                store: "Problem",
+                btnValue: "Show"
+            });
+        },
         edit(ev) {
             this.editId = ev
             this.form = true
@@ -51,20 +60,16 @@ export default {
         duplicate(ev){
             let confirm = window.confirm("Apakah anda yakin akan menduplikat record tersebut?")
             if(!confirm) { return }
-            let record = this.$store.getters["Problem/problemId"](ev)
-            delete record.id
+
+            const { id, periode, ...record } = this.$store.getters["Problem/problemId"](ev)
+
             this.$store.dispatch("append",
             {
                 store: "Problem",
-                obj: Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record)
+                obj: Object.assign(record, { periode: new Date().getTime() })
             })
             // delete record.id
             // console.log(Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record))
-        }
-    },
-    computed: {
-        lists() {
-            return this.$store.getters["Problem/lists"]
         }
     },
     data() {
@@ -72,6 +77,10 @@ export default {
             form: false,
             editId: "",
         }
+    },
+    async mounted() {
+        await this.$store.dispatch("Baseitem/getAllItem");
+        await this.$store.dispatch("Problem/getProblemFromDB");
     },
     name: "ProblemReport",
 }

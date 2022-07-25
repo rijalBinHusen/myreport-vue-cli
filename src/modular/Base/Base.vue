@@ -8,8 +8,18 @@
             @exit="excelMode = false"
             @save="save($event)"
             rowHeight="70"
-        >
-            <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
+        >   
+            <template #button>
+                <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
+            </template>
+            <template #text>
+                {{ $store.getters["dateFormat"]({format: "dateMonth", time: Number(selectedPeriode) })
+                    + ", " +
+                    $store.getters["Warehouses/warehouseId"](selectedWarehouse)?.name
+                    + ", Shift: " +
+                     shift 
+                }}
+            </template>
         </AGGrid>
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
@@ -23,9 +33,8 @@
             />
                 <!-- Date Base report -->
                 <Select 
-                  v-if="listsPeriode.length > 0"
                   class="w3-col s1 w3-margin-right"
-                  :options="listsPeriode" 
+                  :options="$store.getters['BaseReportFile/dateReport']" 
                   value="periode"
                   text="periode2"
                   @selected="selectedPeriode = $event"
@@ -35,7 +44,7 @@
 
                 <!-- Warehouse Base report -->
                 <Select 
-                  v-if="listsWarehouse.length > 0"
+                  v-if="listsWarehouse.length"
                   class="w3-col s2 w3-margin-right"
                   :options="listsWarehouse" 
                   value="warehouse"
@@ -47,45 +56,45 @@
 
                 <!-- Sheet report -->
                 <Select 
-                v-if="listsWarehouse.length > 0"
-                class="w3-col s1 w3-margin-right"
-                :options='[
-                    { id: "clock", title: "Clock" },
-                    { id: "stock", title: "Stock" },
-                ]'
-                value="id"
-                text="title"
-                judul="sheet"
-                :inselect="sheet"
-                @selected="sheet = $event"
+                    v-if="selectedWarehouse.length"
+                    class="w3-col s1 w3-margin-right"
+                    :options='[
+                        { id: "clock", title: "Clock" },
+                        { id: "stock", title: "Stock" },
+                    ]'
+                    value="id"
+                    text="title"
+                    judul="sheet"
+                    :inselect="sheet"
+                    @selected="sheet = $event"
                 />            
                 <!-- Shift -->
-                <Select 
-                v-if="listsWarehouse.length > 0"
-                class="w3-col s1 w3-margin-right"
-                :options="[
-                    { id:1, title: 'Shift 1'},
-                    { id:2, title: 'Shift 2'},
-                    { id:3, title: 'Shift 3'},
-                ]" 
-                judul="shift"
-                value="id"
-                text="title"
-                :inselect="shift"
-                @selected="shift = $event"
+                    <Select 
+                    v-if="selectedWarehouse.length"
+                    class="w3-col s1 w3-margin-right"
+                    :options="[
+                        { id:1, title: 'Shift 1'},
+                        { id:2, title: 'Shift 2'},
+                        { id:3, title: 'Shift 3'},
+                    ]" 
+                    judul="shift"
+                    value="id"
+                    text="title"
+                    :inselect="shift"
+                    @selected="shift = $event"
                 />
                 <!-- oPEN IN EXCEL MODE -->
                 <Button 
-                    v-if="lists.length > 0"
-                    class="w3-left w3-col s2 w3-margin-top w3-margin-right " 
+                    v-if="lists.length"
+                    class="w3-left w3-col s1 w3-margin-top w3-padding " 
                     primary 
-                    value="Excel mode" 
+                    value="Excel" 
                     type="button" 
                     @trig="excelMode = true" 
                 />
                 <!-- MArk as finished -->
-                <Button 
-                    v-if="base && sheet === 'stock' && shift && lists.length > 0 && !lists[0]?.parentDocument"
+                <Button
+                    v-if="lists.length"
                     class="w3-left w3-col s2 w3-margin-top" 
                     primary 
                     value="Mark as finished" 
@@ -101,32 +110,34 @@
           option
           #default="{ prop }"
         >
+            <span v-if="(prop.selisih || (prop.problem && prop.problem.length)) && sheet === 'stock'">
+                <Dropdown
+                    value="Pesan"  
+                    :lists="[
+                        { id: 'apaBaru', isi: 'Apakah selisih baru'},
+                        { id: 'tidakSama', isi: 'Selisih tidak sama'},
+                        { id: 'selesai', isi: 'Sudah kosong'},
+                    ]"
+                    class="w3-small"
+                    listsKey="id"
+                    listsValue="isi"
+                    @trig="message($event, prop)"
+                    secondary
+                />
 
-            <Dropdown
-                v-if="prop.selisih !== 0 || prop.problem.length"
-                value="Pesan"  
-                :lists="[
-                    { id: 'apaBaru', isi: 'Apakah selisih baru'},
-                    { id: 'tidakSama', isi: 'Selisih tidak sama'},
-                ]"
-                class="w3-small"
-                listsKey="id"
-                listsValue="isi"
-                @trig="message($event, prop)"
-            />
-
-            <Dropdown
-                v-if="prop.selisih !== 0 || prop.problem"
-                value="Problem"  
-                :lists="[
-                    { id: 'delete', isi: 'Hapus'},
-                    { id: 'edit', isi: 'Edit'},
-                ]"
-                class="w3-small"
-                listsKey="id"
-                listsValue="isi"
-                @trig="handleProblem($event, prop)"
-            />
+                <Dropdown
+                    value="Problem"  
+                    :lists="[
+                        { id: 'delete', isi: 'Hapus'},
+                        { id: 'edit', isi: 'Edit'},
+                    ]"
+                    class="w3-small"
+                    listsKey="id"
+                    listsValue="isi"
+                    @trig="handleProblem($event, prop)"
+                    primary
+                />
+            </span>
             
             <Button 
                 value="Delete" 
@@ -142,10 +153,8 @@
             v-else 
             :base="base" 
             :shift="shift"
-            :totalDo="totalDo"
-            :totalWaktu="totalWaktu"
-            :totalKendaraan="totalKendaraan"
-            :standartWaktu="standartWaktu"
+            :detailsClock="detailsClock"
+            :detailsStock="detailsStock"
             @exit="BaseFinishForm = false"
             @finished="markAsFinished($event)"
         />
@@ -162,6 +171,7 @@ import { mapState, mapGetters, mapActions } from "vuex"
 import AGGrid from "../../components/parts/AGGrid.vue"
 import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
+// import { shell } from 'electron'
 
 export default {
     components: {
@@ -180,10 +190,10 @@ export default {
             excelMode: false,
             base: null,
             BaseFinishForm: null,
-            totalDo: 0,
-            totalKendaraan: 0,
-            totalWaktu: 0,
-            standartWaktu: 0,
+            // totalDO, totalKendaraan, totalWaktu,
+            detailsClock: "",
+            // end of totalDO, totalKendaraan, totalWaktu,
+            detailsStock: "",
             problem: {},
             unsubscribe: "",
             timeOut: "",
@@ -198,7 +208,6 @@ export default {
         ...mapActions({
             CLOCKBYPARENT: "BaseReportClock/getDataByParent",
             STOCKBYPARENT: "BaseReportStock/getDataByParent",
-            GETALLITEM: "Baseitem/getAllItem",
             DELETEPROBLEMFROMSTOCK: "BaseReportStock/deleteProblem",
         }),
         message(ev, obj) {
@@ -223,15 +232,26 @@ export default {
             //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
             //   "planOut": ""
             // dapatkan nomor telfon dulu
-            let spvInfo = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.selectedPeriode, this.selectedWarehouse, this.shift)
+            let spvInfo = this.$store.getters["Document/spvByPeriodeAndWarehouseAndShift"](this.selectedPeriode, this.selectedWarehouse, this.shift)
+            let warehouseName = this.$store.getters["Warehouses/warehouseId"](this.selectedWarehouse)?.name
             let pesan;
+            let salam = `Assalamu alaikum pak ${spvInfo.name}%0a%0a`
+            let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} ${warehouseName}, untuk item ${obj.itemName}`
+            let selisih = `terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn`
+            let problem = `Dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2.replace('.', ',')}`
+            
             if(ev === "apaBaru") {
-                pesan = `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift}, *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* terdapat selisih sebanyak *${ (obj.awal + obj.in - obj.out) - obj.real }*, apakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
+                pesan = salam+pembuka+' '+selisih+`%0a%0aapakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
             } else if (ev === "tidakSama") {
-                pesan =  `Assalamu alaikum pak ${spvInfo.name}%0a%0aMohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift}, *${spvInfo.warehouseName}*, untuk item *${obj.itemName}* apakah ada selisih baru ya pak?%0%0aaSoalnya dicatatan saya untuk item tersebut ada selisih ${obj.problem2}, sedangkan dilaporan bapak selisihnya sebanyak *${ (obj.awal + obj.in - obj.out) - obj.real }*.`
+                pesan =  salam+pembuka+` apakah ada selisih baru ya pak? %0a%0a${problem} sedangkan dilaporan bapak `+selisih
+            } else if (ev === "selesai") {
+                pesan =  salam+pembuka+' '+selisih+`%0a%0aApakah ada selisih stock yang sudah tersolusikan? %0a${problem}`
             }
-            // console.log(spvInfo.phone)
+            this.$store.dispatch("FollowUp/append", { pesan: pembuka+' '+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
+            // console.log(pesan)
+            // save to the followup
             window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            // shell.openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {
@@ -267,88 +287,96 @@ export default {
             });
         },
         async markAsFinished(ev) {
+            // console.log(ev)
             // buka loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-
             // iterate baseReport stocklist dan tambahkan parent document ev.id
-            for(let i =0; i < this.lists.length; i++) {
-                let record = JSON.parse(JSON.stringify(this.lists[i]))
-                delete record.itemName
-                delete record.selisih
-                delete record.problem2
-                // tunggu sampai update selesai
-                await this.$store.dispatch("update", {
-                    store: "BaseReportStock", 
-                    obj: Object.assign(record, { parentDocument: ev.id }),
-                    criteria: { id: record.id }
-                })
-            }
-
+            // lemparkan ke state saja biar gak bingung
+            // lempar data yang dibutuhkan, parent
+            let criteria = Object.assign(ev, {
+                shift: this.shift,
+                parent: this.base?.id
+            })
+            // tambahkan parent document pada basereportclock
+            await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
+            // tambahkan parent document pada basereportstock
+            await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
+            // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
+            await this.$store.dispatch("Document/handleDocument",
+                {
+                    action: "finished",
+                    val: Object.assign({baseReportFile: this.base.id}, ev),
+                    rec: ev?.parentDocument
+                }
+            )
+            await this.$store.dispatch("BaseReportFile/someRecordFinished", this.base.id)
             // tutup loader
             this.$store.commit("Modal/active");
         },
-        save(ev) {
+        async save(ev) {
             // lempar ke dispatch
-            this.$store.dispatch(
+            // BaseReportClock/saveFromeExcel and renew the lists
+            await this.$store.dispatch(
                     `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}/saveFromExcelMode`, 
                     ev)
+            this.renewLists()
             
         },
-        remove(ev){
+        async remove(ev){
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
-            }
-            let store = this.sheet === "stock" ? 'BaseReportStock' : 'BaseReportClock'
-            //delete from idb
-                this.$store.dispatch("delete", { 
-                    store: store, 
-                    criteria: {id: ev}
+            if(sure) {
+                //delete from idb
+                await this.$store.dispatch("delete", {  
+                    store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
+                    criteria: {id: ev} 
                 })
+                this.renewLists()
+            }
         },
         pickPeriode() {
             this.$store.commit("Modal/active", { 
                 judul: "Set record to show", 
                 form: "PeriodePicker", 
-                store: "BaseReportFile", 
+                store: [ 
+                    { storeName: "BaseReportFile", criteria: { imported: true } },
+                    { storeName: "Document"}
+                ],
                 btnValue: "Show"
             });
         },
         detailsDocument() {
             // total waktu, total kendaraan, total do
-            this.totalWaktu = 0;
-            this.totalDo = 0
-            this.totalKendaraan = 0
             if(this.shift && this.base && this.base.id) {
-                this.standartWaktu = this.STANDARTWAKTU(this.shift, this.base.id)
-                this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id).forEach((val) => {
-                    this.totalDo += 1
-                    this.totalKendaraan += 1
-                    // start
-                    let start = this.GETTIME({format: "time", time: `2022-03-03 ${val.start.slice(0,2)}:${val.start.slice(3,5)}` })
-                    //finish
-                    let finish = this.GETTIME({format: "time", time: `2022-03-03 ${val.finish.slice(0,2)}:${val.finish.slice(3,5)}` })
-                    // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
-                    // finish - start
-                    let total = finish < start ? (finish + 86400000) - start : finish - start
-                    // jaddikan menit, masukan total waktu
-                    this.totalWaktu += (total / 1000) / 60 - (val.rehat * 60 )
-                })
-
+                this.detailsStock = this.$store.getters["BaseReportStock/detailsByShiftAndParent"](this.shift, this.base.id)
+                this.detailsClock = this.$store.getters["BaseReportClock/detailsByShiftAndParent"](this.shift, this.base.id)
             }
         },
-        renewLists() {
-            if(this.shift && this.base) {
-                // console.log("renew lists")
-
-              if(this.sheet === "stock") {
-                this.lists = this.BASEREPORTSTOCKSHIFTANDPARENT(this.shift, this.base.id)
-                return
-              }
-
-              if(this.sheet === "clock") {
-               this.lists = this.BASEREPORTCLOCKSHIFTANDPARENT(this.shift, this.base.id)
-              }
+        async renewLists() {
+            //  || !this.shift || !this.sheet) { return }
+            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.listsWarehouse = this.WAREHOUSEBASEREPORT(this.selectedPeriode)
+            // console.log(this.base)
+            
+            if(this.selectedPeriode && this.selectedWarehouse && this.shift) {
+                // check dulu apakah somerecord exists, 
+                let isExists = 
+                    this.ISCLOCKEXISTS(this.base.id, this.shift) 
+                    && this.ISSTOCKEXISTS( this.base.id, this.shift)
+                // jika exists
+                if(isExists) {
+                    this.detailsDocument()
+                    // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
+                    this.lists = this[`BASEREPORT${this.sheet.toUpperCase()}SHIFTANDPARENT`](this.shift, this.base.id)
+                    return
+                }
+                // // jika tidak exists
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+                // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+                await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+                // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+                await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+                this.$store.commit("Modal/active");
+                this.renewLists()
             }
         }
     },
@@ -360,16 +388,16 @@ export default {
             _BASEID: state => JSON.parse(JSON.stringify(state.BaseReportFile.baseId)),
         }),
         ...mapGetters({
+            ISCLOCKEXISTS: "BaseReportClock/isRecordExistsByParentAndShift",
+            ISSTOCKEXISTS: "BaseReportStock/isRecordExistsByParentAndShift",
             WAREHOUSE_ID: "Warehouses/warehouseId",
             DATEFORMAT: "dateFormat",
             BASEID: "BaseReportFile/baseId",
             BASEITEMKODE: "Baseitem/baseItemKode",
             GETTIME: "dateFormat",
-            DATEBASEREPORT: "BaseReportFile/dateReport",
             WAREHOUSEBASEREPORT: "BaseReportFile/warehouseReport",
             BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
             BASEREPORTCLOCKSHIFTANDPARENT: "BaseReportClock/shiftAndParent",
-            STANDARTWAKTU: "BaseReportStock/standartWaktuByParentAndShift",
             BASEIDSELECTED: "BaseReportFile/getIdByPeriodeByWarehouse"
         }),
         originColumn() {
@@ -393,7 +421,7 @@ export default {
                     { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
                     { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
                     { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
-                    { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + data.awal)'}, 
+                    { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + (+data.awal))'}, 
                 ];
             },
         tableName() {
@@ -405,41 +433,39 @@ export default {
     },
     watch: {
         shift(newVal, oldVal) {
-          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet) { return }
-          this.detailsDocument()
           this.renewLists()
         },
         sheet(newVal, oldVal) {
-          if(!this.selectedPeriode || !this.selectedWarehouse || !this.shift || !this.sheet) { return }
-          this.detailsDocument()
           this.renewLists()
         },
         selectedPeriode(newVal, oldVal) {
-            this.detailsDocument()
-            this.listsWarehouse = this.WAREHOUSEBASEREPORT(newVal)
-            this.sheet = ""
-            this.shift = ""
-            this.lists = []
+            let isExists = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            if(!isExists) {
+                //empty all
+                this.sheet = ""
+                this.shift = ""
+                this.selectedWarehouse = ""
+                this.lists = []
+                    //end of empty all
+            }
+            this.renewLists()
         },
         selectedWarehouse(newVal, oldVal) {
-            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.renewLists()
         },
     },
     async mounted() {
-        // getAllDocumentNotFinished
-        await this.$store.dispatch("Document/getAllDocumentNotFinished")
+        // get all item
+        await this.$store.dispatch("Baseitem/getAllItem");
+        // get all problem
+        await this.$store.dispatch("Problem/getProblemFromDB");
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
-        this.listsPeriode = this.DATEBASEREPORT
-        this.GETALLITEM()
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
-            // jika base report ada yang di update
-            // console.log(mutation)
-            if (mutation.type.includes('BaseReport')) {
-                // console.log("Tunggu 1 detik")
+            if(mutation.type == "BaseReportStock/updateParam" ) {
                 clearTimeout(this.timeOut)
-                this.timeOut = setTimeout( () => {
-                    this.renewLists()
+                this.timeOut = setTimeout(async () => {
+                    this.listsPeriode = this.renewLists()
                 } , 600 )
             }
         });

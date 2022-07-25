@@ -4,8 +4,19 @@ import Localbase from "localbase";
 let db = new Localbase("myreport");
 
 let summary = {};
-let storeToUpdate = [] //store that would to update
+let storeToUpdate = []; //store that would to update
 let timeOut;
+
+function getWeekNumber() {
+  // get today
+  let currentdate = new Date();
+  // get the 1 january day
+  var oneJan = new Date(currentdate.getFullYear(), 0, 1);
+  // get the number of today (currentdate - oneJan) would be epoch number and divide 1 day epoch number
+  var numberOfDays = Math.floor((currentdate - oneJan) / (24 * 60 * 60 * 1000));
+  // get the number of day + 1 + number of days and divide 1 week ( 170 / 7)
+  return Math.ceil((currentdate.getDay() + 1 + numberOfDays) / 7);
+}
 
 function generateId(store) {
   // ambil last id dari summary  // kalau tidak ada bikin baru
@@ -20,20 +31,20 @@ function generateId(store) {
   // 2022
   let fullYear = new Date().getFullYear() + "";
   // 5
-  let monthNow = new Date().getMonth() + 1;
+  let weekNow = getWeekNumber();
   // 22
   let year = lastId.slice(3, 5); //21
   // 05
-  let month = lastId.slice(5, 7); //08
-  //if the month same
-  if (monthNow === Number(month)) {
-    id += year + month;
+  let week = lastId.slice(5, 7); //08
+  //if the week same
+  if (weekNow === Number(week)) {
+    id += year + week;
   }
-  //if the month not same
+  //if the week not same
   else {
-    // if the month 9 change to 09
-    monthNow = monthNow < 9 ? "0" + monthNow : monthNow;
-    id += fullYear.slice(2) + monthNow;
+    // if the week 9 change to 09
+    weekNow = weekNow < 9 ? "0" + weekNow : weekNow;
+    id += fullYear.slice(2) + weekNow;
     increment = "0";
   }
   //0000
@@ -47,30 +58,27 @@ function generateId(store) {
   };
 
   // rekam store untuk diupdate
-  storeToUpdate.includes(store)
-    ? ''
-    : storeToUpdate.push(store)
+  storeToUpdate.includes(store) ? "" : storeToUpdate.push(store);
 
   // write("summary", store, summary[store]);
-  updateSummary()
+  updateSummary();
   // kembalikan
   return result;
 }
 
 function updateSummary() {
   // clear timeOut
-  clearTimeout(timeOut)
+  clearTimeout(timeOut);
 
   // wait 2000ms and update summary
-  timeOut = setTimeout( async () => {
-    
+  timeOut = setTimeout(async () => {
     for (let i = 0; i < storeToUpdate.length; i++) {
       await write("summary", storeToUpdate[i], summary[storeToUpdate[i]]);
     }
 
     // empty store to update
-    storeToUpdate = []
-  }, 2000)
+    storeToUpdate = [];
+  }, 2000);
 }
 
 function write(store, document, value) {
@@ -92,20 +100,20 @@ getStoreWithKey("summary").then((result) => {
   }
 });
 
-function reWriteStoreWithKey (value) {
-    // value = {store: nameOfStore: obj: [Array would to wrote]}
-    db.collection(value.store).set(value.obj, { keys: true });
-  }
+function reWriteStoreWithKey(value) {
+  // value = {store: nameOfStore: obj: [Array would to wrote]}
+  db.collection(value.store).set(value.obj, { keys: true });
+}
 
 export default {
   append: async function (value) {
     //{store: "namastore", obj: {obj: toInput } }
     let id = value?.id ? value?.id : generateId(value.store.toLowerCase());
-    // let result = await 
+    // let result = await
     return db
-            .collection(value.store.toLowerCase())
-            .doc(id)
-            .set(Object.assign({ id: id }, value.obj));
+      .collection(value.store.toLowerCase())
+      .doc(id)
+      .set(Object.assign({ id: id }, value.obj));
   },
   update: function (value) {
     // { criteria: {id: 001}, obj: { obj: objtoupdate } }
@@ -252,7 +260,7 @@ export default {
       return a001.getTime() - 25200000;
     } // hari yang tersebut pada jam 00:00
     else if (a[0] == "dateMonth") {
-      return a002 + "-" + a007[a003];
+      return (a002 > 9 ? a002 : "0" + a002) + "-" + a007[a003];
     } //dapatkan tanggal bulan dd-mmm
     else if (a[0] === "yearMonth") {
       return a004 + (a003 + 1 > 9 ? a003 : "0" + (a003 + 1));
@@ -263,6 +271,15 @@ export default {
       return (
         a004 + "/" + (a003 + 1 > 9 ? a003 + 1 : "0" + (a003 + 1)) + "/" + a002
       );
-    } //dapatkan waktu penuh yyyy/mm/dd
+      //dapatkan waktu penuh yyyy/mm/dd
+    } else if (a[0] === "ddmmyyyy") {
+      return (
+        (a002 > 9 ? a002 : "0" + a002) +
+        "/" +
+        (a003 + 1 > 9 ? a003 + 1 : "0" + (a003 + 1)) +
+        "/" +
+        a004
+      );
+    } //dapatkan waktu penuh dd/mm/yyyy
   },
 };

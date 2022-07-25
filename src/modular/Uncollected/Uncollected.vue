@@ -9,6 +9,17 @@
             listsValue="name"
             @trig="pesanSemua($event)"
             class="w3-right"
+            secondary
+        />
+
+        <Dropdown
+            value="Belum approval"  
+            :lists="$store.state.Headspv.lists"
+            listsKey="phone"
+            listsValue="name"
+            @trig="notApproval($event)"
+            class="w3-right"
+            secondary
         />
 
         <Button 
@@ -46,6 +57,7 @@
                             listsValue="isi"
                             @trig="check({val: $event, id: doc?.id})"
                             class="w3-small"
+                            primary
                         />
                     </td>
                 </template>
@@ -60,7 +72,7 @@
                         type="button" 
                         @trig="pesan(prop)" 
 					/>
-
+                    
                     <Dropdown
                         v-if="viewByPeriode"
                         value="Collect"  
@@ -68,12 +80,15 @@
                             { id: -1, isi: '-1 Hari'},
                             { id: -2, isi: '-2 Hari'},
                             { id: -3, isi: '-3 Hari'},
-                            { id: 0, isi: '0 Hari' }
+                            { id: 0, isi: '0 Hari' },
+                            { id: 'ijin', isi: 'Tidak masuk'},
+                            { id: 'kosong', isi: 'Laporan tidak ada'},
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="collect({action: 'collect', val: $event, rec: prop.id})"
+                        @trig="collect({ action: 'collect', val: $event, rec: prop.id })"
                         class="w3-small"
+                        primary
                     />
 
                     <Button
@@ -97,6 +112,7 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { mapGetters } from "vuex";
+// import { shell } from 'electron';
 
 export default {
     name: "Uncollected",
@@ -139,7 +155,12 @@ export default {
 		},
         collect(ev) {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            this.$store.dispatch("Document/handleDocument", ev)
+            if(isNaN(ev.val)) {
+                this.$store.dispatch("Document/handleDocument", { action: ev.val, rec: ev.rec })
+                return
+            }
+                this.$store.dispatch("Document/handleDocument", ev)
+            // console.log(ev)
         },
 		pesan(ev) {
 			// slice the data
@@ -152,14 +173,15 @@ export default {
 
                 let listLaporanText = ""
                 Object.keys(listLaporan).forEach((val) => {
-                    listLaporanText += this.$store.getters["Warehouses/warehouseId"](val)?.name
-                    listLaporanText += `[${listLaporan[val].join(", ")}]%0a%0a`
+                    listLaporanText += `${listLaporan[val].join(", ")}`
+                    listLaporanText += ` | ${this.$store.getters["Warehouses/warehouseId"](val)?.name}%0a`
                 })
                 // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
-    			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}mohon untuk dikumpulkan tidak lebih dari H+2,%0a%0aTerimakasih atas perhatianya.`
+    			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
 
                     window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
-                     // console.log(pesan)
+                    // shell.openExternal(`https://wa.me/${ev.phone}?text=${pesan}`)
+                    //  console.log(pesan)
                     return
             }
             alert("Tidak ada laporan lebih dari H+2")
@@ -168,7 +190,7 @@ export default {
             // let nophone = window.prompt()
             // if(nophone){
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
-            // get document by spv and iterate
+            // get document by spv and iterate, document by spv yang >= H+2
             this.$store.getters["Document/documentBySpv"](0).forEach((val) => {
                 if(val.documents) {
                 // daftar laporan yang melebihi H+2 dari sekarang
@@ -176,16 +198,31 @@ export default {
                 let listLaporan = []
                 val.documents.forEach((val) => {
                     if(sekarang - val.periode >= 172800000 ) {
-                        listLaporan.push(`* ${val.periode2} | ${val?.warehouseName}%0a`)
+                        listLaporan.push(`${val.periode2} | ${val?.warehouseName}%0a`)
                     }
                 })
                 if(listLaporan.length > 0)
                     result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
                 }
             })
+
             window.open(`https://wa.me/${ev}?text=${result}`)
+            // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
             // console.log(result)
             // }
+        },
+        notApproval(ev) {
+            // dockumen yang belum tanda tangan kabag
+            let result = "Dokumen belum *approval* kapala bagian:%0a%0a"
+            let notApproval = this.$store.getters["Document/documentNotApproval"]
+            Object.keys(notApproval).forEach((val) => {
+                result += `*${notApproval[val]?.headName} (${notApproval[val]?.lists.length}) Dokumen* :%0a`
+                result += notApproval[val]?.lists.join("%0a")
+                result += "%0a%0a"
+            })
+            // console.log(result)
+            window.open(`https://wa.me/${ev}?text=${result}`)
+            // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
         },
         renewLists() {
             this.viewByPeriode

@@ -77,25 +77,26 @@ export default {
             
             // //iterate data menggunakan for
             for(let i = 1; i <= iterateLength; i++) {
-                let leadNumber = "0000"
-                let increment = i + ""
-                let counter = leadNumber.slice(increment.length) + increment
                 /* 
                     #CLOCK jika B5.v > 0 dan D5.v !== D4.v
                     maka masukkan ke idb 
                 */
             //    CLOCK CHECKER
+                // nomor do
                 let clockNo = clockSheet["D"+i] ? clockSheet["D"+ (i)].v : 0
+                // nomor do sebelumnya (atasnya)
                 let clockNoBefore = clockSheet["D"+ (i-1)] ? clockSheet["D"+ (i-1)].v : false
-                let clockStatus = clockNo > 0 && clockNoBefore !== clockNo ? true : false
+                // shift
+                let shift = clockSheet["B"+i]?.v > 0 ? true : false
+                // status untuk diimport true or false
+                let clockStatus = shift && clockNo > 0 && clockNoBefore !== clockNo ? true : false
 
                if(i > 5 && clockStatus) {
-                    await this.$store.dispatch("appendWoutGenerateId", {
+                    await this.$store.dispatch("append", {
                         store: "BaseReportClock",
                         obj: {
-                            id: this.infoBaseReport.id + counter,
                             parent: this.infoBaseReport.id,
-                            shift: clockSheet["B"+i] ? clockSheet["B"+i].v : 0,
+                            shift: clockSheet["B"+i]?.v <= 3 ?  clockSheet["B"+i].v  : 3,
                             noDo: clockSheet["D"+i] ? clockSheet["D"+i].v : 0,
                             reg: clockSheet["F"+i] ? clockSheet["F"+i].w : 0,
                             start: clockSheet["G"+i] ? clockSheet["G"+i].w : 0,
@@ -113,10 +114,9 @@ export default {
             let in1st = stockSheet["E"+i] ? stockSheet["E"+i].v : 0
             let out1st = stockSheet["F"+i] ? stockSheet["F"+i].v : 0
                 if(in1st > 0 || out1st > 0) {
-                    await this.$store.dispatch("appendWoutGenerateId",  {
+                    await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this.infoBaseReport.id + "01" + counter,
                             parent: this.infoBaseReport.id,
                             shift: 1,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
@@ -139,10 +139,9 @@ export default {
             let in2nd = stockSheet["H"+i] ? stockSheet["H"+i].v : 0
             let out2nd = stockSheet["I"+i] ? stockSheet["I"+i].v : 0
                 if(in2nd > 0 || out2nd > 0) {
-                    await this.$store.dispatch("appendWoutGenerateId",  {
+                    await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this.infoBaseReport.id + "02" + counter,
                             parent: this.infoBaseReport.id,
                             shift: 2,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",
@@ -172,10 +171,9 @@ export default {
                 let totalOut = out1 + out2
 
                     if( (in1 || out1  || out2  || in2) && i > 3 && stockSheet["A"+i] ) {
-                    await this.$store.dispatch("appendWoutGenerateId",  {
+                    await this.$store.dispatch("append",  {
                         store: "BaseReportStock",
                         obj: {
-                            id: this.infoBaseReport.id + "03" + counter,
                             parent: this.infoBaseReport.id,
                             shift: 3,
                             item: stockSheet["A"+i] ? stockSheet["A"+i].v : "No item",

@@ -29,7 +29,7 @@ export default {
         }
     },
     methods: {
-        send() {
+        async send() {
             // get name of store from the modal state, that set when user hit the button to launch this periode picker
             // let store = this.obj.store
             // open the modal with loader
@@ -39,14 +39,23 @@ export default {
                     ? [this.periode1] 
                     : this.$store.getters["getDaysArray"](this.periode1, this.periode2)
             // cari data, tunggu sampai selesai
-            this.$store.dispatch("findDataByDateArrays", { 
-                store: this.obj.store, 
-                date: dateCheck, 
-                criteria: this.obj.criteria ? this.obj.criteria : {} 
-            }).then(() => {
-                //tutup modal
-                this.$store.commit("Modal/active")
-            })
+            if(Array.isArray(this.obj?.store)) { 
+                for(let store of this.obj.store) {
+                    await this.$store.dispatch("findDataByDateArrays", { 
+                        store: store?.storeName, 
+                        date: dateCheck, 
+                        criteria: store?.criteria ? store?.criteria : {} 
+                     })
+                }
+            } else {
+                await this.$store.dispatch("findDataByDateArrays", { 
+                    store: this.obj.store, 
+                    date: dateCheck, 
+                    criteria: this.obj.criteria ? this.obj.criteria : {} 
+                })
+            }
+                
+            this.$store.commit("Modal/active")
         },
     },
     mounted() {

@@ -372,6 +372,9 @@ export default {
   },
   created() {
     this.deData = this.getData()
-  }
+  },
+  beforeUnmount() {
+    this.saveData()
+  },
 };
 </script>

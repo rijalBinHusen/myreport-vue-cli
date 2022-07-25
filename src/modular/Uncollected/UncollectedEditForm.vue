@@ -9,7 +9,7 @@
                 type="text"
             />
 
-            <div v-if="more?.mode === 'edit' && more?.next" >
+            <div v-if="more?.mode === 'edit' && more?.next">
                 <label for="next">Langkah selanjutnya:</label>
                 <Select 
                     id="next"
@@ -17,6 +17,7 @@
                     :options="[
                         { id: 'collect', title: 'Koleksi'},
                         { id: 'ijin', title: 'Tidak masuk'},
+                        { id: 'kosong', title: 'Laporan tidak ada'},
                     ]" 
                     value="id"
                     text="title"
@@ -96,7 +97,6 @@
 import Select from "../../components/elements/Select.vue"
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
-import myfunction from "../../myfunction"
 
 export default {
     methods: {
@@ -119,6 +119,14 @@ export default {
             else if(this.more?.next === "ijin") {
                 this.$store.dispatch("Document/handleDocument", { 
                     action: 'ijin', 
+                    rec: this. more?.id
+                })
+                return
+            }
+
+            else if(this.more?.next === "kosong") {
+                this.$store.dispatch("Document/handleDocument", { 
+                    action: 'kosong', 
                     rec: this. more?.id
                 })
                 return
