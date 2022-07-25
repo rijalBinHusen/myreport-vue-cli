@@ -1,8 +1,8 @@
 <template>
-    <div v-if="documents">
-        <Button primary value="Periode" type="button" @trig="handleButton" />
+    <div v-if="listsFollowUp.length">
+        <Button primary value="Periode" type="button"/>
         <Datatable
-            :datanya="documents"
+            :datanya="listsFollowUp"
             :heads="['Periode', 'Pesan']"
             :keys="['periode', 'pesan']"
             option
@@ -10,7 +10,7 @@
             #default="{ prop }"
         >
                 <Dropdown
-                    value="Problem"  
+                    value="Opsi"  
                     :lists="[
                         { id: 'tanya', isi: 'Tanya lagi'},
                         { id: 'pindah', isi: 'Selesai'},
@@ -18,7 +18,7 @@
                     class="w3-small"
                     listsKey="id"
                     listsValue="isi"
-                    @trig="handleProblem($event, prop)"
+                    @trig="handleButton($event, prop)"
                     primary
                 />
         </Datatable>
@@ -26,20 +26,41 @@
 </template>
 
 <script>
-// terkait pesan saya pada tanggal 123, yang isinya kurang lebih seebagai berikut:
-            // Mohon saya diberi konfirmasinya pak, yang benar yang seperti apa, biar saya masukkan ke catatan saya.
 import Button from '@/components/elements/Button.vue'
 import Datatable from "../../components/parts/Datatable.vue"
 import getAllDocuments from "../../composable/storeGetAllDocuments"
-import { onMounted } from '@vue/runtime-core'
+import { computed, onMounted } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
+import { useStore } from 'vuex'
 
 export default {
     components: { Datatable, Button, Dropdown },
     setup() {
         const { error, documents } = getAllDocuments('followup', 100, 'id', true)
+        const store = useStore()
 
-        return { error, documents }
+        let listsFollowUp = computed(() => {
+            if(documents?.value) {
+                return documents.value.map((val) => ({
+                    ...val, periode: store.getters.dateFormat({ format: 'dateMonth', time: val?.periode })
+                })
+                )
+            }
+            return []
+        })
+
+        const handleButton = (ev, obj) => {
+            if(ev == 'tanya') {
+                let tanya = `Mohon maaf pak mengganggu,%0a%0aMohon saya diberi konfirmasinya pak, terkait pesan saya pada tanggal ${obj.periode}, %0ayang benar yang seperti apa, biar saya masukkan ke catatan saya.%0a%0aadapun pesan saya pada tanggal ${obj.periode} isinya kurang lebih seebagai berikut:%0a%0a${obj.pesan}`
+                window.open(`https://wa.me/${obj.tujuan}?text=${tanya}`)
+                // console.log(process.env)
+            //
+            //
+            }
+            // console.log(ev, obj)
+        }
+
+        return { error, listsFollowUp, handleButton }
     }
 }
 </script>
