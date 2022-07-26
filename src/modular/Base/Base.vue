@@ -338,7 +338,7 @@ export default {
                 judul: "Set record to show", 
                 form: "PeriodePicker", 
                 store: [ 
-                    { storeName: "BaseReportFile", criteria: { imported: true } },
+                    { storeName: "BaseReportFile" },
                     { storeName: "Document"}
                 ],
                 btnValue: "Show"

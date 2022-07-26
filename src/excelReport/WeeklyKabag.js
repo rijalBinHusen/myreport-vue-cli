@@ -49,9 +49,9 @@ export default function (arrayOfArrayOfDocuments) {
         let arrayPeriodeSearched = [];
         val.forEach((val2) => {
           if (!arrayPeriodeSearched.includes(val2.periode)) {
-            arrProblem.push(getProblem({ periode: val2.periode, nameSpv: val2.name}));
-            arrProblem.push(getCases({ periode: val2.periode, name: val2.name}));
-            arrProblem.push(GetComplains({ periode: val2.periode, name: val2.name}));
+            arrProblem.push(getProblem({periode: val2.periode, nameHeadSpv:val2.head}));
+            arrProblem.push(getCases({periode: val2.periode, head:val2.head}));
+            arrProblem.push(GetComplains({periode: val2.periode, head:val2.head}));
             arrayPeriodeSearched.push(val2.periode);
           }
           // new details document
@@ -91,13 +91,13 @@ export default function (arrayOfArrayOfDocuments) {
             },
             result
           ),
-          result?.base[1]?.spvName +
-            " " +
-            result?.base[1]?.warehouseName +
-            " " +
-            result?.base[1]?.periode +
-            " - " +
-            result?.base.slice(-1)[0]?.periode
+          result?.base[1]?.periode
+          + " - " +
+          result?.base.slice(-1)[0]?.periode
+          + " " +
+          result?.base[1]?.headName
+          + " Shift " +
+          result?.base[1]?.shift
         );
       });
     });

@@ -1,23 +1,21 @@
 import myfunction from "../myfunction";
 
-export default function (periode, spv) {
+export default function (criteria) {
   return myfunction
     .findData({
       store: "Complains",
-      criteria: {
-        periode: periode,
-        name: spv,
-      },
+      criteria: criteria,
     })
     .then((data) => {
       if (data && data.length) {
         return data.map((val) => ({
+          periode: myfunction.dateFormat(["dateMonth", val?.periode]),
           masalah: val?.masalah,
           sumberMasalah: val?.sumberMasalah,
           solusi: val?.solusi,
           pic: val?.pic,
-          periode: myfunction.dateFormat(["dateMonth", val?.periode]),
           dl: myfunction.dateFormat(["dateMonth", val?.dl]),
+          periode2: +myfunction.dateFormat(["dateMonth", val?.periode]).match(/\d+/)[0],
         }));
       }
     });

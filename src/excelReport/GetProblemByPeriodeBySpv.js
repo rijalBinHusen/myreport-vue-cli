@@ -1,13 +1,10 @@
 import myfunction from "../myfunction";
 
-export default function (periode, spv) {
+export default function (criteria) {
   return myfunction
     .findData({
       store: "Problem",
-      criteria: {
-        periode: periode,
-        nameSpv: spv,
-      },
+      criteria: criteria,
     })
     .then((data) => {
       if (data && data?.length) {

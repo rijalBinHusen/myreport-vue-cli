@@ -100,7 +100,7 @@ export default {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
             // konfirm dulu, kalau ada selisih stock biar diforo dulu
             let promise = new Promise(resolve => {
-                console.log(ev?.obj)
+                // console.log(ev?.obj)
                 if(ev?.obj?.itemVariance) {
                     let confirm = window.confirm("Terdapat selisih stock, silahkan difoto dulu")
                     if(confirm) {
@@ -118,10 +118,10 @@ export default {
             const { obj, ...record } = ev
             // console.log(record, confirm)
             promise.then((val) => {
-                // if(val) {
-                //     this.$store.dispatch("Document/handleDocument",  record)
-                    console.log(val)
-                // }
+                if(val) {
+                    this.$store.dispatch("Document/handleDocument",  record)
+                    // console.log(val)
+                }
             })
             // console.log(confirm)
         },
