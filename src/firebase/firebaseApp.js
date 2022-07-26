@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFireStore } from "firebase/firestore"
+import { getFirestore } from "firebase/firestore";
 
 // init firebase
 const firebaseConfig = {
@@ -12,14 +12,12 @@ const firebaseConfig = {
   messagingSenderId: process.env.VUE_APP_MESSAGINGSENDERID,
   appId: process.env.VUE_APP_APPID,
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 // auth
 const auth = getAuth(app);
 // firestore
-const db = getFireStore(app)
-
+const db = getFirestore(app);
 
 export { auth, db };

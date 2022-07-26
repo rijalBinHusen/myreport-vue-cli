@@ -1,7 +1,8 @@
+import { db } from "@/firebase/firebaseApp";
 import { doc, setDoc } from "firebase/firestore";
 
-const addDocument = (nameStore, idStore, data) => {
-    return setDoc(doc(nameStore, idStore, data?.id), data)
-}
+const addDocument = (nameStore, keyStore, data) => {
+  return setDoc(doc(db, nameStore, keyStore), data);
+};
 
-export default addDocument
+export default addDocument;
