@@ -352,6 +352,7 @@ const Uncollected = {
                   val?.warehouse
                 )?.name,
                 itemVariance: val.itemVariance,
+                isfinished: val.isfinished,
               });
             }
           });
