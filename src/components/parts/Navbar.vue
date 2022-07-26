@@ -28,16 +28,38 @@
 					:datanya="nav.id" 
 					@trig="toNav($event)" 
 				/>
+				<Button 
+					noborder 
+					danger
+					class="w3-bar-item"
+					value="Logout" 
+					type="button" 
+					@trig="handleLogout" 
+				/>
 		</div>
 	</div>
 </template>
 
 <script>
-	import Button from "../elements/Button.vue";
-	import { mapGetters } from "vuex"
+import Button from "../elements/Button.vue";
+import { mapGetters } from "vuex"
+import userLogout from "../../composable/userLogout"
+import { useRouter } from 'vue-router';
 	
 	export default {
 		name: "Navbar",
+		setup() {
+			const router = useRouter()
+			const { logout, error } = userLogout()
+			const handleLogout = async () => {
+				await logout()
+				if(!error.value) {
+					router.push("/login")
+				}
+			}
+
+			return { handleLogout }
+		},
 		data() {
 			return {
 				sideBarActive: true,
