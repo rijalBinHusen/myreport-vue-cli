@@ -29,8 +29,23 @@
 	import Complains from "../../modular/ComplainReport/Complains.vue"
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
 	import SyncToFirebase from "./SyncToFirebase.vue"
+	import { computed, onMounted } from '@vue/runtime-core';
+	import { useStore } from 'vuex';
+	import createLogsFromScratch from "../../composable/createLogsFromScratch"
 
 	export default {
+		setup() {
+			const store = useStore()
+			const activeNav = computed(() =>  store.state.Navbar.active )
+			const more = computed(() =>  store.state.Modal.more)
+
+			onMounted(() => {
+				store.dispatch("getStart");
+				createLogsFromScratch()
+			})
+
+			return { activeNav, more }
+		},
 		name: "Main",
 		components: {
 			SyncToFirebase,
@@ -56,17 +71,6 @@
 			Importbase,
 			Base,
 		},
-		computed: {
-			activeNav() {
-				return this.$store.state.Navbar.active
-			},
-			more() {
-				return this.$store.state.Modal.more
-			},
-		},
-		mounted() {
-			this.$store.dispatch("getStart");
-		}
 	}
 </script>
 

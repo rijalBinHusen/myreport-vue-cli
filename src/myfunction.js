@@ -108,7 +108,7 @@ function reWriteStoreWithKey(value) {
 export default {
   append: async function (value) {
     //{store: "namastore", obj: {obj: toInput } }
-    let id = value?.id ? value?.id : generateId(value.store.toLowerCase());
+    let id = value?.obj?.id ? value?.obj?.id : generateId(value.store.toLowerCase());
     // let result = await
     return db
       .collection(value.store.toLowerCase())
