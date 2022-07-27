@@ -57,20 +57,20 @@ export default function (arrayOfArrayOfDocuments) {
           // new details document
           newArrayOfDocuments.push({
             periode: +val2.periode2.match(/\d+/)[0],
-            totalKendaraan: val2.totalKendaraan,
-            totalWaktu: val2.totalWaktu,
+            totalKendaraan: +val2.totalKendaraan,
+            totalWaktu: +val2.totalWaktu,
             shift: val2.shift,
             spvName: val2.spvName,
             warehouseName: val2.warehouseName,
             itemVariance: +val2.itemVariance,
-            totalItemMoving: val2.totalItemMoving,
-            totalQTYIn: val2.totalQTYIn,
-            totalQTYOut: val2.totalQTYOut,
+            totalItemMoving: +val2.totalItemMoving,
+            totalQTYIn: +val2.totalQTYIn,
+            totalQTYOut: +val2.totalQTYOut,
             totalProductNotFIFO: +val2.totalProductNotFIFO,
             headName: val2.headName,
-            totalDo: val2.totalDo,
-            planOut: val2.planOut,
-            totalItemKeluar: val2.totalItemKeluar,
+            totalDo: +val2.totalDo,
+            planOut: +val2.planOut,
+            totalItemKeluar: +val2.totalItemKeluar,
           });
         });
         let waitAllProblem = await Promise.all(arrProblem);
