@@ -23,9 +23,10 @@ import GetComplains from "./GetComplainByPeriodeBySpv";
 */
 
 export default function (arrayOfArrayOfDocuments) {
-  return new Promise((resolve) => {
-    let newArrayOfArrayOfdocuments = arrayOfArrayOfDocuments.map(
-      async (val) => {
+  return new Promise(async (resolve) => {
+    let newArrayOfArrayOfdocuments = []
+    for ( let val of arrayOfArrayOfDocuments) {
+
         let arrProblem = [];
         let newArrayOfDocuments = [
           {
@@ -74,17 +75,15 @@ export default function (arrayOfArrayOfDocuments) {
           });
         });
         let waitAllProblem = await Promise.all(arrProblem);
-        return {
+        newArrayOfArrayOfdocuments.push({
           base: newArrayOfDocuments,
           problem: waitAllProblem.flat().filter((val) => !!val),
-        };
-      }
-    );
+        });
+  }
+  // console.log(newArrayOfArrayOfdocuments)
 
-    newArrayOfArrayOfdocuments.forEach((val) => {
-      val.then((result) => {
-        // console.log(Object.assign(result, { Report: [{ id: "Bismillah" }] }));
-        exportToXlsSeperateSheet(
+    for (let result of newArrayOfArrayOfdocuments ) {
+        await exportToXlsSeperateSheet(
           Object.assign(
             {
               Report: [{ id: "Bismillah" }],
@@ -99,8 +98,8 @@ export default function (arrayOfArrayOfDocuments) {
             " - " +
             result?.base.slice(-1)[0]?.periode
         );
-      });
-    });
+        await myfunction.tunggu(500)
+    }
     resolve();
     // newArrayOfArrayOfdocuments.forEach((val) => {
     // });
