@@ -89,15 +89,17 @@ export default {
                     for(let j = 0; j < this._WAREHOUSES[i]?.supervisors.length; j ++) {
                         // get the supervisor information
                         let spv = this.GET_SUPERVISORID(this._WAREHOUSES[i]?.supervisors[j])
-                        await this.$store.dispatch("Document/append", {
-                            name: spv?.id, 
-                            periode: periodeTime,
-                            shift: spv?.shift,
-                            head: spv?.shift == 3 
-                                    ? this.GET_HEADSHIFT(2)?.id 
-                                    : this.GET_HEADSHIFT(spv?.shift)?.id,
-                            warehouse: this._WAREHOUSES[i]?.id,
-                        })
+                        if(!spv?.disabled) {
+                            await this.$store.dispatch("Document/append", {
+                                name: spv?.id, 
+                                periode: periodeTime,
+                                shift: spv?.shift,
+                                head: spv?.shift == 3 
+                                        ? this.GET_HEADSHIFT(2)?.id 
+                                        : this.GET_HEADSHIFT(spv?.shift)?.id,
+                                warehouse: this._WAREHOUSES[i]?.id,
+                            })
+                        }
                     }
                 }
                 //close the modeal

@@ -440,7 +440,7 @@ export default {
         },
         selectedPeriode(newVal, oldVal) {
             let isExists = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-            if(!isExists) {
+            if(!isExists?.imported) {
                 //empty all
                 this.sheet = ""
                 this.shift = ""
