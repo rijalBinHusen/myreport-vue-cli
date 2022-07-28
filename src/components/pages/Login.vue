@@ -2,6 +2,8 @@
 	import { ref } from "@vue/reactivity"
 	import userSignin from "../../composable/userSignIn"
 	import { useRouter } from 'vue-router'
+	import func from '../../myfunction'
+	import { onMounted } from '@vue/runtime-core'
 
 	export default {
 		setup() {
@@ -12,9 +14,13 @@
 		const password = ref('');
 
 		const handleSignIn = async () => {
-			let signProcess = await signin(email.value, password.value)
+			await signin(email.value, password.value)
 			router.push({ name: "Main"})
-			// console.log(signProcess)
+			func.append({ store: "login", obj: 
+				{ totalActivity: 0, time: new Date().getTime() }
+			}).then((val) => {
+				localStorage.setItem('loginya', val?.data?.id)
+			})
 		};
 
 		return { email, password, handleSignIn, error }
@@ -33,7 +39,7 @@
 
 				<label class="w3-margin-bottom"><b>Password</b></label>
 				<input class="w3-input w3-border w3-round-large w3-border-teal" type="password" placeholder="Enter Password" name="psw" required="" v-model="password">
-				<p> {{error}} </p>
+				<p style="color:red;"> {{error}} </p>
 				<button class="w3-button w3-block w3-section w3-padding w3-teal w3-round-large" type="submit">Login</button>
 			</div>
 		</form>

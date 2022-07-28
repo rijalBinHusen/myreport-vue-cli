@@ -41,7 +41,7 @@
 
 			onMounted(() => {
 				store.dispatch("getStart");
-				createLogsFromScratch()
+				// createLogsFromScratch()
 			})
 
 			return { activeNav, more }
