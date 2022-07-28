@@ -39,9 +39,14 @@
 			const activeNav = computed(() =>  store.state.Navbar.active )
 			const more = computed(() =>  store.state.Modal.more)
 
-			onMounted(() => {
+			onMounted(async () => {
 				store.dispatch("getStart");
-				// createLogsFromScratch()
+				// Bring up the loader
+				store.commit("Modal/active", {judul: "", form: "Loader"})
+				// wait the process, when there is no activity log
+				await createLogsFromScratch()
+				// close the loader
+				store.commit("Modal/active")
 			})
 
 			return { activeNav, more }

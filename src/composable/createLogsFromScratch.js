@@ -8,6 +8,8 @@ const createLogsFromScratch = async () => {
 
   // jika store activity di indexeddb tidak ada
   if (activity.length) { return }
+    
+  return new Promise(async resolve => {
     // maka ambil store summary,
     let summary = await func.getData({ store: "summary", withKey: true });
     // masukkan info summary ke all store
@@ -25,35 +27,21 @@ const createLogsFromScratch = async () => {
       );
     });
     
-  Promise.all(allStores).then(async (val) => {
-    
+    Promise.all(allStores).then(async (val) => {
         // iterate name of store
         for (let rec of val) {
-              // iterate data that contain in name of store
-              if(rec?.store !== 'summary') {
-                
-                for (let i = 0; i < rec?.data.length; i++) {
-                    //   await addDocument(rec?.store, doc?.key, doc?.data);
-                    // { store: store.toLowerCase(), obj : this._IMPOR[store][i].data}
-                    // await func.append({ 
-                    //     store: "activity", 
-                    //     obj: { 
-                    //         id: i+1, 
-                    //         time: new Date().getTime(),
-                    //         store: rec?.store,
-                    //         idRecord: rec[1]?.data?.id,
-                    //     }
-                    // })
-                    console.log({ 
-                        id: i+1, 
-                        time: new Date().getTime(),
-                        store: rec?.store,
-                        idRecord: rec?.data[1]?.data?.id,
-                    })
-                    await func.tunggu(1170)
-                }
+          // iterate data that contain in name of store
+          for (let i = 0; i <= rec?.data.length; i++) {
+            if(rec?.data[1]?.data?.id) {
+              // insert to idb
+              await func.addActivity({ type: "create", store: rec?.store, idRecord: rec?.data[1]?.data?.id })
+              // wait a minute
+              await func.tunggu(100)
             }
+          }
         }
+        resolve()
     })
+  })
 };
 export default createLogsFromScratch;
