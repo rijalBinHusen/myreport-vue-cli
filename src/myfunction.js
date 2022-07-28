@@ -149,7 +149,9 @@ export default {
     //{store: "namastore", obj: {obj: toInput } }
     let id = value?.obj?.id ? value?.obj?.id : generateId(value.store.toLowerCase());
     // let result = await
-    await addActivity({ type: "create", store: value.store.toLowerCase(), idRecord: id })
+    if(value?.store !== 'login') {
+      await addActivity({ type: "create", store: value.store.toLowerCase(), idRecord: id })
+    }
     return db
       .collection(value.store.toLowerCase())
       .doc(id)

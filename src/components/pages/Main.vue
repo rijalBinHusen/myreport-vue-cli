@@ -44,7 +44,7 @@
 				// Bring up the loader
 				store.commit("Modal/active", {judul: "", form: "Loader"})
 				// wait the process, when there is no activity log
-				await createLogsFromScratch()
+				// await createLogsFromScratch()
 				// close the loader
 				store.commit("Modal/active")
 			})

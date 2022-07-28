@@ -13,14 +13,17 @@
 		const email = ref('');
 		const password = ref('');
 
+		onMounted(() => {
+			localStorage.setItem('loginya', '')
+		})
 		const handleSignIn = async () => {
 			await signin(email.value, password.value)
-			router.push({ name: "Main"})
-			func.append({ store: "login", obj: 
-				{ totalActivity: 0, time: new Date().getTime() }
+			await func.append({ store: "login", obj: 
+				{ totalActivity: 0, id: new Date().getTime()+'' }
 			}).then((val) => {
 				localStorage.setItem('loginya', val?.data?.id)
 			})
+			router.push({ name: "Main"})
 		};
 
 		return { email, password, handleSignIn, error }

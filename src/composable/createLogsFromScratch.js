@@ -32,10 +32,10 @@ const createLogsFromScratch = async () => {
         for (let rec of val) {
           // iterate data that contain in name of store
           for (let i = 0; i <= rec?.data.length; i++) {
-            if(rec?.data[1]?.data?.id) {
+            if(rec?.data[i]?.data?.id) {
               // insert to idb
-              await func.addActivity({ type: "create", store: rec?.store, idRecord: rec?.data[1]?.data?.id })
-              // wait a minute
+              await func.addActivity({ type: "create", store: rec?.store, idRecord: rec?.data[i]?.data?.id })
+              // // wait a minute
               await func.tunggu(100)
             }
           }
