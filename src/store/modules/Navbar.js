@@ -21,6 +21,7 @@ const Navbar = {
       { id: "ImportData", title: "Import data", group: "setting" },
       { id: "Report", title: "Export report", group: "setting" },
       { id: "EditDocument", title: "Edit document", group: "setting" },
+      { id: "Storage", title: "Storage", group: "setting" },
     ],
   },
   mutations: {
