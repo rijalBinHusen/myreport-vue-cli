@@ -28,6 +28,7 @@
 	import Cases from "../../modular/CasesReport/Cases.vue"
 	import Complains from "../../modular/ComplainReport/Complains.vue"
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
+	import Storage from "./Storage.vue"
 
 	export default {
 		name: "Main",
@@ -53,6 +54,7 @@
 			Backup,
 			Importbase,
 			Base,
+			Storage,
 		},
 		computed: {
 			activeNav() {
