@@ -1,17 +1,27 @@
 <template>
+
   <button-vue
     primary 
     value="Create logs starter" 
     type="button" 
     @trig="createLog"
-  >
-    </button-vue>
+  />
+
+  
+  <button-vue
+    primary 
+    value="Send to firebase" 
+    type="button" 
+    @trig="syncData"
+  />
+
 </template>
 
 <script>
 import ButtonVue from '../elements/Button.vue'
 import createLogsFromScratch from "../../composable/createLogsFromScratch"
 import { useStore } from 'vuex'
+import storeSyncData from "../../composable/storeSyncData"
 
 export default {
     setup() {
@@ -24,7 +34,13 @@ export default {
             store.commit("Modal/active")
         }
 
-        return { createLog }
+        const syncData = async () => {
+            store.commit("Modal/active", {judul: "", form: "Loader"});
+            await storeSyncData()
+            store.commit("Modal/active")
+        }
+
+        return { createLog, syncData }
     },
     components: {
         ButtonVue
