@@ -6,6 +6,9 @@ let db = new Localbase("myreport");
 let summary = {};
 let storeToUpdate = []; //store that would to update
 let timeOut;
+// login activity, if the localstorage null, so the value is 0
+let loginActivity = localStorage.getItem("loginActivity") || 0;
+let timeoutActivity;
 
 function getWeekNumber() {
   // get today
@@ -91,6 +94,41 @@ function getStoreWithKey(store) {
   return db.collection(store).get({ keys: true });
 }
 
+function updateActivity() {
+  // clear timeOut
+  clearTimeout(timeoutActivity);
+  // get id login
+  let idLogin = localStorage.getItem('loginya') || "starter"
+  // update activity
+  timeoutActivity = setTimeout(() => {
+    db.collection("login")
+    .doc(idLogin)
+    .update({ totalActivity: loginActivity });
+    // update loginActivity in localStorage
+    localStorage.setItem("loginActivity", loginActivity)
+  }, 2000)
+}
+
+async function addActivity(obj) {
+  // obj = { type: create, store: nameStore, idRecord: string }
+  // get id login
+  let idLogin = localStorage.getItem('loginya')
+  // jika tidak ada loginya
+  if(!idLogin) { 
+    idLogin = "starter"
+    await write("login", "starter", { id: "starter", time: new Date().getTime() })
+    localStorage.setItem('loginya', 'starter')
+  }
+  // increment login activity
+  loginActivity++
+  // id activity e.g = log22240001_1
+  let idActivity = idLogin+'_'+loginActivity
+  // tambahkan activity ke idb
+  await write('activity', idActivity, {...obj, id: idActivity, time: new Date().getTime()})
+  updateActivity()
+
+}
+
 // ketika aplikasi load, jalankan fungsi ambil summary
 getStoreWithKey("summary").then((result) => {
   if (result) {
@@ -105,22 +143,28 @@ function reWriteStoreWithKey(value) {
   db.collection(value.store).set(value.obj, { keys: true });
 }
 
+async function update (value) {
+  // { criteria: {id: 001}, obj: { obj: objtoupdate } }
+  await addActivity({ type: "update", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
+  db.collection(value.store.toLowerCase())
+    .doc(value.criteria)
+    .update(value.obj);
+}
+
 export default {
   append: async function (value) {
     //{store: "namastore", obj: {obj: toInput } }
-    let id = value?.id ? value?.id : generateId(value.store.toLowerCase());
+    let id = value?.obj?.id ? value?.obj?.id : generateId(value.store.toLowerCase());
     // let result = await
+    if(value?.store !== 'login') {
+      await addActivity({ type: "create", store: value.store.toLowerCase(), idRecord: id })
+    }
     return db
       .collection(value.store.toLowerCase())
       .doc(id)
       .set(Object.assign({ id: id }, value.obj));
   },
-  update: function (value) {
-    // { criteria: {id: 001}, obj: { obj: objtoupdate } }
-    db.collection(value.store.toLowerCase())
-      .doc(value.criteria)
-      .update(value.obj);
-  },
+  update: update,
   reWrite: function (value) {
     /*value = {
 	store: "nameStore",
@@ -187,7 +231,8 @@ export default {
   emptyStore: function (value) {
     db.collection(value).set([{}]);
   },
-  deleteDocument: function (value) {
+  deleteDocument: async function (value) {
+    await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value.criteria })
     db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
   },
   deleteDocumentByParam: function (value) {
@@ -282,4 +327,5 @@ export default {
       );
     } //dapatkan waktu penuh dd/mm/yyyy
   },
+  addActivity
 };
