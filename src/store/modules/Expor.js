@@ -20,6 +20,18 @@ const Expor = {
       let storeName = await dispatch("getAllData", "Summary", { root: true })
       // console.log(storeName)
       commit("append", { store: "summary", obj: storeName });
+      // get the activiy store
+      dispatch("getAllData", "activity", {root: true}).then((val) => {
+        if(val) {
+          commit("append", { store: "activity", obj: val})
+        }
+      })
+      // get the login store
+      dispatch("getAllData", "login", {root: true}).then((val) => {
+        if(val) {
+          commit("append", { store: "login", obj: val})
+        }
+      })
       // iterate, push to variable and waiting
       for (let i = 0; i < storeName.length; i++) {
         // wait until data commit to state
