@@ -98,7 +98,7 @@ function updateActivity() {
   // clear timeOut
   clearTimeout(timeoutActivity);
   // get id login
-  let idLogin = localStorage.getItem('loginya') || "starter"
+  let idLogin = localStorage.getItem('loginya')
   // update activity
   timeoutActivity = setTimeout(() => {
     db.collection("login")
