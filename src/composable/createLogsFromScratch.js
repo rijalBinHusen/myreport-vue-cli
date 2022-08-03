@@ -2,12 +2,12 @@ import func from "../myfunction";
 // import addDocument from "./storeAdd";
 
 const createLogsFromScratch = async () => {
-  // dapatkan store activity
+  //dapatkan store activity
   let activity = await func.getData({ store: "activity" });
   let allStores = [];
 
   // jika store activity di indexeddb tidak ada
-  if (activity.length) { return }
+  // if (activity.length) { return }
     
   return new Promise(async resolve => {
     // maka ambil store summary,
@@ -30,13 +30,13 @@ const createLogsFromScratch = async () => {
     Promise.all(allStores).then(async (val) => {
         // iterate name of store
         for (let rec of val) {
+          if(rec?.store !== 'activity')
           // iterate data that contain in name of store
           for (let i = 0; i <= rec?.data.length; i++) {
             if(rec?.data[i]?.data?.id) {
-              // insert to idb
               await func.addActivity({ type: "create", store: rec?.store, idRecord: rec?.data[i]?.data?.id })
-              // // wait a minute
-              await func.tunggu(100)
+              // wait a minute
+              await func.tunggu(60)
             }
           }
         }
