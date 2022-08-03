@@ -126,7 +126,7 @@ async function addActivity(obj) {
   // tambahkan activity ke idb
   await write('activity', idActivity, {...obj, id: idActivity, time: new Date().getTime()})
   updateActivity()
-
+  return {...obj, id: idActivity, time: new Date().getTime()}
 }
 
 // ketika aplikasi load, jalankan fungsi ambil summary
