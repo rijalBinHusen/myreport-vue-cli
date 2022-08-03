@@ -101,14 +101,14 @@ export default {
             // konfirm dulu, kalau ada selisih stock biar diforo dulu
             let promise = new Promise(resolve => {
                 // console.log(ev?.obj)
-                if(ev?.obj?.itemVariance) {
+                if(ev?.action == 'approve' && ev?.obj?.itemVariance) {
                     let confirm = window.confirm("Terdapat selisih stock, silahkan difoto dulu")
                     if(confirm) {
                         resolve(true)
                     }
                     resolve(false)
                 }
-                if(!ev?.obj?.isfinished) {
+                if(ev?.action == 'approve' && !ev?.obj?.isfinished) {
                     window.alert("Laporan masih belum selesai!")
                     resolve(false)
                 }
