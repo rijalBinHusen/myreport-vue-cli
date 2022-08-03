@@ -1,5 +1,5 @@
 import func from "../myfunction";
-// import addDocument from "./storeAdd";
+import addDocument from "./firebaseAddStore";
 
 const createLogsFromScratch = async () => {
   //dapatkan store activity
@@ -30,15 +30,26 @@ const createLogsFromScratch = async () => {
     Promise.all(allStores).then(async (val) => {
         // iterate name of store
         for (let rec of val) {
-          if(rec?.store !== 'activity')
-          // iterate data that contain in name of store
-          for (let i = 0; i <= rec?.data.length; i++) {
-            if(rec?.data[i]?.data?.id) {
-              await func.addActivity({ type: "create", store: rec?.store, idRecord: rec?.data[i]?.data?.id })
-              // wait a minute
-              await func.tunggu(60)
+          let inserted = {}
+            // iterate data that contain in name of store
+            for (let i = 0; i <= rec?.data.length; i++) {
+              let doc = rec?.data[i]
+              if(doc?.data?.id && rec?.store !== 'activity' && i < 500) {
+                // jika store tidak pernah diinsert
+                if(!inserted[rec?.store]) {
+                  inserted[rec?.store] = []
+                }
+                // jika record belum pernah diinsert
+                if(!inserted[rec?.store].includes(doc?.key)) {
+                  inserted[rec?.store].push(doc?.key)
+                  let res = await func.addActivity({ type: "create", store: rec?.store, idRecord: doc?.data?.id })
+                  // insert to firebase
+                  await addDocument(rec?.store, doc?.key, doc?.data);
+                  await addDocument('activity', res?.id, res);
+
+                }
+              }
             }
-          }
         }
         resolve()
     })
