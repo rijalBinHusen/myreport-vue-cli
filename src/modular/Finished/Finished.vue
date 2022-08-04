@@ -76,6 +76,7 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import exportWeeklyReportToExcel from "../../excelReport/WeeklyReport"
 import exportWeeklyKabag from "../../excelReport/WeeklyKabag"
+import WeeklyWarehouses from "../../excelReport/WeeklyReportWarehouses"
 import Dropdown from "../../components/elements/Dropdown.vue"
 
 export default {
@@ -102,9 +103,6 @@ export default {
                 [{ baseReport }, { baseReport }],
             ]
             */
-           if(!this.groupedObject.length) {
-               return
-           }
            let group = []
             //   grouped { spv: index } //seperate by name
            let grouped = {}
@@ -113,12 +111,30 @@ export default {
                if(grouped.hasOwnProperty(val[ev])) {
                    group[grouped[val[ev]]].push({ ...val })
                } else {
+                    if('warehouse' && (val?.warehouseName.includes("jabon") || val?.warehouseName.includes("biscuit"))) {
+                        grouped["WHS22050004"] = group.length
+                        grouped["WHS22050005"] = group.length
+                    } 
+                    else if('warehouse' && (val?.warehouseName.includes("chip") || val?.warehouseName.includes("Hall"))) {
+                        grouped["war22060000"] = group.length
+                        grouped["WHS22050001"] = group.length
+                    }
                    grouped[val[ev]] = group.length
                    group.push([{ ...val }])
                }
            })
-           console.log(group)
-        // await exportWeeklyReportToExcel(group)
+        // export report weekly by spv
+        if(ev == 'name') {
+            await exportWeeklyReportToExcel(group)
+        }
+        // export report weekly by head
+        else if(ev == 'head') {
+            await exportWeeklyKabag(group)
+        }
+        // export report weekly by warehouse
+        else {
+            await WeeklyWarehouses(group)
+        }
         this.$store.commit("Modal/active");
         
         },
