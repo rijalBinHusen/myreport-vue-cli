@@ -19,8 +19,23 @@
         />
         <Button primary class="w3-right" :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
         <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
-        <Button primary v-if="grouped.length" class="w3-right" value="Export Weekly report" type="button" @trig="exportReportWeekly" />
-        <Button primary v-if="grouped.length" class="w3-right" value="Export Kabag report" type="button" @trig="exportReportKabag" />
+        
+        <Dropdown
+            value="Report"
+            :lists="[
+                { id: 'name', isi: 'SPV Weekly'},
+                { id: 'head', isi: 'Kabag Weekly'},
+                { id: 'warehouse', isi: 'Warehouses Weekly'},
+            ]"
+            listsKey="id"
+            listsValue="isi"
+            class="w3-right"
+            @trig="exportReport"
+            primary
+        />
+
+        <!-- <Button primary v-if="grouped.length" class="w3-right" value="Export Weekly report" type="button" @trig="exportReportWeekly" />
+        <Button primary v-if="grouped.length" class="w3-right" value="Export Kabag report" type="button" @trig="exportReportKabag" /> -->
     </div>
 
     <Datatable
@@ -61,10 +76,10 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import exportWeeklyReportToExcel from "../../excelReport/WeeklyReport"
 import exportWeeklyKabag from "../../excelReport/WeeklyKabag"
+import Dropdown from "../../components/elements/Dropdown.vue"
 
 export default {
-    name: "Finished",
-    data() {
+    name: "Finished",data() {
         return {
             grouped: [],
             groupedObject: [],
@@ -74,8 +89,39 @@ export default {
     components: {
         Button,
         Datatable,
+        Dropdown,
     },
     methods: {
+        async exportReport(ev) {
+            // Open loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            // group dulu yang spv dan periode yang sama
+            /* expected object = [
+                [{ baseReport }, { baseReport }],
+                [{ baseReport }, { baseReport }],
+                [{ baseReport }, { baseReport }],
+            ]
+            */
+           if(!this.groupedObject.length) {
+               return
+           }
+           let group = []
+            //   grouped { spv: index } //seperate by name
+           let grouped = {}
+           this.groupedObject.forEach((val) => {
+            //    if the object was grouped, and else
+               if(grouped.hasOwnProperty(val[ev])) {
+                   group[grouped[val[ev]]].push({ ...val })
+               } else {
+                   grouped[val[ev]] = group.length
+                   group.push([{ ...val }])
+               }
+           })
+           console.log(group)
+        // await exportWeeklyReportToExcel(group)
+        this.$store.commit("Modal/active");
+        
+        },
         markAll() {
             if(this.grouped.length) {
                 this.grouped = []
@@ -88,74 +134,6 @@ export default {
                     this.groupedObject.push(val)
                 }
             })
-        },
-        async exportReportWeekly() {
-            // Open loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // group dulu yang spv dan periode yang sama
-            /* expected object = [
-                [{ baseReport }, { baseReport }],
-                [{ baseReport }, { baseReport }],
-                [{ baseReport }, { baseReport }],
-            ]
-            */
-           if(!this.groupedObject.length) {
-               return
-           }
-           let group = []
-        //   grouped { spv: index } //seperate by name
-           let grouped = {}
-           this.groupedObject.forEach((val) => {
-            //    if the object was grouped, and else
-               if(grouped.hasOwnProperty(val?.name)) {
-                // //    console.log("ada sama")
-                //    console.log(val.name+val.periode)
-                //    console.log(grouped[val?.name+val?.periode])
-                   group[grouped[val.name]].push({ ...val })
-               } else {
-                   grouped[val.name] = group.length
-                   group.push([{ ...val }])
-                // console.log(grouped)
-                // console.log("tidak sama")
-               }
-           })
-        //    console.log(group)
-        await exportWeeklyReportToExcel(group)
-        this.$store.commit("Modal/active");
-        },
-        async exportReportKabag() {
-            // Open loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // group dulu yang spv dan periode yang sama
-            /* expected object = [
-                [{ baseReport }, { baseReport }],
-                [{ baseReport }, { baseReport }],
-                [{ baseReport }, { baseReport }],
-            ]
-            */
-           if(!this.groupedObject.length) {
-               return
-           }
-           let group = []
-        //   grouped { head: index } //seperate by name
-           let grouped = {}
-           this.groupedObject.forEach((val) => {
-            //    if the object was grouped, and else
-               if(grouped.hasOwnProperty(val?.head)) {
-                // //    console.log("ada sama")
-                //    console.log(val.name+val.periode)
-                //    console.log(grouped[val?.name+val?.periode])
-                   group[grouped[val.head]].push({ ...val })
-               } else {
-                   grouped[val.head] = group.length
-                   group.push([{ ...val }])
-                // console.log(grouped)
-                // console.log("tidak sama")
-               }
-           })
-        //    console.log(group)
-        await exportWeeklyKabag(group)
-        this.$store.commit("Modal/active");
         },
         push(id, obj) {
             // if the id is exists,
@@ -172,24 +150,6 @@ export default {
 		details(ev) {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});
 		},
-        share(ev){
-            // exportDailyReport()
-            // this.$refs.importerBase.click();
-            // // console.log(ev)
-            // let record = this.$store.getters["Document/getId"](ev)
-            // //set shared to true with date
-            // record.shared = this.$store.getters["dateFormat"]({format: "time"})
-            // // value = {store: 'nameOfStore', obj: {id: idOfDocument, object: 'to append to indexeddb'} }
-            // this.$store.dispatch("update", {
-            //                 store: "Document",
-            //                 obj: record,
-            //                 criteria: { id: ev }
-            //             })
-            console.log(ev)
-        },
-        readExcel(e) {
-			// const file = e.target.files[0]
-        }
     },
     computed: {
         lists() {
