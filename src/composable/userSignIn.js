@@ -19,6 +19,10 @@ const signIn = async (username, password) => {
             throw new Error("Password salah")
         }
         // kembalikan success
+        func.append({ store: 'login', obj: { username: user?.username, time: new Date().getTime(), totalActivity: 0 }}).then((val) => {
+            localStorage.setItem('loginya', val?.data?.id)
+            localStorage.setItem('loginActiviy', 0)
+        })
         return user
     } catch(err) {
         error.value = err
