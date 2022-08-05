@@ -19,7 +19,8 @@
 			localStorage.removeItem('loginActivity')
 		})
 		const handleSignIn = async () => {
-			signIn(username.value, password.value)
+			let process = await signIn(username.value, password.value)
+			console.log(process)
 			// await func.append({ store: "login", obj: 
 			// 	{ totalActivity: 0, id: new Date().getTime()+'' }
 			// }).then((val) => {
