@@ -1,6 +1,5 @@
 <script>
 	import { ref } from "@vue/reactivity"
-	import func from '../../myfunction'
 	import { onMounted } from '@vue/runtime-core';
 	import userSignIn from "../../composable/userSignIn"
 	import userCreate from "../../composable/userCreate"
@@ -20,7 +19,9 @@
 		})
 		const handleSignIn = async () => {
 			let process = await signIn(username.value, password.value)
-			console.log(process)
+			if(process) {
+				location.reload()
+			}
 			// await func.append({ store: "login", obj: 
 			// 	{ totalActivity: 0, id: new Date().getTime()+'' }
 			// }).then((val) => {
