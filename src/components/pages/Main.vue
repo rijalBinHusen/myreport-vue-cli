@@ -1,8 +1,11 @@
 <template>
 	<div>
-		<Navbar />
-		<component :is="activeNav"></component>
-		<Modal :judul="more.judul" :form="more.form"/>
+		<div v-if="isSignIn">
+			<Navbar />
+			<component :is="activeNav"></component>
+			<Modal :judul="more.judul" :form="more.form"/>
+		</div>
+		<Login v-else />
 	</div>
 </template>
 
@@ -29,10 +32,12 @@
 	import Complains from "../../modular/ComplainReport/Complains.vue"
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
 	import Storage from "./Storage.vue"
+	import Login from "./Login.vue"
 
 	export default {
 		name: "Main",
 		components: {
+			Login,
 			FollowUp,
 			Complains,
 			Cases,
@@ -63,12 +68,12 @@
 			more() {
 				return this.$store.state.Modal.more
 			},
+			isSignIn() {
+				return localStorage.getItem('loginya')
+			}
 		},
 		mounted() {
 			this.$store.dispatch("getStart");
 		}
 	}
 </script>
-
-<style>
-</style>
