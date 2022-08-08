@@ -44,6 +44,7 @@ export default function (arrayOfArrayOfDocuments) {
             totalDo: 13,
             planOut: 14,
             totalItemKeluar: 15,
+            periodeBulan: 0,
           },
         ];
         let arrayPeriodeSearched = [];
@@ -56,6 +57,7 @@ export default function (arrayOfArrayOfDocuments) {
           }
           // new details document
           newArrayOfDocuments.push({
+            periodeBulan: val2?.periode2,
             periode: +val2.periode2.match(/\d+/)[0],
             totalKendaraan: +val2.totalKendaraan,
             totalWaktu: +val2.totalWaktu,
@@ -83,6 +85,7 @@ export default function (arrayOfArrayOfDocuments) {
 
     newArrayOfArrayOfdocuments.forEach((val) => {
       val.then((result) => {
+        console.log(result)
         // console.log(Object.assign(result, { Report: [{ id: "Bismillah" }] }));
         exportToXlsSeperateSheet(
           Object.assign(
@@ -91,11 +94,11 @@ export default function (arrayOfArrayOfDocuments) {
             },
             result
           ),
-          result?.base[1]?.periode
-          + " - " +
-          result?.base.slice(-1)[0]?.periode
-          + " " +
           result?.base[1]?.headName
+          + " " +
+          result?.base[1]?.periodeBulan
+          + " Sampai " +
+          result?.base.slice(-1)[0]?.periodeBulan
           + " Shift " +
           result?.base[1]?.shift
         );

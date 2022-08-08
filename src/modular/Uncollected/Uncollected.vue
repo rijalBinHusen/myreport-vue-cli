@@ -255,7 +255,7 @@ export default {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {
                     this.renewLists()
-                } , 1500 )
+                } , 600 )
             }
         });
     },
