@@ -57,6 +57,7 @@ export default function (arrayOfArrayOfDocuments) {
           }
           // new details document
           newArrayOfDocuments.push({
+            periodeBulan: val2.periode2,
             periode: +val2.periode2.match(/\d+/)[0],
             totalKendaraan: val2.totalKendaraan,
             totalWaktu: val2.totalWaktu,
@@ -94,9 +95,11 @@ export default function (arrayOfArrayOfDocuments) {
           " " +
           result?.base[1]?.spvName +
             " " +
-            result?.base[1]?.periode +
-            " - " +
-            result?.base.slice(-1)[0]?.periode
+            result?.base[1]?.periodeBulan +
+            " Sampai " +
+            result?.base.slice(-1)[0]?.periodeBulan
+            + " Shift " +
+            result?.base[1]?.shift
         );
         await myfunction.tunggu(500)
     }
