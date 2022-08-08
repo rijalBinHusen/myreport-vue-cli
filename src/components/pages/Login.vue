@@ -9,6 +9,7 @@
 
 		const username = ref('');
 		const password = ref('');
+		const enableForm = ref(true)
 
 		const { error, signIn } = userSignIn()
 		const { createUser } = userCreate()
@@ -18,15 +19,12 @@
 			localStorage.removeItem('loginActivity')
 		})
 		const handleSignIn = async () => {
+			enableForm.value = false
 			let process = await signIn(username.value, password.value)
 			if(process) {
 				location.reload()
 			}
-			// await func.append({ store: "login", obj: 
-			// 	{ totalActivity: 0, id: new Date().getTime()+'' }
-			// }).then((val) => {
-			// 	localStorage.setItem('loginya', val?.data?.id)
-			// })
+			enableForm.value = true
 		};
 
 		//create new user
@@ -39,7 +37,7 @@
 			}
 		}
 
-		return { createNewUser, username, password, handleSignIn, error }
+		return { createNewUser, username, password, handleSignIn, error, enableForm }
 		}
 	}
 </script>
@@ -48,7 +46,7 @@
 <div class="w3-display-middle">
 	
 	<div id="app" class="w3-row w3-col s3" style="min-width: 350px;margin-left: auto;margin-right: auto;">
-		<form @submit.prevent="handleSignIn" class="w3-container" action="#">
+		<form @submit.prevent="handleSignIn" :class="['w3-container', enableForm ? '' : 'w3-disabled']"  action="#">
 			<div class="w3-section w3-border w3-padding w3-round-large w3-padding-64">
 				<label class="w3-margin-bottom"><b>Username</b></label>
 				<input class="w3-input w3-border w3-margin-bottom w3-round-large w3-border-teal" type="text" placeholder="Username" name="username" required v-model="username">
