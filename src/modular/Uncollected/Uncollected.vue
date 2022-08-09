@@ -1,7 +1,15 @@
 <template>
 <div class="w3-container w3-margin-top">
         <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
-        
+
+        <Button 
+            class="w3-right" 
+            secondary
+            value="Message to all" 
+            type="button" 
+            @trig="oneClickMessageToAll" 
+        />
+
         <Dropdown
             value="Kirim rekap"  
             :lists="$store.state.Headspv.lists"
@@ -129,6 +137,14 @@ export default {
         Dropdown
     },
     methods: {
+        oneClickMessageToAll() {
+            this.$store.state.Supervisors.lists.forEach((val) => {
+                let conf = confirm(`Anda akan mengirim pesan kepada ${val?.name}`)
+                if(conf) {
+                    this.pesan(val)
+                }
+            })
+        },
         edit(ev) {
             this.$store.commit("Modal/active", {
                 judul: "Edit record", 
@@ -169,7 +185,7 @@ export default {
             let listLaporan = this.$store.getters["Document/documentMore2DaysBySpv"](ev?.id)
 
             // jika lists laporan ada, jadikan listslaporan menjadi text
-            if(Object.keys(listLaporan).length) {
+            if(Object.keys(listLaporan).length && ev.phone) {
 
                 let listLaporanText = ""
                 Object.keys(listLaporan).forEach((val) => {
@@ -182,9 +198,7 @@ export default {
                     window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
                     // shell.openExternal(`https://wa.me/${ev.phone}?text=${pesan}`)
                     //  console.log(pesan)
-                    return
             }
-            alert("Tidak ada laporan lebih dari H+2")
 		},
         pesanSemua(ev) {
             // let nophone = window.prompt()
