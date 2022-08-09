@@ -63,7 +63,6 @@ const Backup = {
         );
       }
       commit("Impor/impor", true, { root: true });
-      return dispatch("Expor/expor", {}, { root: true });
     },
     check({ dispatch, state, commit }) {
       let now = new Date().getTime();

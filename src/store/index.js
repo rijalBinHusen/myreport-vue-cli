@@ -3,7 +3,6 @@ import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
 import Collected from "../modular/Collected/Collected";
-import Expor from "./modules/Expor";
 import Impor from "../modular/ImportData/Impor";
 import Warehouses from "../modular/Warehouses/Warehouses";
 import Supervisors from "../modular/Supervisors/Supervisors.js";
@@ -31,7 +30,6 @@ export default createStore({
     Navbar,
     Modal,
     Collected,
-    Expor,
     Impor,
     Warehouses,
     Supervisors,
