@@ -8,6 +8,10 @@ const Modal = {
     },
   },
   mutations: {
+    // we use this as alternative to catch a message before we close the modal
+    tunnelMessage(val) {
+      return val
+    },
     active(state, val) {
       //jika val ada isinya, modal active, ganti form
       if (val) {

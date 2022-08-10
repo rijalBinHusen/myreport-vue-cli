@@ -40,7 +40,6 @@
 	export default {
 		setup() {
 			const store = useStore()
-			const subscribe = ref(null);
 			const isSignIn = ref(null)
 
 			const activeNav = computed(() => {
@@ -50,15 +49,11 @@
 			const more = computed(() => {
 				return store.state.Modal.more
 			})
-
-			// const isSignIn = computed(() => {
-			// 	return localStorage.getItem('loginya')
-			// })
 			
 			onBeforeMount(() => {
 				store.dispatch("getStart");
 				isSignIn.value = localStorage.getItem('loginya')
-				subscribe.value = store.subscribe(() => {
+				store.subscribe(() => {
 					// get time last activity that stored
 					const lastActivity = +localStorage.getItem('lastActivity')
 					// compare to the time now

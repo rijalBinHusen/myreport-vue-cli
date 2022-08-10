@@ -1,7 +1,7 @@
 <template>
   <div v-if="modal" style="display: block;" class="w3-modal">
     <div class="w3-modal-content w3-animate-zoom w3-round-large">
-      <header v-if="form !== 'Loader'" class="w3-container w3-teal w3-round-large">
+      <header v-if="form !== 'Loader' && form !== 'Confirm'" class="w3-container w3-teal w3-round-large">
           <!-- v-if="modal.mode !== 'loading'" -->
         <span
           @click="active"
@@ -44,10 +44,12 @@ import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"
 import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
 import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
+import Confirm from "./Confirm.vue"
 
 export default {
   name: "Modal",
     components: {
+      Confirm,
       ComplainInsertForm,
       ComplainImportForm,
       Complains,
