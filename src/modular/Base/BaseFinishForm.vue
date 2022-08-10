@@ -85,7 +85,6 @@ export default {
                 parentDocument: this.documentRecord?.id,
                 generateReport: this.generateReport,
             }, this.details))
-            this.$emit('exit')
         },
     },
     computed: {

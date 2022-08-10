@@ -310,6 +310,8 @@ export default {
                 }
             )
             await this.$store.dispatch("BaseReportFile/someRecordFinished", this.base.id)
+            // close the base finish form
+            this.BaseFinishForm = false
             // tutup loader
             this.$store.commit("Modal/active");
         },
