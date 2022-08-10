@@ -274,7 +274,7 @@ const BaseReportStock = {
                     Number(val.real) -
                     (Number(val.awal) + Number(val.in) - Number(val.out));
                   val.problem2 = rootGetters["Problem/masalah"](val.problem);
-                  val.planOut = 0;
+                  val.planOut = 0 || val?.planOut;
                   return val;
                 }
               })

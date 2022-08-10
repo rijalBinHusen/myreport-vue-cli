@@ -49,12 +49,9 @@ import Button from "../../components/elements/Button.vue"
 		created() {
 			this.info = this.$store.getters["Modal/obj"].obj
 			// (periode, warehouse, item)
-			this.$store.getters["Problem/problemActive"](this.info.periode, this.info.warehouse, this.info.item)
-				.forEach((val) => {
-					this.listsProblem.push(
-						this.$store.getters["Problem/problemId"](val) 
-					)
-			})
+			// get all problem by warehouse and item
+			this.listsProblem = this.$store.getters["Problem/problemByItem"](this.info?.warehouse, this.info?.item)
+			// 
 			this.pickedProblem = this.info.problem
 		},
 		name: "BaseProblemForm"

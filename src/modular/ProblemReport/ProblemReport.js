@@ -90,6 +90,11 @@ const Problem = {
           (val) => val?.nameSpv === spv && val?.periode == periode
         );
       },
+    problemByItem: (state) => (warehouse, item) => {
+      // this.$store.getters["Problem/problemActive"](new Date().getTime())
+      /* expected result = [itemId, itemId] */
+      return JSON.parse(JSON.stringify(state.lists)).filter((val) => val.warehouse == warehouse && val.item == item);
+    },
   },
 };
 
