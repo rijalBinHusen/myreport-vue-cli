@@ -21,7 +21,8 @@ const signIn = async (username, password) => {
         // kembalikan success
         func.append({ store: 'login', obj: { username: user[0]?.username, time: new Date().getTime(), totalActivity: 0 }}).then((val) => {
             localStorage.setItem('loginya', val?.data?.id)
-            localStorage.setItem('loginActiviy', 0)
+            localStorage.setItem('loginActivity', 0)
+            localStorage.setItem('lastActivity', new Date().getTime() + 14400000)
         })
         await func.tunggu(2500)
         return true

@@ -106,6 +106,7 @@ function updateActivity() {
     .update({ totalActivity: loginActivity });
     // update loginActivity in localStorage
     localStorage.setItem("loginActivity", loginActivity)
+    localStorage.setItem("lastActivity", new Date().getTime() + 14400000)
   }, 2000)
 }
 

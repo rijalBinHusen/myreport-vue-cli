@@ -6,13 +6,6 @@
         <div class="w3-row w3-center">
             <p class="w3-col w3-large s2 w3-left-align w3-margin-right">Set backup periode : </p>
             <Button 
-                class="w3-col s2"
-                primary
-                value="Start" 
-                type="button"
-                @trig="handleBackup" 
-            />
-            <Button 
                 v-for="bup in backupLists"
                 class="w3-col s2"
                 :key="bup"

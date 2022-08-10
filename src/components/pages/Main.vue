@@ -33,8 +33,45 @@
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
 	import Storage from "./Storage.vue"
 	import Login from "./Login.vue"
+	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
+	import { useStore } from 'vuex';
+	import userSignOut from "../../composable/UserSignOut"
 
 	export default {
+		setup() {
+			const store = useStore()
+			const subscribe = ref(null);
+			const isSignIn = ref(null)
+
+			const activeNav = computed(() => {
+				return store.state.Navbar.active
+			})
+
+			const more = computed(() => {
+				return store.state.Modal.more
+			})
+
+			// const isSignIn = computed(() => {
+			// 	return localStorage.getItem('loginya')
+			// })
+			
+			onBeforeMount(() => {
+				store.dispatch("getStart");
+				isSignIn.value = localStorage.getItem('loginya')
+				subscribe.value = store.subscribe(() => {
+					// get time last activity that stored
+					const lastActivity = +localStorage.getItem('lastActivity')
+					// compare to the time now
+					const nowTime = new Date().getTime() 
+					// if now > last activity return false
+					if( isSignIn.value && nowTime > lastActivity) {
+						userSignOut()
+					}
+				})
+			})
+			
+			return { activeNav, more, isSignIn }
+		},
 		name: "Main",
 		components: {
 			Login,
@@ -61,19 +98,5 @@
 			Base,
 			Storage,
 		},
-		computed: {
-			activeNav() {
-				return this.$store.state.Navbar.active
-			},
-			more() {
-				return this.$store.state.Modal.more
-			},
-			isSignIn() {
-				return localStorage.getItem('loginya')
-			}
-		},
-		mounted() {
-			this.$store.dispatch("getStart");
-		}
 	}
 </script>
