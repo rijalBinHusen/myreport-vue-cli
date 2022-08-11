@@ -29,6 +29,7 @@ import Table from "../elements/Table.vue"
 import Button from "../elements/Button.vue"
 import exportToXls from "../../exportToXls"
 import exportSeperateSheet from "../../exportToXlsSeperateSheet"
+import exportDocuments from "../../excelReport/Documents"
 
 export default {
     data () {
@@ -36,7 +37,8 @@ export default {
             reportNow: "",
             reports: [
                 { judul: "Export pengumpulan dokumen", keterangan: "Export periode pengumpulan dokumen berdasarkan tanggal", id: "report001"},
-                { judul: "Export base report", keterangan: "Export base report untuk mengisi tanggal expired di excel", id: "report002"}
+                { judul: "Export base report", keterangan: "Export base report untuk mengisi tanggal expired di excel", id: "report002"},
+                { judul: "Test report", keterangan: "Hanya test saja", id: 'report003'}
             ],
             step: "",
             unsubscribe: ""
@@ -50,6 +52,8 @@ export default {
             this.$store.commit("Modal/active", { judul: "Set record to export", form: "PeriodePicker", store: "Document", btnValue: "Export"});
             } else if (id === "report002") {
                 this.exportBaseReport()        
+            } else if (id === 'report003') {
+                exportDocuments('2022-07-01', '2022-08-01')
             }
         },
         async exportBaseReport() {
