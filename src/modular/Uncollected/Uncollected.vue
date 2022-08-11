@@ -137,14 +137,42 @@ export default {
         Dropdown
     },
     methods: {
-        oneClickMessageToAll() {
-            this.$store.state.Supervisors.lists.forEach((val) => {
-                let conf = confirm(`Anda akan mengirim pesan kepada ${val?.name}`)
-                if(conf) {
-                    this.pesan(val)
-                }
-            })
+        async oneClickMessageToAll () {
+            // ambil dulu semua karu
+            let allKaru = this.$store.state.Supervisors.lists
+            // iterate semua karu untuk kirim pesan
+            for (let ind in allKaru) {
+                // variable untuk menampung subscribe
+                let unsubscribe;
+                // promise 
+                const prom = new Promise(resolve => {
+                    // luncurkan dialog
+                    this.$store.commit("Modal/active", {
+                        judul: "", 
+                        form: "Confirm",
+                         pesan: `Kamu akan mengirim pesan kepada ${allKaru[ind]?.name}`
+                    })
+                    // subscribe untuk tanggkap confirm dialog apakah yes atau tidak
+                    unsubscribe = this.$store.subscribe(mutation => {
+                        // if the confirmation button clicked whatever yes or no
+                        if(mutation?.type == 'Modal/tunnelMessage') {
+                            // resolve the messaage, true or false
+                            resolve(mutation?.payload)
+                        }
+                    })
+                })
+                // jika oke kirim pesan
+                await prom.then(confirm => {
+                    unsubscribe()
+                    if(confirm) {
+                        this.pesan(allKaru[ind])
+                    }
+                    this.$store.commit("Modal/active")
+                })
+                // ke pesan selanjutnya
+            }
         },
+    
         edit(ev) {
             this.$store.commit("Modal/active", {
                 judul: "Edit record", 
