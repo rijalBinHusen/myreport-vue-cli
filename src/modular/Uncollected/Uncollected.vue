@@ -2,20 +2,12 @@
 <div class="w3-container w3-margin-top">
         <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
 
-        <Button 
-            class="w3-right" 
-            secondary
-            value="Message to all" 
-            type="button" 
-            @trig="oneClickMessageToAll" 
-        />
-
         <Dropdown
-            value="Kirim rekap"  
+            value="Message to all"  
             :lists="$store.state.Headspv.lists"
             listsKey="phone"
             listsValue="name"
-            @trig="pesanSemua($event)"
+            @trig="oneClickMessageToAll($event)"
             class="w3-right"
             secondary
         />
@@ -119,10 +111,102 @@
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
-import { mapGetters } from "vuex";
+import { mapGetters, useStore } from "vuex";
 // import { shell } from 'electron';
 
 export default {
+    setup() {
+        const store = useStore()
+
+        const oneClickMessageToAll = async (ev) => {
+            // ambil dulu semua karu
+            let allKaru = store.state.Supervisors.lists
+            // iterate semua karu untuk kirim pesan
+            for (let ind in allKaru) {
+                // variable untuk menampung subscribe
+                let unsubscribe;
+                // promise 
+                const prom = new Promise(resolve => {
+                    // luncurkan dialog
+                    store.commit("Modal/active", {
+                        judul: "", 
+                        form: "Confirm",
+                         pesan: `Kamu akan mengirim pesan kepada ${allKaru[ind]?.name}`
+                    })
+                    // subscribe untuk tanggkap confirm dialog apakah yes atau tidak
+                    unsubscribe = store.subscribe(mutation => {
+                        // if the confirmation button clicked whatever yes or no
+                        if(mutation?.type == 'Modal/tunnelMessage') {
+                            // resolve the messaage, true or false
+                            resolve(mutation?.payload)
+                        }
+                    })
+                })
+                // jika oke kirim pesan
+                await prom.then(confirm => {
+                    unsubscribe()
+                    if(confirm) {
+                        // call the pesan function
+                        pesan(allKaru[ind])
+                    }
+                    store.commit("Modal/active")
+                })
+                // ke pesan selanjutnya
+            }
+            pesanSemua(ev)
+            console.log(ev)
+        }
+
+        const pesan = () => {
+            // slice the data
+			// let datanya = JSON.parse(JSON.stringify(ev))
+            // daftar laporan yang melebihi H+2 dari sekarang
+            let listLaporan = store.getters["Document/documentMore2DaysBySpv"](ev?.id)
+
+            // jika lists laporan ada, jadikan listslaporan menjadi text
+            if(Object.keys(listLaporan).length && ev.phone) {
+
+                let listLaporanText = ""
+                Object.keys(listLaporan).forEach((val) => {
+                    listLaporanText += `${listLaporan[val].join(", ")}`
+                    listLaporanText += ` | ${store.getters["Warehouses/warehouseId"](val)?.name}%0a`
+                })
+                // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
+    			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
+
+                    window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
+                    // shell.openExternal(`https://wa.me/${ev.phone}?text=${pesan}`)
+                    //  console.log(pesan)
+            }
+        }
+
+        const pesanSemua = (ev) => {
+            // let nophone = window.prompt()
+            if(!ev){ return }
+            let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${store.getters["dateFormat"]({format: "full"})}:%0a%0a`
+            // get document by spv and iterate, document by spv yang >= H+2
+            store.getters["Document/documentBySpv"](0).forEach((val) => {
+                if(val.documents) {
+                // daftar laporan yang melebihi H+2 dari sekarang
+                let sekarang = new Date().getTime()
+                let listLaporan = []
+                val.documents.forEach((val) => {
+                    if(sekarang - val.periode >= 172800000 ) {
+                        listLaporan.push(`${val.periode2} | ${val?.warehouseName}%0a`)
+                    }
+                })
+                if(listLaporan.length > 0)
+                    result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
+                }
+            })
+
+            window.open(`https://wa.me/${ev}?text=${result}`)
+            // console.log(result)
+        }
+        
+
+        return { oneClickMessageToAll, pesan, pesanSemua }
+    },
     name: "Uncollected",
     data() {
         return {
@@ -137,42 +221,6 @@ export default {
         Dropdown
     },
     methods: {
-        async oneClickMessageToAll () {
-            // ambil dulu semua karu
-            let allKaru = this.$store.state.Supervisors.lists
-            // iterate semua karu untuk kirim pesan
-            for (let ind in allKaru) {
-                // variable untuk menampung subscribe
-                let unsubscribe;
-                // promise 
-                const prom = new Promise(resolve => {
-                    // luncurkan dialog
-                    this.$store.commit("Modal/active", {
-                        judul: "", 
-                        form: "Confirm",
-                         pesan: `Kamu akan mengirim pesan kepada ${allKaru[ind]?.name}`
-                    })
-                    // subscribe untuk tanggkap confirm dialog apakah yes atau tidak
-                    unsubscribe = this.$store.subscribe(mutation => {
-                        // if the confirmation button clicked whatever yes or no
-                        if(mutation?.type == 'Modal/tunnelMessage') {
-                            // resolve the messaage, true or false
-                            resolve(mutation?.payload)
-                        }
-                    })
-                })
-                // jika oke kirim pesan
-                await prom.then(confirm => {
-                    unsubscribe()
-                    if(confirm) {
-                        this.pesan(allKaru[ind])
-                    }
-                    this.$store.commit("Modal/active")
-                })
-                // ke pesan selanjutnya
-            }
-        },
-    
         edit(ev) {
             this.$store.commit("Modal/active", {
                 judul: "Edit record", 
@@ -205,53 +253,6 @@ export default {
             }
                 this.$store.dispatch("Document/handleDocument", ev)
             // console.log(ev)
-        },
-		pesan(ev) {
-			// slice the data
-			// let datanya = JSON.parse(JSON.stringify(ev))
-            // daftar laporan yang melebihi H+2 dari sekarang
-            let listLaporan = this.$store.getters["Document/documentMore2DaysBySpv"](ev?.id)
-
-            // jika lists laporan ada, jadikan listslaporan menjadi text
-            if(Object.keys(listLaporan).length && ev.phone) {
-
-                let listLaporanText = ""
-                Object.keys(listLaporan).forEach((val) => {
-                    listLaporanText += `${listLaporan[val].join(", ")}`
-                    listLaporanText += ` | ${this.$store.getters["Warehouses/warehouseId"](val)?.name}%0a`
-                })
-                // jika ada laporan yang H+2 lapor kirim, buka link jika tidak ada tampilkan alert
-    			let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listLaporanText}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
-
-                    window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
-                    // shell.openExternal(`https://wa.me/${ev.phone}?text=${pesan}`)
-                    //  console.log(pesan)
-            }
-		},
-        pesanSemua(ev) {
-            // let nophone = window.prompt()
-            // if(nophone){
-            let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${this.$store.getters["dateFormat"]({format: "full"})}:%0a%0a`
-            // get document by spv and iterate, document by spv yang >= H+2
-            this.$store.getters["Document/documentBySpv"](0).forEach((val) => {
-                if(val.documents) {
-                // daftar laporan yang melebihi H+2 dari sekarang
-                let sekarang = new Date().getTime()
-                let listLaporan = []
-                val.documents.forEach((val) => {
-                    if(sekarang - val.periode >= 172800000 ) {
-                        listLaporan.push(`${val.periode2} | ${val?.warehouseName}%0a`)
-                    }
-                })
-                if(listLaporan.length > 0)
-                    result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
-                }
-            })
-
-            window.open(`https://wa.me/${ev}?text=${result}`)
-            // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
-            // console.log(result)
-            // }
         },
         notApproval(ev) {
             // dockumen yang belum tanda tangan kabag
