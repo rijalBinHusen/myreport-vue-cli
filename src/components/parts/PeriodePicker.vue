@@ -30,6 +30,11 @@ export default {
     },
     methods: {
         async send() {
+            // if we only need the date
+            if(!this.obj?.store && this.obj?.tunnelMessage) {
+                this.$store.commit('Modal/tunnelMessage', {periode1: this.periode1, periode2: this.periode2})
+                return
+            }
             // get name of store from the modal state, that set when user hit the button to launch this periode picker
             // let store = this.obj.store
             // open the modal with loader

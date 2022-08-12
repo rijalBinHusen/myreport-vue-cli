@@ -27,7 +27,6 @@
 <script>
 import Table from "../elements/Table.vue"
 import Button from "../elements/Button.vue"
-import exportToXls from "../../exportToXls"
 import exportSeperateSheet from "../../exportToXlsSeperateSheet"
 import exportDocuments from "../../excelReport/Documents"
 
@@ -38,7 +37,6 @@ export default {
             reports: [
                 { judul: "Export pengumpulan dokumen", keterangan: "Export periode pengumpulan dokumen berdasarkan tanggal", id: "report001"},
                 { judul: "Export base report", keterangan: "Export base report untuk mengisi tanggal expired di excel", id: "report002"},
-                { judul: "Test report", keterangan: "Hanya test saja", id: 'report003'}
             ],
             step: "",
             unsubscribe: ""
@@ -46,14 +44,38 @@ export default {
     },
     methods: {
         launch(id) {
-            if(id === "report001") {
-            this.reportNow = id
-            // luncurkan periode picker
-            this.$store.commit("Modal/active", { judul: "Set record to export", form: "PeriodePicker", store: "Document", btnValue: "Export"});
-            } else if (id === "report002") {
+            if (id === "report002") {
                 this.exportBaseReport()        
-            } else if (id === 'report003') {
-                exportDocuments('2022-07-01', '2022-08-01')
+            } 
+            else if (id === 'report001') {
+                let unsubscribe;
+                this.$store.commit("Modal/active", { 
+                    judul: "Set record to export", 
+                    form: "PeriodePicker", 
+                    store: false, 
+                    btnValue: "Export",
+                    tunnelMessage: true,
+                });
+
+                const promise = new Promise (resolve => {
+                    unsubscribe = this.$store.subscribe(mutation => {
+                        if (mutation.type === 'Modal/tunnelMessage') {
+                            //get the payload that send to tunnel message
+                        resolve(mutation?.payload)
+                        }
+                    })
+                })
+                
+                promise.then(async val => {
+                    //open the loader
+                    this.$store.commit("Modal/active", {judul: "", form: "Loader"})
+                    // wait the process
+                    await exportDocuments(val?.periode1, val?.periode2)
+                    //unsubscribe the mutation
+                    unsubscribe()
+                    //close the loader
+                    this.$store.commit("Modal/active")
+                })
             }
         },
         async exportBaseReport() {
@@ -88,44 +110,6 @@ export default {
     },
     created() {
         this.$store.dispatch("Baseitem/getAllItem")
-        this.step = ""
-        this.unsubscribe = this.$store.subscribe((mutation) => {
-            // console.log(mutation)
-        if (mutation.type === 'Modal/active') {
-            // jika mutation.payload && mutation.payload.form === PeriodePicker (user akan memilih periode yang akan didownload)
-            if(mutation.payload && mutation.payload.form === "PeriodePicker") {
-                // this.step = mutation.payload.form
-                this.step = mutation.payload.form
-            } 
-            // jika mutation.payload && mutation.payload.form === Loader (user telah memilih periode yang didownload)
-            if(mutation.payload && mutation.payload.form === "Loader") {
-                this.step = mutation.payload.form
-                // this.step = mutation.payload.form
-                // ambil periode yang telah dipilih user
-                this.periode = mutation.payload.periode
-            }
-            // jika mutation.payload === undefined && this.step === Loader (modal ditutup otomatis setelah semua data didapatkan dari database)
-            if(!mutation.payload && this.step === "Loader") {
-                // this.step = ""
-                this.step = ""
-                // download filenya
-                if(this.reportNow === "report001") {
-                    let namaFileReport = `Pengumpulan dokumen periode ${this.$store.getters["dateFormat"]({format: "ymdexcel", time: this.periode[0]})} sampai dengan ${this.$store.getters["dateFormat"]({format: "ymdexcel", time: this.periode[1]})}`
-                    exportToXls(this.$store.getters["Document/exportData"], namaFileReport)
-                }
-            }
-            // jika mutation.payload === undefined (modal ditutup manual, user tidak jadi download)
-            if(!mutation.payload) {
-                // this.step kembali jadi "" lagi
-                this.step = ""
-            }
-
-            // console.log(`Updating to ${state}`);
-            }
-        });
-    },
-    beforeUnmount() {
-        this.unsubscribe();
     },
     components: {
         Table, Button,

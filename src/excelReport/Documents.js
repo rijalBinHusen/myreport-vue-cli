@@ -90,15 +90,15 @@ const report = async  (startDate, endDate) => {
                             .then(val => { warehouse[doc?.warehouse] = val[0]?.name })
                 }
                 result.push ({
-                    periode: func.dateFormat(['dateMonth', doc?.periode]),
-                    karu: karu[doc?.name] || 'Not found',
-                    bagian: warehouse[doc?.warehouse] || 'Not found',
-                    kabag: head[doc?.head] || 'Not found',
-                    shift: doc?.shift,
-                    dikumpulkan: !isNaN(doc.collected+ "") ? func.dateFormat(['dateMonth', doc?.collected]) : doc?.collected,
-                    selesai: !isNaN(doc.finished+ "") ? func.dateFormat(['dateMonth', doc?.finished]) : doc?.finished,
-                    diparaf: !isNaN(doc.approval+ "") ? func.dateFormat(['dateMonth', doc?.approval]) : doc?.approval,
-                    dibagikan: !isNaN(doc.shared+ "") ? func.dateFormat(['dateMonth', doc?.shared]) : doc?.shared,
+                    Periode: func.dateFormat(['dateMonth', doc?.periode]),
+                    Karu: karu[doc?.name] || 'Not found',
+                    Bagian: warehouse[doc?.warehouse] || 'Not found',
+                    Kabag: head[doc?.head] || 'Not found',
+                    Shift: doc?.shift,
+                    Dikumpulkan: !isNaN(doc.collected+ "") ? func.dateFormat(['dateMonth', doc?.collected]) : doc?.collected,
+                    Selesai: !isNaN(doc.finished+ "") ? func.dateFormat(['dateMonth', doc?.finished]) : doc?.finished,
+                    Diparaf: !isNaN(doc.approval+ "") ? func.dateFormat(['dateMonth', doc?.approval]) : doc?.approval,
+                    Dibagikan: !isNaN(doc.shared+ "") ? func.dateFormat(['dateMonth', doc?.shared]) : doc?.shared,
                 })
             }
         }
