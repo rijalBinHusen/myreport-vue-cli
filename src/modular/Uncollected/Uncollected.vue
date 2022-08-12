@@ -154,7 +154,6 @@ export default {
                 // ke pesan selanjutnya
             }
             pesanSemua(ev)
-            console.log(ev)
         }
 
         const pesan = () => {
