@@ -114,6 +114,9 @@ export default {
         if(!this.documentRecord?.collected) {
             alert("The document record status not collected yet")
         }
+        console.log(this.documentRecord)
+        console.log(this.detailsClock)
+        console.log(this.detailsStock)
     },
 }
 </script>

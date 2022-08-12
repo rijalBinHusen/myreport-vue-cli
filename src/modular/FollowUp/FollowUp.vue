@@ -28,7 +28,7 @@
 <script>
 import Button from '@/components/elements/Button.vue'
 import Datatable from "../../components/parts/Datatable.vue"
-import getAllDocuments from "../../composable/storeGetAllDocuments"
+import stateFollowUp from "../../composable/components/followUp"
 import { computed, onMounted } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
@@ -36,12 +36,12 @@ import { useStore } from 'vuex'
 export default {
     components: { Datatable, Button, Dropdown },
     setup() {
-        const { error, documents } = getAllDocuments('followup', 100, 'id', true)
+        const { lists } = stateFollowUp()
         const store = useStore()
-
+        
         let listsFollowUp = computed(() => {
-            if(documents?.value) {
-                return documents.value.map((val) => ({
+            if(lists?.value) {
+                return lists.value.map((val) => ({
                     ...val, periode: store.getters.dateFormat({ format: 'dateMonth', time: val?.periode })
                 })
                 )
@@ -60,7 +60,7 @@ export default {
             // console.log(ev, obj)
         }
 
-        return { error, listsFollowUp, handleButton }
+        return { listsFollowUp, handleButton }
     }
 }
 </script>

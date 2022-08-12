@@ -156,7 +156,7 @@ export default {
             pesanSemua(ev)
         }
 
-        const pesan = () => {
+        const pesan = (ev) => {
             // slice the data
 			// let datanya = JSON.parse(JSON.stringify(ev))
             // daftar laporan yang melebihi H+2 dari sekarang

@@ -307,7 +307,7 @@ const BaseReportStock = {
           result["totalItemMoving"]++;
           result["totalQTYIn"] = result["totalQTYIn"] + Number(val.in);
           result["totalQTYOut"] = result["totalQTYOut"] + Number(val.out);
-          result["planOut"] = +result["planOut"] + Number(val?.planOut);
+          result["planOut"] = result["planOut"] += val?.planOut ? Number(val?.planOut) : 0;
         }
       });
 

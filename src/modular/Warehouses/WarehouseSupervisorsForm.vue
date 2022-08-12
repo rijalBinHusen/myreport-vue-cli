@@ -59,7 +59,7 @@ import Button from "../../components/elements/Button.vue"
 						)
 				})
 			}
-			this.listsSupervisors = this.$store.getters["Supervisors/enabled"]
+			this.listsSupervisors = this.$store.state.Supervisors.lists
 		// console.log(this.info)
 		},
 		name: "WarehouseSupervisorsForm"
