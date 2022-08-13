@@ -29,7 +29,7 @@
 import Button from '@/components/elements/Button.vue'
 import Datatable from "../../components/parts/Datatable.vue"
 import stateFollowUp from "../../composable/components/followUp"
-import { computed, onMounted } from '@vue/runtime-core'
+import { computed } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
 
