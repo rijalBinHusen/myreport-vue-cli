@@ -50,6 +50,7 @@ export default {
                 window.open(`https://wa.me/${obj.tujuan}?text=${tanya}`)
             } else if (ev === 'selesai') {
                 markAsFinished(obj?.id)
+                renewLists()
             }
         }
 
