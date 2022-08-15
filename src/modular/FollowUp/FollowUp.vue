@@ -1,6 +1,6 @@
 <template>
     <div v-if="listsFollowUp.length">
-        <Button primary value="Periode" type="button"/>
+        <Button primary value="Periode" type="button" @trig="handleAdd"/>
         <Datatable
             :datanya="listsFollowUp"
             :heads="['Periode', 'Pesan']"
@@ -28,7 +28,7 @@
 <script>
 import Button from '@/components/elements/Button.vue'
 import Datatable from "../../components/parts/Datatable.vue"
-import stateFollowUp from "../../composable/components/followUp"
+import followUp from "../../composable/components/followUp"
 import { computed } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
@@ -36,7 +36,7 @@ import { useStore } from 'vuex'
 export default {
     components: { Datatable, Button, Dropdown },
     setup() {
-        const { lists } = stateFollowUp()
+        const { lists, addData } = followUp()
         const store = useStore()
         
         let listsFollowUp = computed(() => {
@@ -48,19 +48,20 @@ export default {
             }
             return []
         })
-
+        
+        const handleAdd = () => {
+            addData(
+                { pesan: 'teststertertertertertert', tujuan: 'spvInfo.phone' }
+            )
+        }
         const handleButton = (ev, obj) => {
             if(ev == 'tanya') {
                 let tanya = `Mohon maaf pak mengganggu,%0a%0aMohon saya diberi konfirmasinya pak, terkait pesan saya pada tanggal ${obj.periode}, %0ayang benar yang seperti apa, biar saya masukkan ke catatan saya.%0a%0aadapun pesan saya pada tanggal ${obj.periode} isinya kurang lebih seebagai berikut:%0a%0a${obj.pesan}`
                 window.open(`https://wa.me/${obj.tujuan}?text=${tanya}`)
-                // console.log(process.env)
-            //
-            //
             }
-            // console.log(ev, obj)
         }
 
-        return { listsFollowUp, handleButton }
+        return { listsFollowUp, handleButton, handleAdd }
     }
 }
 </script>

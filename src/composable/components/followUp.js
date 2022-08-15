@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from "vue"
 import func from "../../myfunction"
+import { ymdTime } from "../piece/dateFormat"
 
 let lists = reactive([])
 
@@ -13,8 +14,17 @@ const followUp = () => {
     
     // update data
     // delete data
+    return { lists, addData }
+}
+
+const addData = (payload) => {
     // add data
-    return { lists }
+    let record = { ...payload, periode: ymdTime() };
+    func.append({
+          store: "FollowUp",
+          obj: record,
+        }
+      ).then((val) => lists.value.unshift(val?.data))
 }
 
 export default followUp
