@@ -1,7 +1,7 @@
 const getDetails = (payload) => {
     // a = { format: 'dateTime', time: new Date() }
-    const jsDate = payload?.time ? new Date(payload?.time) : new Date();
-    const dateNumber = jsDate.getDate();
+    const jsDate = payload ? new Date(payload) : new Date();
+    const dateNumber = jsDate.getDate() > 9 ? jsDate.getDate() : "0" + jsDate.getDate();
     const monthNumber = jsDate.getMonth();
     const YearNumber = jsDate.getFullYear();
     const hoursNumber = jsDate.getHours() > 9 ? jsDate.getHours() : "0" + jsDate.getHours();
@@ -36,6 +36,11 @@ export const dayPlus1 = (payload) => {
 export const ymdTime = (payload) => {
     const details = getDetails(payload)
     return new Date(details.year + "/" + (details.month + 1) + "/" + details.date).getTime();
+}
+
+export const dateMonth = (payload) => {
+    const details = getDetails(payload)
+    return `${details.date}-${MMM[details.month]}`
 }
 
 const dateFormat =  {

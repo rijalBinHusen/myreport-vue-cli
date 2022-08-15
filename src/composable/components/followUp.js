@@ -1,11 +1,10 @@
 import { computed, reactive, ref } from "vue"
 import func from "../../myfunction"
-import { ymdTime } from "../piece/dateFormat"
+import { ymdTime, dateMonth } from "../piece/dateFormat"
 
 let lists = reactive([])
 
 const getFollowUp = async () => {
-    // console.log(lists?.value)
     if(!lists?.value) {
         // get all data from indexeddb
         await func.getData({store: 'followup', limit: 100, desc: true, orderBy: 'id'})
@@ -27,7 +26,12 @@ export const markAsFinished = (idRecord) => {
 
 export const unFinished = async () => {
     await getFollowUp()
-    return lists.value.filter((val) => !val?.finished)
+    let unfinish = [ ...lists.value].filter((val) => {
+        if(!val?.finished) {
+            return Object.assign(val, {periode2: dateMonth(val?.periode)})
+        }
+    })
+    return unfinish
 }
 
 export const addData = (payload) => {

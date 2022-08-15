@@ -4,7 +4,7 @@
         <Datatable
             :datanya="lists"
             :heads="['Periode', 'Pesan']"
-            :keys="['periode', 'pesan']"
+            :keys="['periode2', 'pesan']"
             option
             id="followUp"
             #default="{ prop }"
