@@ -171,6 +171,7 @@ import { mapState, mapGetters, mapActions } from "vuex"
 import AGGrid from "../../components/parts/AGGrid.vue"
 import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
+import { addData } from "../../composable/components/followUp"
 // import { shell } from 'electron'
 
 export default {
@@ -247,7 +248,7 @@ export default {
             } else if (ev === "selesai") {
                 pesan =  salam+pembuka+' '+selisih+`%0a%0aApakah ada selisih stock yang sudah tersolusikan? %0a${problem}`
             }
-            this.$store.dispatch("FollowUp/append", { pesan: pembuka+' '+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
+            addData({ pesan: pembuka+' '+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
             // console.log(pesan)
             // save to the followup
             window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)

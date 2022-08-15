@@ -45,10 +45,12 @@ import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
 import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import Confirm from "./Confirm.vue"
+import FollowUpFinished from "../../modular/FollowUp/FollowUpFinished.vue"
 
 export default {
   name: "Modal",
     components: {
+      FollowUpFinished,
       Confirm,
       ComplainInsertForm,
       ComplainImportForm,

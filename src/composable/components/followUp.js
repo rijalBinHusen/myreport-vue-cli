@@ -14,14 +14,14 @@ const getFollowUp = async () => {
 }
 
 // update data
-export const markAsFinished = (idRecord) => {
+export const markAsFinished = (idRecord, answer) => {
     lists.value = lists.value.map((val) => {
         if (val?.id === idRecord) {
-            return { ...val, finished: ymdTime()}
+            return { ...val, finished: ymdTime(), answer: answer}
         }
         return val
     })
-    func.update({ store: 'followup', criteria: idRecord, obj: {finished: ymdTime()}})
+    func.update({ store: 'followup', criteria: { id: idRecord }, obj: { finished: ymdTime(), answer: answer }})
 }
 
 export const unFinished = async () => {
