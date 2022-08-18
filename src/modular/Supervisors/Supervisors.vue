@@ -63,12 +63,33 @@
 </template>
 
 <script>
+import { useStore } from 'vuex';
 import Button from "../../components/elements/Button.vue"
 import Select from "../../components/elements/Select.vue"
-import { uid } from "uid"
 import Table from "../../components/elements/Table.vue"
 
 export default {
+  setup() {
+    // 
+    const store = useStore()
+    
+    const disableName = (ev, disabled) => {
+      // cek dulu apakah dia sudah di pick di suatu gudang
+      let warehouseName = store.getters['Warehouses/warehouseNameBySpv'](ev)
+      // kalau belum dipick
+      if(!warehouseName) { 
+        alert("Supervisor belum ditugaskan digudang")
+        return 
+      }
+
+      store.dispatch("Supervisors/updateParam", { 
+        id: ev, 
+        param: { disabled: !disabled } 
+      })
+    }
+
+    return { disableName }
+  },
   components: {
     Button,
     Table,
@@ -102,7 +123,7 @@ export default {
       }
       // jika tidak
       else {
-        this.$store.dispatch("Supervisors/append", { ...this.supervisor, disabled: false })
+        this.$store.dispatch("Supervisors/append", { ...this.supervisor, disabled: true })
       }
       this.cancel()
     },
@@ -116,12 +137,6 @@ export default {
         name: "",
         phone: "",
       }
-    },
-    disableName(ev, disabled) {
-      this.$store.dispatch("Supervisors/updateParam", { 
-        id: ev, 
-        param: { disabled: !disabled } 
-      })
     },
   },
   mounted() {

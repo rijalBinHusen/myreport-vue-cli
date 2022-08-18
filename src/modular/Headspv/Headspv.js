@@ -67,7 +67,7 @@ const Headspv = {
   },
   getters: {
     enabled(state) {
-      return state.lists.filter((val) => val.disabled === false);
+      return state.lists.filter((val) => !val.disabled);
     },
     headId: (state, getters, rootState, rootGetters) => (id) => {
       let rec = JSON.parse(JSON.stringify(state.lists)).find(
@@ -82,7 +82,7 @@ const Headspv = {
     },
     shift: (state, getters, rootState, rootGetters) => (shift) => {
       let rec = [...state.lists].find((val) => val.shift == shift);
-      return rec && rec.name
+      return rec && rec.name && !rec?.disabled
         ? rec
         : {
             name: "Vacant",

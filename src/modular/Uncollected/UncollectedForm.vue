@@ -119,7 +119,6 @@ export default {
             _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
         }),
         ...mapGetters({
-            GET_UNCOLLECTED: "Document/uncollected",
             GET_HEADENABLE: "Headspv/enabled",
             GET_SPVENABLE: "Supervisors/enabled",
             GET_LASTDATE: "Document/lastDate",
@@ -127,8 +126,10 @@ export default {
             GET_SUPERVISORID: "Supervisors/spvId",
             GET_HEADID: "Headspv/headId",
             GET_HEADSHIFT: "Headspv/shift",
+            GET_SPV_WAREHOUSE: "Warehouses/warehouseNameBySpv"
         }),
         names() {
+            // warehouse: 123123123, spv [ 1, 2, 3 ], warehousename
             let result = []
             let groupLength = Math.ceil(this.GET_SPVENABLE.length / 3) * 3
             for (let i = 0; i < groupLength; i += 3) {
