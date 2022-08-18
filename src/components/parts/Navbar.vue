@@ -30,6 +30,13 @@
 				/>
 				<Button 
 					noborder 
+					class="w3-bar-item w3-text-black" 
+					value="Sync firebase" 
+					type="button"  
+					@trig="syncData" 
+				/>
+				<Button 
+					noborder 
 					class="w3-bar-item w3-text-black w3-hover-pink" 
 					value="Sign out" 
 					type="button"  
@@ -43,10 +50,11 @@
 	import Button from "../elements/Button.vue";
 	import { mapGetters } from "vuex"
 	import signOut from "../../composable/UserSignOut"
+	import syncData from "../../composable/storeSyncData"
 	
 	export default {
 		setup() {
-			return { signOut }
+			return { signOut, syncData }
 		},
 		name: "Navbar",
 		data() {

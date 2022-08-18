@@ -1,44 +1,39 @@
-import func from "../myfunction";
-import addDocument from "./firebaseAddStore";
+import { db } from "@/firebase/firebaseApp";
+import { collection, getDocs } from "firebase/firestore"
+import func from "../myfunction"
+import addData from "./firebaseAddStore"
 
-const syncData = () => {
-  // jika ditemukan store activity
-  let activity = func.getData({ store: "activity"});
+// the store that we're gonna sync
+let store = ['problem']
 
-    // console.log(await Promise.all(allStores));
-    return new Promise( resolve => {
-      activity.then(async (val) => {
-        let inserted = {}
-        //   iterate name of store
-        // iterate data that contain in name of store
-        for (let rec of val) {
-          if(rec?.store != 'activity' && rec?.store != 'summary' && rec?.store != 'login') {
-            // periksa apakah store sudah pernah diinsert?
-            if(inserted[rec?.store]) {
-              //  jika sudah pernah diinsert, periksa apakah record sudaah pernah diinsert ke firebase]
-              if(inserted[rec?.store].includes(rec?.idRecord)) {
+import getStore from "./firebaseGetAllDocument";
+// cek dulu apakah pernah di sync sebelumnya
+const startSyncingData = async () => {
+  const querySnapshot = await getDocs(collection(db, 'sync'));
+  // 	kalau ada, periksa tanggal berapa dia sync
+  // 	ambil activitas store terakhir
+  // 	periksa tanggal sync firebase dengan aktivitas terakhir
+  // 	jika lebih besar aktivitas terakhir sync ke firebase
+// 	catat tanggal sync difirebase
 
-              }
-              else {
-                // jika tidak pernah diinsert
-                inserted[rec?.store].push(rec?.idRecord)
-              }
-
-            } 
-            else {
-              // jika store tidaak pernah diinsert
-              inserted[rec?.store] = [rec?.idRecord]
-            }
-            
-            let record = await func.findData({ store: rec?.store, criteria: { id: rec?.idRecord }})
-            //   // kirim ke firebasel
-            //   // await addDocument(rec?.store, doc?.key, doc?.data);
-            //   console.log(rec?.store, doc?.key, doc?.data)
-            await func.tunggu(3000)
-          }
+// jika tidak pernah ada sync sebelumnya
+  if(querySnapshot?.empty) {
+    store.forEach(async (store) => {
+      // 	get semua data yang ada distore
+      await func.findData({ store: store, criteria: { isFinished: false }}).then(async (docs) => {
+        // 	push semua data ke firebase
+        for (let doc of docs) {
+          await addData(store, doc?.id, doc)
         }
-        resolve()
+
+      addData('synced', store, { login: localStorage.getItem('loginya'), time: new Date().getTime() })
       })
-    });
-};
-export default syncData;
+    })
+  }
+
+// ========
+// berarti kita butuh document tersendiri berjudul sync
+// yang berisi nama store dan tanggal terakhir dia sync dan id activity yang melakukan sync
+}
+
+export default startSyncingData

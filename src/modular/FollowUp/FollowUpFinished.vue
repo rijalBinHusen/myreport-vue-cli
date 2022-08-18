@@ -28,7 +28,10 @@ export default {
 
 
         const handleSubmit = () => {
-            // console.log(record?.value?.id)
+            if(!answer.value) { 
+                alert("The answer can not be blank")
+                return 
+            }
             // mark as finish record
             markAsFinished(record?.value?.id, answer.value)
             // close the modal

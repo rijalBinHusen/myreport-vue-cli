@@ -31,7 +31,6 @@
 	import Cases from "../../modular/CasesReport/Cases.vue"
 	import Complains from "../../modular/ComplainReport/Complains.vue"
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
-	import Storage from "./Storage.vue"
 	import Login from "./Login.vue"
 	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
@@ -91,7 +90,6 @@
 			Backup,
 			Importbase,
 			Base,
-			Storage,
 		},
 	}
 </script>
