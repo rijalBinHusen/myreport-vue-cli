@@ -16,6 +16,7 @@
     </div>
 
             <Datatable
+                v-if="renderTable"
                 :datanya="table?.lists"
                 :heads="table?.heads"
                 :keys="table?.keys"
@@ -44,6 +45,7 @@ export default {
     data() {
         return {
             inserted: true,
+            renderTable: true,
         }
     },
     computed: {
@@ -51,8 +53,8 @@ export default {
             if(this.inserted) {
                 return {
                     lists: this.$store.getters["Cases/inserted"],
-                    heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Solusi"],
-                    keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "solusi"],
+                    heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Diinput"],
+                    keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "insert2"],
                     id: "tableCasesInserted"
                 }
             }
@@ -148,6 +150,14 @@ export default {
         Datatable,
         Input,
         Datatable,
+    },
+    watch: {
+        inserted() {
+            this.renderTable = false
+            setTimeout(() => {
+                this.renderTable = true
+            }, 300)
+        }
     },
     name: "Cases",
 }
