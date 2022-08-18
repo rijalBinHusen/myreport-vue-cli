@@ -71,7 +71,7 @@ export default function (arrayOfArrayOfDocuments) {
             totalProductNotFIFO: +val2.totalProductNotFIFO,
             headName: val2.headName,
             totalDo: val2.totalDo,
-            planOut: val2.planOut,
+            planOut: +val2.planOut,
             totalItemKeluar: val2.totalItemKeluar,
           });
         });
