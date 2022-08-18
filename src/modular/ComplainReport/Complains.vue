@@ -66,8 +66,8 @@ export default {
             if(this.inserted) {
                 return {
                     lists: this.$store.getters["Complains/inserted"],
-                    heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Solusi"],
-                    keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "solusi"],
+                    heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Inserted"],
+                    keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "insert2"],
                     id: "tableComplainsInserted"
                 }
             }
@@ -76,8 +76,6 @@ export default {
                 heads: ['Tanggal Komplain', 'Gudang', 'Karu', 'Item', 'Selisih', 'Row'],
                 keys: ['tanggalKomplain', 'gudang', 'spv', 'item', 'selisih', 'row'],
                 id: "tableComplainsImported"
-                // "row", "gudang", "tally", "spv" , "kabag", "tanggalSuratJalan", "tanggalBongkar", "tanggalKomplain"
-                // "tanggalInfo", "customer", "nomorSJ", "nopol", "item", "do", "real", "nomorSJ", "type", "import"
             }
         },
     },

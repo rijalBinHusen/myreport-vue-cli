@@ -90,6 +90,7 @@ const Complain = {
           });
           val.spvName = rootGetters["Supervisors/spvId"](val?.name)?.name;
           val.headName = rootGetters["Headspv/headId"](val?.head)?.name;
+          val.insert2 = rootGetters['dateFormat']({ time: val.insert, format: 'dateMonth'})
           return val;
         }
       });

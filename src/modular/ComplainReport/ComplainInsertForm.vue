@@ -77,6 +77,7 @@
 import datepicker from "vue3-datepicker"
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
+import { ymdTime } from "../../composable/piece/dateFormat"
 
 export default {
     // Tanggal[v], Masalah[v], Sumber Masalah, Solusi dan Tindakan, PIC, D/L, Status
@@ -99,7 +100,6 @@ export default {
                 pic: "",
                 dl: "",
                 status: false,
-                insert: true,
             }
         }
     },
@@ -121,7 +121,7 @@ export default {
         }
         },
         appendComplain() {
-            this.$store.dispatch("Complains/append", { ...this.ComplainInput })
+            this.$store.dispatch("Complains/append", { ...this.ComplainInput, insert: ymdTime() })
             this.$store.commit("Modal/active")
         },
         updateComplain() {
