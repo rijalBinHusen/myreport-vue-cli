@@ -2,7 +2,6 @@
 	import { ref } from "@vue/reactivity"
 	import { onMounted } from '@vue/runtime-core';
 	import userSignIn from "../../composable/userSignIn"
-	import userCreate from "../../composable/userCreate"
 
 	export default {
 		setup() {
@@ -12,7 +11,6 @@
 		const enableForm = ref(true)
 
 		const { error, signIn } = userSignIn()
-		const { createUser } = userCreate()
 
 		onMounted(() => {
 			localStorage.removeItem('loginya')
@@ -27,17 +25,7 @@
 			enableForm.value = true
 		};
 
-		//create new user
-		const createNewUser = async () => {
-			// else, create username and password
-			const create = await createUser(username.value, password.value)
-			if(create) {
-				username.value = ''
-				password.value = ''
-			}
-		}
-
-		return { createNewUser, username, password, handleSignIn, error, enableForm }
+		return { username, password, handleSignIn, error, enableForm }
 		}
 	}
 </script>
@@ -51,7 +39,7 @@
 				<label class="w3-margin-bottom"><b>Username</b></label>
 				<input class="w3-input w3-border w3-margin-bottom w3-round-large w3-border-teal" type="text" placeholder="Username" name="username" required v-model="username">
 
-				<label @dblclick="createNewUser" class="w3-margin-bottom"><b>Password</b></label>
+				<label class="w3-margin-bottom"><b>Password</b></label>
 				<input class="w3-input w3-border w3-round-large w3-border-teal" type="password" placeholder="Enter Password" name="psw" required="" v-model="password">
 				<p style="color:red;"> {{error}} </p>
 				<button class="w3-button w3-block w3-section w3-padding w3-teal w3-round-large" type="submit">Login</button>
