@@ -1,8 +1,7 @@
 import { db } from "@/firebase/firebaseApp";
-import Problem from "@/modular/ProblemReport/ProblemReport";
 import { doc, getDoc } from "firebase/firestore"
 import func from "../myfunction"
-import addData from "./firebaseAddStore"
+import syncProblem from "./piece/firebaseSyncProblem"
 
 // the store that we're gonna sync
 let stores = ['problem']
@@ -31,34 +30,17 @@ const startSyncingData = async () => {
             for(let activity of loginActivity) {
               // update atau write, periksa apakah time di login history filtered > lastsynced time
               if(activity?.time > lastSynced?.time) {
-                let doc;
                 // ambil dulu documentnya, lalu tulis ke firebase
                 if(store === 'problem') {
-                  doc = await func.findData({ store: 'problem', criteria: {id: activity?.idRecord}})
-                                .then(async (doc) => {
-                                  // get item details
-                                  let item = await func.findData({store: 'baseitem', criteria: { kode: doc[0]?.item } })
-                                  // get spv details
-                                  let spv = doc[0]?.nameSpv ? await func.findData({store: 'supervisors', criteria: { id: doc[0]?.nameSpv } }) : [{ name: 'Vacant' }]
-                                  // get headspv details
-                                  let headspv =doc[0]?.nameHeadSpv ? await func.findData({store: 'headspv', criteria: { id: doc[0]?.nameHeadSpv } }) : [{ name: 'Vacant' }]
-                                  // return
-                                  return { ...doc[0], item: item[0]?.name, nameSpv: spv[0]?.name, nameHeadSpv: headspv[0]?.name}
-                                })
+                  await syncProblem(activity?.idRecord)
                 }
-                // console.log(doc)
-                await addData(store, doc?.id, doc)
               }
             }
           }
-        // record to synced document
-        await addData('synced', store, { login: localStorage.getItem('loginya'), time: new Date().getTime() })
         }
+        // record to synced document
+        await syncedDocument(store)
       }
-      // jika yes push datanya ke firebase
-      // periksa tanggal sync firebase dengan aktivitas terakhir
-      // jika lebih besar aktivitas terakhir sync ke firebase
-      // catat tanggal sync difirebase
     }
   }
 //   const querySnapshot = await getDocs(collection(db, 'synced'));
@@ -80,6 +62,12 @@ const startSyncingData = async () => {
 // ========
 // berarti kita butuh document tersendiri berjudul sync
 // yang berisi nama store dan tanggal terakhir dia sync dan id activity yang melakukan sync
+}
+
+
+// record in synced document
+const syncedDocument = (nameStore) => {
+  return addData('synced', nameStore, { login: localStorage.getItem('loginya'), time: new Date().getTime() })
 }
 
 export default startSyncingData
