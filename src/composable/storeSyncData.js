@@ -2,6 +2,7 @@ import { db } from "@/firebase/firebaseApp";
 import { doc, getDoc } from "firebase/firestore"
 import func from "../myfunction"
 import syncProblem from "./piece/firebaseSyncProblem"
+import addData from "./firebaseAddStore"
 
 // the store that we're gonna sync
 let stores = ['problem']
@@ -40,6 +41,19 @@ const startSyncingData = async () => {
         }
         // record to synced document
         await syncedDocument(store)
+      }
+    } else {
+      if(store === 'problem') {
+        let docs = await func.findData({ store: store, criteria: { isFinished: false } })
+        if(docs && docs?.length) {
+          // iterate and insert to firebase
+          for(let doc of docs) {
+            // insert to firebase
+            await syncProblem(doc?.id)
+          }
+        // record to synced document
+        await syncedDocument(store)
+        }
       }
     }
   }

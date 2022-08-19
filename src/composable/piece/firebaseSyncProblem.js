@@ -34,7 +34,6 @@ const syncProblem = async (idProblem) => {
                     }
                   } 
               })
-  console.log(doc)
   // write problem
   addDocument('problem', doc?.problem?.id, doc?.problem)
   // write details problem
