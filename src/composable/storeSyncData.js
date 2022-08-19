@@ -36,16 +36,23 @@ const startSyncingData = async () => {
                 if(store === 'problem') {
                   doc = await func.findData({ store: 'problem', criteria: {id: activity?.idRecord}})
                                 .then(async (doc) => {
+                                  // get item details
                                   let item = await func.findData({store: 'baseitem', criteria: { kode: doc[0]?.item } })
-                                  // console.log(item)
-                                  return { ...doc[0], item: item[0]?.name}
+                                  // get spv details
+                                  let spv = doc[0]?.nameSpv ? await func.findData({store: 'supervisors', criteria: { id: doc[0]?.nameSpv } }) : [{ name: 'Vacant' }]
+                                  // get headspv details
+                                  let headspv =doc[0]?.nameHeadSpv ? await func.findData({store: 'headspv', criteria: { id: doc[0]?.nameHeadSpv } }) : [{ name: 'Vacant' }]
+                                  // return
+                                  return { ...doc[0], item: item[0]?.name, nameSpv: spv[0]?.name, nameHeadSpv: headspv[0]?.name}
                                 })
                 }
-                console.log(doc)
-                // await addData(store, doc?.id, doc)
+                // console.log(doc)
+                await addData(store, doc?.id, doc)
               }
             }
           }
+        // record to synced document
+        await addData('synced', store, { login: localStorage.getItem('loginya'), time: new Date().getTime() })
         }
       }
       // jika yes push datanya ke firebase
@@ -66,7 +73,6 @@ const startSyncingData = async () => {
 //           await addData(store, doc?.id, doc)
 //         }
 
-//       addData('synced', store, { login: localStorage.getItem('loginya'), time: new Date().getTime() })
 //       })
 //     })
 //   }
