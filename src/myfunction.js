@@ -125,7 +125,7 @@ async function addActivity(obj) {
   // id activity e.g = log22240001_1
   let idActivity = idLogin+'_'+loginActivity
   // tambahkan activity ke idb
-  await write('activity', idActivity, {...obj, id: idActivity, time: new Date().getTime()})
+  await write('activity', idActivity, {...obj, id: idActivity, time: new Date().getTime(), idLogin: idLogin})
   updateActivity()
   return {...obj, id: idActivity, time: new Date().getTime()}
 }
