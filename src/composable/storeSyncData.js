@@ -5,7 +5,7 @@ import syncProblem from "./piece/firebaseSyncProblem"
 import addData from "./firebaseAddStore"
 
 // the store that we're gonna sync
-let stores = ['problem']
+let stores = ['problem', 'cases']
 
 const startSyncingData = async () => {
   // cek dulu apakah pernah di sync sebelumnya
@@ -15,12 +15,12 @@ const startSyncingData = async () => {
     if(isSynced.exists()) {
       const lastSynced = isSynced.data()
       // ambil 30 login terakhir
-      const loginHistory = await func.getData({ store: 'login', limit: 30, desc: true, orderBy: 'id'})
+      const loginHistory = await func.getData({ store: 'login', limit: 30, desc: true, orderBy: 'time'})
       // bandingkan login yang ada di store sync didatabase
-      // ambil activity yang lebih besar dari lastSynced login
-      const loginHistoryFiltered = loginHistory.filter((log) => log.id >= lastSynced.login)
-      // jika ada yang lebih besar
-      if(loginHistoryFiltered && loginHistoryFiltered.length) {    
+      // jika ada time lebih besar
+      if(loginHistory[0]?.time > lastSynced?.time) {    
+        // ambil activity yang lebih besar dari lastSynced login
+        const loginHistoryFiltered = loginHistory.filter((log) => log.id >= lastSynced.login)
         // iterate loginHistoryFiltered, 
         for(let log of loginHistoryFiltered ) {
           // cari aktivitas yang berkaitan dengan store, 
@@ -55,6 +55,8 @@ const startSyncingData = async () => {
         await syncedDocument(store)
         }
       }
+      let docs = await func.getData({store: store})
+      console.log(docs)
     }
   }
 //   const querySnapshot = await getDocs(collection(db, 'synced'));

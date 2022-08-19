@@ -7,6 +7,7 @@ const syncProblem = async (idProblem) => {
   let doc = await 
               func.findData({ store: 'problem', criteria: {id: idProblem}})
                 .then(async (doc) => {
+                  if(!doc) { return }
                   // get item details
                   let item = await func.findData({store: 'baseitem', criteria: { kode: doc[0]?.item } })
                   // get spv details
@@ -34,10 +35,12 @@ const syncProblem = async (idProblem) => {
                     }
                   } 
               })
-  // write problem
-  addDocument('problem', doc?.problem?.id, doc?.problem)
-  // write details problem
-  addDocument('detailsProblem', doc?.problem?.id, doc?.detailsProblem)
+  if(doc) {
+    // write problem
+    addDocument('problem', doc?.problem?.id, doc?.problem)
+    // write details problem
+    addDocument('detailsProblem', doc?.problem?.id, doc?.detailsProblem)
+  }
 }
 
 export default syncProblem
