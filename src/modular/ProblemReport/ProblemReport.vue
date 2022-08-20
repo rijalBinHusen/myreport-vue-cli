@@ -5,27 +5,23 @@
             <Button primary value="Set periode" class="w3-right w3-margin-top" type="button" @trig="pickPeriode" />
             <Datatable
                 :datanya="$store.getters['Problem/lists']"
-                :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Status']"
-                :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'status']"
+                :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Karu', 'Status']"
+                :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'supervisor', 'status']"
                 option
                 id="tableProblemReport"
                 #default="{ prop }"
             >
-                <Button 
-                    small
-                    primary 
-                    value="Edit" 
-                    :datanya="prop.id" 
-                    type="button" 
-                    @trig="edit($event)" 
-                />
-                <Button 
-                    small
-                    secondary
-                    value="Duplicate" 
-                    :datanya="prop.id" 
-                    type="button" 
-                    @trig="duplicate($event)" 
+                
+                <Dropdown 
+                    value="Opsi" 
+                    :lists="[
+                        { id: 'edit', content: 'Edit'}, 
+                        { id: 'duplicate', content: 'Duplicate'}
+                    ]"
+                    listsKey="id"
+                    listsValue="content"
+                    @trig="handleButton($event, prop?.id)"
+                    primary
                 />
             </Datatable>
         </div>
@@ -37,48 +33,56 @@
 import Datatable from "../../components/parts/Datatable.vue"
 import Button from "../../components/elements/Button.vue"
 import ProblemReportForm from "./ProblemReportForm.vue"
+import Dropdown from '../../components/elements/Dropdown.vue'
+import { problem } from '../../composable/periodePickerProps'
+import { ref } from '@vue/reactivity'
+import { useStore } from 'vuex'
 
 export default {
-    components: {
-        Button,
-        Datatable,
-        ProblemReportForm,
-    },
-    methods: {
-        pickPeriode() {
-            this.$store.commit("Modal/active", { 
-                judul: "Set record to show", 
-                form: "PeriodePicker", 
-                store: "Problem",
-                btnValue: "Show"
-            });
-        },
-        edit(ev) {
-            this.editId = ev
-            this.form = true
-        },
-        duplicate(ev){
+    setup() {
+        
+        const form = ref(false)
+        const editId =  ref(null)
+        const store = useStore()
+
+        const handleButton = (action, id) => {
+            if(action === 'edit') {
+                editId.value = id
+                form.value = true
+                return
+            }
+            duplicate(id)
+        }
+
+        
+        const pickPeriode = () => {
+            store.commit("Modal/active", problem);
+        }
+        
+
+        const duplicate = (ev) =>{
             let confirm = window.confirm("Apakah anda yakin akan menduplikat record tersebut?")
             if(!confirm) { return }
 
             const { id, periode, ...record } = this.$store.getters["Problem/problemId"](ev)
 
-            this.$store.dispatch("append",
+            store.dispatch("append",
             {
                 store: "Problem",
                 obj: Object.assign(record, { periode: new Date().getTime() })
             })
-            // delete record.id
-            // console.log(Object.assign( { id: this.lists[0] ? this.lists[0].id : "PRB22050000" }, record))
         }
+
+        
+
+        return { handleButton, form, editId, pickPeriode }
     },
-    data() {
-        return {
-            form: false,
-            editId: "",
-        }
-    },
-    async mounted() {
+    components: {
+        Button,
+        Datatable,
+        ProblemReportForm,
+        Dropdown
+    },async mounted() {
         await this.$store.dispatch("Baseitem/getAllItem");
         await this.$store.dispatch("Problem/getProblemFromDB");
     },

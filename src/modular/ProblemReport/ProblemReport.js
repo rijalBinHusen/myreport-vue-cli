@@ -52,6 +52,7 @@ const Problem = {
               format: "dateMonth",
               time: val.periode,
             }),
+            supervisor: rootGetters['Supervisors/spvId'](val?.nameSpv)?.name,
             status: val?.isFinished ? "Closed" : "Progress",
           }))
         : [];

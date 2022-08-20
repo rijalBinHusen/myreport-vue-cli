@@ -28,7 +28,6 @@
 
 <script>
 import Input from "../../components/elements/Input.vue"
-import { uid } from "uid"
 import Button from "../../components/elements/Button.vue"
 import InputItem from "./InputItem.vue"
 
@@ -43,7 +42,7 @@ export default {
               item: null,
           })
           this.pickedItem.push(
-          Object.assign({ id: uid(9), item: null, }, this.$store.getters["Modal/obj"].addOn)
+          Object.assign({ item: null, }, this.$store.getters["Modal/obj"].addOn)
           )
       },
       item(index, value) {

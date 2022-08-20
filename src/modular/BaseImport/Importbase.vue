@@ -53,7 +53,7 @@ import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import { mapGetters} from "vuex"
-import periodePickerProps from "../../composable/periodePickerProps"
+import { BaseReportFile } from "../../composable/periodePickerProps"
 import readExcelFile from "../../composable/readExcel"
 
 export default {
@@ -71,7 +71,7 @@ export default {
     },
     methods: {
         pickPeriode() {
-            this.$store.commit("Modal/active", periodePickerProps('BaseReportFile'));
+            this.$store.commit("Modal/active", BaseReportFile);
         },
         launch(ev) {
             this.$refs.importerBase.click();
