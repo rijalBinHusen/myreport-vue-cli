@@ -64,7 +64,7 @@ export default {
             let confirm = window.confirm("Apakah anda yakin akan menduplikat record tersebut?")
             if(!confirm) { return }
 
-            const { id, periode, ...record } = this.$store.getters["Problem/problemId"](ev)
+            const { id, periode, ...record } = store.getters["Problem/problemId"](ev)
 
             store.dispatch("append",
             {
