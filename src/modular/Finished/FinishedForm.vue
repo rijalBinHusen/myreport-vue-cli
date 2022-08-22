@@ -8,7 +8,7 @@
                 :value="more?.[dat.valueFrom]"
                 @change="more[dat.valueFrom] = $event.target.value"
                 :disabled="!edit || !dat?.editable"
-                type="text"
+                :type="dat.type"
             />
         </div>
         <Button primary :value="edit ?  'Update' : 'Edit'" class="w3-right" type="button" @trig="editButtonHandle"/>
@@ -38,19 +38,19 @@ export default {
             more: "",
             edit: false,
             dataToShow: [
-                { title: "Periode", valueFrom: "periode2", editable: false },
-                { title: "Supervisor Name", valueFrom: "spvName", editable: false },
-                { title: "Gudang", valueFrom: "warehouseName", editable: false },
-                { title: "Shift", valueFrom: "shift", editable: false  },
-                { title: "Total DO", valueFrom: "totalDo", editable: true},
-                { title: "Total Kendaraan", valueFrom: "totalKendaraan", editable: true},
-                { title: "Total Waktu", valueFrom: "totalWaktu", editable: true},
-                { title: "Total item moving", valueFrom: "totalItemMoving", editable: true},
-                { title: "Total product in", valueFrom: "totalQTYIn", editable: true},
-                { title: "Total output", valueFrom: "totalQTYOut", editable: true},
-                { title: "Coret DO", valueFrom: "planOut", editable: true},
-                { title: "Total Not FIFO", valueFrom: "totalProductNotFIFO", editable: true},
-                { title: "Total item variance", valueFrom: "itemVariance", editable: true}
+                { title: "Periode", valueFrom: "periode2", editable: false, type: 'text' },
+                { title: "Supervisor Name", valueFrom: "spvName", editable: false, type: 'text'  },
+                { title: "Gudang", valueFrom: "warehouseName", editable: false, type: 'text'  },
+                { title: "Shift", valueFrom: "shift", editable: false, type: 'text'   },
+                { title: "Total DO", valueFrom: "totalDo", editable: true, type: 'number'},
+                { title: "Total Kendaraan", valueFrom: "totalKendaraan", editable: true, type: 'number'},
+                { title: "Total Waktu", valueFrom: "totalWaktu", editable: true, type: 'number'},
+                { title: "Total item moving", valueFrom: "totalItemMoving", editable: true, type: 'number'},
+                { title: "Total product in", valueFrom: "totalQTYIn", editable: true, type: 'number'},
+                { title: "Total output", valueFrom: "totalQTYOut", editable: true, type: 'number'},
+                { title: "Coret DO", valueFrom: "planOut", editable: true, type: 'number'},
+                { title: "Total Not FIFO", valueFrom: "totalProductNotFIFO", editable: true, type: 'number'},
+                { title: "Total item variance", valueFrom: "itemVariance", editable: true, type: 'number'}
             ],
         }
     },
