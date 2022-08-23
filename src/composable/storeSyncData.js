@@ -3,22 +3,23 @@ import { doc, getDoc } from "firebase/firestore"
 import func from "../myfunction"
 import syncProblem from "./piece/firebaseSyncProblem"
 import addData from "./firebaseAddStore"
+import syncCases from "./piece/firebaseSyncCases"
 
 // the store that we're gonna sync
-let stores = ['problem', 'cases']
+let stores = ['problem', 'cases', 'complains']
 
 const startSyncingData = async () => {
+  // ambil 30 login terakhir
+  const loginHistory = await func.getData({ store: 'login', limit: 30, desc: true, orderBy: 'time'})
   // cek dulu apakah pernah di sync sebelumnya
   for(let store of stores) {
     const isSynced = await getDoc(doc(db, 'synced', store));
     // 	kalau ada, periksa tanggal berapa dia sync
-    if(isSynced.exists()) {
+    if(isSynced.data()) {
       const lastSynced = isSynced.data()
-      // ambil 30 login terakhir
-      const loginHistory = await func.getData({ store: 'login', limit: 30, desc: true, orderBy: 'time'})
       // bandingkan login yang ada di store sync didatabase
       // jika ada time lebih besar
-      if(loginHistory[0]?.time > lastSynced?.time) {    
+      if(loginHistory && loginHistory[0]?.time > lastSynced?.time) {    
         // ambil activity yang lebih besar dari lastSynced login
         const loginHistoryFiltered = loginHistory.filter((log) => log.id >= lastSynced.login)
         // iterate loginHistoryFiltered, 
@@ -30,10 +31,13 @@ const startSyncingData = async () => {
             // iterate login activity
             for(let activity of loginActivity) {
               // update atau write, periksa apakah time di login history filtered > lastsynced time
-              if(activity?.time > lastSynced?.time) {
+              if(activity?.time > lastSynced?.time && ['create', 'update'].includes(activity?.type)) {
                 // ambil dulu documentnya, lalu tulis ke firebase
                 if(store === 'problem') {
                   await syncProblem(activity?.idRecord)
+                } else {
+                  console.log('masuk')
+                  await syncCases(store, activity?.idRecord)
                 }
               }
             }
@@ -43,6 +47,7 @@ const startSyncingData = async () => {
         await syncedDocument(store)
       }
     } else {
+      // ====================== Problem
       if(store === 'problem') {
         let docs = await func.findData({ store: store, criteria: { isFinished: false } })
         if(docs && docs?.length) {
@@ -51,12 +56,22 @@ const startSyncingData = async () => {
             // insert to firebase
             await syncProblem(doc?.id)
           }
-        // record to synced document
-        await syncedDocument(store)
         }
       }
-      let docs = await func.getData({store: store})
-      console.log(docs)
+      else {
+        // =================== cases and complains
+        let docs = await func.getData({store: store})
+        for (let doc of docs) {
+          await syncCases(store, doc?.id)
+        }
+        // console.log(docs)
+        // the record we would show like:
+        // periode | name spv | masalah
+        //  the details would show:
+        // | sumber masalah | solusi | pic | dl
+      }
+      // record to synced document
+      await syncedDocument(store)
     }
   }
 //   const querySnapshot = await getDocs(collection(db, 'synced'));

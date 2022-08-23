@@ -39,7 +39,7 @@ const syncProblem = async (idProblem) => {
     // write problem
     addDocument('problem', doc?.problem?.id, doc?.problem)
     // write details problem
-    addDocument('detailsProblem', doc?.problem?.id, doc?.detailsProblem)
+    addDocument('problemDetails', doc?.problem?.id, doc?.detailsProblem)
   }
 }
 
