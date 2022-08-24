@@ -465,7 +465,10 @@ export default {
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
-            if(mutation.type == "BaseReportStock/updateParam" ) {
+            if(
+                mutation.type == "BaseReportStock/updateParam" 
+                || mutation.type == "BaseReportStock/append" 
+                ) {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout(async () => {
                     this.listsPeriode = this.renewLists()
