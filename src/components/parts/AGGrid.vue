@@ -190,11 +190,16 @@ export default {
     },
     pressKey(event) {
       this.keyPress[event.key] = true
+      // if the control button still pressed
       if(this.keyPress['Control']) {
+        // if the S button pressed ( CTRL + S )
         if(event.keyCode === 83) {
+          // prevent dialog save as to launch
           event.preventDefault()
+          // if any record edited
           if(this.edited.length) {
-            this.$emit("save", this.edited)
+            // save the canged record
+            this.saveChanged()
           }
           return false
         }
