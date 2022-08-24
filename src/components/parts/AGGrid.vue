@@ -188,6 +188,18 @@ export default {
     releaseKey(event) {
       delete this.keyPress[event.key]
     },
+    pressKey(event) {
+      this.keyPress[event.key] = true
+      if(this.keyPress['Control']) {
+        if(event.keyCode === 83) {
+          event.preventDefault()
+          if(this.edited.length) {
+            this.$emit("save", this.edited)
+          }
+          return false
+        }
+      }
+    },
   },
   watch: {
     width() {
