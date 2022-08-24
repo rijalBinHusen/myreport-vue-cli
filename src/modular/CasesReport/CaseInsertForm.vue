@@ -22,7 +22,7 @@
                 judul="Supervisor"
                 value="id"
                 text="name"
-                @selected="caseInput.name = $event"
+                @selected="caseInput.name = $event; picName($event)"
                 :inselect="caseInput.name"
             />
             <label for="head">Kabag:</label>
@@ -83,6 +83,9 @@ export default {
         }
     },
     methods: {
+        picName(name) {
+            this.caseInput.pic = this.$store.getters["Supervisors/spvId"](name)?.name
+        },
         appendCase() {
             this.$store.dispatch("Cases/append", { ...this.caseInput, insert: ymdTime() })
             this.$store.commit("Modal/active")
