@@ -20,12 +20,12 @@ export default async function (arrayOfProblemId) {
       )
     );
     allProblem.flat().forEach((val) => {
-      result.pic += val.pic + "\r\n";
-      result.dl += func.dateFormat(["dateMonth", val.dl]) + "\r\n";
-      result.masalah += val.masalah + "\r\n";
-      result.sumberMasalah += val.sumberMasalah + "\r\n";
-      result.solusi += val.solusi + "\r\n";
-      result.solusiPanjang += val.solusiPanjang + "\r\n";
+      result.pic += `${val.pic}  \r\n`;
+      result.dl += `* ${func.dateFormat(["dateMonth", val.dl])} \r\n`;
+      result.masalah += `* ${val.masalah} ${func.dateFormat(["dateMonth", val.periode])} \r\n`;
+      result.sumberMasalah += `${val.sumberMasalah} \r\n`;
+      result.solusi += `${val.solusi} \r\n`;
+      result.solusiPanjang += `${val.solusiPanjang} \r\n`;
       result.dlPanjang +=
         func.dateFormat(["dateMonth", val.dlPanjang]) + "\r\n";
       result.picPanjang += val.picPanjang + "\r\n";

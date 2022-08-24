@@ -74,12 +74,12 @@ const Problem = {
       });
       return result;
     },
-    masalah: (state) => (arrayOfProblemId) => {
+    masalah: (state, getters, rootState, rootGetters) => (arrayOfProblemId) => {
       let result = [];
       if (arrayOfProblemId.length > 0) {
         state.lists.forEach((val) => {
           if (arrayOfProblemId.includes(val.id)) {
-            result.push(val.masalah);
+            result.push(`${val.masalah} ${rootGetters['dateFormat']({format: 'dateMonth', time: val.periode})}`);
           }
         });
       }
