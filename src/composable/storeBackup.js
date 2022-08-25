@@ -4,7 +4,7 @@ import func from "../myfunction"
 import { startExport } from "./piece/exportAsFile"
 
 
-const storeBackup = async () => {
+export const storeBackup = async () => {
     // will store all document that we saved in idexeddb
     let allDocuments = {}
     // initiate documents, because activity store, not recorded in summary store
@@ -39,11 +39,10 @@ function getDocument (store) {
 // backup all
 // find all "many" user activity
 export const seperateUsers = async (number) => {
-
     const logins = await db
     .collection("login")
     .orderBy("time", "desc")
-    .limit(number || 2)
+    .limit(number || 1)
     .get();
     
 
@@ -94,5 +93,3 @@ export const seperateUsers = async (number) => {
 // find all record that user create or update
 // and then push into object
 // 
-
-export default storeBackup;

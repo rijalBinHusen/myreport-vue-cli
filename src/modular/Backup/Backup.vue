@@ -40,18 +40,21 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import { mapState, mapGetters, mapActions, useStore } from "vuex"
-import storeBackup from "../../composable/storeBackup"
+import { storeBackup } from "../../composable/storeBackup"
 import { seperateUsers } from "../../composable/storeBackup"
 
 export default {
     setup() {
         const store = useStore()
         const handleBackup = async () => {
+            let numberOfUserLogin = window.prompt('Masukkan berapa banyak user yang ingin di backup terpisah')
             // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
             // await storeBackup()
-            await seperateUsers()
+            // waiting for backup user activity
+            console.log(numberOfUserLogin)
+            await seperateUsers(+numberOfUserLogin)
             // close the spinner
             store.commit("Modal/active");
         }
