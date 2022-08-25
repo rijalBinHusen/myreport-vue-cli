@@ -51,9 +51,9 @@ export default {
             // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            // await storeBackup()
+            await storeBackup()
             // waiting for backup user activity
-            console.log(numberOfUserLogin)
+            // console.log(numberOfUserLogin)
             await seperateUsers(+numberOfUserLogin)
             // close the spinner
             store.commit("Modal/active");
