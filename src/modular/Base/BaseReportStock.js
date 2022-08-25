@@ -186,11 +186,11 @@ const BaseReportStock = {
         else if (arrayOfRecord[i].dateOut && +arrayOfRecord[i].real == 0) {
           arrayOfRecord[i].dateEnd = "-";
         }
-        commit("update", arrayOfRecord[i]);
         let record = Object.assign({}, arrayOfRecord[i]);
         delete record.itemName;
         delete record.selisih;
         delete record.problem2;
+        commit("update", record);
         await dispatch(
           "updateOnly",
           {
@@ -234,10 +234,8 @@ const BaseReportStock = {
           problem: [],
         });
         if (obj.item) {
-          commit("append", obj);
-          // console.log(obj)
           await dispatch(
-            "appendWoutGenerateId",
+            "append",
             { store: "BaseReportStock", obj: obj },
             { root: true }
           );
@@ -274,7 +272,7 @@ const BaseReportStock = {
                     Number(val.real) -
                     (Number(val.awal) + Number(val.in) - Number(val.out));
                   val.problem2 = rootGetters["Problem/masalah"](val.problem);
-                  val.planOut = 0 || val?.planOut;
+                  val.planOut = val?.planOut || 0;
                   return val;
                 }
               })

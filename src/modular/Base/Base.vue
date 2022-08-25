@@ -187,7 +187,7 @@ export default {
     data() {
         return {
             sheet: "",
-            shift: "",
+            shift: 0,
             excelMode: false,
             base: null,
             BaseFinishForm: null,
@@ -284,7 +284,7 @@ export default {
             this.$store.commit("Modal/active", {
                 judul: `Tambah record ${this.sheet}`, 
                 form: form,
-                addOn: { parent: this.base.id, shift: this.shift},
+                addOn: { parent: this.base.id, shift: +this.shift},
             });
         },
         async markAsFinished(ev) {
