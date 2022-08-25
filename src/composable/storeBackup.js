@@ -81,6 +81,11 @@ export const seperateUsers = async (number) => {
                 }
                 // waiting for exporting data as file
                 if(record.hasOwnProperty(userActivities[0]?.store)) {
+                    await func.update({
+                        store: 'login',
+                        criteria: {id: userActivities[0]?.idLogin },
+                        obj: { backup: true }
+                    })
                     await startExport({
                         activities: userActivities,
                         record: record

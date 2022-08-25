@@ -1,5 +1,5 @@
 import { uploadFile } from "./firebaseStorageUpload"
-
+import addDocument from "../firebaseAddStore";
 
 export const startExport = async (records, fileName) => {
     // create a download file
@@ -8,6 +8,8 @@ export const startExport = async (records, fileName) => {
     var file = new Blob([JSON.stringify(records)], { type: "text/plain" });
     // upload to firebase
     uploadFile(file, fileName)
+    // record document that saved to firebase
+    addDocument('activitySaved', fileName, true)
     // append file
     a.href = URL.createObjectURL(file);
     // file name
