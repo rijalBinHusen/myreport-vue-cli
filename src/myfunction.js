@@ -233,7 +233,7 @@ export default {
     db.collection(value).set([{}]);
   },
   deleteDocument: async function (value) {
-    await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value.criteria })
+    await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
     db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
   },
   deleteDocumentByParam: function (value) {

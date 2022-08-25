@@ -14,8 +14,9 @@
                 :value="bup" 
                 type="button" 
                 :datanya="bup.toLowerCase()" 
-                @trig="setPeriode($event); handleBackup()" 
+                @trig="handleBackup()" 
             />
+                <!-- @trig="setPeriode($event); handleBackup()"  -->
             <div class=" w3-center" style="margin-top:80px;">
                 <p class="">
                     Next backup at least : {{ 
@@ -40,6 +41,7 @@
 import Button from "../../components/elements/Button.vue"
 import { mapState, mapGetters, mapActions, useStore } from "vuex"
 import storeBackup from "../../composable/storeBackup"
+import { seperateUsers } from "../../composable/storeBackup"
 
 export default {
     setup() {
@@ -48,7 +50,8 @@ export default {
             // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            await storeBackup()
+            // await storeBackup()
+            await seperateUsers()
             // close the spinner
             store.commit("Modal/active");
         }
