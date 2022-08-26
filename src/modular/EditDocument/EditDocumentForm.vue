@@ -11,6 +11,7 @@
                 type="text"
             />
         </div>
+        <SelectHeadVue :inSelectHead="more?.head" @selectedHead="test" />
         <div class=" w3-col s3 w3-margin-right">
             <label class="w3-margin-top">Collected</label>
             <datepicker 
@@ -40,6 +41,7 @@ import Select from "../../components/elements/Select.vue"
 import Input from "../../components/elements/Input.vue"
 import datepicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"
+import SelectHeadVue from "@/components/parts/SelectHead.vue"
 
 export default {
     name: "CollectedForm",
@@ -58,6 +60,9 @@ export default {
         }
     },
     methods: {
+        test(ev) {
+            console.log(ev)
+        },
         editButtonHandle() {
             if(!this.edit) {
                 this.edit = true
@@ -88,6 +93,7 @@ export default {
         datepicker,
         Select,
         Button,
+        SelectHeadVue
     },
     watch: {
         collected(newVal, oldVal) {
@@ -104,7 +110,6 @@ export default {
         this.collected = new Date(this.more.collected)
         this.approval = new Date(this.more.approval)
         let record = this.$store.getters["Document/getId"](this.more.id)
-        // console.log(record)
     },
 }
 </script>
