@@ -19,17 +19,13 @@
 
 <script>
 import Input from "../../components/elements/Input.vue"
-import { uid } from "uid"
 import Button from "../../components/elements/Button.vue"
 export default {
     methods: {
         kirim() {
-            let objToSend = JSON.parse(JSON.stringify(Object.assign(this.clock, this.$store.state.Modal.more.addOn, {id: uid(6)})))
-            delete objToSend.period
             this.$store.dispatch("append", {
                         store: "BaseReportClock",
-                        obj: objToSend,
-                        period: this.$store.state.Modal.more.period
+                        obj: { ...this.clock, ...this.$store.state.Modal.more.addOn },
                     })
             this.$store.commit("Modal/active");
         }

@@ -109,7 +109,8 @@
           id="tableBaseReport"
           option
           #default="{ prop }"
-        >
+        >   
+            <!-- When there is a problem in base report stock -->
             <span v-if="(prop.selisih || (prop.problem && prop.problem.length)) && sheet === 'stock'">
                 <Dropdown
                     value="Pesan"  
@@ -138,6 +139,7 @@
                     primary
                 />
             </span>
+            <!-- When there is a problem in base report stock -->
             
             <Button 
                 value="Delete" 
@@ -145,6 +147,15 @@
                 danger 
                 small
                 @trig="remove(prop.id)" 
+            />
+            
+            <Button 
+                v-if="sheet === 'clock'"
+                value="Duplicate" 
+                type="button" 
+                primary
+                small
+                @trig="duplicateRecord(prop)" 
             />
 
         </Datatable>
@@ -253,6 +264,10 @@ export default {
             // save to the followup
             window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
             // shell.openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+        },
+        duplicateRecord(ev) {
+            const { id, ...record } = ev
+            this.$store.dispatch("append", { store: "BaseReportClock", obj: record })
         },
         handleProblem(ev, obj) {
             if(ev === "delete") {
@@ -408,8 +423,8 @@ export default {
                 ? [
                     { headerName: "Nomor", field: "noDo", width: 100 },
                     { headerName: "Register", field: "reg", width: 100 },
-                    { headerName: "Start", field: "start", width: 100 },
-                    { headerName: "Finish", field: "finish", width: 100 },
+                    { headerName: "Start", field: "start", width: 100, editable: true },
+                    { headerName: "Finish", field: "finish", width: 100, editable: true },
                     { headerName: "istirahat", field: "rehat", editable: true, width: 100 },
                 ]
                 : [
@@ -465,14 +480,17 @@ export default {
         // this.$store.dispatch("getDataByCriteria", { store: "Baseitem", allData: true })
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
-            if(
-                mutation.type == "BaseReportStock/updateParam" 
-                || mutation.type == "BaseReportStock/append" 
-                ) {
+            if( [
+                    "BaseReportStock/updateParam", 
+                    "BaseReportStock/append", 
+                    "BaseReportClock/append",
+                ].includes(mutation.type)) {
+
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout(async () => {
                     this.listsPeriode = this.renewLists()
                 } , 600 )
+
             }
         });
     },
