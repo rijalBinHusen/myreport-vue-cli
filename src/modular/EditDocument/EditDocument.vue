@@ -97,14 +97,14 @@ export default {
             this.$store.commit("Modal/active", {  judul: "Add document",  form: "AddDocumentForm", });
         },
         async renewLists() {
-                this.lists = await listsOfDocuments()
+            this.lists = await listsOfDocuments()
         },
     },
     async mounted() {
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika document ada yang di update
-            if (['Document/append', 'Document/update'].includes(mutation.type)) {
+            if (["Modal/tunnelMessage"].includes(mutation.type)) {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {
                     this.renewLists()

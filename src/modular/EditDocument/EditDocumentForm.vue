@@ -49,6 +49,7 @@ import Input from "../../components/elements/Input.vue"
 import datepicker from "vue3-datepicker"
 import Button from "../../components/elements/Button.vue"
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
+import { updateDocument } from '../../composable/components/DocumentsPeriod'
 
 export default {
     name: "CollectedForm",
@@ -69,14 +70,15 @@ export default {
     },
     methods: {
         recordChanged(key, ev) {
-            this.changed['obj'] = { [key]: ev }
+            this.changed[key] = ev
         },
         editButtonHandle() {
             if(!this.edit) {
                 this.edit = true
                 return
             }
-            this.$store.dispatch('updateAndGetRecordFromDB', this.changed)
+            updateDocument(this.more.id, this.changed)
+            this.$store.commit("Modal/tunnelMessage", true);
             this.$store.commit("Modal/active");
         }
     },
@@ -89,20 +91,18 @@ export default {
     },
     watch: {
         collected(newVal, oldVal) {
-            this.more.collected = newVal.getTime()
-            this.more.status = 2
+            this.recordChanged('collected', newVal.getTime())
+            this.recordChanged('status',  2)
         },
         approval(newVal, oldVal) {
-            this.more.approval = newVal.getTime()
-            this.more.status = 2
+            this.recordChanged('approval', newVal.getTime())
+            this.recordChanged('status',  2)
         },
     },
     mounted() {
         this.more = this.$store.getters["Modal/obj"].obj
         this.collected = new Date(this.more.collected)
         this.approval = new Date(this.more.approval)
-        this.changed['store'] = 'Document'
-        this.changed['criteria'] = { id: this.more.id }
     },
 }
 </script>
