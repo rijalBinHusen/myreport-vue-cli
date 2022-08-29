@@ -49,6 +49,21 @@ export default createStore({
   },
   mutations: {},
   actions: {
+    updateAndGetRecordFromDB({ commit }, value) {
+      /* 
+        value = { 
+          store: nameOfStore, 
+          criteria: { id: 1 }, 
+          obj: { key: value, key: value } 
+        } 
+      */
+      let update = myfunction.update(value)
+      const { obj, ...record } = value
+      update.then(async () => {
+        let newRec = await myfunction.findData(record)
+        commit(`${value.store}/update`, newRec[0], { root: true });
+      })
+    },
     append({ commit, rootGetters, dispatch }, value) {
       // check auto backup
       // await dispatch("Backup/check", {}, { root: true });

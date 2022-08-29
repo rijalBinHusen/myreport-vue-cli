@@ -1,13 +1,17 @@
 <template>
-    <SelectVue 
-        id="head"
-        :options="head" 
-        judul="Kabag"
-        value="id"
-        text="name"
-        @selected="handleChange($event)"
-        :inselect="selectedHead"
-    />
+    <div>
+        <label for="head" class="w3-margin-top">Pilih kabag</label>
+        <SelectVue 
+            id="head"
+            :options="head" 
+            judul="Kabag"
+            value="id"
+            text="name"
+            @selected="handleChange($event)"
+            :inselect="inSelectHead"
+            :disabled="disabled"
+        />
+    </div>
 </template>
 
 <script>
@@ -15,7 +19,7 @@ import { useStore } from 'vuex';
 import SelectVue from '../elements/Select.vue';
 export default {
     emit: ['selectedHead'],
-    props: ['inSelectHead'],
+    props: ['inSelectHead', 'disabled'],
     setup(props, { emit }) {
         const store = useStore()
         const head = store.state.Headspv.lists
@@ -23,9 +27,7 @@ export default {
             emit('selectedHead', ev)
         }
 
-        const selectedHead = props.selectedHead
-
-        return { head, handleChange, selectedHead }
+        return { head, handleChange }
     },
     components: {
         SelectVue,

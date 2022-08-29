@@ -1,5 +1,11 @@
 <template>
-    <select @change="selected($event.target.value)" :id="id" :class="classLists" name="option">
+    <select 
+        @change="selected($event.target.value)" 
+        :id="id" 
+        :class="classLists" 
+        name="option"
+        :disabled='disabled'
+    >
         <option value="">Pilih {{ judul }}</option>
         <option 
             v-for="option in options" :key="option[value]" 
@@ -48,6 +54,7 @@ export default {
         inselect: String,
         id: String,
         judul: String,
+        disabled: Boolean,
     },
     emits: ["selected"],
     methods: {

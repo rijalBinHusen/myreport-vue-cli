@@ -11,24 +11,31 @@
                 type="text"
             />
         </div>
-        <SelectHeadVue :inSelectHead="more?.head" @selectedHead="test" />
-        <div class=" w3-col s3 w3-margin-right">
-            <label class="w3-margin-top">Collected</label>
-            <datepicker 
-                class="w3-margin-top w3-border w3-input w3-round-large" 
-                v-model="collected"
+        <div class="w3-row">
+            <SelectHeadVue 
+                class="w3-col s3 w3-margin-right" 
+                :inSelectHead="more?.head" 
+                @selectedHead="recordChanged('head', $event)" 
                 :disabled="!edit"
-                >
-            </datepicker>
-        </div>
-        <div class=" w3-col s3">
-            <label class="w3-margin-top">Approval</label>
-            <datepicker 
-                class="w3-margin-top w3-border w3-input w3-round-large" 
-                v-model="approval"
-                :disabled="!edit"
-                >
-            </datepicker>
+            />
+            <div class=" w3-col s3 w3-margin-right">
+                <label class="w3-margin-top">Collected</label>
+                <datepicker 
+                    class="w3-margin-top w3-border w3-input w3-round-large" 
+                    v-model="collected"
+                    :disabled="!edit"
+                    >
+                </datepicker>
+            </div>
+            <div class=" w3-col s3">
+                <label class="w3-margin-top">Approval</label>
+                <datepicker 
+                    class="w3-margin-top w3-border w3-input w3-round-large" 
+                    v-model="approval"
+                    :disabled="!edit"
+                    >
+                </datepicker>
+            </div>
         </div>
     </div>
     <Button primary :value="edit ?  'Update' : 'Edit'" class="w3-right" type="button" @trig="editButtonHandle"/>
@@ -51,6 +58,7 @@ export default {
             collected: new Date(),
             approval: new Date(),
             more: "",
+            changed: {},
             dataToShow: [
                 { title: "Periode", valueFrom: "periode2"},
                 { title: "Supervisor Name", valueFrom: "spvName"},
@@ -60,32 +68,16 @@ export default {
         }
     },
     methods: {
-        test(ev) {
-            console.log(ev)
+        recordChanged(key, ev) {
+            this.changed['obj'] = { [key]: ev }
         },
         editButtonHandle() {
             if(!this.edit) {
                 this.edit = true
                 return
             }
-              const {
-                collected2,
-                approval2,
-                headName,
-                periode2,
-                spvName,
-                warehouseName,
-                ...obj
-            } = this.more;
-            this.$store.dispatch("update",
-                { 
-                    store: "Document", 
-                    obj: { ...obj }, 
-                    criteria: { id: this.more?.id }
-                }
-            )
+            this.$store.dispatch('updateAndGetRecordFromDB', this.changed)
             this.$store.commit("Modal/active");
-            // console.log(this.more)
         }
     },
     components: {
@@ -109,7 +101,8 @@ export default {
         this.more = this.$store.getters["Modal/obj"].obj
         this.collected = new Date(this.more.collected)
         this.approval = new Date(this.more.approval)
-        let record = this.$store.getters["Document/getId"](this.more.id)
+        this.changed['store'] = 'Document'
+        this.changed['criteria'] = { id: this.more.id }
     },
 }
 </script>

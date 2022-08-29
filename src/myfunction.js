@@ -147,7 +147,7 @@ function reWriteStoreWithKey(value) {
 async function update (value) {
   // { criteria: {id: 001}, obj: { obj: objtoupdate } }
   await addActivity({ type: "update", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
-  db.collection(value.store.toLowerCase())
+  return db.collection(value.store.toLowerCase())
     .doc(value.criteria)
     .update(value.obj);
 }

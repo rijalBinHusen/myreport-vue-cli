@@ -83,14 +83,12 @@ export default {
     // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika document ada yang di update
-            if (mutation.type === 'Document/append') {
+            if (['Document/append', 'Document/update'].includes(mutation.type)) {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {
                     this.renewLists()
-                } , 1500 )
-            }
-            else if (mutation.type === 'Document/update') {
-                this.renewLists()
+                    console.log('baru')
+                } , 300 )
             }
         });
     },
