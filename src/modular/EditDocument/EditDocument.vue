@@ -32,6 +32,7 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
+import { getDocuments } from '../../composable/components/DocumentsPeriod'
 
 export default {
     name: "Collect",
@@ -48,12 +49,35 @@ export default {
     },
     methods: {
         pickPeriode() {
+            let unsubscribe;
             this.$store.commit("Modal/active", { 
-                judul: "Set record to show", 
+                judul: "Set periode to show", 
                 form: "PeriodePicker", 
-                store: "Document",
-                btnValue: "Show"
+                store: false, 
+                btnValue: "Show",
+                tunnelMessage: true,
             });
+
+            const promise = new Promise (resolve => {
+                unsubscribe = this.$store.subscribe(mutation => {
+                    if (mutation.type === 'Modal/tunnelMessage') {
+                        //get the payload that send to tunnel message
+                    resolve(mutation?.payload)
+                    }
+                })
+            })
+            
+            promise.then(async val => {
+                //open the loader
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"})
+                // wait the process
+                getDocuments(val?.periode1, val?.periode2)
+                // await exportDocuments(val?.periode1, val?.periode2)
+                //unsubscribe the mutation
+                unsubscribe()
+                //close the loader
+                this.$store.commit("Modal/active")
+            })
         },
 
         edit(ev) {
@@ -65,7 +89,7 @@ export default {
                 obj: ev,
             });
         },
-        addDocument(ev) {
+        addDocument() {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
             // this.$store.dispatch("Document/handleDocument", ev)
             this.$store.commit("Modal/active", { 
@@ -80,14 +104,13 @@ export default {
     async mounted() {
         await await this.$store.dispatch("Document/getDocumentByStatusFromDB", "approval")
         this.renewLists()
-    // subscribe the mutation,, and renew lists when data updated
+        // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika document ada yang di update
             if (['Document/append', 'Document/update'].includes(mutation.type)) {
                 clearTimeout(this.timeOut)
                 this.timeOut = setTimeout( () => {
                     this.renewLists()
-                    console.log('baru')
                 } , 300 )
             }
         });
