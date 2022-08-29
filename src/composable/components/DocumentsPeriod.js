@@ -2,6 +2,9 @@ import { ref } from "vue"
 import func from "../../myfunction"
 import getDatesArray from "../piece/getDaysArray"
 import { dateMonth } from '../piece/dateFormat'
+import { getHeadspvId } from './Headspv'
+import { getSupervisorId } from './Supervisors'
+import { getWarehouseId } from './Warehouses'
 
 let lists = ref([])
 
@@ -27,11 +30,11 @@ export const listsOfDocuments = async () => {
         for (let rec of lists.value) {
             let getName = [
                 // find name supervisor
-                func.findData({ store: 'Supervisors', criteria: { id: rec.name } }),
+                getSupervisorId(rec.name),
                 // find name head
-                func.findData({ store: 'Headspv', criteria: { id: rec.head } }),
+                getHeadspvId(rec.head),
                 // find name warehouse
-                func.findData({ store: 'Warehouses', criteria: { id: rec.warehouse } })
+                getWarehouseId(rec.warehouse)
             ]
             await Promise.all(getName).then((res) => {
                 result.push({ 
@@ -53,7 +56,6 @@ export const listsOfDocuments = async () => {
 
 // update document
 export const updateDocument = async (idDocument, objToUpdate) => {
-    console.log(idDocument, objToUpdate)
     await func.update({ 
         store: 'Document', 
         criteria: {id: idDocument }, 
