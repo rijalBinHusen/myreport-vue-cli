@@ -192,7 +192,7 @@ export default {
       this.keyPress[event.key] = true
       // if the control button still pressed
       if(this.keyPress['Control']) {
-        // if the S button pressed ( CTRL + S )
+        // if the S (83) button pressed ( CTRL + S )
         if(event.keyCode === 83) {
           // prevent dialog save as to launch
           event.preventDefault()
@@ -202,6 +202,34 @@ export default {
             this.saveChanged()
           }
           return false
+        }
+        // if the W (87) button pressed ( CTRL + W )
+        //  Save the document and close the excel mode
+        if(event.keyCode === 88) {
+          // prevent default function (closing tab)
+          event.preventDefault()
+          // save the changed record
+          this.saveChanged()
+
+          // subscribe to the mutation
+          let unsubscribe;
+
+          const promise = new Promise (resolve => {
+              unsubscribe = this.$store.subscribe(mutation => {
+                  // if the modal close ( there is no mutation payload)
+                  if (!mutation?.payload) {
+                    resolve(true)
+                  }
+              })
+          })
+          
+          // if the mutation payload false, close the excel mode
+          promise.then(() => {
+              //unsubscribe the mutation
+              unsubscribe()
+              //close the excel mode
+              this.exit()
+          })
         }
       }
     },
@@ -220,6 +248,13 @@ export default {
     // add listen event
       window.addEventListener("keydown", this.pressKey)
       window.addEventListener("keyup", this.releaseKey)
+      window.onbeforeunload = function (e) {
+          // Cancel the event
+          e.preventDefault();
+
+          // Chrome requires returnValue to be set
+          e.returnValue = 'Really want to quit the app?';
+      };
   },
   unmounted() {
     //remove listen event
