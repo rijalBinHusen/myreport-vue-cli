@@ -6,7 +6,7 @@
                 :placeholder="dat.title" 
                 class="w3-margin-bottom" 
                 :value="more?.[dat.valueFrom]"
-                @change="more[dat.valueFrom] = $event.target.value"
+                @change="changeValue(dat.valueFrom, $event.target.value)"
                 :disabled="!edit || !dat?.editable"
                 :type="dat.type"
             />
@@ -19,6 +19,7 @@
 
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
+import { updateDocument } from '../../composable/components/DocumentsPeriod'
 
 export default {
     methods: {
@@ -27,11 +28,12 @@ export default {
                 this.edit = true
                 return
             }
-            this.$store.dispatch("Document/handleDocument",
-                { action: "finished", val: this.more, rec: this.more?.id }
-            )
+            updateDocument(this.more.id, this.changed)
             this.$store.commit("Modal/active");
-        }
+        },
+        changeValue(key, value) {
+            this.changed[key] = value
+        },
     },
     data() {
         return {
@@ -52,6 +54,7 @@ export default {
                 { title: "Total Not FIFO", valueFrom: "totalProductNotFIFO", editable: true, type: 'number'},
                 { title: "Total item variance", valueFrom: "itemVariance", editable: true, type: 'number'}
             ],
+            changed: {},
         }
     },
     mounted() {

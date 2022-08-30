@@ -31,7 +31,7 @@
     </div>
 
     <Datatable
-        v-if="renderTable"
+        v-if="renderTable && lists"
         :datanya="lists"
         :heads="['Periode', 'Nama', 'Kabag', 'Shift']"
         :keys="['periode2', 'spvName', 'headName', 'shift']"
@@ -197,7 +197,12 @@ export default {
             }
         },
 		details(ev) {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});
+            // console.log(ev)
+            this.$store.commit("Modal/active", { 
+                judul: "Details document", 
+                form: "FinishedForm", 
+                data: ev
+            });
 		},
     },
     watch: {
@@ -208,9 +213,11 @@ export default {
                 this.renderTable = true
 
             }, 600)
-            console.log('berubah')
             this.renewLists()
         }
     },
+    mounted() {
+        this.renewLists()
+    }
 }
 </script>

@@ -56,7 +56,6 @@ export const finishedDocument = async () => {
 export const unFinishedDocument = async () => {
     if(lists.value.length) {
         let filtered = lists.value.filter((rec) => !rec?.isfinished)
-        console.log(filtered)
         return await documentsMapper(filtered)
     }
 }

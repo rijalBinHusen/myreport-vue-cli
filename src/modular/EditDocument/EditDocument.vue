@@ -97,6 +97,7 @@ export default {
         },
     },
     async mounted() {
+        this.renewLists()
         // subscribe the mutation,, and renew lists when data updated
         this.unsubscribe = this.$store.subscribe((mutation) => {
             // jika document ada yang di update
