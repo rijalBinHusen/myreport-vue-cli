@@ -2,6 +2,7 @@
 <div class="">
 
     <div class="w3-border w3-padding w3-container">
+        
         <Button 
             id="periode"
             class="w3-col s2 w3-right" 
@@ -11,24 +12,26 @@
             @trig="pickPeriode" 
         />
         <Button primary class="w3-right" :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
-        <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
         
         <Dropdown
-            value="Report"
-            :lists="[
-                { id: 'name', isi: 'SPV Weekly'},
-                { id: 'head', isi: 'Kabag Weekly'},
-                { id: 'warehouse', isi: 'Warehouses Weekly'},
-            ]"
-            listsKey="id"
-            listsValue="isi"
-            class="w3-right"
-            @trig="exportReport"
-            primary
+        value="Report"
+        :lists="[
+            { id: 'name', isi: 'SPV Weekly'},
+            { id: 'head', isi: 'Kabag Weekly'},
+            { id: 'warehouse', isi: 'Warehouses Weekly'},
+        ]"
+        listsKey="id"
+        listsValue="isi"
+        class="w3-right"
+        @trig="exportReport"
+        primary
         />
+
+        <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
     </div>
 
     <Datatable
+        v-if="renderTable"
         :datanya="lists"
         :heads="['Periode', 'Nama', 'Kabag', 'Shift']"
         :keys="['periode2', 'spvName', 'headName', 'shift']"
@@ -68,8 +71,7 @@ import exportWeeklyReportToExcel from "../../excelReport/WeeklyReport"
 import exportWeeklyKabag from "../../excelReport/WeeklyKabag"
 import WeeklyWarehouses from "../../excelReport/WeeklyReportWarehouses"
 import Dropdown from "../../components/elements/Dropdown.vue"
-import { getDocuments } from '../../composable/components/DocumentsPeriod'
-import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
+import { finishedDocument, getDocuments, unFinishedDocument } from '../../composable/components/DocumentsPeriod'
 
 export default {
     name: "Finished",
@@ -79,6 +81,7 @@ export default {
             groupedObject: [],
             unfinished: false,
             lists: [],
+            renderTable: true
         };
     },
     components: {
@@ -187,11 +190,27 @@ export default {
             })
         },
         async renewLists() {
-            this.lists = await listsOfDocuments()
+            if(this.unfinished) {
+                this.lists = await unFinishedDocument() 
+            } else {
+                this.lists = await finishedDocument()
+            }
         },
 		details(ev) {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});
 		},
+    },
+    watch: {
+        unfinished() {
+            this.renderTable = false
+            setTimeout(() => {
+
+                this.renderTable = true
+
+            }, 600)
+            console.log('berubah')
+            this.renewLists()
+        }
     },
 }
 </script>

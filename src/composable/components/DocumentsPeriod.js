@@ -25,9 +25,46 @@ export const getDocuments = async (periode1, periode2) => {
 }
 
 export const listsOfDocuments = async () => {
-    let result = []
+    
+    return await documentsMapper(lists.value)
+}
+
+// append document
+
+// update document
+export const updateDocument = async (idDocument, objToUpdate) => {
+    await func.update({ 
+        store: 'Document', 
+        criteria: {id: idDocument }, 
+        obj: objToUpdate 
+    })
+    
+    lists.value = lists.value.map((val) => {
+        return val?.id === idDocument
+            ? { ...val, ...objToUpdate }
+            : val
+    })
+}
+// finished document
+export const finishedDocument = async () => {
     if(lists.value.length) {
-        for (let rec of lists.value) {
+        let filtered = lists.value.filter((rec) => rec?.isfinished)
+        return await documentsMapper(filtered)
+    }
+}
+// unfinished document
+export const unFinishedDocument = async () => {
+    if(lists.value.length) {
+        let filtered = lists.value.filter((rec) => !rec?.isfinished)
+        console.log(filtered)
+        return await documentsMapper(filtered)
+    }
+}
+
+const documentsMapper = async (docs) => {
+    let result = []
+    if(docs) {
+        for (let rec of docs) {
             let getName = [
                 // find name supervisor
                 getSupervisorId(rec.name),
@@ -52,27 +89,3 @@ export const listsOfDocuments = async () => {
     }
     return result
 }
-
-// append document
-
-// update document
-export const updateDocument = async (idDocument, objToUpdate) => {
-    await func.update({ 
-        store: 'Document', 
-        criteria: {id: idDocument }, 
-        obj: objToUpdate 
-    })
-    
-    lists.value = lists.value.map((val) => {
-        return val?.id === idDocument
-            ? { ...val, ...objToUpdate }
-            : val
-    })
-}
-// finished document
-export const finishedDocument = async () => {
-    return lists.value.length
-        ? lists.value.filter((rec) => rec.finished)
-        : []
-}
-// unfinished document
