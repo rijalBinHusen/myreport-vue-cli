@@ -36,10 +36,6 @@ import { getDocuments } from '../../composable/components/DocumentsPeriod'
 import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
 
 export default {
-    // setup() {
-    //     listsOfDoc = computed(() =>  listsOfDocuments() )
-    //     return { listsOfDoc }
-    // },
     name: "Collect",
     data() {
         return {

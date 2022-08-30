@@ -45,6 +45,7 @@ export const listsOfDocuments = async () => {
                     periode2: isNaN(rec.periode) ? rec.periode : dateMonth(rec.periode),
                     collected2: isNaN(rec.collected) ? rec.collected : dateMonth(rec.collected),
                     approval2: isNaN(rec.approval) ? rec.approval : dateMonth(rec.approval),
+                    finished2: isNaN(rec.finished) ? rec.finished : dateMonth(rec.finished),
                 })
             })
         }
@@ -68,4 +69,10 @@ export const updateDocument = async (idDocument, objToUpdate) => {
             : val
     })
 }
-// 
+// finished document
+export const finishedDocument = async () => {
+    return lists.value.length
+        ? lists.value.filter((rec) => rec.finished)
+        : []
+}
+// unfinished document

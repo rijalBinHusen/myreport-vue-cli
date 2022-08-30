@@ -2,13 +2,6 @@
 <div class="">
 
     <div class="w3-border w3-padding w3-container">
-        <input
-            class="w3-hide"
-            @change.prevent="readExcel($event)"
-            type="file"
-            ref="importerBase"
-            accept=".xls, .ods"
-        />
         <Button 
             id="periode"
             class="w3-col s2 w3-right" 
@@ -33,15 +26,12 @@
             @trig="exportReport"
             primary
         />
-
-        <!-- <Button primary v-if="grouped.length" class="w3-right" value="Export Weekly report" type="button" @trig="exportReportWeekly" />
-        <Button primary v-if="grouped.length" class="w3-right" value="Export Kabag report" type="button" @trig="exportReportKabag" /> -->
     </div>
 
     <Datatable
         :datanya="lists"
-        :heads="['Periode', 'Nama', 'Gudang', 'Shift', 'Finished']"
-        :keys="['periode2', 'spvName', 'warehouseName', 'shift', 'finished2']"
+        :heads="['Periode', 'Nama', 'Kabag', 'Shift']"
+        :keys="['periode2', 'spvName', 'headName', 'shift']"
         option
         id="tableFinished"
     >
@@ -78,13 +68,17 @@ import exportWeeklyReportToExcel from "../../excelReport/WeeklyReport"
 import exportWeeklyKabag from "../../excelReport/WeeklyKabag"
 import WeeklyWarehouses from "../../excelReport/WeeklyReportWarehouses"
 import Dropdown from "../../components/elements/Dropdown.vue"
+import { getDocuments } from '../../composable/components/DocumentsPeriod'
+import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
 
 export default {
-    name: "Finished",data() {
+    name: "Finished",
+    data() {
         return {
             grouped: [],
             groupedObject: [],
             unfinished: false,
+            lists: [],
         };
     },
     components: {
@@ -111,7 +105,8 @@ export default {
                if(grouped.hasOwnProperty(val[ev])) {
                    group[grouped[val[ev]]].push({ ...val })
                } else {
-                    if('warehouse' && (val?.warehouseName.includes("jabon") || val?.warehouseName.includes("biscuit"))) {
+                    if('warehouse' && ["jabon", "biscuit"].includes(val?.warehouseName)) {
+                    // if('warehouse' && (val?.warehouseName.includes("jabon") || val?.warehouseName.includes("biscuit"))) {
                         grouped["WHS22050004"] = group.length
                         grouped["WHS22050005"] = group.length
                     } 
@@ -161,19 +156,42 @@ export default {
             this.groupedObject.push({ ...obj })
         },
         pickPeriode() {
-            this.$store.commit("Modal/active", { judul: "Set record to show", form: "PeriodePicker", store: "Document", btnValue: "Show"});
+            let unsubscribe;
+            this.$store.commit("Modal/active", { 
+                judul: "Set periode to show", 
+                form: "PeriodePicker", 
+                store: false, 
+                btnValue: "Show",
+                tunnelMessage: true,
+            });
+
+            const promise = new Promise (resolve => {
+                unsubscribe = this.$store.subscribe(mutation => {
+                    if (mutation.type === 'Modal/tunnelMessage') {
+                        //get the payload that send to tunnel message
+                    resolve(mutation?.payload)
+                    }
+                })
+            })
+            
+            promise.then(async val => {
+                //open the loader
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"})
+                // wait the process
+                await getDocuments(val?.periode1, val?.periode2)
+                //unsubscribe the mutation
+                unsubscribe()
+                //close the loader
+                this.$store.commit("Modal/active")
+                this.renewLists()
+            })
+        },
+        async renewLists() {
+            this.lists = await listsOfDocuments()
         },
 		details(ev) {
             this.$store.commit("Modal/active", { judul: "Set record to show", form: "FinishedForm", data: ev});
 		},
     },
-    computed: {
-        lists() {
-            return this.unfinished ? this.$store.getters["Document/unfinished"] : this.$store.getters["Document/finished"]
-        }
-    },
-    mounted() {
-        this.$store.dispatch("Document/getDocumentByStatusFromDB");
-    }
 }
 </script>
