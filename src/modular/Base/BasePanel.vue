@@ -8,15 +8,15 @@
             @trig="pickPeriode"
         />
         <!-- Date Base report -->
-        <!-- <SelectVue 
+        <SelectVue 
             class="w3-col s1 w3-margin-right"
-            :options="$store.getters['BaseReportFile/dateReport']" 
+            :options="dateBaseReportFile" 
             value="periode"
-            text="periode2"
-            @selected="selectedPeriode = $event"
-            :inselect="selectedPeriode"
             judul="periode"
-        /> -->
+            text="periode2"
+        />
+            <!-- @selected="selectedPeriode = $event"
+            :inselect="selectedPeriode" -->
 
         <!-- Warehouse Base report -->
         <!-- <SelectVue 
@@ -83,8 +83,9 @@
 <script>
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
-import { getBaseReportFile, listsAllBaseReportFile } from '@/composable/components/BaseReportFile';
+import { getBaseReportFile, listsAllBaseReportFile, dateBaseReportFileImported } from '@/composable/components/BaseReportFile';
 import { useStore } from 'vuex';
+import { computed } from '@vue/runtime-core';
 
 
 export default {
@@ -126,8 +127,10 @@ export default {
                 listsAllBaseReportFile()
             })
         }
+
+        const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
         
-        return { pickPeriode }
+        return { pickPeriode, dateBaseReportFile }
     },
 }
 </script>

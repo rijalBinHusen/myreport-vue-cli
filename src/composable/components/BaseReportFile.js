@@ -37,6 +37,23 @@ const documentsMapper = async (docs) => {
             })
         }
     }
+    return result
+}
+
+export const dateBaseReportFileImported = () => {
+    let isPushed = []
+    let result = []
+    for(let doc of lists.value) {
+        console.log(doc)
+        // if periode not pushed
+        if(!isPushed.includes(doc?.periode) && doc?.imported) {
+            result.push({
+                periode: doc?.periode,
+                periode2: dateMonth(doc?.periode)
+            })
+            isPushed.push(doc?.periode)
+        }
+    }
     console.log(result)
     return result
 }
