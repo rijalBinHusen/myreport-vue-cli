@@ -23,85 +23,7 @@
         </AGGrid>
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
-            <div id="set-periode" class="w3-row w3-center">
-            <Button 
-                class="w3-left w3-col s2 w3-margin-top w3-margin-right" 
-                primary 
-                value="Set periode" 
-                type="button" 
-                @trig="pickPeriode" 
-            />
-                <!-- Date Base report -->
-                <Select 
-                  class="w3-col s1 w3-margin-right"
-                  :options="$store.getters['BaseReportFile/dateReport']" 
-                  value="periode"
-                  text="periode2"
-                  @selected="selectedPeriode = $event"
-                  :inselect="selectedPeriode"
-                  judul="periode"
-                />
-
-                <!-- Warehouse Base report -->
-                <Select 
-                  v-if="listsWarehouse.length"
-                  class="w3-col s2 w3-margin-right"
-                  :options="listsWarehouse" 
-                  value="warehouse"
-                  text="warehouseName"
-                  @selected="selectedWarehouse = $event"
-                  :inselect="selectedWarehouse"
-                  judul="gudang"
-                />
-
-                <!-- Sheet report -->
-                <Select 
-                    v-if="selectedWarehouse.length"
-                    class="w3-col s1 w3-margin-right"
-                    :options='[
-                        { id: "clock", title: "Clock" },
-                        { id: "stock", title: "Stock" },
-                    ]'
-                    value="id"
-                    text="title"
-                    judul="sheet"
-                    :inselect="sheet"
-                    @selected="sheet = $event"
-                />            
-                <!-- Shift -->
-                    <Select 
-                    v-if="selectedWarehouse.length"
-                    class="w3-col s1 w3-margin-right"
-                    :options="[
-                        { id:1, title: 'Shift 1'},
-                        { id:2, title: 'Shift 2'},
-                        { id:3, title: 'Shift 3'},
-                    ]" 
-                    judul="shift"
-                    value="id"
-                    text="title"
-                    :inselect="shift"
-                    @selected="shift = $event"
-                />
-                <!-- oPEN IN EXCEL MODE -->
-                <Button 
-                    v-if="lists.length"
-                    class="w3-left w3-col s1 w3-margin-top w3-padding " 
-                    primary 
-                    value="Excel" 
-                    type="button" 
-                    @trig="excelMode = true" 
-                />
-                <!-- MArk as finished -->
-                <Button
-                    v-if="lists.length"
-                    class="w3-left w3-col s2 w3-margin-top" 
-                    primary 
-                    value="Mark as finished" 
-                    type="button" 
-                    @trig="BaseFinishForm = true"
-                />
-            </div>
+        <BasePanelVue />
         <Datatable
           :datanya="lists"
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih', 'Problem']"
@@ -183,6 +105,7 @@ import AGGrid from "../../components/parts/AGGrid.vue"
 import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
+import BasePanelVue from './BasePanel.vue'
 // import { shell } from 'electron'
 
 export default {
@@ -194,6 +117,7 @@ export default {
         Select,
         PeriodePicker,
         BaseFinishForm,
+        BasePanelVue,
     },
     data() {
         return {
