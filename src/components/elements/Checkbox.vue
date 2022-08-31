@@ -11,12 +11,15 @@ export default {
         label: {
             type: String,
             required: true,
+        },
+        value: {
+            required: true,
         }
     },
     emits: ["check"],
     methods: {
         check() {
-            this.$emit("check", this.label)
+            this.$emit("check", this.value)
         }
     }
 }
