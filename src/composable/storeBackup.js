@@ -41,18 +41,16 @@ function getDocument (store) {
 // ask the user, how "many" user before would backup seperate
 // backup all
 // find all "many" user activity
-export const seperateUsers = async (number, sendToCloud) => {
-    const logins = await db
-    .collection("login")
-    .orderBy("time", "desc")
-    .limit(number || 1)
-    .get();
+export const seperateUsers = async (sendToCloud) => {
+    const logins = await func.findData({ store: 'login', criteria: { backup: false }})
     
-
-    let activities = logins.map((val) => 
-        func.findData({ store: 'activity', criteria: {idLogin: val?.id}})
-    )
-
+    if(!logins) { return }
+    
+    let activities = logins.map((val) => {
+        if(val) {
+            return func.findData({ store: 'activity', criteria: { idLogin: val?.id }})
+        }
+    })
     
     Promise.all(activities).then(async (allActivities) => {
         for (let userActivity of allActivities) {
@@ -61,18 +59,20 @@ export const seperateUsers = async (number, sendToCloud) => {
                 let userActivities = userActivity
                 for(let activity of userActivity) {
                     // jika activity.type === create or update
-                    if(['create', 'update'].includes(activity?.type)) {
+                    if(['create', 'update'].includes(activity?.type) && activity?.idRecord) {
                         // cari datanya pada store (activity.store) dengan id (activity.idRecord)
                         let getRecord = await func.findData({ store: activity?.store, criteria: { id: activity?.idRecord} })
                         // jika ditemukan masukkan ke record
                         // periksa dulu apakah sudah ada storenya 
                         // jika belum bikin 
                         // jika sudah langsung push
-                        record[activity?.store]
+                        if(getRecord) {
+                            record[activity?.store]
                             ? record[activity?.store][activity?.idRecord] = getRecord[0] || false
                             : record[activity?.store] = {
                                 [activity?.idRecord]: { ...getRecord[0]  } || false
                             }
+                        }
                         /**
                          * record {
                          *      nameOFStore: {
