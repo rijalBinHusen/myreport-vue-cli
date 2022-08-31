@@ -73,8 +73,8 @@ export default {
             }
             return {
                 lists: this.$store.getters["Complains/imported"],
-                heads: ['Tanggal Komplain', 'Gudang', 'Karu', 'Item', 'Selisih', 'Row'],
-                keys: ['tanggalKomplain', 'gudang', 'spv', 'item', 'selisih', 'row'],
+                heads: ['Tanggal Komplain', 'Cutomer', 'Karu', 'Item', 'Selisih'],
+                keys: ['tanggalKomplain', 'customer', 'spv', 'item', 'selisih'],
                 id: "tableComplainsImported"
             }
         },
