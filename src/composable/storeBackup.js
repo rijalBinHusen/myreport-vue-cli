@@ -4,7 +4,7 @@ import func from "../myfunction"
 import { startExport } from "./piece/exportAsFile"
 
 
-export const storeBackup = async () => {
+export const storeBackup = async (sendToCloud) => {
     // will store all document that we saved in idexeddb
     let allDocuments = {}
     // initiate documents, because activity store, not recorded in summary store
@@ -27,7 +27,10 @@ export const storeBackup = async () => {
         })
     }
     // export as file
-    await startExport(allDocuments, `Backup myreport ${new Date().toISOString()}.json`)
+    await startExport(allDocuments, 
+        `Backup myreport ${new Date().toISOString()}.json`,
+        sendToCloud
+    )
 }
 
 function getDocument (store) {
@@ -38,7 +41,7 @@ function getDocument (store) {
 // ask the user, how "many" user before would backup seperate
 // backup all
 // find all "many" user activity
-export const seperateUsers = async (number) => {
+export const seperateUsers = async (number, sendToCloud) => {
     const logins = await db
     .collection("login")
     .orderBy("time", "desc")
@@ -89,7 +92,10 @@ export const seperateUsers = async (number) => {
                     await startExport({
                         activities: userActivities,
                         record: record
-                    }, userActivities[0]?.idLogin+'.json')
+                    }, 
+                    userActivities[0]?.idLogin+'.json',
+                    sendToCloud
+                    )
                 }
             }
         }

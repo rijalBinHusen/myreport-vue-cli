@@ -5,12 +5,17 @@
         <br />
         <div class="w3-row w3-center">
             <div class="w3-col s3" v-for="option in options" :key="option.id">
-                <CheckboxVue :value="option.id" :label="option.value" @check="check($event)" />
+                <CheckboxVue 
+                    :checkboxName="option.name" 
+                    :value="option.id" 
+                    :label="option.value"
+                    @check="checkedOption.push($event)"
+                 />
             </div>
             <br />
             <br />
             <br />
-            <ButtonVue primary value="Mulai backup" type="button"/>
+            <ButtonVue primary value="Mulai backup" type="button" @trig="handleBackup"/>
         </div>
     </div>
 </template>
@@ -26,37 +31,33 @@ export default {
     setup() {
         const store = useStore()
         const handleBackup = async () => {
-            // let numberOfUserLogin = window.prompt('Masukkan berapa banyak user yang ingin di backup terpisah')
             // // open the spinner
-            // store.commit("Modal/active", { judul: "", form: "Loader" });
-            // // trigger and waiting the backup function
-            // await storeBackup()
-            // // waiting for backup user activity
-            // // console.log(numberOfUserLogin)
-            // await seperateUsers(+numberOfUserLogin)
+            store.commit("Modal/active", { judul: "", form: "Loader" });
+            // trigger and waiting the backup function
+            if(checkedOption.includes(3)) {
+                await storeBackup(checkedOption.includes(2))
+            }
+            // waiting for backup user activity
+            if(checkedOption.includes(4)) {
+                let numberOfUserLogin = window.prompt('Masukkan berapa banyak user yang ingin di backup terpisah')
+                await seperateUsers(+numberOfUserLogin, checkedOption.includes(2))
+            }
             // // close the spinner
-            // store.commit("Modal/active");
-            
-            // jika backup local only
-            // jika backup to cloud
-            // jika backup all data
-            // jika backup user activity 
+            store.commit("Modal/active");
+            // empty the option
+            checkedOption = []
         }
 
         const options = [
-            { id: 1, value: 'Backup to local only' }, 
-            { id: 2, value: 'Backup to cloud' }, 
-            { id: 3, value: 'Backup all data'}, 
-            { id: 4, value: 'Backup user activity'}
+            { id: 1, value: 'Backup to local only', name: 'mode', }, 
+            { id: 2, value: 'Backup to cloud', name: 'mode', }, 
+            { id: 3, value: 'Backup all data', name: 'all',}, 
+            { id: 4, value: 'Backup user activity', name: 'user',}
         ]
 
-        checkedOption = []
+        const checkedOption = []
 
-        const check = (ev) => {
-            checkedOption.push(ev)
-        }
-
-        return { handleBackup, options, check }
+        return { handleBackup, options, checkedOption }
     },
     name: "Backup",
     components: {

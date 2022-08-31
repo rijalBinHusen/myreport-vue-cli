@@ -1,5 +1,5 @@
 <template>
-    <input :id="label" class="w3-check" type="checkbox" @click="check()">
+    <input :name="checkboxName" :id="label" class="w3-check" type="checkbox" @click="check()">
     <label :for="label" class="w3-margin-left"> {{ label }}</label>
     <p></p>
 </template>
@@ -14,6 +14,9 @@ export default {
         },
         value: {
             required: true,
+        },
+        checkboxName: {
+            required: false
         }
     },
     emits: ["check"],
