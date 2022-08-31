@@ -3,6 +3,7 @@
     <div class="w3-border w3-padding w3-container">
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" @trig="approvalForm" />
+        <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
         <Button primary class="w3-right" v-if="grouped.length" value="Export all" type="button" @trig="exportReportAll" />
     </div>
 
@@ -69,6 +70,17 @@ export default {
         Dropdown,
     },
     methods: {
+        markAll() {
+            if(this.grouped.length) {
+                this.grouped = []
+                this.groupedObject = []
+                return
+            }
+            this.lists.forEach((val) => {
+                    this.grouped.push(val.id)
+                    this.groupedObject.push(val)
+            })
+        },
         dropDownOptions(prop) {
             // v-if="prop.shared == 'false' || !prop.shared "
             // !isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile
@@ -163,7 +175,9 @@ export default {
             this.$store.dispatch("Document/handleDocument", ev)
         },
         renewLists() {
-                this.lists = this.$store.getters["Document/documentByStatus"](2)
+            this.grouped = []
+            this.groupedObject = []
+            this.lists = this.$store.getters["Document/documentByStatus"](2)
         },
         push(id, obj) {
             // if the id is exists,
