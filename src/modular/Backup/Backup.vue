@@ -4,89 +4,63 @@
         <br />
         <br />
         <div class="w3-row w3-center">
-            <p class="w3-col w3-large s2 w3-left-align w3-margin-right">Set backup periode : </p>
-            <Button 
-                v-for="bup in backupLists"
-                class="w3-col s2"
-                :key="bup"
-                :primary="_BACKUP[0].setup == bup.toLowerCase()"
-                :danger="_BACKUP[0].setup != bup.toLowerCase()"
-                :value="bup" 
-                type="button" 
-                :datanya="bup.toLowerCase()" 
-                @trig="handleBackup()" 
-            />
-                <!-- @trig="setPeriode($event); handleBackup()"  -->
-            <div class=" w3-center" style="margin-top:80px;">
-                <p class="">
-                    Next backup at least : {{ 
-                        _BACKUP.length > 0 
-                            ? GET_DATEFORMAT({format: "full", time: _BACKUP[0].nextBackup})
-                            : '' }}
-                </p>
-                <p>
-                    Last backup periode :
-                </p>
-                <ul v-if="_BACKUP.length > 0" class="w3-ul w3-center">
-                    <li v-for="list in _BACKUP" :key="list.id">
-                        {{ list.time ? GET_DATEFORMAT({format: "full", time: list.time}) +" Backup success" : "Not backup yet"}}
-                    </li>
-                </ul>
+            <div class="w3-col s3" v-for="option in options" :key="option.id">
+                <CheckboxVue :value="option.id" :label="option.value" @check="check($event)" />
             </div>
+            <br />
+            <br />
+            <br />
+            <ButtonVue primary value="Mulai backup" type="button"/>
         </div>
     </div>
 </template>
 
 <script>
-import Button from "../../components/elements/Button.vue"
-import { mapState, mapGetters, mapActions, useStore } from "vuex"
+import { useStore } from "vuex"
 import { storeBackup } from "../../composable/storeBackup"
 import { seperateUsers } from "../../composable/storeBackup"
+import CheckboxVue from "@/components/elements/Checkbox.vue"
+import ButtonVue from "@/components/elements/Button.vue"
 
 export default {
     setup() {
         const store = useStore()
         const handleBackup = async () => {
-            let numberOfUserLogin = window.prompt('Masukkan berapa banyak user yang ingin di backup terpisah')
-            // open the spinner
-            store.commit("Modal/active", { judul: "", form: "Loader" });
-            // trigger and waiting the backup function
-            await storeBackup()
-            // waiting for backup user activity
-            // console.log(numberOfUserLogin)
-            await seperateUsers(+numberOfUserLogin)
-            // close the spinner
-            store.commit("Modal/active");
+            // let numberOfUserLogin = window.prompt('Masukkan berapa banyak user yang ingin di backup terpisah')
+            // // open the spinner
+            // store.commit("Modal/active", { judul: "", form: "Loader" });
+            // // trigger and waiting the backup function
+            // await storeBackup()
+            // // waiting for backup user activity
+            // // console.log(numberOfUserLogin)
+            // await seperateUsers(+numberOfUserLogin)
+            // // close the spinner
+            // store.commit("Modal/active");
+            
+            // jika backup local only
+            // jika backup to cloud
+            // jika backup all data
+            // jika backup user activity 
         }
 
-        return { handleBackup }
+        const options = [
+            { id: 1, value: 'Backup to local only' }, 
+            { id: 2, value: 'Backup to cloud' }, 
+            { id: 3, value: 'Backup all data'}, 
+            { id: 4, value: 'Backup user activity'}
+        ]
+
+        checkedOption = []
+
+        const check = (ev) => {
+            checkedOption.push(ev)
+        }
+
+        return { handleBackup, options, check }
     },
+    name: "Backup",
     components: {
-        Button,
-    },
-    data() {
-        return {
-            backupLists: ["Hours", "Day", "Week", "Month"]
-        }
-    },
-    methods: {
-        ...mapActions({
-        APPEND: "Backup/append",
-        }),
-
-        setPeriode(value) {
-            this.APPEND(value)
-        },
-
-    },
-    computed: {
-        ...mapState({
-            _BACKUP: state => JSON.parse(JSON.stringify(state.Backup.lists)),
-        }),
-        ...mapGetters({
-            GET_DATEFORMAT: "dateFormat",
-        })
-    },
-    name: "Backup"
+        CheckboxVue, ButtonVue
+    }
 }
 </script>
