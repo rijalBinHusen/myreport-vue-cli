@@ -39,8 +39,7 @@ export default {
             }
             // waiting for backup user activity
             if(checkedOption.includes(4)) {
-                let numberOfUserLogin = window.prompt('Masukkan berapa banyak user yang ingin di backup terpisah')
-                await seperateUsers(+numberOfUserLogin, checkedOption.includes(2))
+                await seperateUsers(checkedOption.includes(2))
             }
             // // close the spinner
             store.commit("Modal/active");
