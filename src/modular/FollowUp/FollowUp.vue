@@ -39,7 +39,7 @@ import { unFinished, deleteData } from "../../composable/components/followUp"
 import { onMounted, ref } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
-import { createReturnStatement } from '@vue/compiler-core'
+import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 
 export default {
     components: { Datatable, Button, Dropdown },
@@ -60,32 +60,8 @@ export default {
                 await deleteData(idRecord)
                 renewLists()
             }
-            // console.log(confirm)
         }
 
-        const subscribeMutation = async (judul, form, obj, subscribeMtation) => {
-            let unsubscribe;
-            // create a promise to waiting the update process, and listen to the tunnel message
-            const prom = new Promise(resolve => {
-                    // luncurkan dialog
-                    store.commit('Modal/active', { judul: judul,  form: form,  obj: obj })
-                    // subscribe untuk tanggkap confirm dialog apakah yes atau tidak
-                    unsubscribe = store.subscribe(mutation => {
-                        // if the confirmation button clicked whatever yes or no
-                        if(mutation?.type == subscribeMtation) {
-                            // resolve the messaage, true or false
-                            resolve(mutation?.payload)
-                        }
-                    })
-                })
-                // jika oke kirim pesan
-            return prom.then((res) => {
-                unsubscribe()
-                store.commit('Modal/active')
-                return res
-            })
-        }
-        
         const handleButton = async (ev, obj) => {
             if(ev == 'tanya') {
                 let tanya = `Mohon maaf pak mengganggu,%0a%0aMohon saya diberi konfirmasinya pak, terkait pesan saya pada tanggal ${obj.periode}, %0ayang benar yang seperti apa, biar saya masukkan ke catatan saya.%0a%0aadapun pesan saya pada tanggal ${obj.periode} isinya kurang lebih seebagai berikut:%0a%0a${obj.pesan}`
