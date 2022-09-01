@@ -26,16 +26,10 @@
 
                 <!-- Nama supervisors -->
                 <div class="w3-col s3 w3-padding">
-                    <label for="nameSpv">Nama supervisor</label>
-                    <Select 
-                        id="nameSpv"
-                        :options="$store.getters['Supervisors/enabled']" 
-                        class="w3-border"
-                        judul="Supervisor"
-                        value="id"
-                        text="name"
-                        :inselect="problem.nameSpv"
-                        @selected="problem.nameSpv = $event"
+                    <SelectSupervisorsVue 
+                        :inSelectSpv="problem.nameSpv"
+                        @selectedSpv="problem.nameSpv = $event"
+                        spvEnabled
                     />
                 </div>
                 
@@ -174,6 +168,7 @@ import { mapState, mapGetters, mapActions } from "vuex"
 import InputItem from "../Base/InputItem.vue"
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
+import SelectSupervisorsVue from "@/components/parts/SelectSupervisors.vue"
 
 export default {
     data() {
@@ -239,6 +234,7 @@ export default {
         Input,
         InputItem,
         Select,
+        SelectSupervisorsVue
     },
     watch: {
         periodeModel(newVal, oldVal) {
