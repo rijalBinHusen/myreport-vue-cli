@@ -22,7 +22,7 @@
             type="button" 
             danger 
             small
-            @trig="this.$emit('exit')" 
+            @trig="$emit('exit')" 
         />
         <Button 
             v-if="documentRecord?.collected && !documentRecord.isfinished"
@@ -43,6 +43,7 @@
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
+import EventEmitter from "events"
 
 export default {
     components: {
@@ -57,6 +58,7 @@ export default {
             warehouseName: "",
             details: "",
             generateReport: false,
+            keyPress: {},
         }
     },
     emits: ["exit", "finished"],
@@ -86,6 +88,32 @@ export default {
                 generateReport: this.generateReport,
             }, this.details))
         },
+        releaseKey(event) {
+        delete this.keyPress[event.key]
+        },
+        pressKey(event) {
+            if(event.keyCode === 27) {
+                // console.log('esc')
+                this.$emit('exit')
+                return
+            }
+            this.keyPress[event.key] = true
+            // if the control button still pressed
+            if(this.keyPress['Control']) {
+                // if the S (83) button pressed ( CTRL + S )
+                if(event.keyCode === 83) {
+                // prevent dialog save as to launch
+                event.preventDefault()
+                // if any record edited
+                    if(this.documentRecord?.collected && !this.documentRecord.isfinished) {
+                        // save the canged record
+                        this.save()
+                        // console.log('ctrl + s')
+                    }
+                }
+            }
+            
+        },
     },
     computed: {
         inputs() {
@@ -114,9 +142,17 @@ export default {
         if(!this.documentRecord?.collected) {
             alert("The document record status not collected yet")
         }
+        // event listener
+        window.addEventListener("keydown", this.pressKey)
+        window.addEventListener("keyup", this.releaseKey)
         // console.log(this.documentRecord)
         // console.log(this.detailsClock)
         // console.log(this.detailsStock)
     },
+    unmounted() {
+        //remove listen event
+        window.removeEventListener("keydown", this.pressKey)
+        window.removeEventListener("keyup", this.releaseKey)
+    }
 }
 </script>
