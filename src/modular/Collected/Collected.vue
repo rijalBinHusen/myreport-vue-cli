@@ -8,6 +8,7 @@
             @trig="viewByPeriode = !viewByPeriode" 
         />
         <Datatable
+            v-if="renderTable"
             :datanya="lists"
             :heads="heads"
             :keys="keys"
@@ -80,6 +81,7 @@ export default {
             viewByPeriode: true,
             lists: [],
             unsubscribe: "",
+            renderTable: true,
         };
     },
     components: {
@@ -149,7 +151,11 @@ export default {
     },
     watch: {
         viewByPeriode(newVal, oldVal) {
-            this.renewLists()
+            this.renderTable = false
+            setTimeout(() => {
+                this.renderTable = true
+                this.renewLists()
+            }, 200)
         }
     },
     async mounted() {
