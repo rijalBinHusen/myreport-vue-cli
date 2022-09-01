@@ -41,5 +41,19 @@ export const addData = (payload) => {
           store: "FollowUp",
           obj: record,
         }
-      ).then((val) => lists.value.unshift(val?.data))
+      ).then((val) => {
+        if(lists.value) {
+            lists.value.unshift(val?.data)
+        }
+      })
+}
+
+export const deleteData = (idRecord) => {
+    
+    lists.value = lists.value.filter((rec) => rec.id !== idRecord)
+    
+    return func.deleteDocument({
+        store: 'followup',
+        criteria: { id: idRecord}
+    })
 }

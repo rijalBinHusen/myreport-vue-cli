@@ -20,6 +20,14 @@
                     @trig="handleButton($event, prop)"
                     primary
                 />
+                <Button 
+                    value="Delete" 
+                    :datanya="prop.id" 
+                    danger 
+                    type="button" 
+                    class="w3-small" 
+                    @trig="remove($event)"
+                />
         </Datatable>
     </div>
 </template>
@@ -27,10 +35,11 @@
 <script>
 import Button from '@/components/elements/Button.vue'
 import Datatable from "../../components/parts/Datatable.vue"
-import { unFinished } from "../../composable/components/followUp"
+import { unFinished, deleteData } from "../../composable/components/followUp"
 import { onMounted, ref } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
+import { createReturnStatement } from '@vue/compiler-core'
 
 export default {
     components: { Datatable, Button, Dropdown },
@@ -44,6 +53,38 @@ export default {
         onMounted (() => {
             renewLists()
         })
+
+        const remove = async (idRecord) => {
+            let confirm = await subscribeMutation('Hapus record', 'Confirm', false, 'Modal/tunnelMessage')
+            if(confirm) {
+                await deleteData(idRecord)
+                renewLists()
+            }
+            // console.log(confirm)
+        }
+
+        const subscribeMutation = async (judul, form, obj, subscribeMtation) => {
+            let unsubscribe;
+            // create a promise to waiting the update process, and listen to the tunnel message
+            const prom = new Promise(resolve => {
+                    // luncurkan dialog
+                    store.commit('Modal/active', { judul: judul,  form: form,  obj: obj })
+                    // subscribe untuk tanggkap confirm dialog apakah yes atau tidak
+                    unsubscribe = store.subscribe(mutation => {
+                        // if the confirmation button clicked whatever yes or no
+                        if(mutation?.type == subscribeMtation) {
+                            // resolve the messaage, true or false
+                            resolve(mutation?.payload)
+                        }
+                    })
+                })
+                // jika oke kirim pesan
+            return prom.then((res) => {
+                unsubscribe()
+                store.commit('Modal/active')
+                return res
+            })
+        }
         
         const handleButton = async (ev, obj) => {
             if(ev == 'tanya') {
@@ -76,7 +117,7 @@ export default {
             }
         }
 
-        return { lists, handleButton }
+        return { lists, handleButton, remove }
     }
 }
 </script>
