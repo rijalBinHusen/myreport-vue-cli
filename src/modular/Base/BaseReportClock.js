@@ -1,3 +1,5 @@
+import { totalTime } from "@/composable/piece/totalTimeAsMinute";
+
 const BaseReportClock = {
   namespaced: true,
   state: {
@@ -116,12 +118,13 @@ const BaseReportClock = {
       for (let i = 0; i < arrayOfRecord.length; i++) {
         commit("update", arrayOfRecord[i]);
         // let record = Object.assign({}, arrayOfRecord[i]);
+        const { totalTime, ...obj } = arrayOfRecord[i]
         await dispatch(
           "update",
           {
             store: "BaseReportClock",
             criteria: { id: arrayOfRecord[i].id },
-            obj: { ...arrayOfRecord[i] },
+            obj: obj,
           },
           { root: true }
         );
@@ -132,11 +135,16 @@ const BaseReportClock = {
   },
   getters: {
     shiftAndParent: (state) => (shift, id) => {
-      return JSON.parse(
-        JSON.stringify(
-          state.lists.filter((val) => val.shift == shift && val.parent == id)
-        )
-      );
+      let res = []
+      state.lists.forEach((rec) => {
+        if(rec.shift == shift && rec.parent == id) {
+          res.push({
+            ...rec, 
+            totalTime: totalTime(rec?.start, rec?.finish) - (rec.rehat * 60)
+          })
+        }
+      })
+      return res
     },
     detailsByShiftAndParent:
       (state, getters, rootState, rootGetters) => (shift, id) => {
@@ -153,28 +161,8 @@ const BaseReportClock = {
           ) {
             totalDo += 1;
             totalKendaraan += 1;
-            // start
-            let start = rootGetters["dateFormat"]({
-              format: "time",
-              time: `2022-03-03 ${val.start.slice(0, 2)}:${val.start.slice(
-                3,
-                5
-              )}`,
-            });
-            //finish
-            let finish = rootGetters["dateFormat"]({
-              format: "time",
-              time: `2022-03-03 ${val.finish.slice(0, 2)}:${val.finish.slice(
-                3,
-                5
-              )}`,
-            });
-            // jika finish lebih kecil dari pada start, maka finish ditambah 24 jam guys (86400000)
-            // finish - start
-            let total =
-              finish < start ? finish + 86400000 - start : finish - start;
-            // jaddikan menit, masukan total waktu
-            totalWaktu += total / 1000 / 60 - val.rehat * 60;
+            // jaddikan menit, masukan total waktu - rehat
+            totalWaktu += totalTime(val?.start, val?.finish) - (val.rehat * 60);
           }
         });
         return {

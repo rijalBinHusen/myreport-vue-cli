@@ -28,8 +28,8 @@
         <!-- Panel base report -->
         <Datatable
           :datanya="lists"
-          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih', 'Problem']"
-          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat'] : ['itemName', 'selisih', 'problem2']"
+          :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat', 'Total'] : ['Item', 'Selisih', 'Problem']"
+          :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat', 'totalTime'] : ['itemName', 'selisih', 'problem2']"
           id="tableBaseReport"
           option
           #default="{ prop }"
@@ -351,7 +351,8 @@ export default {
                     { headerName: "Register", field: "reg", width: 100 },
                     { headerName: "Start", field: "start", width: 100, editable: true },
                     { headerName: "Finish", field: "finish", width: 100, editable: true },
-                    { headerName: "istirahat", field: "rehat", editable: true, width: 100 },
+                    { headerName: "Istirahat", field: "rehat", editable: true, width: 100 },
+                    { headerName: "Total", field: "totalTime", editable: false, width: 100 },
                 ]
                 : [
                     { headerName: "Kode Item", field: "item", editable: true, resizable: true },
