@@ -28,7 +28,7 @@
                 <div class="w3-col s3 w3-padding">
                     <SelectSupervisorsVue 
                         :inSelectSpv="problem.nameSpv"
-                        @selectedSpv="problem.nameSpv = $event"
+                        @selectedSpv="problem.nameSpv = $event; setPic($event)"
                         spvEnabled
                     />
                 </div>
@@ -67,20 +67,20 @@
                 </div>
                 <!-- Nama PIC solusi jangka penddek -->
                 <div class="w3-col s3 w3-padding">
-                    <Input label="PIC jangka pendek" :value="problem.pic" placeholder="Nama PIC" type="text" @inp="problem.pic = $event" />
+                    <Input 
+                        label="PIC jangka pendek" 
+                        :value="problem.pic" 
+                        placeholder="Nama PIC" 
+                        type="text" 
+                        @inp="problem.pic = $event" 
+                    />
                 </div>
 
                 <!-- Nama head spv -->
                 <div class="w3-col s3 w3-padding">
-                    <label>Nama kabag</label>
-                    <Select 
-                        class="w3-border"
-                        judul="Kabag"
-                        :options="$store.getters['Headspv/enabled']" 
-                        value="id"
-                        text="name"
-                        :inselect="problem.nameHeadSpv"
-                        @selected="problem.nameHeadSpv = $event"
+                    <SelectHeadVue
+                        :inSelectHead="problem.nameHeadSpv" 
+                        @selectedHead="problem.nameHeadSpv = $event"
                     />
                 </div>
 
@@ -169,6 +169,7 @@ import InputItem from "../Base/InputItem.vue"
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
 import SelectSupervisorsVue from "@/components/parts/SelectSupervisors.vue"
+import SelectHeadVue from "@/components/parts/SelectHead.vue"
 
 export default {
     data() {
@@ -226,6 +227,9 @@ export default {
                 store: "Problem",
                 obj: { ...this.problem },
             })
+        },
+        setPic(ev) {
+            this.problem.pic = this.$store.getters['Supervisors/spvId'](ev)?.name
         }
     },
     components: {
@@ -234,7 +238,8 @@ export default {
         Input,
         InputItem,
         Select,
-        SelectSupervisorsVue
+        SelectSupervisorsVue,
+        SelectHeadVue,
     },
     watch: {
         periodeModel(newVal, oldVal) {
