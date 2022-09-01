@@ -49,20 +49,10 @@
                 
                 <!-- Shift mulai masalah -->
                 <div class="w3-col s3 w3-padding">
-                    <label for="shiftMulai">Shift mulai:</label>
-                    <Select 
-                        class="w3-border"
-                        id="shiftMulai"
-                        judul="Shift"
-                        :options="[
-                            { id:1, title: 'Shift 1'},
-                            { id:2, title: 'Shift 2'},
-                            { id:3, title: 'Shift 3'},
-                        ]" 
-                        value="id"
-                        text="title"
-                        :inselect="problem.shiftMulai"
-                        @selected="problem.shiftMulai = $event"
+                    <SelectShiftVue
+                        label="mulai"
+                        :inSelectShift="problem.shiftMulai"
+                        @selectedShift="problem.shiftMulai = $event"
                     />
                 </div>
                 <!-- Nama PIC solusi jangka penddek -->
@@ -106,20 +96,10 @@
 
                 <!-- Shift masalah selesai -->
                 <div class="w3-col s3 w3-padding">
-                    <label for="shiftSelesai">Shift selesai</label>
-                    <Select 
-                        class="w3-border"
-                        id="shiftMulai"
-                        judul="Shift"
-                        :options="[
-                            { id:1, title: 'Shift 1'},
-                            { id:2, title: 'Shift 2'},
-                            { id:3, title: 'Shift 3'},
-                        ]" 
-                        value="id"
-                        text="title"
-                        :inselect="problem.shiftSelesai"
-                        @selected="problem.shiftSelesai = $event"
+                    <SelectShiftVue
+                        label="selesai"
+                        :inSelectShift="problem.shiftSelesai"
+                        @selectedShift="problem.shiftSelesai = $event"
                     />
                 </div>
             </div>
@@ -170,6 +150,7 @@ import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
 import SelectSupervisorsVue from "@/components/parts/SelectSupervisors.vue"
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
+import SelectShiftVue from "@/components/parts/SelectShift.vue"
 
 export default {
     data() {
@@ -240,6 +221,7 @@ export default {
         Select,
         SelectSupervisorsVue,
         SelectHeadVue,
+        SelectShiftVue,
     },
     watch: {
         periodeModel(newVal, oldVal) {
