@@ -7,7 +7,8 @@ const Problem = {
   mutations: {
     // new data from localbase
     problem(state, value) {
-      state.lists = value;
+      // sort from newest to oldest
+      state.lists = value.sort((a, b) => a.id < b.id ? 1 : -1);
     },
     // add data to
     append(state, value) {
@@ -15,7 +16,7 @@ const Problem = {
         value.forEach((val) => state.lists.push(val));
         return;
       }
-      state.lists.push(value);
+      state.lists.unshift(value);
     },
     // update data
     update(state, value) {
