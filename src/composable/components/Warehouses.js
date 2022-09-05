@@ -10,7 +10,8 @@ export const getWarehouses = async () => {
 }
 
 export const getWarehouseId = async (warehouseId) => {
-    if(!lists.value.length) {
+    console.log(lists.value)
+    if(!lists.value) {
         await getWarehouses()
     }
     return lists.value.filter((rec) => rec?.id === warehouseId)

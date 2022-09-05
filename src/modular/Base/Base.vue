@@ -23,7 +23,9 @@
         </AGGrid>
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
+        <!-- Panel base report -->
         <BasePanelVue />
+        <!-- Panel base report -->
         <Datatable
           :datanya="lists"
           :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat'] : ['Item', 'Selisih', 'Problem']"

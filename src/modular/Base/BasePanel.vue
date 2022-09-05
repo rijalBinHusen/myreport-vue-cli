@@ -14,21 +14,22 @@
             value="periode"
             judul="periode"
             text="periode2"
+            @selected="selectedPeriode = $event"
         />
-            <!-- @selected="selectedPeriode = $event"
+            <!-- 
             :inselect="selectedPeriode" -->
 
         <!-- Warehouse Base report -->
-        <!-- <SelectVue 
-            v-if="listsWarehouse.length"
+        <SelectVue
+            v-if="selectedPeriode"
             class="w3-col s2 w3-margin-right"
-            :options="listsWarehouse" 
+            :options="warehouses" 
             value="warehouse"
             text="warehouseName"
-            @selected="selectedWarehouse = $event"
-            :inselect="selectedWarehouse"
             judul="gudang"
-        /> -->
+        />
+            <!-- @selected="selectedWarehouse = $event"
+            :inselect="selectedWarehouse" -->
 
         <!-- Sheet report -->
         <!-- <SelectVue 
@@ -83,9 +84,16 @@
 <script>
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
-import { getBaseReportFile, listsAllBaseReportFile, dateBaseReportFileImported } from '@/composable/components/BaseReportFile';
+
+import { 
+    getBaseReportFile, 
+    listsAllBaseReportFile, 
+    dateBaseReportFileImported,
+    warehouseByDate,
+} from '@/composable/components/BaseReportFile';
+
 import { useStore } from 'vuex';
-import { computed } from '@vue/runtime-core';
+import { computed, ref, watch, onUpdated } from '@vue/runtime-core';
 
 
 export default {
@@ -94,7 +102,8 @@ export default {
     },
     setup() {
         const store = useStore()
-
+        const selectedPeriode = ref(null)
+        const warehouses = ref([])
         const pickPeriode = () => {
             let unsubscribe;
             store.commit("Modal/active", { 
@@ -130,7 +139,13 @@ export default {
 
         const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
         
-        return { pickPeriode, dateBaseReportFile }
+
+        watch(selectedPeriode, async () => {
+            warehouses.value = await warehouseByDate(selectedPeriode.value)
+                // console.log(warehouses.value)
+        })
+        
+        return { pickPeriode, dateBaseReportFile, warehouses, selectedPeriode }
     },
 }
 </script>

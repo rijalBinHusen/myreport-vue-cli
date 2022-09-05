@@ -44,7 +44,6 @@ export const dateBaseReportFileImported = () => {
     let isPushed = []
     let result = []
     for(let doc of lists.value) {
-        console.log(doc)
         // if periode not pushed
         if(!isPushed.includes(doc?.periode) && doc?.imported) {
             result.push({
@@ -54,6 +53,21 @@ export const dateBaseReportFileImported = () => {
             isPushed.push(doc?.periode)
         }
     }
-    console.log(result)
     return result
+}
+
+export const warehouseByDate = async (periode) => {
+    let result = [];
+
+    for(let val of lists.value) {
+      if (val.periode == periode && val.imported) {
+
+        let getWarehouseName = await getWarehouseId(val.warehouse)
+        result.push({
+          warehouse: val?.warehouse,
+          warehouseName: getWarehouseName[0]?.name,
+        });
+      }
+    };
+    return result;
 }
