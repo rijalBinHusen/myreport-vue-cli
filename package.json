@@ -17,6 +17,7 @@
     "ag-grid-community": "^27.1.0",
     "ag-grid-vue3": "^27.1.0",
     "core-js": "^3.8.3",
+    "firebase": "^9.9.4",
     "handsontable": "^11.1.0",
     "localbase": "^0.7.5",
     "sheetjs-style": "^0.15.8",
