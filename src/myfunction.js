@@ -165,6 +165,7 @@ export const append = async function (value) {
     .set(Object.assign({ id: id }, value.obj));
 }
 
+<<<<<<< HEAD
 export const reWrite = function (value) {
   /*value = {
 store: "nameStore",
@@ -172,6 +173,67 @@ id: idData
 obj: [{key: 'value', obj: 'value to update'}], 
 split: "tahun/bulan/false",
 period: "202203/time()"
+=======
+    //limit order desc
+    if (deData.limit && deData.orderBy && deData.desc) {
+      return db
+        .collection(store)
+        .orderBy(deData.orderBy, "desc")
+        .limit(deData.limit)
+        .get();
+    }
+    //limit order
+    if (deData.limit && deData.orderBy) {
+      return db
+        .collection(store)
+        .orderBy(deData.orderBy)
+        .limit(deData.limit)
+        .get();
+    }
+    //limit
+    if (deData.limit) {
+      return db.collection(store).limit(deData.limit).get();
+    }
+    //order desc
+    if (deData.orderBy && deData.desc) {
+      return db.collection(store).orderBy(deData.orderBy, "desc").get();
+    }
+    //order
+    if (deData.orderBy) {
+      return db.collection(store).orderBy(deData.orderBy).get();
+    }
+
+    // if get all data withKey
+    if (deData.withKey) {
+      return db.collection(store).get({ keys: true });
+    }
+    //   all data without key
+    return db.collection(store).get();
+  },
+  findData: function (value) {
+    return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
+  },
+  deleteCollection: function (value) {
+    return db.collection(value).delete();
+  },
+  deleteDb: function () {
+    db.delete();
+  },
+  emptyStore: function (value) {
+    db.collection(value).set([{}]);
+  },
+  deleteDocument: async function (value) {
+    await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
+    db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
+  },
+  deleteDocumentByParam: function (value) {
+    /*value = {
+	store: "nameStore", 
+	split: "tahun/bulan/false",
+	period: "202203/time()",
+	parameter: "parent",
+  value: "c08"
+>>>>>>> b49144a (#54 field to tell us that document was generated)
     } */
   //(nameStore, [{id: idData}, {key: 'new value'}])
   //write data
