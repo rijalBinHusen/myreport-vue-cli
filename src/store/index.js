@@ -207,19 +207,17 @@ export default createStore({
         }
       }
     },
-    rewriteStore({}, payload) {
+    async rewriteStore({}, payload) {
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
-      myfunction.reWriteStoreWithKey(payload);
-      // setelah store di write biar nunggu dulu, agar browser tidak freez
-      if (payload.obj.length < 30) {
-        return myfunction.tunggu(3000);
-      }
-      return myfunction.tunggu(payload.obj.length * 25);
+      await myfunction.reWriteStoreWithKey(payload);
+      console.log('sudah selesaai')
+      return myfunction.tunggu(90);
     },
-    emptyStore({}, payload) {
-      myfunction.deleteCollection(payload.toLowerCase());
+    async emptyStore({}, payload) {
+      await myfunction.deleteCollection(payload.toLowerCase());
       // setelah store dihapus biar nunggu 4 detik, agar browser tidak freez
-      return myfunction.tunggu(4000);
+      console.log('selesai di hapus')
+      return myfunction.tunggu(2000);
     },
   },
   getters: {

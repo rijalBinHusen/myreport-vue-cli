@@ -113,3 +113,11 @@ export const addData = async (name, periode, shift, head, warehouse) => {
         })
     return
 }
+
+export const isGenerateDocument = (idDocument, val) => {
+    func.update({
+        store: 'Document',
+        criteria: {id: idDocument},
+        obj: { isGenerate: val }
+    })
+}
