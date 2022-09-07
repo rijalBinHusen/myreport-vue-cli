@@ -44,8 +44,12 @@ import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.
 import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import Confirm from "./Confirm.vue"
 import FollowUpFinished from "../../modular/FollowUp/FollowUpFinished.vue"
+<<<<<<< HEAD
 import FieldProblemForm from "@/form/FieldProblemForm.vue"
 import DocumentSingleForm from "@/form/DocumentSingleForm.vue"
+=======
+import FieldProblemVue from "@/form/FieldProblem.vue"
+>>>>>>> df2374f (Select supervisor in field problem form)
 
 export default {
   name: "Modal",
@@ -70,7 +74,11 @@ export default {
       Loader,
       ImporterForm,
       BaseReportFile,
+<<<<<<< HEAD
       FieldProblemForm
+=======
+      FieldProblemVue
+>>>>>>> df2374f (Select supervisor in field problem form)
     },
   props: {
     judul: {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { append, getData, update, findData, deleteDocument } from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorById } from '@/composable/components/Superviors'
@@ -95,3 +96,20 @@ export const deleteData = (idRecord) => {
     
     return deleteDocument({ store: 'fieldproblem', criteria: { id: idRecord} })
 }
+=======
+import { append } from '@/myfunction'
+import { reactive } from 'vue';
+
+const lists = reactive([])
+
+export const addData = (payload) => {
+    // add data
+    let record = { ...payload, periode: ymdTime() };
+    append({ store: "FollowUp", obj: record })
+    .then((val) => {
+        if(lists.value) {
+            lists.value.unshift(val?.data)
+        }
+      })
+}
+>>>>>>> df2374f (Select supervisor in field problem form)

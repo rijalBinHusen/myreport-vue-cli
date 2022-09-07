@@ -166,6 +166,9 @@ export const append = async function (value) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> df2374f (Select supervisor in field problem form)
 export const reWrite = function (value) {
   /*value = {
 store: "nameStore",
@@ -173,6 +176,7 @@ id: idData
 obj: [{key: 'value', obj: 'value to update'}], 
 split: "tahun/bulan/false",
 period: "202203/time()"
+<<<<<<< HEAD
 =======
     //limit order desc
     if (deData.limit && deData.orderBy && deData.desc) {
@@ -234,6 +238,8 @@ period: "202203/time()"
 	parameter: "parent",
   value: "c08"
 >>>>>>> b49144a (#54 field to tell us that document was generated)
+=======
+>>>>>>> df2374f (Select supervisor in field problem form)
     } */
   //(nameStore, [{id: idData}, {key: 'new value'}])
   //write data
@@ -243,7 +249,11 @@ period: "202203/time()"
 }
 
 export const getData = function (deData) {
+<<<<<<< HEAD
   let store = deData.store.toLowerCase();
+=======
+  let store = deData.store;
+>>>>>>> df2374f (Select supervisor in field problem form)
 
   //limit order desc
   if (deData.limit && deData.orderBy && deData.desc) {
