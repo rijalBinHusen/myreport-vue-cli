@@ -43,7 +43,7 @@
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
-import EventEmitter from "events"
+import { isGenerateDocument } from '@/composable/components/DocumentsPeriod'
 
 export default {
     components: {
@@ -59,6 +59,8 @@ export default {
             details: "",
             generateReport: false,
             keyPress: {},
+            timeout: '',
+            freezePage: false
         }
     },
     emits: ["exit", "finished"],
@@ -82,6 +84,8 @@ export default {
     },
     methods: {
         save() {
+            // dont do anything when the page freeze
+            if(this.freezePage) { return }
             // console.log(this.document)
             this.$emit("finished", Object.assign({
                 parentDocument: this.documentRecord?.id,
@@ -153,6 +157,20 @@ export default {
         //remove listen event
         window.removeEventListener("keydown", this.pressKey)
         window.removeEventListener("keyup", this.releaseKey)
+    },
+    watch: {
+        generateReport(newVal, oldVal) {
+            clearTimeout(this.timeout)
+            this.freezePage = true
+            if(!newVal) {
+                this.freezePage = false
+                return
+            }
+            this.timeout = setTimeout(() => {
+                this.freezePage = false
+                isGenerateDocument(this.documentRecord.id, true)
+            }, 600)
+        }
     }
 }
 </script>

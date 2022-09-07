@@ -53,7 +53,6 @@ export const listsOfDocuments = async () => {
 
 // update document
 export const updateDocument = async (idDocument, objToUpdate) => {
-    console.log(idDocument, objToUpdate)
     await func.update({ 
         store: 'Document', 
         criteria: {id: idDocument }, 
@@ -67,3 +66,11 @@ export const updateDocument = async (idDocument, objToUpdate) => {
     })
 }
 // 
+
+export const isGenerateDocument = (idDocument, val) => {
+    func.update({
+        store: 'Document',
+        criteria: {id: idDocument},
+        obj: { isGenerate: val }
+    })
+}

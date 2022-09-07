@@ -73,6 +73,7 @@ export default function (arrayOfArrayOfDocuments) {
             totalDo: val2.totalDo,
             planOut: +val2.planOut,
             totalItemKeluar: val2.totalItemKeluar,
+            isGenerate: val2?.isGenerate
           });
         });
         let waitAllProblem = await Promise.all(arrProblem);

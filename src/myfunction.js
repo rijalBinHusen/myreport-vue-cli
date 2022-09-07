@@ -141,7 +141,7 @@ getStoreWithKey("summary").then((result) => {
 
 function reWriteStoreWithKey(value) {
   // value = {store: nameOfStore: obj: [Array would to wrote]}
-  db.collection(value.store).set(value.obj, { keys: true });
+  return db.collection(value.store).set(value.obj, { keys: true });
 }
 
 async function update (value) {
@@ -224,7 +224,7 @@ export default {
     return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
   },
   deleteCollection: function (value) {
-    db.collection(value).delete();
+    return db.collection(value).delete();
   },
   deleteDb: function () {
     db.delete();
