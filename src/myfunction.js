@@ -144,7 +144,7 @@ function reWriteStoreWithKey(value) {
   return db.collection(value.store).set(value.obj, { keys: true });
 }
 
-async function update (value) {
+export const update = async function  (value) {
   // { criteria: {id: 001}, obj: { obj: objtoupdate } }
   await addActivity({ type: "update", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
   return db.collection(value.store.toLowerCase())
@@ -152,108 +152,128 @@ async function update (value) {
     .update(value.obj);
 }
 
-export default {
-  append: async function (value) {
-    //{store: "namastore", obj: {obj: toInput } }
-    let id = value?.obj?.id ? value?.obj?.id : generateId(value.store.toLowerCase());
-    // let result = await
-    if(value?.store !== 'login') {
-      await addActivity({ type: "create", store: value.store.toLowerCase(), idRecord: id })
-    }
-    return db
-      .collection(value.store.toLowerCase())
-      .doc(id)
-      .set(Object.assign({ id: id }, value.obj));
-  },
-  update: update,
-  reWrite: function (value) {
-    /*value = {
-	store: "nameStore",
-	id: idData
-	obj: [{key: 'value', obj: 'value to update'}], 
-	split: "tahun/bulan/false",
-	period: "202203/time()"
-    	} */
-    //(nameStore, [{id: idData}, {key: 'new value'}])
-    //write data
-    db.collection(storenya(value.store, value.split, value.period))
-      .doc({ id: value.id })
-      .set(value.obj);
-  },
-  reWriteStoreWithKey: reWriteStoreWithKey,
-  getData: function (deData) {
-    let store = deData.store.toLowerCase();
+export const append = async function (value) {
+  //{store: "namastore", obj: {obj: toInput } }
+  let id = value?.obj?.id ? value?.obj?.id : generateId(value.store.toLowerCase());
+  // let result = await
+  if(value?.store !== 'login') {
+    await addActivity({ type: "create", store: value.store.toLowerCase(), idRecord: id })
+  }
+  return db
+    .collection(value.store.toLowerCase())
+    .doc(id)
+    .set(Object.assign({ id: id }, value.obj));
+}
 
-    //limit order desc
-    if (deData.limit && deData.orderBy && deData.desc) {
-      return db
-        .collection(store)
-        .orderBy(deData.orderBy, "desc")
-        .limit(deData.limit)
-        .get();
-    }
-    //limit order
-    if (deData.limit && deData.orderBy) {
-      return db
-        .collection(store)
-        .orderBy(deData.orderBy)
-        .limit(deData.limit)
-        .get();
-    }
-    //limit
-    if (deData.limit) {
-      return db.collection(store).limit(deData.limit).get();
-    }
-    //order desc
-    if (deData.orderBy && deData.desc) {
-      return db.collection(store).orderBy(deData.orderBy, "desc").get();
-    }
-    //order
-    if (deData.orderBy) {
-      return db.collection(store).orderBy(deData.orderBy).get();
-    }
-
-    // if get all data withKey
-    if (deData.withKey) {
-      return db.collection(store).get({ keys: true });
-    }
-    //   all data without key
-    return db.collection(store).get();
-  },
-  findData: function (value) {
-    return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
-  },
-  deleteCollection: function (value) {
-    return db.collection(value).delete();
-  },
-  deleteDb: function () {
-    db.delete();
-  },
-  emptyStore: function (value) {
-    db.collection(value).set([{}]);
-  },
-  deleteDocument: async function (value) {
-    await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
-    db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
-  },
-  deleteDocumentByParam: function (value) {
-    /*value = {
-	store: "nameStore", 
-	split: "tahun/bulan/false",
-	period: "202203/time()",
-	parameter: "parent",
-  value: "c08"
+export const reWrite = function (value) {
+  /*value = {
+store: "nameStore",
+id: idData
+obj: [{key: 'value', obj: 'value to update'}], 
+split: "tahun/bulan/false",
+period: "202203/time()"
     } */
-    //keyword = {key: value}
-    db.collection(value.store.toLowerCase())
-      .doc({ [value.parameter]: value.value })
-      .delete();
-  },
-  tunggu: function (time) {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), time);
-    });
-  },
+  //(nameStore, [{id: idData}, {key: 'new value'}])
+  //write data
+  db.collection(storenya(value.store, value.split, value.period))
+    .doc({ id: value.id })
+    .set(value.obj);
+}
+
+export const getData = function (deData) {
+  let store = deData.store;
+
+  //limit order desc
+  if (deData.limit && deData.orderBy && deData.desc) {
+    return db
+      .collection(store)
+      .orderBy(deData.orderBy, "desc")
+      .limit(deData.limit)
+      .get();
+  }
+  //limit order
+  if (deData.limit && deData.orderBy) {
+    return db
+      .collection(store)
+      .orderBy(deData.orderBy)
+      .limit(deData.limit)
+      .get();
+  }
+  //limit
+  if (deData.limit) {
+    return db.collection(store).limit(deData.limit).get();
+  }
+  //order desc
+  if (deData.orderBy && deData.desc) {
+    return db.collection(store).orderBy(deData.orderBy, "desc").get();
+  }
+  //order
+  if (deData.orderBy) {
+    return db.collection(store).orderBy(deData.orderBy).get();
+  }
+
+  // if get all data withKey
+  if (deData.withKey) {
+    return db.collection(store).get({ keys: true });
+  }
+  //   all data without key
+  return db.collection(store).get();
+}
+
+export const findData = function (value) {
+  return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
+}
+
+export const deleteCollection = function (value) {
+  return db.collection(value).delete();
+}
+
+export const deleteDb = function () {
+  db.delete();
+}
+
+export const emptyStore = function (value) {
+  db.collection(value).set([{}]);
+}
+
+export const deleteDocument = async function (value) {
+  await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
+  db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
+}
+
+export const deleteDocumentByParam = function (value) {
+  /*value = {
+store: "nameStore", 
+split: "tahun/bulan/false",
+period: "202203/time()",
+parameter: "parent",
+value: "c08"
+  } */
+  //keyword = {key: value}
+  db.collection(value.store.toLowerCase())
+    .doc({ [value.parameter]: value.value })
+    .delete();
+}
+
+export const tunggu = function (time) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), time);
+  });
+}
+
+export default {
+  append: append,
+  update: update,
+  reWrite: reWrite,
+  reWriteStoreWithKey: reWriteStoreWithKey,
+  getData: getData,
+  findData: findData,
+  deleteCollection: deleteCollection,
+  deleteDb: deleteDb,
+  emptyStore: emptyStore,
+  deleteDocument: deleteDocument,
+  deleteDocumentByParam: deleteDocumentByParam,
+  tunggu: tunggu,
   ribuan: function (a) {
     return a.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   },

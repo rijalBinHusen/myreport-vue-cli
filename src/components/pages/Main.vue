@@ -35,6 +35,8 @@
 	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
 	import userSignOut from "../../composable/UserSignOut"
+	import FieldProblemVue from '@/pages/FieldProblem.vue';
+	
 
 	export default {
 		setup() {
@@ -90,6 +92,7 @@
 			Backup,
 			Importbase,
 			Base,
+			FieldProblemVue
 		},
 	}
 </script>
