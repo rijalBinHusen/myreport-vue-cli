@@ -1,4 +1,4 @@
-import { append, getData, update, findData } from '@/myfunction'
+import { append, getData, update, findData, deleteDocument } from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorById } from '@/composable/components/Superviors'
 import { getHeadById } from './Head'
@@ -30,7 +30,7 @@ export const addData = async (periode, supervisor, head, masalah, sumberMasalah,
 
     await append({ store: "fieldProblem", obj: record })
     .then((val) => {
-        if(lists.value) {
+        if(lists) {
             lists.unshift(val?.data)
         }
       })
@@ -87,4 +87,11 @@ export const updateData = async (idRecord, periode, supervisor, head, masalah, s
         })
     })
     return
+}
+
+export const deleteData = (idRecord) => {
+    
+    lists = lists.filter((rec) => rec.id !== idRecord)
+    
+    return deleteDocument({ store: 'fieldproblem', criteria: { id: idRecord} })
 }

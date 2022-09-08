@@ -8,7 +8,7 @@
                 class="w3-right" 
                 value="Tambahkan" 
                 type="button" 
-                @trig="fieldProblem"
+                @trig="handleButton('tambah')"
             />
         </div>
     
@@ -30,7 +30,7 @@
                     ]"
                     listsKey="id"
                     listsValue="content"
-                    @trig="handleDropdown($event, prop?.id)"
+                    @trig="handleButton($event, prop?.id)"
                     primary
                 />
             </template>
@@ -43,8 +43,7 @@
 import ButtonVue from '@/components/elements/Button.vue'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
-import { fieldProblem } from '@/composable/piece/vuexModalLauncher'
-import { listsFieldProblem } from '@/composable/components/FieldProblem'
+import { listsFieldProblem, deleteData } from '@/composable/components/FieldProblem'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
@@ -67,23 +66,24 @@ export default {
             renewLists()
         })
 
-        const handleDropdown = async (action, id) => {
-            if(action === 'edit') {
-                // subscribe mutation
-                let res = await subscribeMutation(
-                                'Edit kendala lapangan', 
-                                'FieldProblemForm',
-                                id,
-                                'Modal/tunnelMessage'
-                            )
+        const handleButton = async (action, id) => {
+            let form = action === 'delete' ? 'Confirm' : 'FieldProblemForm'
+            // subscribe mutation
+            let res = await subscribeMutation( 'Edit kendala lapangan',  form, id, 'Modal/tunnelMessage')
+
+            if(action === 'delete') {
                 // if the mutation contain payload true
                 if(res) {
-                    renewLists()
+                    await deleteData(id)
                 }
+            }
+            // if the mutation receive message true
+            if(res) {
+                renewLists()
             }
         }
 
-        return { fieldProblem, table, lists, renderTable, handleDropdown }
+        return { table, lists, renderTable, handleButton }
     },
     components: {
         ButtonVue,
