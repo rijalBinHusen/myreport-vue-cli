@@ -43,6 +43,12 @@ export const dateMonth = (payload) => {
     return `${details.date}-${MMM[details.month]}`
 }
 
+//dapatkan waktu penuh dd/mm/yyyy
+export const ddmmyyyy = (payload, splitter) =>  {
+    const details = getDetails(payload)
+    return details.date+splitter+details.month+splitter+details.year      
+} 
+
 const dateFormat =  {
         time, full, dayPlus1, ymdTime
     }
