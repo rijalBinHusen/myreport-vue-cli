@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import { computed } from '@vue/runtime-core'
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import { getDocuments } from '../../composable/components/DocumentsPeriod'

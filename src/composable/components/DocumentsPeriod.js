@@ -25,7 +25,7 @@ export const getDocuments = async (periode1, periode2) => {
 }
 
 export const listsOfDocuments = async () => {
-    
+    await getDocuments()
     return await documentsMapper(lists.value)
 }
 

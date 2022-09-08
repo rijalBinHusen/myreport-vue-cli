@@ -1,18 +1,16 @@
-import { ref } from 'vue'
 import func from '../../myfunction'
 
-const lists = ref([])
+let lists = []
 
 export const getWarehouses = async () => {
-    lists.value = []
-    lists.value = await func.getData({ store: 'Warehouses', orderBy: 'id', desc: true })
+    lists = []
+    lists = await func.getData({ store: 'Warehouses', orderBy: 'id', desc: true })
     return true
 }
 
 export const getWarehouseId = async (warehouseId) => {
-    console.log(lists.value)
-    if(!lists.value) {
+    if(!lists.length) {
         await getWarehouses()
     }
-    return lists.value.filter((rec) => rec?.id === warehouseId)
+    return lists.filter((rec) => rec?.id === warehouseId)
 }
