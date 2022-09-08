@@ -1,8 +1,16 @@
-import { append } from '@/myfunction'
-import { reactive } from 'vue';
+import { append, getData } from '@/myfunction'
 import { ymdTime } from '@/composable/piece/dateFormat'
 
-const lists = reactive([])
+let lists = []
+
+const getFieldProblem = async () => {
+    if(!lists.length) {
+        // get all data from indexeddb
+        await getData({store: 'fieldproblem', limit: 50, desc: true, orderBy: 'id'})
+        .then((val) => lists = val)
+    }
+    // delete data
+}
 
 export const addData = async (periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl) => {
     // add data
@@ -21,8 +29,14 @@ export const addData = async (periode, supervisor, head, masalah, sumberMasalah,
     await append({ store: "fieldProblem", obj: record })
     .then((val) => {
         if(lists.value) {
-            lists.value.unshift(val?.data)
+            lists.unshift(val?.data)
         }
       })
     return
 }
+
+export const listsFieldProblem = async () => {
+    await getFieldProblem()
+    return lists
+}
+

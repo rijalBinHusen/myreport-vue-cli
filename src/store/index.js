@@ -37,7 +37,6 @@ export default createStore({
   state: {
     store: [
       "Warehouses",
-      "Backup",
       "Supervisors",
       "Headspv",
       "Baseitem",
