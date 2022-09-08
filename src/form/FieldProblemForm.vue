@@ -15,12 +15,14 @@
             <SelectSupervisorsVue 
                 @selectedSpv="supervisor = $event"
                 class="w3-col s4 w3-padding"
+                :inSelectSpv="supervisor"
             />
             
             <!-- Head supervisors -->
             <SelectHeadVue 
                 @selectedHead="head = $event"
                 class="w3-col s4 w3-padding" 
+                :inSelectHead="head"
             />
         </div>
 
@@ -81,16 +83,6 @@
             </div>
         </div>
         <ButtonVue primary value="Tambah" class="w3-right" type="button"/>
-            <!-- 
-            <label for="solusi">solusi: </label><br>
-            <textarea v-model="caseInput.solusi" id="solusi" style="width:100%; height:60px;"></textarea>
-
-
-            <label for="status">Status done?</label>
-            <input type="checkbox" v-model="caseInput.status" />
-
-            <Button primary v-if="caseInput.id" value="Update" class="w3-right" type="button" @trig="updateCase"/>
-            -->
         
         </form>
 </template>
@@ -104,13 +96,16 @@ import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import InputVue from "@/components/elements/Input.vue"
 import { ref } from '@vue/reactivity'
 import { addData } from '@/composable/components/FieldProblem'
-import { watchEffect } from '@vue/runtime-core'
+import { onMounted, watchEffect } from '@vue/runtime-core'
 import { getSupervisorById } from '@/composable/components/Superviors'
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher'
+import { useStore } from 'vuex'
+import { getFieldProblemById } from '@/composable/components/FieldProblem'
 
 export default {
     setup() {
         // periode, supervisor, head, masalah, sumberMasalah, Solusi, PIC, dl
+        const idFieldProblem = ref(null)
         const periode = ref(new Date())
         const supervisor = ref('-')
         const head = ref('-')
@@ -119,6 +114,7 @@ export default {
         const solusi = ref('-')
         const pic = ref('-')
         const dl = ref(new Date())
+        const store = useStore()
 
         watchEffect(async () => {
             supervisor: {
@@ -142,66 +138,27 @@ export default {
             modalClose()
         }
 
+        onMounted(async () => {
+            // check the modal obj, if is there obj key exists, the mode is edit
+            idFieldProblem.value = store.getters['Modal/obj']?.obj
+            if(idFieldProblem.value) {
+                // get problem first
+                const fieldProblem = await getFieldProblemById(idFieldProblem.value)
+                // fill the form with value
+                periode.value = new Date(fieldProblem.periode)
+                supervisor.value = fieldProblem.supervisor
+                head.value = fieldProblem.head
+                masalah.value = fieldProblem.masalah
+                sumberMasalah.value = fieldProblem.sumberMasalah
+                solusi.value = fieldProblem.solusi
+                pic.value = fieldProblem.pic
+                dl.value = new Date(fieldProblem.dl)
+
+            }
+        })
+
         return { periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl, handleSubmit}
     },
-    methods: {
-        selectSpv(ev) {
-            console.log(ev)
-        }
-        // picName(name) {
-        //     this.caseInput.pic = this.$store.getters["Supervisors/spvId"](name)?.name
-        // },
-        // appendCase() {
-        //     this.$store.dispatch("Cases/append", { ...this.caseInput, insert: ymdTime() })
-        //     this.$store.commit("Modal/active")
-        // },
-        // updateCase() {
-        //     this.$store.dispatch("update",
-        //         { 
-        //             store: "Cases", 
-        //             obj: { ...this.caseInput }, 
-        //             criteria: { id: this.caseInput.id }
-        //         }
-        //     )
-        //     this.$store.commit("Modal/active")
-        // }
-    },
-    // watch: {
-    //     periodeModel(newVal, oldVal) {
-    //         this.caseInput.periode = this.$store.getters["dateFormat"]({format: "ymdTime", time: newVal})
-    //         this.dlModel = newVal
-    //     },
-    //     dlModel(newVal, oldVal) {
-    //         this.caseInput.dl = this.$store.getters["dateFormat"]({format: "ymdTime", time: newVal})
-    //     },
-    // },
-    // created() {
-    //     let obj = this.$store.getters["Modal/obj"].obj
-    //     if(obj?.edit) {
-    //         // delete unneeded keys
-    //         const {
-    //             periode2,
-    //             spvName,
-    //             headName,
-    //             edit,
-    //             ...details
-    //         } = obj;
-    //         // put to the caseinput
-    //         this.caseInput = details
-    //         this.periodeModel = new Date(obj?.periode)
-    //         this.dlModel = new Date(obj?.dl)
-    //         // get the parent record
-    //         let base = this.$store.getters["Cases/caseId"](obj.parent)
-    //         // show to the left view editor
-    //         this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
-    //         return
-    //     }
-    //     this.caseInput.parent = obj?.id
-    //     this.baseData = Object.keys(obj).map((val) => `${val}:<br> ${obj[val]}`).join(`<hr/>`)
-    //     this.periodeModel = new Date()
-    //     this.dlModel = new Date()
-        
-    // },
     components: {
         datepicker, 
         SelectVue, 
