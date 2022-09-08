@@ -1,5 +1,7 @@
 import { append, getData } from '@/myfunction'
-import { ymdTime } from '@/composable/piece/dateFormat'
+import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
+import { getSupervisorById } from '@/composable/components/Superviors'
+import { getHeadById } from './Head'
 
 let lists = []
 
@@ -37,6 +39,20 @@ export const addData = async (periode, supervisor, head, masalah, sumberMasalah,
 
 export const listsFieldProblem = async () => {
     await getFieldProblem()
-    return lists
+    let result = []
+
+    for (let list of lists) {
+        let getSupervisor = await getSupervisorById(list.supervisor)
+        let getHead = await getHeadById(list.head)
+        result.push({
+            ...list,
+            supervisor: getSupervisor?.name,
+            head: getHead?.name,
+            periode: ddmmyyyy(list.periode, '-'),
+            dl: ddmmyyyy(list.dl, '-')
+        })
+    }
+
+    return result
 }
 

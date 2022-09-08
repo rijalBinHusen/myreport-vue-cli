@@ -46,7 +46,7 @@ export const dateMonth = (payload) => {
 //dapatkan waktu penuh dd/mm/yyyy
 export const ddmmyyyy = (payload, splitter) =>  {
     const details = getDetails(payload)
-    return details.date+splitter+details.month+splitter+details.year      
+    return details.date+splitter+(details.month > 8 ? details.month+1 : '0' + (details.month+1))+splitter+details.year      
 } 
 
 const dateFormat =  {
