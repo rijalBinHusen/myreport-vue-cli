@@ -66,6 +66,7 @@
                 placeholder="PIC" 
                 class="w3-col s4 w3-margin-right" 
                 @inp="pic = $event"
+                :value="pic"
                 type="text"
             />
 
@@ -98,11 +99,13 @@
 import datepicker from "vue3-datepicker"
 import SelectVue from "@/components/elements/Select.vue"
 import ButtonVue from "@/components/elements/Button.vue"
-import { ymdTime } from "@/composable/piece/dateFormat"
 import SelectSupervisorsVue from '@/components/parts/SelectSupervisors.vue'
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import InputVue from "@/components/elements/Input.vue"
 import { ref } from '@vue/reactivity'
+import { addData } from '@/composable/components/FieldProblem'
+import { watchEffect } from '@vue/runtime-core'
+import { getSupervisorById } from '@/composable/components/Superviors'
 
 export default {
     setup() {
@@ -116,8 +119,15 @@ export default {
         const pic = ref('')
         const dl = ref(new Date())
 
+        watchEffect(async () => {
+            supervisor: {
+                let res = await getSupervisorById(supervisor.value)
+                pic.value = res?.name
+            }
+        })
+
         const handleSubmit = () => {
-            console.log(periode.value, supervisor.value, head.value, masalah.value, sumberMasalah.value, solusi.value, pic.value, dl.value)
+            addData(periode.value, supervisor.value, head.value, masalah.value, sumberMasalah.value, solusi.value, pic.value, dl.value)
         }
 
         return { periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl, handleSubmit}

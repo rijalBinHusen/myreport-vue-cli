@@ -1,15 +1,28 @@
 import { append } from '@/myfunction'
 import { reactive } from 'vue';
+import { ymdTime } from '@/composable/piece/dateFormat'
 
 const lists = reactive([])
 
-export const addData = (payload) => {
+export const addData = (periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl) => {
     // add data
-    let record = { ...payload, periode: ymdTime() };
-    append({ store: "FollowUp", obj: record })
-    .then((val) => {
-        if(lists.value) {
-            lists.value.unshift(val?.data)
-        }
-      })
+    // periode, supervisor, head, masalah, sumberMasalah, Solusi, PIC, dl
+    let record = { 
+        periode: ymdTime(periode),
+        supervisor: supervisor,
+        head: head,
+        masalah: masalah, 
+        sumberMasalah: sumberMasalah,
+        solusi: solusi,
+        pic: pic,
+        dl: ymdTime(dl)
+     };
+
+     console.log(record)
+    // append({ store: "FollowUp", obj: record })
+    // .then((val) => {
+    //     if(lists.value) {
+    //         lists.value.unshift(val?.data)
+    //     }
+    //   })
 }
