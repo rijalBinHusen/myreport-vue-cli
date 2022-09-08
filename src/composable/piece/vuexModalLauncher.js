@@ -15,7 +15,3 @@ export const fieldProblem = () => {
 export const loader = () => {
     store.commit("Modal/active", {judul: "", form: "Loader"});
 }
-
-export const fieldProblemEdit = (idFieldProblem) => {
-    modalLauncher('Tambahkan kendala lapangan', 'FieldProblemForm', idFieldProblem)
-}

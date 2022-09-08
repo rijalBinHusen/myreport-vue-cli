@@ -1,4 +1,4 @@
-import { append, getData } from '@/myfunction'
+import { append, getData, update, findData } from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorById } from '@/composable/components/Superviors'
 import { getHeadById } from './Head'
@@ -61,3 +61,30 @@ export const getFieldProblemById = async (idFieldProblem) => {
     return lists.find((rec) => rec.id === idFieldProblem)
 }
 
+export const updateData = async (idRecord, periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl) => {
+    // add data
+    // periode, supervisor, head, masalah, sumberMasalah, Solusi, PIC, dl
+    let record = { 
+        periode: ymdTime(periode),
+        supervisor: supervisor,
+        head: head,
+        masalah: masalah, 
+        sumberMasalah: sumberMasalah,
+        solusi: solusi,
+        pic: pic,
+        dl: ymdTime(dl)
+     };
+
+    // update data
+    await update({ store: "fieldProblem", criteria: { id: idRecord }, obj: record })
+    // find Data
+    await findData({ store: "fieldProblem", criteria: { id: idRecord } }).then((res) => {
+        lists = lists.map((rec) => {
+            if(rec.id === idRecord) {
+                return res[0]
+            }
+            return rec
+        })
+    })
+    return
+}

@@ -43,10 +43,11 @@
 import ButtonVue from '@/components/elements/Button.vue'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
-import { fieldProblem, fieldProblemEdit } from '@/composable/piece/vuexModalLauncher'
+import { fieldProblem } from '@/composable/piece/vuexModalLauncher'
 import { listsFieldProblem } from '@/composable/components/FieldProblem'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
+import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 
 export default {
     setup() {
@@ -57,14 +58,28 @@ export default {
             keys: ['periode', 'supervisor', 'head', 'masalah']
         }
 
-        onMounted(async () => {
+        const renewLists = async () => {
             lists.value = await listsFieldProblem()
             renderTable.value = true
+        }
+
+        onMounted(() => {
+            renewLists()
         })
 
-        const handleDropdown = (action, id) => {
+        const handleDropdown = async (action, id) => {
             if(action === 'edit') {
-                fieldProblemEdit(id)
+                // subscribe mutation
+                let res = await subscribeMutation(
+                                'Edit kendala lapangan', 
+                                'FieldProblemForm',
+                                id,
+                                'Modal/tunnelMessage'
+                            )
+                // if the mutation contain payload true
+                if(res) {
+                    renewLists()
+                }
             }
         }
 
