@@ -20,6 +20,7 @@ const Modal = {
       }
       // jika tidak, tutup modal, judul kosongi, form kosongi
       else {
+        this.commit('Modal/tunnelMessage', false)
         if (state.more.form === "Loader") {
           setTimeout(() => {
             state.active = false;

@@ -1,7 +1,6 @@
 import store from '@/store'
 
 export const subscribeMutation = async (judul, form, obj, subscribeMtation) => {
-    console.log(store)
     let unsubscribe;
     // create a promise to waiting the update process, and listen to the tunnel message
     const prom = new Promise(resolve => {

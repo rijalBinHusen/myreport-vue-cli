@@ -16,6 +16,7 @@
                 @selectedSpv="supervisor = $event"
                 class="w3-col s4 w3-padding"
                 :inSelectSpv="supervisor"
+                :spvEnabled="true"
             />
             
             <!-- Head supervisors -->
@@ -82,7 +83,7 @@
                 </datepicker>
             </div>
         </div>
-        <ButtonVue primary value="Tambah" class="w3-right" type="button"/>
+        <ButtonVue primary :value="idFieldProblem ? 'Update' : 'Tambah'" class="w3-right" type="button"/>
         
         </form>
 </template>
@@ -95,7 +96,7 @@ import SelectSupervisorsVue from '@/components/parts/SelectSupervisors.vue'
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import InputVue from "@/components/elements/Input.vue"
 import { ref } from '@vue/reactivity'
-import { addData } from '@/composable/components/FieldProblem'
+import { addData, updateData } from '@/composable/components/FieldProblem'
 import { onMounted, watchEffect } from '@vue/runtime-core'
 import { getSupervisorById } from '@/composable/components/Superviors'
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher'
@@ -124,17 +125,33 @@ export default {
         })
 
         const handleSubmit = async () => {
+            // send a message to subscribe mutation
             loader()
-            await addData(
-                periode.value, 
-                supervisor.value, 
-                head.value,
-                masalah.value, 
-                sumberMasalah.value, 
-                solusi.value, 
-                pic.value, 
-                dl.value
-            )
+            if(idFieldProblem.value) {
+                await updateData(
+                    idFieldProblem.value,
+                    periode.value, 
+                    supervisor.value, 
+                    head.value,
+                    masalah.value, 
+                    sumberMasalah.value, 
+                    solusi.value, 
+                    pic.value, 
+                    dl.value
+                )
+            } else {
+                await addData(
+                    periode.value, 
+                    supervisor.value, 
+                    head.value,
+                    masalah.value, 
+                    sumberMasalah.value, 
+                    solusi.value, 
+                    pic.value, 
+                    dl.value
+                )
+            }
+            store.commit('Modal/tunnelMessage', true)
             modalClose()
         }
 
@@ -153,11 +170,21 @@ export default {
                 solusi.value = fieldProblem.solusi
                 pic.value = fieldProblem.pic
                 dl.value = new Date(fieldProblem.dl)
-
             }
         })
 
-        return { periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl, handleSubmit}
+        return { 
+            periode,
+            supervisor, 
+            head, 
+            masalah, 
+            sumberMasalah, 
+            solusi, 
+            pic, 
+            dl, 
+            handleSubmit,
+            idFieldProblem
+        }
     },
     components: {
         datepicker, 
