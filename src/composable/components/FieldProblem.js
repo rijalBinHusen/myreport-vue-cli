@@ -4,7 +4,7 @@ import { ymdTime } from '@/composable/piece/dateFormat'
 
 const lists = reactive([])
 
-export const addData = (periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl) => {
+export const addData = async (periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl) => {
     // add data
     // periode, supervisor, head, masalah, sumberMasalah, Solusi, PIC, dl
     let record = { 
@@ -18,11 +18,11 @@ export const addData = (periode, supervisor, head, masalah, sumberMasalah, solus
         dl: ymdTime(dl)
      };
 
-     console.log(record)
-    // append({ store: "FollowUp", obj: record })
-    // .then((val) => {
-    //     if(lists.value) {
-    //         lists.value.unshift(val?.data)
-    //     }
-    //   })
+    await append({ store: "fieldProblem", obj: record })
+    .then((val) => {
+        if(lists.value) {
+            lists.value.unshift(val?.data)
+        }
+      })
+    return
 }

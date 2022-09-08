@@ -11,3 +11,7 @@ export const modalClose = () => {
 export const fieldProblem = () => {
     modalLauncher('Tambahkan kendala lapangan', 'FieldProblemVue')
 }
+
+export const loader = () => {
+    store.commit("Modal/active", {judul: "", form: "Loader"});
+}
