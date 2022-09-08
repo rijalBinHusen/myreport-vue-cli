@@ -1,69 +1,97 @@
 <template>
-    <div class="w3-row">
-        <div class="w3-col s6 w3-padding-large" v-html="baseData" style="overflow: auto; height: 400px;">
-        </div>
-        <div class="w3-col s6 w3-padding-large" style="overflow: auto; height: 400px;">
+    <form @submit.prevent="handleSubmit">
+        <div class="w3-row w3-padding">
             <!-- Periode -->
-            <label for="periode">Periode:</label>
-            <datepicker 
-                id="periode" 
-                class="w3-margin-bottom w3-border w3-input" 
-                v-model="periodeModel">
-            </datepicker>
+            <div class="w3-col s4">
+                <label for="periode" class="w3-margin-bottom">Periode:</label>
+                <datepicker 
+                    id="periode" 
+                    class="w3-margin-top w3-border w3-input w3-round-large w3-padding" 
+                    v-model="periode">
+                </datepicker>
+            </div>
 
-            <label for="dl">Dead line:</label>
-            <datepicker 
-                id="dl" 
-                class="w3-margin-bottom w3-border w3-input" 
-                v-model="dlModel">
-            </datepicker>
-
-            <!-- Masalah -->
-            <label for="masalah">Masalah: </label><br>
-            <label for="masalah">Max length(255) {{ caseInput.masalah.length }} </label><br>
-            <textarea v-model="caseInput.masalah" rows="6" id="masalah" style="width:100%;"></textarea>
-            
             <!-- Supervisor -->
-            <!-- <label for="name">Supervisor:</label>
-            <Select 
-                id="name"
-                :options="$store.state.Supervisors.lists" 
-                judul="Supervisor"
-                value="id"
-                text="name"
-                @selected="caseInput.name = $event; picName($event)"
-                :inselect="caseInput.name"
-            /> -->
             <SelectSupervisorsVue 
-                @selectedSpv="selectSpv($event)"
+                @selectedSpv="supervisor = $event"
+                class="w3-col s4 w3-padding"
             />
-            <!-- <label for="head">Kabag:</label>
-            <Select 
-                id="head"
-                :options="$store.state.Headspv.lists" 
-                judul="Kabag"
-                value="id"
-                text="name"
-                @selected="caseInput.head = $event"
-                :inselect="caseInput.head"
+            
+            <!-- Head supervisors -->
+            <SelectHeadVue 
+                @selectedHead="head = $event"
+                class="w3-col s4 w3-padding" 
+            />
+        </div>
+
+        <div class="w3-row">
+            <!-- Masalah -->
+            <div class="w3-col s4 w3-padding">  
+                <label for="masalah">Masalah: </label>
+                <label for="masalah">Max length(255) {{ masalah.length }} </label><br>
+                <textarea 
+                    v-model="masalah" 
+                    rows="5" 
+                    id="masalah" 
+                    style="width:100%;">
+                </textarea>
+            </div>
+            
+            <div class="w3-col s4 w3-padding">  
+                <label for="sumberMasalah">Sumber masalah: </label>
+                <textarea 
+                    v-model="sumberMasalah" 
+                    id="sumberMasalah" 
+                    style="width:100%;"
+                    rows="5" 
+                >
+                </textarea>
+            </div>
+            
+            <div class="w3-col s4 w3-padding">  
+                <label for="sumberMasalah">solusi: </label>
+                <textarea 
+                    v-model="solusi" 
+                    id="sumberMasalah" 
+                    style="width:100%;"
+                    rows="5" 
+                >
+                </textarea>
+            </div>
+        </div>
+
+        <div class="w3-row w3-padding">
+            <input-vue
+                label="PIC" 
+                placeholder="PIC" 
+                class="w3-col s4 w3-margin-right" 
+                @inp="pic = $event"
+                type="text"
             />
 
-            <label for="sumberMasalah">Sumber masalah: </label><br>
-            <textarea v-model="caseInput.sumberMasalah" id="sumberMasalah" style="width:100%; height:60px;"></textarea>
-
+            <!-- Deadline -->
+            <div class="w3-col s4">
+                <label for="periode" class="w3-margin-bottom">Deadline:</label>
+                <datepicker 
+                    id="Deadline" 
+                    class="w3-border w3-input w3-round-large w3-padding" 
+                    v-model="dl">
+                </datepicker>
+            </div>
+        </div>
+        <ButtonVue primary value="Tambah" class="w3-right" type="button"/>
+            <!-- 
             <label for="solusi">solusi: </label><br>
             <textarea v-model="caseInput.solusi" id="solusi" style="width:100%; height:60px;"></textarea>
 
-            <label for="pic">PIC</label>
-            <textarea id="pic" v-model="caseInput.pic" placeholder="Name PIC" style="width:100%;"></textarea>
 
             <label for="status">Status done?</label>
             <input type="checkbox" v-model="caseInput.status" />
 
             <Button primary v-if="caseInput.id" value="Update" class="w3-right" type="button" @trig="updateCase"/>
-            <Button primary v-else value="Submit" class="w3-right" type="button" @trig="appendCase"/> -->
-        </div>
-    </div>
+            -->
+        
+        </form>
 </template>
 
 <script>
@@ -72,26 +100,27 @@ import SelectVue from "@/components/elements/Select.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import SelectSupervisorsVue from '@/components/parts/SelectSupervisors.vue'
+import SelectHeadVue from "@/components/parts/SelectHead.vue"
+import InputVue from "@/components/elements/Input.vue"
+import { ref } from '@vue/reactivity'
 
 export default {
-    data() {
-        return {
-            baseData: "",
-            periodeModel: new Date(),
-            dlModel: new Date(),
-            caseInput: {
-                parent: "",
-                periode: "",
-                name: "",
-                head: "",
-                masalah: "",
-                sumberMasalah: "",
-                solusi: "",
-                pic: "",
-                dl: "",
-                status: false,
-            }
+    setup() {
+        // periode, supervisor, head, masalah, sumberMasalah, Solusi, PIC, dl
+        const periode = ref(new Date())
+        const supervisor = ref('')
+        const head = ref('')
+        const masalah = ref('')
+        const sumberMasalah = ref('')
+        const solusi = ref('')
+        const pic = ref('')
+        const dl = ref(new Date())
+
+        const handleSubmit = () => {
+            console.log(periode.value, supervisor.value, head.value, masalah.value, sumberMasalah.value, solusi.value, pic.value, dl.value)
         }
+
+        return { periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl, handleSubmit}
     },
     methods: {
         selectSpv(ev) {
@@ -155,7 +184,9 @@ export default {
         datepicker, 
         SelectVue, 
         ButtonVue,
-        SelectSupervisorsVue
+        SelectSupervisorsVue,
+        SelectHeadVue,
+        InputVue
     },
 }
 </script>
