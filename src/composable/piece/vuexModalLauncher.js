@@ -1,7 +1,7 @@
 import store from '@/store'
 
-const modalLauncher = (title, formName) => {
-    store.commit("Modal/active", {judul: title, form: formName});
+const modalLauncher = (title, formName, obj) => {
+    store.commit("Modal/active", { judul: title, form: formName, obj: obj });
 }
 
 export const modalClose = () => {
@@ -9,9 +9,13 @@ export const modalClose = () => {
 }
 
 export const fieldProblem = () => {
-    modalLauncher('Tambahkan kendala lapangan', 'FieldProblemVue')
+    modalLauncher('Tambahkan kendala lapangan', 'FieldProblemForm')
 }
 
 export const loader = () => {
     store.commit("Modal/active", {judul: "", form: "Loader"});
+}
+
+export const fieldProblemEdit = (idFieldProblem) => {
+    modalLauncher('Tambahkan kendala lapangan', 'FieldProblemForm', idFieldProblem)
 }

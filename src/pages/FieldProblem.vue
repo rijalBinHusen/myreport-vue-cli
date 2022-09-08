@@ -18,14 +18,22 @@
             :heads="['periode', 'supervisor', 'head', 'masalah']"
             :keys="['periode', 'supervisor', 'head', 'masalah']"
             id="tableFieldProblem"
+            option
         >
         
-            <!-- <template #default="{ prop }">
-                <Button v-if="!prop?.inserted && !inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-                <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
-                <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
-                
-            </template> -->
+            <template #default="{ prop }">
+                <Dropdown 
+                    value="Opsi" 
+                    :lists="[
+                        { id: 'edit', content: 'Edit'}, 
+                        { id: 'delete', content: 'Delete'}
+                    ]"
+                    listsKey="id"
+                    listsValue="content"
+                    @trig="handleDropdown($event, prop?.id)"
+                    primary
+                />
+            </template>
         </DatatableVue> 
         
     </div>
@@ -33,10 +41,11 @@
     
 <script>
 import ButtonVue from '@/components/elements/Button.vue'
+import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
-import { fieldProblem } from '@/composable/piece/vuexModalLauncher'
+import { fieldProblem, fieldProblemEdit } from '@/composable/piece/vuexModalLauncher'
 import { listsFieldProblem } from '@/composable/components/FieldProblem'
-import { reactive, ref } from '@vue/reactivity'
+import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 
 export default {
@@ -53,11 +62,18 @@ export default {
             renderTable.value = true
         })
 
-        return { fieldProblem, table, lists, renderTable }
+        const handleDropdown = (action, id) => {
+            if(action === 'edit') {
+                fieldProblemEdit(id)
+            }
+        }
+
+        return { fieldProblem, table, lists, renderTable, handleDropdown }
     },
     components: {
         ButtonVue,
-        DatatableVue
+        DatatableVue,
+        Dropdown,
     },
 }
 </script>

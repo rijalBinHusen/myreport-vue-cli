@@ -56,3 +56,8 @@ export const listsFieldProblem = async () => {
     return result
 }
 
+export const getFieldProblemById = async (idFieldProblem) => {
+    await getFieldProblem()
+    return lists.find((rec) => rec.id === idFieldProblem)
+}
+

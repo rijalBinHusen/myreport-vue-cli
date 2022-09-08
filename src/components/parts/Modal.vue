@@ -46,7 +46,7 @@ import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.
 import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import Confirm from "./Confirm.vue"
 import FollowUpFinished from "../../modular/FollowUp/FollowUpFinished.vue"
-import FieldProblemVue from "@/form/FieldProblem.vue"
+import FieldProblemForm from "@/form/FieldProblemForm.vue"
 
 export default {
   name: "Modal",
@@ -72,7 +72,7 @@ export default {
       Loader,
       ImporterForm,
       BaseReportFile,
-      FieldProblemVue
+      FieldProblemForm
     },
   props: {
     judul: {
