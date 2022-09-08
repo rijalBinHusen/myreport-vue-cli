@@ -20,6 +20,9 @@ export const fieldProblem = () => {
 
 export const loader = () => {
     store.commit("Modal/active", {judul: "", form: "Loader"});
+<<<<<<< HEAD
 =======
 >>>>>>> df2374f (Select supervisor in field problem form)
+=======
+>>>>>>> 196a663 (update field problem and renew lists)
 }

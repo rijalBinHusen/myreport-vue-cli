@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { append, getData, update, findData, deleteDocument } from '@/myfunction'
+=======
+import { append, getData, update, findData } from '@/myfunction'
+>>>>>>> 196a663 (update field problem and renew lists)
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorById } from '@/composable/components/Superviors'
 import { getHeadById } from './Head'
@@ -89,6 +93,7 @@ export const updateData = async (idRecord, periode, supervisor, head, masalah, s
     })
     return
 }
+<<<<<<< HEAD
 
 export const deleteData = (idRecord) => {
     
@@ -113,3 +118,5 @@ export const addData = (payload) => {
       })
 }
 >>>>>>> df2374f (Select supervisor in field problem form)
+=======
+>>>>>>> 196a663 (update field problem and renew lists)

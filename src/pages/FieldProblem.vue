@@ -66,7 +66,12 @@
 import ButtonVue from '@/components/elements/Button.vue'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
+<<<<<<< HEAD
 import { listsFieldProblem, deleteData } from '@/composable/components/FieldProblem'
+=======
+import { fieldProblem } from '@/composable/piece/vuexModalLauncher'
+import { listsFieldProblem } from '@/composable/components/FieldProblem'
+>>>>>>> 196a663 (update field problem and renew lists)
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
@@ -89,6 +94,7 @@ export default {
             renewLists()
         })
 
+<<<<<<< HEAD
         const handleButton = async (action, id) => {
             let form = action === 'delete' ? 'Confirm' : 'FieldProblemForm'
             // subscribe mutation
@@ -103,6 +109,21 @@ export default {
             // if the mutation receive message true
             if(res) {
                 renewLists()
+=======
+        const handleDropdown = async (action, id) => {
+            if(action === 'edit') {
+                // subscribe mutation
+                let res = await subscribeMutation(
+                                'Edit kendala lapangan', 
+                                'FieldProblemForm',
+                                id,
+                                'Modal/tunnelMessage'
+                            )
+                // if the mutation contain payload true
+                if(res) {
+                    renewLists()
+                }
+>>>>>>> 196a663 (update field problem and renew lists)
             }
         }
 
