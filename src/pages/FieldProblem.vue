@@ -8,7 +8,7 @@
                 class="w3-right" 
                 value="Tambahkan" 
                 type="button" 
-                @trig="launchModal"
+                @trig="fieldProblem"
             />
         </div>
     
@@ -34,15 +34,12 @@
     <script>
     import ButtonVue from '@/components/elements/Button.vue'
     import DatatableVue from '@/components/parts/Datatable.vue'
-    import { modalLauncher } from '@/composable/piece/vuexModalLauncher'
+    import { fieldProblem } from '@/composable/piece/vuexModalLauncher'
     
     export default {
         setup() {
-            const launchModal = () => {
-                modalLauncher('Tambahkan data kendala', 'FieldProblemVue')
-            }
-
-            return { launchModal }
+            
+            return { fieldProblem }
         },
         data() {
             return {}
