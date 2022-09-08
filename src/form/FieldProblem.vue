@@ -106,17 +106,18 @@ import { ref } from '@vue/reactivity'
 import { addData } from '@/composable/components/FieldProblem'
 import { watchEffect } from '@vue/runtime-core'
 import { getSupervisorById } from '@/composable/components/Superviors'
+import { loader, modalClose } from '@/composable/piece/vuexModalLauncher'
 
 export default {
     setup() {
         // periode, supervisor, head, masalah, sumberMasalah, Solusi, PIC, dl
         const periode = ref(new Date())
-        const supervisor = ref('')
-        const head = ref('')
-        const masalah = ref('')
-        const sumberMasalah = ref('')
-        const solusi = ref('')
-        const pic = ref('')
+        const supervisor = ref('-')
+        const head = ref('-')
+        const masalah = ref('-')
+        const sumberMasalah = ref('-')
+        const solusi = ref('-')
+        const pic = ref('-')
         const dl = ref(new Date())
 
         watchEffect(async () => {
@@ -126,8 +127,19 @@ export default {
             }
         })
 
-        const handleSubmit = () => {
-            addData(periode.value, supervisor.value, head.value, masalah.value, sumberMasalah.value, solusi.value, pic.value, dl.value)
+        const handleSubmit = async () => {
+            loader()
+            await addData(
+                periode.value, 
+                supervisor.value, 
+                head.value,
+                masalah.value, 
+                sumberMasalah.value, 
+                solusi.value, 
+                pic.value, 
+                dl.value
+            )
+            modalClose()
         }
 
         return { periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl, handleSubmit}
