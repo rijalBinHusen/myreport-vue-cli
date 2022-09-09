@@ -72,12 +72,12 @@ export default {
         recordChanged(key, ev) {
             this.changed[key] = ev
         },
-        editButtonHandle() {
+        async editButtonHandle() {
             if(!this.edit) {
                 this.edit = true
                 return
             }
-            updateDocument(this.more.id, this.changed)
+            await updateDocument(this.more.id, this.changed)
             this.$store.commit("Modal/tunnelMessage", true);
             this.$store.commit("Modal/active");
         }

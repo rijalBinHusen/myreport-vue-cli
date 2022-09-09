@@ -3,7 +3,7 @@
     <div class="w3-border w3-padding w3-container">
         <label for="periode">Set record to show : </label>
         <Button id="periode" primary value="Set" type="button" @trig="pickPeriode" />
-        <Button primary class="w3-right" value="Add" type="button" @trig="addDocument" />
+        <Button primary class="w3-right" value="Add" type="button" @trig="handleButton" />
     </div>
     <Datatable
         v-if="lists"
@@ -19,7 +19,7 @@
                 value="Edit" 
                 type="button" 
                 primary small 
-                @trig="edit(prop)" 
+                @trig="handleButton(prop)" 
             />
 
         </span>
@@ -37,6 +37,7 @@ import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
+import { onMounted } from '@vue/runtime-core'
 
 export default {
     setup() {
@@ -54,24 +55,24 @@ export default {
             renewLists()
         }
 
-        const edit = (ev) => {
-            // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            store.commit("Modal/active", { 
-                judul: "Edit document", 
-                form: "EditDocumentForm",
-                obj: ev,
-            });
+        const handleButton = async (ev) => {
+            let judul = ev ? 'Edit dokumen' : 'Tambahkan dokumen'
+            let form = ev ? 'EditDocumentForm' : 'AddDocumentForm'
+            let res = await subscribeMutation(judul, form, ev, 'Modal/tunnelMessage')
+            if(res) {
+                renewLists()
+            }
         }
 
-        const addDocument= () => {
-            store.commit("Modal/active", {  judul: "Add document",  form: "AddDocumentForm", });
-        }
+        onMounted(() => {
+            renewLists()
+        })
 
         const renewLists = async () => {
             lists.value = await listsOfDocuments()
         }
 
-        return { lists, pickPeriode, edit, addDocument }
+        return { lists, pickPeriode, handleButton }
     },
     components: {
         Button,

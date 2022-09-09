@@ -66,6 +66,7 @@ import Select from "../../components/elements/Select.vue"
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
+import { addData } from "@/composable/components/DocumentsPeriod"
 
 
 export default {
@@ -82,13 +83,8 @@ export default {
     methods: {
         async send() {
             // console.log("simpan")
-            await this.$store.dispatch("Document/append", {
-                name: this.name, 
-                periode: this.periodeTime,
-                shift: this.shift,
-                head: this.head,
-                warehouse: this.warehouse,
-            })
+            await addData(this.name, this.periodeTime, this.shift, this.head, this.warehouse)
+            this.$store.commit('Modal/tunnelMessage', true)
             this.$store.commit("Modal/active")
         }
 

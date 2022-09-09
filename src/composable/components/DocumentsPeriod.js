@@ -4,6 +4,7 @@ import { dateMonth } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId } from './Warehouses'
+import store from '@/store'
 
 let lists = []
 
@@ -21,6 +22,7 @@ export const getDocuments = async (periode1, periode2) => {
 
 export const listsOfDocuments = () => {
     // await getDocuments()
+    if(!lists.length) { return [] }
     return documentsMapper(lists)
 }
 
@@ -82,4 +84,32 @@ const documentsMapper = async (docs) => {
         }
     }
     return result
+}
+
+
+export const addData = async (name, periode, shift, head, warehouse) => {
+    let newRecord = {
+        collected: false,
+        approval: false,
+        status: 0,
+        shared: false,
+        finished: false,
+        totalDo: false,
+        totalKendaraan: false,
+        totalWaktu: false,
+        baseReportFile: false,
+        isfinished: false,
+        name,
+        periode,
+        shift,
+        head,
+        warehouse,
+    }
+    // add data
+    await func.append({ store: "Document", obj: newRecord })
+        .then((val) => {
+            lists.unshift(val?.data)
+            store.commit('Document/append', val.data)
+        })
+    return
 }
