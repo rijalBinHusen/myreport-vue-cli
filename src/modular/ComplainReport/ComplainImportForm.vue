@@ -4,7 +4,7 @@
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="importTemp?.fileName" disabled />
         <p>Select sheet to import</p>
         <div class="w3-large w3-row w3-margin-bottom">
-            <div class="w3-col s3" v-for="sheet in importTemp.sheets" :key="sheet">
+            <div class="w3-col s3" v-for="sheet in importTemp.sheetNames" :key="sheet">
                 <input type="checkbox" class="w3-margin-right" :id="sheet" v-model="sheetsSelected" :value="sheet" />
                 <label :for="sheet">{{ sheet }}</label>
             </div>
@@ -16,6 +16,7 @@
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
+import { modalClose, loader } from "@/composable/piece/vuexModalLauncher"
 
 export default {
     components: {
@@ -30,45 +31,47 @@ export default {
     },
     methods: {
         async startImport() {
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            loader()
             // sheetsSelected = ["Januari", "Februari", .......]
             // importTemp = {}
             // iterate the sheet
             for (let sheetName of this.sheetsSelected) {
+                // sheet name
+                let sheetByName = this.importTemp.sheets[sheetName]
                 // jumlah row
-                let totalRow = this.importTemp.sheet[sheetName]["!ref"].split(":")
+                let totalRow = sheetByName["!ref"].split(":")
+                // console.log()
                 // dapatkan length number data clock
                 let totalRowNumber = +totalRow[1].match(/\d+/)[0]
-                let sheet = this.importTemp.sheet[sheetName]
                 for( let i = 5; i <= totalRowNumber; i++) {
-                    if(sheet["P"+i] && sheet["P"+i]?.v) {
+                    if(sheetByName["P"+i] && sheetByName["P"+i]?.v || (sheetByName["C"+i] && sheetByName["C"+i].v)) {
                         // insert to idb
                         let typeKesalahan = "";
 
-                        if(sheet["T"+i]?.v) { typeKesalahan += "Klaim" }
-                        if(sheet["U"+i]?.v) { typeKesalahan += "Kurang muat" }
-                        if(sheet["V"+i]?.v) { typeKesalahan += "Lebih muat" }
-                        if(sheet["W"+i]?.v) { typeKesalahan += "Singsal muat" }
-                        if(sheet["X"+i]?.v) { typeKesalahan += "Lain lain" }
+                        if(sheetByName["T"+i]?.v) { typeKesalahan += "Klaim" }
+                        if(sheetByName["U"+i]?.v) { typeKesalahan += "Kurang muat" }
+                        if(sheetByName["V"+i]?.v) { typeKesalahan += "Lebih muat" }
+                        if(sheetByName["W"+i]?.v) { typeKesalahan += "Singsal muat" }
+                        if(sheetByName["X"+i]?.v) { typeKesalahan += "Lain lain" }
 
                         await this.$store.dispatch("append", { 
                             store: "Complains",
                             obj: {
                                 row: i < 9 ? sheetName+"0"+i : sheetName+i, 
-                                gudang: sheet["A"+i]?.v, 
-                                tally: sheet["B"+i]?.v , 
-                                spv: sheet["C"+i]?.v , 
-                                kabag: sheet["D"+i]?.v , 
-                                tanggalSuratJalan: sheet["E"+i]?.w , 
-                                tanggalBongkar: sheet["F"+i]?.w , 
-                                tanggalKomplain: sheet["G"+i]?.w , 
-                                tanggalInfo: sheet["H"+i]?.w , 
-                                customer: sheet["I"+i]?.v ,
-                                nomorSJ: sheet["J"+i]?.v ,
-                                nopol: sheet["L"+i]?.v ,
-                                item: sheet["M"+i]?.v ,
-                                do: sheet["N"+i]?.v ,
-                                real: sheet["O"+i]?.v ,
+                                gudang: sheetByName["A"+i]?.v, 
+                                tally: sheetByName["B"+i]?.v , 
+                                spv: sheetByName["C"+i]?.v , 
+                                kabag: sheetByName["D"+i]?.v , 
+                                tanggalSuratJalan: sheetByName["E"+i]?.w , 
+                                tanggalBongkar: sheetByName["F"+i]?.w , 
+                                tanggalKomplain: sheetByName["G"+i]?.w , 
+                                tanggalInfo: sheetByName["H"+i]?.w , 
+                                customer: sheetByName["I"+i]?.v ,
+                                nomorSJ: sheetByName["J"+i]?.v ,
+                                nopol: sheetByName["L"+i]?.v ,
+                                item: sheetByName["M"+i]?.v ,
+                                do: sheetByName["N"+i]?.v ,
+                                real: sheetByName["O"+i]?.v ,
                                 type: typeKesalahan,
                                 import: true,
                                 }
@@ -76,7 +79,7 @@ export default {
                     }
                 }
             }
-            this.$store.commit("Modal/active");
+            modalClose()
         },
     },
     computed: {},
