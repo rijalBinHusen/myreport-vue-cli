@@ -46,13 +46,15 @@ export default {
 
         const pickPeriode = async () => {
             let period = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
-            //open the loader
-            store.commit("Modal/active", {judul: "", form: "Loader"})
-            // wait the process
-            await getDocuments(period?.periode1, period?.periode2)
-            //close the loader
-            store.commit("Modal/active")
-            renewLists()
+            if(period) {
+                //open the loader
+                store.commit("Modal/active", {judul: "", form: "Loader"})
+                // wait the process
+                await getDocuments(period?.periode1, period?.periode2)
+                //close the loader
+                store.commit("Modal/active")
+                renewLists()
+            }
         }
 
         const handleButton = async (ev) => {

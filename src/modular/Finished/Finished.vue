@@ -72,6 +72,7 @@ import exportWeeklyKabag from "../../excelReport/WeeklyKabag"
 import WeeklyWarehouses from "../../excelReport/WeeklyReportWarehouses"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { finishedDocument, getDocuments, unFinishedDocument } from '../../composable/components/DocumentsPeriod'
+import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 export default {
     name: "Finished",
@@ -158,36 +159,18 @@ export default {
             // else
             this.groupedObject.push({ ...obj })
         },
-        pickPeriode() {
-            let unsubscribe;
-            this.$store.commit("Modal/active", { 
-                judul: "Set periode to show", 
-                form: "PeriodePicker", 
-                store: false, 
-                btnValue: "Show",
-                tunnelMessage: true,
-            });
-
-            const promise = new Promise (resolve => {
-                unsubscribe = this.$store.subscribe(mutation => {
-                    if (mutation.type === 'Modal/tunnelMessage') {
-                        //get the payload that send to tunnel message
-                    resolve(mutation?.payload)
-                    }
-                })
-            })
+        async pickPeriode() {
+            let periode = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
             
-            promise.then(async val => {
+            if(periode) {
                 //open the loader
                 this.$store.commit("Modal/active", {judul: "", form: "Loader"})
                 // wait the process
-                await getDocuments(val?.periode1, val?.periode2)
-                //unsubscribe the mutation
-                unsubscribe()
+                await getDocuments(periode?.periode1, periode?.periode2)
                 //close the loader
                 this.$store.commit("Modal/active")
                 this.renewLists()
-            })
+            }
         },
         async renewLists() {
             if(this.unfinished) {
