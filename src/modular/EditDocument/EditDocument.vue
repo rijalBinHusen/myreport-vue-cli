@@ -33,6 +33,7 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import { getDocuments } from '../../composable/components/DocumentsPeriod'
 import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
+import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 
 export default {
     name: "Collect",
@@ -48,36 +49,15 @@ export default {
         Datatable,
     },
     methods: {
-        pickPeriode() {
-            let unsubscribe;
-            this.$store.commit("Modal/active", { 
-                judul: "Set periode to show", 
-                form: "PeriodePicker", 
-                store: false, 
-                btnValue: "Show",
-                tunnelMessage: true,
-            });
-
-            const promise = new Promise (resolve => {
-                unsubscribe = this.$store.subscribe(mutation => {
-                    if (mutation.type === 'Modal/tunnelMessage') {
-                        //get the payload that send to tunnel message
-                    resolve(mutation?.payload)
-                    }
-                })
-            })
-            
-            promise.then(async val => {
-                //open the loader
-                this.$store.commit("Modal/active", {judul: "", form: "Loader"})
-                // wait the process
-                await getDocuments(val?.periode1, val?.periode2)
-                //unsubscribe the mutation
-                unsubscribe()
-                //close the loader
-                this.$store.commit("Modal/active")
-                this.renewLists()
-            })
+        async pickPeriode() {
+            let period = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
+            //open the loader
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"})
+            // wait the process
+            await getDocuments(period?.periode1, period?.periode2)
+            //close the loader
+            this.$store.commit("Modal/active")
+            this.renewLists()
         },
 
         edit(ev) {
@@ -94,19 +74,6 @@ export default {
         async renewLists() {
             this.lists = await listsOfDocuments()
         },
-    },
-    async mounted() {
-        this.renewLists()
-        // subscribe the mutation,, and renew lists when data updated
-        this.unsubscribe = this.$store.subscribe((mutation) => {
-            // jika document ada yang di update
-            if (["Modal/tunnelMessage"].includes(mutation.type)) {
-                clearTimeout(this.timeOut)
-                this.timeOut = setTimeout( () => {
-                    this.renewLists()
-                } , 300 )
-            }
-        });
     },
     beforeUnmount() {
         this.unsubscribe();
