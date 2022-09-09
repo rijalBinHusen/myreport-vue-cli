@@ -9,7 +9,7 @@
         <Button danger v-if="grouped.length" class="w3-right" value="Delete all" @trig="removeAll" type="button"/>
         <input
             class="w3-hide"
-            @change.prevent="readExcel($event)"
+            @change.prevent="readExcelFile($event)"
             type="file"
             ref="importerComplain"
             accept=".xls, .ods"
@@ -51,7 +51,7 @@
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
-import * as XLSX from "xlsx";
+import readExcel from "@/composable/readExcel"
 
 export default {
     data() {
@@ -80,38 +80,12 @@ export default {
         },
     },
     methods: {
-        readExcel(e) {
+        readExcelFile(e) {
             // bring the loader up
         this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-        const file = e.target.files[0]
-        let info = { fileName: file.name }
-        
-        const promise = new Promise ((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file);
-            
-            fileReader.onload = (e) => {
-            const bufferArray = e.target.result;
-                
-            // const wb = XLSX.read(bufferArray, {type: "buffer"});
-            const wb = XLSX.read(bufferArray);
-            info.sheets = wb.SheetNames
-            info.sheet = wb.Sheets
-                
-            resolve(info)
-            };
-            
-            fileReader.onerror=((error) => { reject(error) })
-        })
-        
-        promise.then(async (d) => {
-            
+        readExcel(e.target.files[0]).then((d) => {
             // bring up the modal and the form and throw the data (d)
-            this.$store.commit("Modal/active", { 
-                judul: "Import complain", 
-                form: "ComplainImportForm",
-                obj: d
-            });
+            this.$store.commit("Modal/active", { judul: "Import complain", form: "ComplainImportForm", obj: d });
         
             })
         },
