@@ -8,7 +8,7 @@
         <Button primary :class="['w3-right', inserted ? 'w3-disabled' : '']" value="Cases" @trig="inserted = true" type="button"/>
         <input
             class="w3-hide"
-            @change.prevent="readExcel($event)"
+            @change.prevent="readExcelFile($event)"
             type="file"
             ref="importerCase"
             accept=".xls, .ods"
@@ -39,7 +39,7 @@
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
-import * as XLSX from "xlsx";
+import readExcel from "@/composable/readExcel"
 
 export default {
     data() {
@@ -67,57 +67,59 @@ export default {
         },
     },
     methods: {
-        readExcel(e) {
+        readExcelFile(e) {
             // bring the loader up
         this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-        const file = e.target.files[0]
-        let info = { fileName: file.name }
-        
-        const promise = new Promise ((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsArrayBuffer(file);
-            
-            fileReader.onload = (e) => {
-            const bufferArray = e.target.result;
-                
-            // const wb = XLSX.read(bufferArray, {type: "buffer"});
-            const wb = XLSX.read(bufferArray);
-            let sheets = wb.SheetNames
-            info.sheet = wb.Sheets[sheets[0]]
-                
-            resolve(info)
-            };
-            
-            fileReader.onerror=((error) => { reject(error) })
-        })
-        
-        promise.then(async (d) => {
-        // insert to idb
-        let infoRow = d.sheet["!ref"].split(":")
-        let lengthRow = +infoRow[1].match(/\d+/)[0]
-        // console.log(d.sheet)
-        for(let i = 1; i <= lengthRow; i++) {
-            if(d.sheet["B"+i]) {
-            await this.$store.dispatch("append", { 
-                store: "Cases",
-                obj: { 
-                    periode: d.sheet["C"+i]?.w, 
-                    divisi: d.sheet["D"+i]?.v , 
-                    bagian: d.sheet["E"+i]?.v , 
-                    fokus: d.sheet["F"+i]?.v , 
-                    temuan: d.sheet["G"+i]?.v , 
-                    karu: d.sheet["I"+i]?.v , 
-                    kabag: d.sheet["J"+i]?.v , 
-                    keterangan1: d.sheet["L"+i]?.v , 
-                    keterangan2: d.sheet["M"+i]?.v ,
-                    import: true,
-                    }
-                })
+
+        readExcel(e.target.files[0]).then(async (d) => {
+            // insert to idb
+            let sheetName = d['sheetNames'][0]
+            let sheet = d['sheets'][sheetName]
+            let infoRow = sheet["!ref"].split(":")
+            let lengthRow = +infoRow[1].match(/\d+/)[0]
+            // console.log(sheet)
+            for(let i = 1; i <= lengthRow; i++) {
+                if(sheet["B"+i]) {
+                    await this.$store.dispatch("append", { 
+                        store: "Cases",
+                        obj: { 
+                            periode: sheet["C"+i]?.w, 
+                            divisi: sheet["D"+i]?.v , 
+                            bagian: sheet["E"+i]?.v , 
+                            fokus: sheet["F"+i]?.v , 
+                            temuan: sheet["G"+i]?.v , 
+                            karu: sheet["I"+i]?.v , 
+                            kabag: sheet["J"+i]?.v , 
+                            keterangan1: sheet["L"+i]?.v , 
+                            keterangan2: sheet["M"+i]?.v ,
+                            import: true,
+                        }
+                    })
+                }
             }
-        }
         // close the loader
         this.$store.commit("Modal/active");
-            })
+        })
+// const file = 
+// let info = { fileName: file.name }
+
+// const promise = new Promise ((resolve, reject) => {
+//     const fileReader = new FileReader();
+//     fileReader.readAsArrayBuffer(file);
+    
+//     fileReader.onload = (e) => {
+//     const bufferArray = e.target.result;
+        
+//     // const wb = XLSX.read(bufferArray, {type: "buffer"});
+//     const wb = XLSX.read(bufferArray);
+//     let sheets = wb.SheetNames
+//     info.sheet = wb.Sheets[sheets[0]]
+        
+//     resolve(info)
+//     };
+    
+//     fileReader.onerror=((error) => { reject(error) })
+// })
         },
         remove(ev){
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
