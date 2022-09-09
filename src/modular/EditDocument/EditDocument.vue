@@ -6,6 +6,7 @@
         <Button primary class="w3-right" value="Add" type="button" @trig="addDocument" />
     </div>
     <Datatable
+        v-if="lists"
         :datanya="lists"
         :heads="['Nama', 'Gudang', 'Periode', 'Collected', 'Kabag', 'Approve']"
         :keys="['spvName', 'warehouseName', 'periode2', 'collected2', 'headName', 'approval2']"
@@ -34,49 +35,47 @@ import Datatable from "../../components/parts/Datatable.vue"
 import { getDocuments } from '../../composable/components/DocumentsPeriod'
 import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
+import { ref } from '@vue/reactivity'
+import { useStore } from 'vuex'
 
 export default {
-    name: "Collect",
-    data() {
-        return {
-            lists: [],
-            unsubscribe: "",
-            timeOut: "",
-        };
-    },
-    components: {
-        Button,
-        Datatable,
-    },
-    methods: {
-        async pickPeriode() {
+    setup() {
+        const lists = ref([])
+        const store = useStore()
+
+        const pickPeriode = async () => {
             let period = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
             //open the loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"})
+            store.commit("Modal/active", {judul: "", form: "Loader"})
             // wait the process
             await getDocuments(period?.periode1, period?.periode2)
             //close the loader
-            this.$store.commit("Modal/active")
-            this.renewLists()
-        },
+            store.commit("Modal/active")
+            renewLists()
+        }
 
-        edit(ev) {
+        const edit = (ev) => {
             // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            this.$store.commit("Modal/active", { 
+            store.commit("Modal/active", { 
                 judul: "Edit document", 
                 form: "EditDocumentForm",
                 obj: ev,
             });
-        },
-        addDocument() {
-            this.$store.commit("Modal/active", {  judul: "Add document",  form: "AddDocumentForm", });
-        },
-        async renewLists() {
-            this.lists = await listsOfDocuments()
-        },
+        }
+
+        const addDocument= () => {
+            store.commit("Modal/active", {  judul: "Add document",  form: "AddDocumentForm", });
+        }
+
+        const renewLists = async () => {
+            lists.value = await listsOfDocuments()
+        }
+
+        return { lists, pickPeriode, edit, addDocument }
     },
-    beforeUnmount() {
-        this.unsubscribe();
+    components: {
+        Button,
+        Datatable,
     },
 }
 </script>
