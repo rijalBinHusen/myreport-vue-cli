@@ -1,11 +1,9 @@
 import myfunction from "../myfunction";
 
-export default function (periode, supervisor) {
+export default function (periode, supervisor, head) {
+  let criteria = supervisor ? { periode, supervisor } : { periode, head }
   return myfunction
-    .findData({
-      store: "fieldProblem",
-      criteria: {periode, supervisor},
-    })
+    .findData({ store: "fieldProblem", criteria: criteria })
     .then((data) => {
       if (data && data?.length) {
         let result = data.map(async (val) => {
@@ -22,5 +20,5 @@ export default function (periode, supervisor) {
       return Promise.all(result)
     }
   })
-    .then((result) => result);
+  .then((result) => result);
 }

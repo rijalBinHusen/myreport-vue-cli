@@ -3,6 +3,7 @@ import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 import getCases from "./GetCasesByPeriodeBySpv";
 import GetComplains from "./GetComplainByPeriodeBySpv";
+import GetFieldProblem from "./GetFieldProblemByPeriodeBySpv";
 
 /*
   periode
@@ -53,6 +54,7 @@ export default function (arrayOfArrayOfDocuments) {
             arrProblem.push(getProblem({periode: val2.periode, nameHeadSpv:val2.head}));
             arrProblem.push(getCases({periode: val2.periode, head:val2.head}));
             arrProblem.push(GetComplains({periode: val2.periode, head:val2.head}));
+            arrProblem.push(GetFieldProblem(val2.periode, undefined, val2.head))
             arrayPeriodeSearched.push(val2.periode);
           }
           // new details document
@@ -85,7 +87,6 @@ export default function (arrayOfArrayOfDocuments) {
 
     newArrayOfArrayOfdocuments.forEach((val) => {
       val.then((result) => {
-        console.log(result)
         // console.log(Object.assign(result, { Report: [{ id: "Bismillah" }] }));
         exportToXlsSeperateSheet(
           Object.assign(
