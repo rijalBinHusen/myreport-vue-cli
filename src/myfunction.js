@@ -181,7 +181,7 @@ period: "202203/time()"
 }
 
 export const getData = function (deData) {
-  let store = deData.store;
+  let store = deData.store.toLowerCase();
 
   //limit order desc
   if (deData.limit && deData.orderBy && deData.desc) {

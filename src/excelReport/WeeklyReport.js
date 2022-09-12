@@ -3,6 +3,7 @@ import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 import getCases from "./GetCasesByPeriodeBySpv";
 import GetComplains from "./GetComplainByPeriodeBySpv";
+import GetFieldProblem from "./GetFieldProblemByPeriodeBySpv";
 
 /*
   periode
@@ -53,6 +54,7 @@ export default function (arrayOfArrayOfDocuments) {
             arrProblem.push(getProblem({ periode: val2.periode, nameSpv: val2.name}));
             arrProblem.push(getCases({ periode: val2.periode, name: val2.name}));
             arrProblem.push(GetComplains({ periode: val2.periode, name: val2.name}));
+            arrProblem.push(GetFieldProblem(val2.periode, val2.name))
             arrayPeriodeSearched.push(val2.periode);
           }
           // new details document
