@@ -11,7 +11,7 @@ export const startExport = async (records, fileName, sendToCloud) => {
         // upload to firebase
         uploadFile(file, fileName)
         // record document that saved to firebase
-        addDocument('activitySaved', fileName, true)
+        addDocument('activitySaved', fileName, { uploaded: true })
     }
     // append file
     a.href = URL.createObjectURL(file);
