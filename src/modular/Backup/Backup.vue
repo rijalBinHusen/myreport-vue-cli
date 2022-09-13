@@ -10,6 +10,7 @@
                     :value="option.id" 
                     :label="option.value"
                     @check="checkedOption.push($event)"
+                    :isChecked="checkedOption.includes(option.id)"
                  />
             </div>
             <br />
@@ -26,6 +27,7 @@ import { storeBackup } from "../../composable/storeBackup"
 import { seperateUsers } from "../../composable/storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
+import { ref } from '@vue/reactivity'
 
 export default {
     setup() {
@@ -34,17 +36,17 @@ export default {
             // // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            if(checkedOption.includes(3)) {
-                await storeBackup(checkedOption.includes(2))
+            if(checkedOption.value.includes(3)) {
+                await storeBackup(checkedOption.value.includes(2))
             }
             // waiting for backup user activity
-            if(checkedOption.includes(4)) {
-                await seperateUsers(checkedOption.includes(2))
+            if(checkedOption.value.includes(4)) {
+                await seperateUsers(checkedOption.value.includes(2))
             }
             // // close the spinner
             store.commit("Modal/active");
             // empty the option
-            checkedOption = []
+            checkedOption.value.length = 0
         }
 
         const options = [
@@ -54,7 +56,7 @@ export default {
             { id: 4, value: 'Backup user activity', name: 'user',}
         ]
 
-        const checkedOption = []
+        const checkedOption = ref([])
 
         return { handleBackup, options, checkedOption }
     },

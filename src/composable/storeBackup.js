@@ -44,7 +44,7 @@ function getDocument (store) {
 export const seperateUsers = async (sendToCloud) => {
     const logins = await func.findData({ store: 'login', criteria: { backup: false }})
     
-    if(!logins) { return }
+    if(!logins) {  return true }
     
     let activities = logins.map((val) => {
         if(val) {
@@ -52,14 +52,18 @@ export const seperateUsers = async (sendToCloud) => {
         }
     })
     
-    Promise.all(activities).then(async (allActivities) => {
+    await Promise.all(activities).then(async (allActivities) => {
         for (let userActivity of allActivities) {
             if(userActivity) {
                 let record = {}
                 let userActivities = userActivity
                 for(let activity of userActivity) {
-                    // jika activity.type === create or update
-                    if(['create', 'update'].includes(activity?.type) && activity?.idRecord) {
+
+                    record[activity?.store]
+                        ? false 
+                        : record[activity?.store] = {  }
+                    // jika activity.type === create or update dan belum pernah di lakukan pencarian sebelumnya
+                    if(['create', 'update'].includes(activity?.type) && activity?.idRecord && !record[activity?.store].hasOwnProperty(activity?.idRecord)) {
                         // cari datanya pada store (activity.store) dengan id (activity.idRecord)
                         let getRecord = await func.findData({ store: activity?.store, criteria: { id: activity?.idRecord} })
                         // jika ditemukan masukkan ke record
@@ -67,11 +71,7 @@ export const seperateUsers = async (sendToCloud) => {
                         // jika belum bikin 
                         // jika sudah langsung push
                         if(getRecord) {
-                            record[activity?.store]
-                            ? record[activity?.store][activity?.idRecord] = getRecord[0] || false
-                            : record[activity?.store] = {
-                                [activity?.idRecord]: { ...getRecord[0]  } || false
-                            }
+                            record[activity?.store][activity?.idRecord] = getRecord[0] || false
                         }
                         /**
                          * record {
@@ -94,12 +94,13 @@ export const seperateUsers = async (sendToCloud) => {
                         record: record
                     }, 
                     userActivities[0]?.idLogin+'.json',
-                    sendToCloud
+                
                     )
                 }
             }
         }
     })
+    return true
 }
 // find all record that user create or update
 // and then push into object

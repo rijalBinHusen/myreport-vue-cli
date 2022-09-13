@@ -6,7 +6,7 @@ export const startExport = async (records, fileName, sendToCloud) => {
     var a = window.document.createElement("a");
     // new blob data
     var file = new Blob([JSON.stringify(records)], { type: "text/plain" });
-    console.log(sendToCloud)
+    
     if(sendToCloud) {
         // upload to firebase
         uploadFile(file, fileName)
