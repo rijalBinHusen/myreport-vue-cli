@@ -93,8 +93,8 @@ export const seperateUsers = async (sendToCloud) => {
                         activities: userActivities,
                         record: record
                     }, 
-                    userActivities[0]?.idLogin+'.json',
-                
+                    userActivities[0]?.idLogin+'.json', 
+                    sendToCloud                    
                     )
                 }
             }
