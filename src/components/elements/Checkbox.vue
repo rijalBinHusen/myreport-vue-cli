@@ -1,5 +1,11 @@
 <template>
-    <input :name="checkboxName" :id="label" class="w3-check" type="checkbox" @click="check()">
+    <input 
+        :name="checkboxName" 
+        :id="label" 
+        class="w3-check" 
+        type="checkbox" @click="check()"
+        :checked="isChecked"
+    >
     <label :for="label" class="w3-margin-left"> {{ label }}</label>
     <p></p>
 </template>
@@ -17,13 +23,14 @@ export default {
         },
         checkboxName: {
             required: false
-        }
+        },
+        isChecked: Boolean
     },
     emits: ["check"],
     methods: {
         check() {
             this.$emit("check", this.value)
         }
-    }
+    },
 }
 </script>
