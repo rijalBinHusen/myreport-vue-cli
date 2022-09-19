@@ -31,8 +31,8 @@ export default {
     setup() {
         const store = useStore()
 
-        const obj = store.getters["Modal/obj"]
-
+        const obj = store.getters["Modal/obj"]?.obj
+ 
         return { obj }
     },
     components: {

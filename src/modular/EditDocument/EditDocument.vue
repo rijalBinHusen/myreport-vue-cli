@@ -40,8 +40,7 @@
 <script>
 import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
-import { getDocuments } from '../../composable/components/DocumentsPeriod'
-import { listsOfDocuments } from '../../composable/components/DocumentsPeriod'
+import { getDocuments, listsOfDocuments, removeDocument } from '../../composable/components/DocumentsPeriod'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
@@ -82,7 +81,15 @@ export default {
             lists.value = await listsOfDocuments()
         }
 
-        return { lists, pickPeriode, handleButton }
+        const remove = async (idDocument) => {
+            let res = await subscribeMutation('', 'Confirm', {}, 'Modal/tunnelMessage')
+            if(res) {
+                await removeDocument(idDocument)
+                renewLists()
+            }
+        }
+
+        return { lists, pickPeriode, handleButton, remove }
     },
     components: {
         Button,
