@@ -38,9 +38,9 @@
 </template>
 
 <script>
-import Button from "../../components/elements/Button.vue"
-import Datatable from "../../components/parts/Datatable.vue"
-import { getDocuments, listsOfDocuments, removeDocument } from '../../composable/components/DocumentsPeriod'
+import Button from "@/components/elements/Button.vue"
+import Datatable from "@/components/parts/Datatable.vue"
+import { getDocuments, listsOfDocuments, removeDocument } from '@/composable/components/DocumentsPeriod'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
@@ -66,8 +66,8 @@ export default {
 
         const handleButton = async (ev) => {
             let judul = ev ? 'Edit dokumen' : 'Tambahkan dokumen'
-            let form = ev ? 'EditDocumentForm' : 'AddDocumentForm'
-            let res = await subscribeMutation(judul, form, ev, 'Modal/tunnelMessage')
+            let res = await subscribeMutation(judul, 'DocumentSingleForm', ev, 'Modal/tunnelMessage')
+            console.log(res)
             if(res) {
                 renewLists()
             }

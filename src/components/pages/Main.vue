@@ -27,7 +27,7 @@
 	import BaseItem from "../../modular/BaseItem/BaseItem.vue"
 	import ProblemReport from "../../modular/ProblemReport/ProblemReport.vue"
 	import Finished from "../../modular/Finished/Finished.vue"
-	import EditDocument from "../../modular/EditDocument/EditDocument.vue"
+	import EditDocument from "../../pages/EditDocument.vue"
 	import Cases from "../../modular/CasesReport/Cases.vue"
 	import Complains from "../../modular/ComplainReport/Complains.vue"
 	import FollowUp from "../../modular/FollowUp/FollowUp.vue"

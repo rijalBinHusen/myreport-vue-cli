@@ -38,8 +38,6 @@ import PeriodePicker from "../parts/PeriodePicker.vue"
 import WarehouseSupervisorsForm from "../../modular/Warehouses/WarehouseSupervisorsForm.vue"
 import SupervisorWarehousesForm from "../../modular/Supervisors/SupervisorWarehousesForm.vue"
 import FinishedForm from "../../modular/Finished/FinishedForm.vue"
-import EditDocumentForm from "../../modular/EditDocument/EditDocumentForm.vue"
-import AddDocumentForm from "../../modular/EditDocument/AddDocumentForm.vue"
 import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"
 import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
@@ -47,6 +45,7 @@ import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.
 import Confirm from "./Confirm.vue"
 import FollowUpFinished from "../../modular/FollowUp/FollowUpFinished.vue"
 import FieldProblemForm from "@/form/FieldProblemForm.vue"
+import DocumentSingleForm from "@/form/DocumentSingleForm.vue"
 
 export default {
   name: "Modal",
@@ -57,8 +56,7 @@ export default {
       ComplainImportForm,
       Complains,
       CaseInsertForm,
-      EditDocumentForm,
-      AddDocumentForm,
+      DocumentSingleForm,
       FinishedForm,
       SupervisorWarehousesForm,
       WarehouseSupervisorsForm,
