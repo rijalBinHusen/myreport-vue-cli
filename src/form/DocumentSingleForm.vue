@@ -18,6 +18,16 @@
         <div class="w3-col s3">
             <SelectWarehouse :inSelectWarehouse="warehouse" @selectedWarehouse="warehouse = $event"  />
         </div>
+        <div v-if="idDocument" class="w3-row">
+            <div class="w3-col s6"  style="padding: 0 16px 0 0px;">
+                <label for="periode">Dikumpulkan:</label>
+                <datepicker id="periode" class="w3-margin-bottom w3-border w3-input" v-model="collectedModel"></datepicker>
+            </div>
+            <div class="w3-col s6" style="padding: 0 0px 0 16px;">
+                <label for="periode">Diparaf:</label>
+                <datepicker id="periode" class="w3-margin-bottom w3-border w3-input" v-model="approvalModel"></datepicker>
+            </div>
+        </div>
     </div>
     <Button primary value="Submit" class="w3-right" type="button" @trig="send"/>
 </div>
@@ -48,31 +58,27 @@ export default {
         // isEditMode conditional using idDocument
         const idDocument = ref(false)
         const changed = {}
+        const collectedModel = ref(new Date())
+        const approvalModel = ref(new Date())
 
         const store = useStore()
 
-        watch([periodeModel, supervisor, shift, head, warehouse], (newVal) => {
+        watch([periodeModel, supervisor, shift, head, warehouse, collectedModel, approvalModel], (newVal) => {
             if(idDocument.value) {
                 // periodeModel
-                if(newVal[0]) {
-                    changed['periode'] = newVal[0].getTime()
-                }
+                if(newVal[0]) { changed['periode'] = newVal[0].getTime() }
                 // supervisor
-                if(newVal[1]) {
-                    changed['name'] = newVal[1]
-                }
+                if(newVal[1]) { changed['name'] = newVal[1] }
                 // shift]
-                if(newVal[2]) {
-                    changed['shift'] = newVal[2]
-                }
+                if(newVal[2]) { changed['shift'] = newVal[2] }
                 // head
-                if(newVal[3]) {
-                    changed['head'] = newVal[3]
-                }
+                if(newVal[3]) { changed['head'] = newVal[3] }
                 // warehouse
-                if(newVal[4]) {
-                    changed['warehouse'] = newVal[4]
-                }
+                if(newVal[4]) { changed['warehouse'] = newVal[4] }
+                // collectedModel
+                if(newVal[5]) { changed['collected'] = newVal[5].getTime() }
+                // approvalModel
+                if(newVal[6]) { changed['approval'] = newVal[6].getTime() }
             }
         })
 
@@ -100,16 +106,19 @@ export default {
                 let doc = findDocument(obj?.idDocument)
                 console.log(doc)
                 supervisor.value = doc?.name
-                periodeTime.value = doc?.periode
+                periodeModel.value = new Date(doc?.periode)
                 shift.value = doc?.shift
                 head.value = doc?.head
                 warehouse.value = doc?.warehouse
                 // fill the idDocument, so the form in the edit mode
-                idDocument.value = obj?.idDocument
+                collectedModel.value = new Date(doc?.collected)
+                approvalModel.value = new Date(doc?.approval)
+                idDocument.value = doc?.id
+                console.log(collectedModel.value)
             }
         })
 
-        return { supervisor, periodeModel, shift, head, warehouse, send }
+        return { supervisor, periodeModel, shift, head, warehouse, send, idDocument, approvalModel, collectedModel }
     }, 
     components: {
         Button,
