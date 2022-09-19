@@ -121,3 +121,9 @@ export const isGenerateDocument = (idDocument, val) => {
         obj: { isGenerate: val }
     })
 }
+
+export const removeDocument = async (idDocument) => {
+    await func.deleteDocument({ store: 'document', criteria: { id: idDocument }})
+    lists.value.filter((list) => list.id != idDocument)
+    return
+}

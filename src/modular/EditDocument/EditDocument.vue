@@ -21,6 +21,14 @@
                 primary small 
                 @trig="handleButton(prop)" 
             />
+            
+            <Button 
+                value="Delete" 
+                type="button" 
+                danger small 
+                :datanya="prop.id"
+                @trig="remove($event)" 
+            />
 
         </span>
     </Datatable>
