@@ -19,7 +19,8 @@
                 value="Edit" 
                 type="button" 
                 primary small 
-                @trig="handleButton(prop)" 
+                :datanya="prop.id"
+                @trig="handleButton($event)" 
             />
             
             <Button 
@@ -66,8 +67,7 @@ export default {
 
         const handleButton = async (ev) => {
             let judul = ev ? 'Edit dokumen' : 'Tambahkan dokumen'
-            let res = await subscribeMutation(judul, 'DocumentSingleForm', ev, 'Modal/tunnelMessage')
-            console.log(res)
+            let res = await subscribeMutation(judul, 'DocumentSingleForm', { idDocument: ev }, 'Modal/tunnelMessage')
             if(res) {
                 renewLists()
             }

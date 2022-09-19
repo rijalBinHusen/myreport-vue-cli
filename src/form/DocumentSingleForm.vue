@@ -28,7 +28,7 @@
 
 import Button from "@/components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
-import { addData, updateDocument } from "@/composable/components/DocumentsPeriod"
+import { addData, updateDocument, findDocument } from "@/composable/components/DocumentsPeriod"
 import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
 import SelectShift from "@/components/parts/SelectShift.vue"
@@ -47,7 +47,7 @@ export default {
         const periodeTime = ref('')
         // isEditMode conditional using idDocument
         const idDocument = ref(false)
-        const changed = ref({})
+        const changed = {}
 
         const store = useStore()
 
@@ -78,7 +78,8 @@ export default {
 
         const send = async () => {
             if(idDocument.value) {
-                await updateDocument(idDocument, changed)
+                console.log(changed)
+                await updateDocument(idDocument.value, changed)
             } else {
                 await addData (
                     supervisor.value,
@@ -93,7 +94,19 @@ export default {
         }
 
         onMounted(() => {
-            console.log('singleForem')
+            let obj = store.getters['Modal/obj']?.obj
+            if(obj) {
+                // get the document
+                let doc = findDocument(obj?.idDocument)
+                console.log(doc)
+                supervisor.value = doc?.name
+                periodeTime.value = doc?.periode
+                shift.value = doc?.shift
+                head.value = doc?.head
+                warehouse.value = doc?.warehouse
+                // fill the idDocument, so the form in the edit mode
+                idDocument.value = obj?.idDocument
+            }
         })
 
         return { supervisor, periodeModel, shift, head, warehouse, send }

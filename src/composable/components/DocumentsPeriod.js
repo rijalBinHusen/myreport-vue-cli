@@ -5,6 +5,7 @@ import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId } from './Warehouses'
 import store from '@/store'
+import { list } from "@firebase/storage"
 
 let lists = []
 
@@ -26,13 +27,11 @@ export const listsOfDocuments = () => {
     return documentsMapper(lists)
 }
 
-// append document
-
 // update document
 export const updateDocument = async (idDocument, objToUpdate) => {
     await func.update({ 
         store: 'Document', 
-        criteria: {id: idDocument }, 
+        criteria: { id: idDocument }, 
         obj: objToUpdate 
     })
     
@@ -87,6 +86,7 @@ const documentsMapper = async (docs) => {
 }
 
 
+// append document
 export const addData = async (name, periode, shift, head, warehouse) => {
     let newRecord = {
         collected: false,
@@ -126,4 +126,8 @@ export const removeDocument = async (idDocument) => {
     await func.deleteDocument({ store: 'document', criteria: { id: idDocument }})
     lists = lists.filter((list) => list.id != idDocument)
     return
+}
+
+export const findDocument = (idDocument) => {
+    return lists.find((rec) => rec.id == idDocument)
 }
