@@ -80,7 +80,6 @@ import {
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
-import { getWarehouses } from '@/composable/components/Warehouses';
 
 
 export default {
@@ -118,8 +117,6 @@ export default {
         watch(selectedPeriode, async () => {
             warehouses.value = await warehouseByDate(selectedPeriode.value)
         })
-
-        onMounted(() => getWarehouses() )
 
         const renewLists = async () => {
             //  || !this.shift || !this.sheet) { return }

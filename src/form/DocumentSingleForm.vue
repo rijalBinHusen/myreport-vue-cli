@@ -84,7 +84,6 @@ export default {
 
         const send = async () => {
             if(idDocument.value) {
-                console.log(changed)
                 await updateDocument(idDocument.value, changed)
             } else {
                 await addData (
@@ -104,7 +103,6 @@ export default {
             if(obj) {
                 // get the document
                 let doc = findDocument(obj?.idDocument)
-                console.log(doc)
                 supervisor.value = doc?.name
                 periodeModel.value = new Date(doc?.periode)
                 shift.value = doc?.shift
@@ -114,7 +112,6 @@ export default {
                 collectedModel.value = new Date(doc?.collected)
                 approvalModel.value = new Date(doc?.approval)
                 idDocument.value = doc?.id
-                console.log(collectedModel.value)
             }
         })
 

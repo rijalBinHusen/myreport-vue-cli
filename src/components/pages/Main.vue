@@ -19,7 +19,7 @@
 	import Modal from "../parts/Modal.vue"
 	import Supervisors from "../../modular/Supervisors/Supervisors.vue"
 	import Backup from "../../modular/Backup/Backup.vue"
-	import Importbase from "../../modular/BaseImport/Importbase.vue"
+	import Importbase from "../../pages/Importbase.vue"
 	import Base from "../../modular/Base/Base.vue"
 	import Warehouses from "../../modular/Warehouses/Warehouses.vue"
 	import AGGrid from "../parts/AGGrid.vue"
@@ -36,6 +36,7 @@
 	import { useStore } from 'vuex';
 	import userSignOut from "../../composable/UserSignOut"
 	import FieldProblemVue from '@/pages/FieldProblem.vue';
+	import { getWarehouses } from "@/composable/components/Warehouses";
 	
 
 	export default {
@@ -52,6 +53,7 @@
 			})
 			
 			onBeforeMount(() => {
+				getWarehouses()
 				store.dispatch("getStart");
 				isSignIn.value = localStorage.getItem('loginya')
 				store.subscribe(() => {
