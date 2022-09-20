@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { append, getData, update, findData, deleteDocument } from '@/myfunction'
-=======
-import { append, getData, update, findData } from '@/myfunction'
->>>>>>> 196a663 (update field problem and renew lists)
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorById } from '@/composable/components/Superviors'
 import { getHeadById } from './Head'
@@ -93,30 +88,9 @@ export const updateData = async (idRecord, periode, supervisor, head, masalah, s
     })
     return
 }
-<<<<<<< HEAD
-
 export const deleteData = (idRecord) => {
     
     lists = lists.filter((rec) => rec.id !== idRecord)
     
     return deleteDocument({ store: 'fieldproblem', criteria: { id: idRecord} })
 }
-=======
-import { append } from '@/myfunction'
-import { reactive } from 'vue';
-
-const lists = reactive([])
-
-export const addData = (payload) => {
-    // add data
-    let record = { ...payload, periode: ymdTime() };
-    append({ store: "FollowUp", obj: record })
-    .then((val) => {
-        if(lists.value) {
-            lists.value.unshift(val?.data)
-        }
-      })
-}
->>>>>>> df2374f (Select supervisor in field problem form)
-=======
->>>>>>> 196a663 (update field problem and renew lists)

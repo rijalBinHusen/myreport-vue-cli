@@ -7,8 +7,7 @@
                 primary 
                 class="w3-right" 
                 value="Tambahkan" 
-                type="button" 
-<<<<<<< HEAD
+                type="button"
                 @trig="handleButton('tambah')"
             />
         </div>
@@ -35,43 +34,15 @@
                     primary
                 />
             </template>
-        </DatatableVue> 
-=======
-                @trig="launchModal"
-            />
-        </div>
-    
-        <!-- <DatatableVue
-            :datanya="table?.lists"
-            :heads="table?.heads"
-            :keys="table?.keys"
-            option
-            id="tableFieldProblem"
-        >
-        
-            <template #default="{ prop }">
-                <Button v-if="!prop?.inserted && !inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-                <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
-                <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
-                
-            </template> -->
-        <!-- </DatatableVue>  -->
->>>>>>> df2374f (Select supervisor in field problem form)
-        
+        </DatatableVue>
     </div>
 </template>
     
-<<<<<<< HEAD
 <script>
 import ButtonVue from '@/components/elements/Button.vue'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
-<<<<<<< HEAD
 import { listsFieldProblem, deleteData } from '@/composable/components/FieldProblem'
-=======
-import { fieldProblem } from '@/composable/piece/vuexModalLauncher'
-import { listsFieldProblem } from '@/composable/components/FieldProblem'
->>>>>>> 196a663 (update field problem and renew lists)
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
@@ -93,8 +64,7 @@ export default {
         onMounted(() => {
             renewLists()
         })
-
-<<<<<<< HEAD
+        
         const handleButton = async (action, id) => {
             let form = action === 'delete' ? 'Confirm' : 'FieldProblemForm'
             // subscribe mutation
@@ -109,21 +79,6 @@ export default {
             // if the mutation receive message true
             if(res) {
                 renewLists()
-=======
-        const handleDropdown = async (action, id) => {
-            if(action === 'edit') {
-                // subscribe mutation
-                let res = await subscribeMutation(
-                                'Edit kendala lapangan', 
-                                'FieldProblemForm',
-                                id,
-                                'Modal/tunnelMessage'
-                            )
-                // if the mutation contain payload true
-                if(res) {
-                    renewLists()
-                }
->>>>>>> 196a663 (update field problem and renew lists)
             }
         }
 
@@ -136,27 +91,3 @@ export default {
     },
 }
 </script>
-=======
-    <script>
-    import ButtonVue from '@/components/elements/Button.vue'
-    import DatatableVue from '@/components/parts/Datatable.vue'
-    import { modalLauncher } from '@/composable/piece/vuexModalLauncher'
-    
-    export default {
-        setup() {
-            const launchModal = () => {
-                modalLauncher('Tambahkan data kendala', 'FieldProblemVue')
-            }
-
-            return { launchModal }
-        },
-        data() {
-            return {}
-        },
-        components: {
-            ButtonVue,
-            DatatableVue
-        },
-    }
-    </script>
->>>>>>> df2374f (Select supervisor in field problem form)

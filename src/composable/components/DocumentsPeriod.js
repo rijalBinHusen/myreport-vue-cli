@@ -5,7 +5,6 @@ import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId } from './Warehouses'
 import store from '@/store'
-import { list } from "@firebase/storage"
 
 let lists = []
 
@@ -84,9 +83,6 @@ const documentsMapper = async (docs) => {
     }
     return result
 }
-
-
-<<<<<<< HEAD
 // append document
 export const addData = async (name, periode, shift, head, warehouse) => {
     let newRecord = {
@@ -131,28 +127,4 @@ export const removeDocument = async (idDocument) => {
 
 export const findDocument = (idDocument) => {
     return lists.find((rec) => rec.id == idDocument)
-=======
-// update document
-export const updateDocument = async (idDocument, objToUpdate) => {
-    await func.update({ 
-        store: 'Document', 
-        criteria: {id: idDocument }, 
-        obj: objToUpdate 
-    })
-    
-    lists.value = lists.value.map((val) => {
-        return val?.id === idDocument
-            ? { ...val, ...objToUpdate }
-            : val
-    })
-}
-// 
-
-export const isGenerateDocument = (idDocument, val) => {
-    func.update({
-        store: 'Document',
-        criteria: {id: idDocument},
-        obj: { isGenerate: val }
-    })
->>>>>>> b49144a (#54 field to tell us that document was generated)
 }
