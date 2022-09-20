@@ -71,3 +71,7 @@ export const warehouseByDate = async (periode) => {
     };
     return result;
 }
+
+export const findBaseReportFile = (id) => {
+    return lists.value.find((val) => val.id == id)
+}

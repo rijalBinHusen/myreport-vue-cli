@@ -51,19 +51,28 @@
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
-import { mapGetters} from "vuex"
-import { BaseReportFile } from "@/composable/periodePickerProps"
 import readExcelFile from "@/composable/readExcel"
 import { ref } from 'vue'
-import { getBaseReportFile, listsAllBaseReportFile } from "@/composable/components/BaseReportFile"
+import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile } from "@/composable/components/BaseReportFile"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { loader } from "@/composable/piece/vuexModalLauncher"
+import { dateMonth } from "@/composable/piece/dateFormat"
+import { getWarehouseId } from "@/composable/components/Warehouses"
+import { useStore } from "vuex"
 
 export default {
     name: "Collect",
+    components: {
+        Input,
+        Button,
+        Datatable,
+    },
     setup() {
         const importId = ref(null)
         const lists = ref([])
         const renderTable = ref(false)
+        const importerBase = ref(null)
+        const store = useStore()
 
         const pickPeriode = async () => { 
             let res = await subscribeMutation(
@@ -84,64 +93,40 @@ export default {
             console.log(lists.value)
         }
 
+        const launch = (ev) => {
+            importerBase.value.click()
+            importId.value = ev
+        }
+        // remove all data that was imported
+        const remove = async (ev) => {
+            // let sure = confirm("Apakah anda yakin akan menghapusnya?")
+            // if(!sure) { return; }
+            // this.$store.dispatch("BaseReportFile/emptyRecord", ev)
+        }
+        // read file and put to the state
+        const readExcel = (e) => {
+            // info of record
+            let infobase = findBaseReportFile(importId.value)
+            // bring the loader up
+            loader()
+            readExcelFile(e.target.files[0]).then((d) => {
+                let warehouseName = getWarehouseId(infobase?.warehouse)?.name
+                let periode2 = dateMonth(infobase?.periode )
+                // send data excel to vuex
+                store.commit("BaseReportFile/importTemp", d)
+                // bring the form up and send the baseid info to the modal state
+                store.commit("Modal/active", {
+                    judul: warehouseName + " " + periode2, 
+                    form: "BaseReportFile",
+                    obj: infobase,
+                });
+			})
+		}
+
         return {
-            importId, pickPeriode, lists, renderTable
+            importId, pickPeriode, lists, renderTable, importerBase, launch,
+            readExcel, remove
         }
     },
-    components: {
-        Input,
-        Button,
-        Datatable,
-    },
-    // methods: {
-    //     pickPeriode() {
-    //         this.$store.commit("Modal/active", BaseReportFile);
-    //     },
-    //     launch(ev) {
-    //         this.$refs.importerBase.click();
-    //         this.importId = ev
-    //     },
-    //     // remove all data that was imported
-    //     async remove(ev) {
-    //         let sure = confirm("Apakah anda yakin akan menghapusnya?")
-    //         if(!sure) { return; }
-    //         this.$store.dispatch("BaseReportFile/emptyRecord", ev)
-    //     },
-    //     // read file and put to the state
-    //     readExcel(e) {
-    //         // if(!e.target.files[0]) {
-    //         //     return
-    //         // }
-    //         // info of record
-    //         let infobase = this.BASEID(this.importId)
-    //         // bring the loader up
-    //         this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-    //         readExcelFile(e.target.files[0]).then((d) => {
-    //             let warehouseName = this.$store.getters["Warehouses/warehouseId"](infobase?.warehouse)?.name
-    //             let periode2 = this.$store.getters["dateFormat"]({ format: "dateMonth", time: infobase?.periode })
-    //             // send data excel to vuex
-    //             this.$store.commit("BaseReportFile/importTemp", d)
-    //             // bring the form up and send the baseid info to the modal state
-    //             this.$store.commit("Modal/active", {
-    //                 judul: warehouseName + " " + periode2, 
-    //                 form: "BaseReportFile",
-    //                 obj: infobase,
-    //             });
-	// 		})
-	// 	}
-    // },
-    // computed: {
-    //     ...mapGetters({
-    //         BASEID: "BaseReportFile/baseId"
-    //     }),
-    // },
-    // async mounted() {
-    //     // get all item name
-    //     await this.$store.dispatch("Baseitem/getAllItem")
-    //     // get the 3 days before today basereportfile record
-    //     await this.$store.dispatch("BaseReportFile/recordStarter")
-    //     // get all problem guys
-    //     await this.$store.dispatch("Problem/getProblemFromDB");
-    // },
 }
 </script>
