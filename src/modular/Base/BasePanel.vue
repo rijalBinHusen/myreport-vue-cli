@@ -15,9 +15,9 @@
             judul="periode"
             text="periode2"
             @selected="selectedPeriode = $event"
+            :inselect="selectedPeriode"
         />
-            <!-- 
-            :inselect="selectedPeriode" -->
+            
 
         <!-- Warehouse Base report -->
         <SelectVue
@@ -27,12 +27,12 @@
             value="warehouse"
             text="warehouseName"
             judul="gudang"
+            @selected="selectedWarehouse = $event"
+            :inselect="selectedWarehouse"
         />
-            <!-- @selected="selectedWarehouse = $event"
-            :inselect="selectedWarehouse" -->
 
         <!-- Sheet report -->
-        <!-- <SelectVue 
+        <SelectVue 
             v-if="selectedWarehouse.length"
             class="w3-col s1 w3-margin-right"
             :options='[
@@ -44,22 +44,9 @@
             judul="sheet"
             :inselect="sheet"
             @selected="sheet = $event"
-        />             -->
+        />
         <!-- Shift -->
-        <!-- <SelectVue 
-            v-if="selectedWarehouse.length"
-            class="w3-col s1 w3-margin-right"
-            :options="[
-                { id:1, title: 'Shift 1'},
-                { id:2, title: 'Shift 2'},
-                { id:3, title: 'Shift 3'},
-            ]" 
-            judul="shift"
-            value="id"
-            text="title"
-            :inselect="shift"
-            @selected="shift = $event"
-        /> -->
+        
         <!-- oPEN IN EXCEL MODE -->
         <!-- <ButtonVue 
             v-if="lists.length"
@@ -84,16 +71,16 @@
 <script>
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
-
 import { 
     getBaseReportFile, 
     listsAllBaseReportFile, 
     dateBaseReportFileImported,
     warehouseByDate,
 } from '@/composable/components/BaseReportFile';
-
-import { useStore } from 'vuex';
-import { computed, ref, watch, onUpdated } from '@vue/runtime-core';
+import { subscribeMutation } from '@/composable/piece/subscribeMutation';
+import { computed, ref, watch, onMounted } from 'vue';
+import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
+import { getWarehouses } from '@/composable/components/Warehouses';
 
 
 export default {
@@ -101,40 +88,28 @@ export default {
         ButtonVue, SelectVue
     },
     setup() {
-        const store = useStore()
         const selectedPeriode = ref(null)
         const warehouses = ref([])
-        const pickPeriode = () => {
-            let unsubscribe;
-            store.commit("Modal/active", { 
-                judul: "Set periode to show", 
-                form: "PeriodePicker", 
-                store: false, 
-                btnValue: "Show",
-                tunnelMessage: true,
-            });
-
-            const promise = new Promise (resolve => {
-                unsubscribe = store.subscribe(mutation => {
-                    if (mutation.type === 'Modal/tunnelMessage') {
-                        //get the payload that send to tunnel message
-                    resolve(mutation?.payload)
-                    }
-                })
-            })
-            
-            promise.then(async val => {
+        const shift = ref('')
+        const sheet = ref('')
+        const base = ref('')
+        const pickPeriode = async () => {
+            let res = await subscribeMutation(
+                "Pilih periode yang akan ditampilkan", 
+                "PeriodePicker",
+                {},
+                'Modal/tunnelMessage'
+                )
+            if(res) {
                 //open the loader
-                store.commit("Modal/active", {judul: "", form: "Loader"})
+                loader()
                 // wait the process
-                await getBaseReportFile(val?.periode1, val?.periode2)
-                //unsubscribe the mutation
-                unsubscribe()
+                await getBaseReportFile(res?.periode1, res?.periode2)
                 //close the loader
-                store.commit("Modal/active")
+                modalClose()
                 // renewLists()
                 listsAllBaseReportFile()
-            })
+            }
         }
 
         const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
@@ -142,10 +117,48 @@ export default {
 
         watch(selectedPeriode, async () => {
             warehouses.value = await warehouseByDate(selectedPeriode.value)
-                // console.log(warehouses.value)
         })
+
+        onMounted(() => getWarehouses() )
+
+        const renewLists = async () => {
+            //  || !this.shift || !this.sheet) { return }
+            base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            this.listsWarehouse = this.WAREHOUSEBASEREPORT(this.selectedPeriode)
+            // console.log(this.base)
+            
+            if(this.selectedPeriode && this.selectedWarehouse && this.shift) {
+                // check dulu apakah somerecord exists, 
+                let isExists = 
+                    this.ISCLOCKEXISTS(this.base.id, this.shift) 
+                    && this.ISSTOCKEXISTS( this.base.id, this.shift)
+                // jika exists
+                if(isExists) {
+                    this.detailsDocument()
+                    // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
+                    this.lists = this[`BASEREPORT${this.sheet.toUpperCase()}SHIFTANDPARENT`](this.shift, this.base.id)
+                    return
+                }
+                // // jika tidak exists
+                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+                // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+                await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+                // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+                await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+                this.$store.commit("Modal/active");
+                this.renewLists()
+            }
+        }
         
-        return { pickPeriode, dateBaseReportFile, warehouses, selectedPeriode }
+        return { 
+            shift, 
+            sheet, 
+            pickPeriode, 
+            dateBaseReportFile, 
+            warehouses, 
+            selectedPeriode,
+             
+        }
     },
 }
 </script>
