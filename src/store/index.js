@@ -8,7 +8,6 @@ import BaseReportFile from "../modular/BaseImport/BaseReportFile";
 import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "../modular/Base/BaseReportStock";
 import Baseitem from "../modular/BaseItem/Baseitem";
-import Headspv from "../modular/Headspv/Headspv";
 import Problem from "../modular/ProblemReport/ProblemReport";
 import Document from "./modules/Document";
 import Cases from "../modular/CasesReport/Cases";
@@ -20,7 +19,6 @@ export default createStore({
     Cases,
     Problem,
     Document,
-    Headspv,
     Baseitem,
     Navbar,
     Modal,
@@ -32,7 +30,6 @@ export default createStore({
   },
   state: {
     store: [
-      "Headspv",
       "Baseitem",
       "Cases",
       "Complains",
