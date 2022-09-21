@@ -103,25 +103,24 @@ export default {
             // this.$store.dispatch("BaseReportFile/emptyRecord", ev)
         }
         // read file and put to the state
-        const readExcel = (e) => {
+        const readExcel = async (e) => {
             // info of record
             let infobase = findBaseReportFile(importId.value)
             // bring the loader up
             loader()
-            readExcelFile(e.target.files[0]).then( async (d) => {
-                let warehouseName = await getWarehouseId(infobase?.warehouse)
-                let periode2 = dateMonth(infobase?.periode )
-                // bring the form up and send the baseid info to the modal state
-                // send data excel
-                store.commit("Modal/active", {
-                    judul: warehouseName?.name + " " + periode2, 
-                    form: "BaseReportFile",
-                    obj: {
-                        base: importId.value,
-                        excel: d
-                    }
-                });
-			})
+            let excel = await readExcelFile(e.target.files[0])
+            let warehouseName = await getWarehouseId(infobase?.warehouse)
+            let periode2 = dateMonth(infobase?.periode )
+
+            let res = subscribeMutation(
+                warehouseName?.name + " " + periode2,
+                'BaseReportFile',
+                { base: importId.value, excel: excel }
+            )
+            
+            if(res) {
+                renewLists()
+            }
 		}
 
         return {

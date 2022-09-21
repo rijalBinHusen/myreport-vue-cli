@@ -1,4 +1,4 @@
-import func from "@/myfunction";
+import { findData, update } from "@/myfunction";
 import { ref } from "vue";
 import { dateMonth } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
@@ -10,7 +10,7 @@ export const getBaseReportFile = async (periode1, periode2) => {
     lists.value = []
     let datesArray = getDaysArray(periode1, periode2)
     for(let date of datesArray) {
-        let records = await func.findData({
+        let records = await findData({
             store: "BaseReportFile",
             criteria: { periode: date }
         })
@@ -74,4 +74,15 @@ export const warehouseByDate = async (periode) => {
 
 export const findBaseReportFile = (id) => {
     return lists.value.find((val) => val.id == id)
+}
+
+export const updateBaseReport = async (id, obj) => {
+    lists.value = lists.value.map((val) => {
+        if(val.id == id) {
+            return { ...val, ...obj}
+        }
+        return val
+    })
+    await update({ store: 'basereportfile', criteria: { id: id }, obj: obj })
+    return true
 }
