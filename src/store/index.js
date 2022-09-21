@@ -4,7 +4,6 @@ import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
 import Collected from "../modular/Collected/Collected";
 import Impor from "../modular/ImportData/Impor";
-import Supervisors from "../modular/Supervisors/Supervisors.js";
 import BaseReportFile from "../modular/BaseImport/BaseReportFile";
 import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "../modular/Base/BaseReportStock";
@@ -27,14 +26,12 @@ export default createStore({
     Modal,
     Collected,
     Impor,
-    Supervisors,
     BaseReportFile,
     BaseReportClock,
     BaseReportStock,
   },
   state: {
     store: [
-      "Supervisors",
       "Headspv",
       "Baseitem",
       "Cases",

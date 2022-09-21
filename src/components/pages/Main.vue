@@ -17,7 +17,7 @@
 	import Approval from "../../modular/Approval/Approval.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
-	import Supervisors from "../../modular/Supervisors/Supervisors.vue"
+	import Supervisors from "@/pages/Supervisors.vue"
 	import Backup from "../../modular/Backup/Backup.vue"
 	import Importbase from "../../pages/Importbase.vue"
 	import Base from "../../modular/Base/Base.vue"
