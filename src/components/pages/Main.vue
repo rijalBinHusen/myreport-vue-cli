@@ -21,7 +21,7 @@
 	import Backup from "../../modular/Backup/Backup.vue"
 	import Importbase from "../../pages/Importbase.vue"
 	import Base from "../../modular/Base/Base.vue"
-	import Warehouses from "../../modular/Warehouses/Warehouses.vue"
+	import Warehouses from "@/pages/Warehouses.vue"
 	import AGGrid from "../parts/AGGrid.vue"
 	import Headspv from "../../modular/Headspv/Headspv.vue"
 	import BaseItem from "../../modular/BaseItem/BaseItem.vue"
