@@ -35,7 +35,7 @@ import BaseClockForm from "../../modular/Base/BaseClockForm.vue";
 import BaseProblemForm from "../../modular/Base/BaseProblemForm.vue";
 import BaseStockForm from "../../modular/Base/BaseStockForm.vue"
 import PeriodePicker from "../parts/PeriodePicker.vue"
-import WarehouseSupervisorsForm from "../../modular/Warehouses/WarehouseSupervisorsForm.vue"
+import WarehouseSupervisorsForm from "@/form/WarehouseSupervisorsForm.vue"
 import SupervisorWarehousesForm from "../../modular/Supervisors/SupervisorWarehousesForm.vue"
 import FinishedForm from "../../modular/Finished/FinishedForm.vue"
 import CaseInsertForm from "../../modular/CasesReport/CaseInsertForm.vue"

@@ -76,11 +76,9 @@ export default {
         { id: ev },
         'Modal/tunnelMessage'
       )
-      // this.$store.commit("Modal/active", {
-      //           judul: "Edit supervisors", 
-      //           form: "WarehouseSupervisorsForm",
-      //           obj: { id: ev }
-      //       });
+      if(res) {
+        renewLists()
+      }
     }
     const send = async () => {
       // jika update

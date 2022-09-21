@@ -28,19 +28,19 @@ export const addWarehouse = async (warehouseName) => {
 
 export const updateSupervisors = async (idWarehouse, arraySupervisorId) => {
     // payload = {id: 123, supervisors: [] }
+    console.log(idWarehouse, arraySupervisorId)
     await update({ 
         store: "Warehouses",  
         criteria: { id: idWarehouse }, 
         obj: { supervisors: arraySupervisorId } 
     })
-
     lists = lists.map((val) => {
         if(val.id == idWarehouse) {
             return { ...val, supervisors: arraySupervisorId }
         }
         return val
     })
-
+    return true
 }
 
 export const warehouseNameBySpv = (spvId) => {

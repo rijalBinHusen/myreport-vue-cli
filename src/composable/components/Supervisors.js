@@ -1,6 +1,6 @@
 import func from '../../myfunction'
 
-let lists = []
+export let lists = []
 
 export const getSupervisors = async () => {
     lists = []

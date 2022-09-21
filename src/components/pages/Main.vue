@@ -37,6 +37,7 @@
 	import userSignOut from "../../composable/UserSignOut"
 	import FieldProblemVue from '@/pages/FieldProblem.vue';
 	import { getWarehouses } from "@/composable/components/Warehouses";
+	import { getSupervisors } from "@/composable/components/Supervisors";
 	
 
 	export default {
@@ -54,6 +55,7 @@
 			
 			onBeforeMount(() => {
 				getWarehouses()
+				getSupervisors()
 				store.dispatch("getStart");
 				isSignIn.value = localStorage.getItem('loginya')
 				store.subscribe(() => {
