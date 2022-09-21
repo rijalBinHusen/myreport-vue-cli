@@ -1,4 +1,4 @@
-import { append } from "@/myfunction"
+import { append, deleteDocument } from "@/myfunction"
 
 let lists = []
 
@@ -53,4 +53,9 @@ export const appendData = async (parent, shift, noDo, reg, start, finish, rehat)
                 lists.unshift(val?.data)
             }
         })
+}
+
+export const removeClockByParent = async (parent) => {
+    deleteDocument({ store: 'basereportclock', criteria: { parent }})
+    return true
 }

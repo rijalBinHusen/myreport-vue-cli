@@ -53,12 +53,14 @@ import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import readExcelFile from "@/composable/readExcel"
 import { ref, onMounted } from 'vue'
-import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile } from "@/composable/components/BaseReportFile"
+import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile, updateBaseReport } from "@/composable/components/BaseReportFile"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { loader } from "@/composable/piece/vuexModalLauncher"
+import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
 import { getWarehouseId } from "@/composable/components/Warehouses"
 import { useStore } from "vuex"
+import { removeClockByParent } from '@/composable/components/BaseReportClock' 
+import { removeStockByParent } from '@/composable/components/BaseReportStock'
 
 export default {
     name: "Collect",
@@ -104,9 +106,25 @@ export default {
         }
         // remove all data that was imported
         const remove = async (ev) => {
+            let res = await subscribeMutation(
+                '', 
+                'Confirm', 
+                { pesan: 'Semua data akan dihapus, apakah anda yakin?' },
+                'Modal/tunnelMessage'
+            )
             // let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            // if(!sure) { return; }
-            // this.$store.dispatch("BaseReportFile/emptyRecord", ev)
+            if(!res) { return; }
+            loader()
+                await removeStockByParent(ev)
+                await removeClockByParent(ev)
+                await updateBaseReport(ev, { 
+                    fileName: false,
+                    stock: false,
+                    clock: false,
+                    imported: false
+                })
+            modalClose()
+            renewLists()
         }
         // read file and put to the state
         const readExcel = async (e) => {
@@ -118,10 +136,11 @@ export default {
             let warehouseName = await getWarehouseId(infobase?.warehouse)
             let periode2 = dateMonth(infobase?.periode )
 
-            let res = subscribeMutation(
+            let res = await subscribeMutation(
                 warehouseName?.name + " " + periode2,
                 'BaseReportFile',
-                { base: importId.value, excel: excel }
+                { base: importId.value, excel: excel },
+                'Modal/tunnelMessage'
             )
             
             if(res) {

@@ -1,4 +1,4 @@
-import { append } from "@/myfunction"
+import { append, deleteDocument } from "@/myfunction"
 import { problemActive } from '@/composable/components/Problem'
 import { findBaseReportFile } from "./BaseReportFile"
 
@@ -94,5 +94,10 @@ export const appendData = async (parent, shift, item, awal, masuk, keluar, riil)
             problem: getProblem
         },
     })
+    return true
+}
+
+export const removeStockByParent = async (parent) => {
+    deleteDocument({ store: 'basereportstock', criteria: { parent }})
     return true
 }
