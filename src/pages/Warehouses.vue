@@ -24,7 +24,7 @@
     <Table 
       v-if="lists.length"
       :headers="['Nama gudang']" 
-      :lists="lists" 
+      :lists="warehouseLists" 
       :keys="['name']"
       options
       #default="{ prop }"
@@ -59,14 +59,15 @@
 import Button from "@/components/elements/Button.vue"
 import Table from "@/components/elements/Table.vue"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation";
-import { ref } from "@firebase/storage";
-import { updateWarehouse, addWarehouse, disableWarehouse, lists } from '@/composable/components/Warehouses'
+import { ref, onMounted } from "vue";
+import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId } from '@/composable/components/Warehouses'
 
 export default {
   components: { Button, Table },
   setup () {
     const warehouse = ref('')
     const idWarehouse = ref('')
+    const warehouseLists = ref([])
 
     const supervisors = async (ev) => {
       let res = await subscribeMutation(
@@ -88,6 +89,12 @@ export default {
       else { await addWarehouse(warehouse.value) }
       // reset the form
       cancel()
+      renewLists()
+    }
+
+    const renewLists = () => {
+      warehouseLists.value = lists
+      console.log(lists)
     }
 
     const cancel = () => {
@@ -99,10 +106,14 @@ export default {
       await disableWarehouse(ev, disabled)
     }
 
-    const edit = (ev) => {
+    const edit = async (ev) => {
       idWarehouse.value = ev
-      warehouse.value = this.GET_WAREHOUSEID(ev).name
+      warehouse.value = await warehouseId(ev)?.name
     }
+
+    onMounted(() => {
+      renewLists()
+    })
 
     return {
       warehouse,
@@ -111,7 +122,9 @@ export default {
       send,
       disable,
       edit,
-      lists
+      lists,
+      cancel,
+      warehouseLists
     }
 
   },

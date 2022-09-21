@@ -66,6 +66,13 @@ export const updateWarehouse = async (idWarehouse, warehouseName) => {
         criteria: { id: idWarehouse },
         obj: { name: warehouseName }
     })
+    lists = lists.map((val) => {
+        if(val.id == idWarehouse) {
+            return { ...val, name: warehouseName}
+        }
+        return val
+    })
+    return true
 }
 
 export const disableWarehouse = async (idWarehouse, bool) => {
