@@ -33,7 +33,7 @@
 
         <!-- Sheet report -->
         <SelectVue 
-            v-if="selectedWarehouse.length"
+            v-if="selectedWarehouse"
             class="w3-col s1 w3-margin-right"
             :options='[
                 { id: "clock", title: "Clock" },
@@ -46,7 +46,7 @@
             @selected="sheet = $event"
         />
         <!-- Shift -->
-        
+        <SelectShift v-if="sheet" class="w3-col s1 w3-margin-right" :inSelectShift="shift" @selectedShift="shift = $event" />
         <!-- oPEN IN EXCEL MODE -->
         <!-- <ButtonVue 
             v-if="lists.length"
@@ -80,18 +80,22 @@ import {
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
+import SelectShift from '@/components/parts/SelectShift.vue';
 
 
 export default {
     components: {
-        ButtonVue, SelectVue
-    },
+    ButtonVue,
+    SelectVue,
+    SelectShift,
+},
     setup() {
         const selectedPeriode = ref(null)
         const warehouses = ref([])
         const shift = ref('')
         const sheet = ref('')
         const base = ref('')
+        const selectedWarehouse = ref('')
         const pickPeriode = async () => {
             let res = await subscribeMutation(
                 "Pilih periode yang akan ditampilkan", 
@@ -154,7 +158,7 @@ export default {
             dateBaseReportFile, 
             warehouses, 
             selectedPeriode,
-             
+            selectedWarehouse,             
         }
     },
 }

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label for="shiftSelesai">Shift {{ label }}</label>
+        <label v-if="showLable" for="shiftSelesai">Shift {{ label }}</label>
         <SelectVue 
             class="w3-border"
             id="shiftMulai"
@@ -22,7 +22,7 @@
 import SelectVue from "../elements/Select.vue";
 
     export default {
-        props: ['inSelectShift', 'label'],
+        props: ['inSelectShift', 'label', 'showLable'],
         emit: ['selectedShift'],
         setup(props, { emit }) {
             const selectShift = (ev) => {

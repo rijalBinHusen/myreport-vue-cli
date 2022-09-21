@@ -68,7 +68,7 @@ export const warehouseByDate = async (periode) => {
         let getWarehouseName = await getWarehouseId(val.warehouse)
         result.push({
           warehouse: val?.warehouse,
-          warehouseName: getWarehouseName[0]?.name,
+          warehouseName: getWarehouseName?.name,
         });
       }
     };
