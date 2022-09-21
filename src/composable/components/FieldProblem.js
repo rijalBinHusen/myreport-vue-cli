@@ -1,7 +1,7 @@
 import { append, getData, update, findData, deleteDocument } from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
-import { getSupervisorById } from '@/composable/components/Superviors'
-import { getHeadById } from './Head'
+import { getSupervisorId } from '@/composable/components/Supervisors'
+import { getHeadById } from './Headspv'
 
 let lists = []
 
@@ -42,7 +42,7 @@ export const listsFieldProblem = async () => {
     let result = []
 
     for (let list of lists) {
-        let getSupervisor = await getSupervisorById(list.supervisor)
+        let getSupervisor = await getSupervisorId(list.supervisor)
         let getHead = await getHeadById(list.head)
         result.push({
             ...list,

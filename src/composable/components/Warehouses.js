@@ -12,5 +12,5 @@ export const getWarehouseId = async (warehouseId) => {
     if(!lists.length) {
         await getWarehouses()
     }
-    return lists.filter((rec) => rec?.id === warehouseId)
+    return lists.find((rec) => rec?.id === warehouseId)
 }

@@ -98,7 +98,7 @@ import InputVue from "@/components/elements/Input.vue"
 import { ref } from '@vue/reactivity'
 import { addData, updateData } from '@/composable/components/FieldProblem'
 import { onMounted, watchEffect } from '@vue/runtime-core'
-import { getSupervisorById } from '@/composable/components/Superviors'
+import { getSupervisorId } from '@/composable/components/Supervisors'
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher'
 import { useStore } from 'vuex'
 import { getFieldProblemById } from '@/composable/components/FieldProblem'
@@ -119,7 +119,7 @@ export default {
 
         watchEffect(async () => {
             supervisor: {
-                let res = await getSupervisorById(supervisor.value)
+                let res = await getSupervisorId(supervisor.value)
                 pic.value = res?.name
             }
         })

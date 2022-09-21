@@ -12,5 +12,5 @@ export const getHeadspvId = async (headId) => {
     if(!lists.length) {
         await getHeadspv()
     }
-    return lists.filter((rec) => rec?.id === headId)
+    return lists.find((rec) => rec?.id === headId)
 }

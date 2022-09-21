@@ -70,9 +70,9 @@ const documentsMapper = async (docs) => {
             await Promise.all(getName).then((res) => {
                 result.push({ 
                     ...rec, 
-                    spvName: res[0][0]?.name, 
-                    headName: res[1][0]?.name, 
-                    warehouseName: res[2][0]?.name,
+                    spvName: res[0]?.name, 
+                    headName: res[1]?.name, 
+                    warehouseName: res[2]?.name,
                     periode2: isNaN(rec.periode) ? rec.periode : dateMonth(rec.periode),
                     collected2: isNaN(rec.collected) ? rec.collected : dateMonth(rec.collected),
                     approval2: isNaN(rec.approval) ? rec.approval : dateMonth(rec.approval),

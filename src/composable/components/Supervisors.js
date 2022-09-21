@@ -12,5 +12,5 @@ export const getSupervisorId = async (supervisorId) => {
     if(!lists.length) {
         await getSupervisors()
     }
-    return lists.filter((rec) => rec?.id === supervisorId)
+    return lists.find((rec) => rec?.id === supervisorId)
 }
