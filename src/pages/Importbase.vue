@@ -90,7 +90,6 @@ export default {
         const renewLists = async () => {
             lists.value = await listsAllBaseReportFile()
             renderTable.value = true
-            console.log(lists.value)
         }
 
         const launch = (ev) => {
@@ -109,16 +108,18 @@ export default {
             let infobase = findBaseReportFile(importId.value)
             // bring the loader up
             loader()
-            readExcelFile(e.target.files[0]).then((d) => {
-                let warehouseName = getWarehouseId(infobase?.warehouse)?.name
+            readExcelFile(e.target.files[0]).then( async (d) => {
+                let warehouseName = await getWarehouseId(infobase?.warehouse)
                 let periode2 = dateMonth(infobase?.periode )
-                // send data excel to vuex
-                store.commit("BaseReportFile/importTemp", d)
                 // bring the form up and send the baseid info to the modal state
+                // send data excel
                 store.commit("Modal/active", {
-                    judul: warehouseName + " " + periode2, 
+                    judul: warehouseName?.name + " " + periode2, 
                     form: "BaseReportFile",
-                    obj: infobase,
+                    obj: {
+                        base: importId.value,
+                        excel: d
+                    }
                 });
 			})
 		}

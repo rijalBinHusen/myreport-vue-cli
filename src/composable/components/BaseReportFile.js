@@ -32,7 +32,7 @@ const documentsMapper = async (docs) => {
             let getWarehouseName = await getWarehouseId(doc.warehouse)
             result.push({
                 ...doc,
-                warehouseName: getWarehouseName[0]?.name,
+                warehouseName: getWarehouseName?.name,
                 periode2: isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode),
             })
         }

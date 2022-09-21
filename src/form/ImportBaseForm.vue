@@ -1,7 +1,7 @@
 <template>
     <div>
         <label class="w3-margin-top">Nama file</label>
-        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" value="_BASEREPORT.fileName" disabled />
+        <input type="text" class="w3-input w3-margin-top w3-margin-bottom" :value="excel?.fileName" disabled />
         <label class="w3-margin-top">Clock Sheet</label>
         <Select 
             :options="sheetNames" 
@@ -31,7 +31,7 @@
 <script>
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
-import { mapState, mapGetters, useStore } from "vuex"
+import { useStore } from "vuex"
 import { ref, onMounted } from "vue"
 
 export default {
@@ -41,12 +41,25 @@ export default {
         const stock = ref(null)
         const infoBaseReport = ref(null)
         const store = useStore()
+        const excel = ref(null)
+        const baseId = ref(null)
+        const sheetNames = ref([])
 
         onMounted(() => {
-            console.log(store.getters['Modal/obj'])
+            let modalObj = store.getters['Modal/obj']?.obj
+            baseId.value = modalObj?.base
+            excel.value = modalObj?.excel
+            sheetNames.value = excel.value.sheetNames.map((val, index) => ({
+                id: index, title: val
+            }))
         })
+
+        const importBase = () => {
+            console.log('import')
+        }
+
         return {
-            clock, stock, infoBaseReport
+            clock, stock, infoBaseReport, excel, importBase, sheetNames
         }
     },
     
