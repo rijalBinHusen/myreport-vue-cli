@@ -1,4 +1,6 @@
 import { append } from "@/myfunction"
+import { problemActive } from '@/composable/components/Problem'
+import { findBaseReportFile } from "./BaseReportFile"
 
 
 export const startImportStock = async (sheets, baseId) => {
@@ -74,6 +76,8 @@ export const startImportStock = async (sheets, baseId) => {
 }
 
 export const appendData = async (parent, shift, item, awal, masuk, keluar, riil) => {
+    let parentDetails = findBaseReportFile(parent)
+    let getProblem = problemActive(parentDetails?.warehouse, item ? item.v : "No item")
     await append({
         store: "BaseReportStock",
         obj: {
@@ -87,7 +91,7 @@ export const appendData = async (parent, shift, item, awal, masuk, keluar, riil)
             dateOut: "",
             dateEnd: "",
             real: riil ? riil.v : 0,
-            problem: this.PROBLEMACTIVE(this.infoBaseReport.periode, this.infoBaseReport.warehouse, sheets["A"+i] ? sheets["A"+i].v : "No item")
+            problem: getProblem
         },
     })
     return true

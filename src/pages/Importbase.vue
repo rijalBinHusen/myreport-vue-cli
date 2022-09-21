@@ -52,7 +52,7 @@ import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import readExcelFile from "@/composable/readExcel"
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile } from "@/composable/components/BaseReportFile"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader } from "@/composable/piece/vuexModalLauncher"
@@ -89,8 +89,14 @@ export default {
 
         const renewLists = async () => {
             lists.value = await listsAllBaseReportFile()
-            renderTable.value = true
+            if(lists.value) {
+                renderTable.value = true
+            }
         }
+
+        onMounted(() => {
+            renewLists()
+        })
 
         const launch = (ev) => {
             importerBase.value.click()

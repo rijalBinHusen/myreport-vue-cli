@@ -22,7 +22,10 @@ export const getBaseReportFile = async (periode1, periode2) => {
 }
 
 export const listsAllBaseReportFile = async () => {
-    return documentsMapper(lists.value)
+    if(lists.value) {
+        return documentsMapper(lists.value)
+    }
+    return []
 }
 
 const documentsMapper = async (docs) => {
