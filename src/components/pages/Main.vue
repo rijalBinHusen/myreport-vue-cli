@@ -18,7 +18,7 @@
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
 	import Supervisors from "@/pages/Supervisors.vue"
-	import Backup from "../../modular/Backup/Backup.vue"
+	import Backup from "@/pages/Backup.vue"
 	import Importbase from "../../pages/Importbase.vue"
 	import Base from "../../modular/Base/Base.vue"
 	import Warehouses from "@/pages/Warehouses.vue"

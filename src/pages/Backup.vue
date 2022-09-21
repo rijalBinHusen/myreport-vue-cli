@@ -23,8 +23,7 @@
 
 <script>
 import { useStore } from "vuex"
-import { storeBackup } from "../../composable/storeBackup"
-import { seperateUsers } from "../../composable/storeBackup"
+import { storeBackup, seperateUsers } from "@/composable/storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
