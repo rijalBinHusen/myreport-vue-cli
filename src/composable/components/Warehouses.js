@@ -77,13 +77,13 @@ export const updateWarehouse = async (idWarehouse, warehouseName) => {
 
 export const disableWarehouse = async (idWarehouse, bool) => {
     update({
-        store: 'Warehouse',
+        store: 'Warehouses',
         criteria: { id: idWarehouse },
         obj: { disabled: bool }
     })
     lists = lists.map((val) => {
         if(val.id == idWarehouse) {
-            return { ...val, disabled: disabled}
+            return { ...val, disabled: bool}
         }
         return val
     })

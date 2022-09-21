@@ -94,7 +94,6 @@ export default {
 
     const renewLists = () => {
       warehouseLists.value = lists
-      console.log(lists)
     }
 
     const cancel = () => {
@@ -103,7 +102,8 @@ export default {
     }
 
     const disable = async (ev, disabled) => {
-      await disableWarehouse(ev, disabled)
+      await disableWarehouse(ev, !disabled)
+      renewLists()
     }
 
     const edit = async (ev) => {
