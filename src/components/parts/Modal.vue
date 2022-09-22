@@ -29,7 +29,7 @@ import UncollectedForm from "../../modular/Uncollected/UncollectedForm.vue"
 import UncollectedEditForm from "../../modular/Uncollected/UncollectedEditForm.vue"
 import ApprovalForm from "../../modular/Approval/ApprovalForm.vue"
 import Loader from "./Loader.vue"
-import ImporterForm from "../../modular/ImportData/ImporterForm.vue"
+import ImporterForm from "@/form/ImportDataForm.vue"
 import BaseReportFile from "@/form/ImportBaseForm.vue"
 import BaseClockForm from "../../modular/Base/BaseClockForm.vue";
 import BaseProblemForm from "../../modular/Base/BaseProblemForm.vue";

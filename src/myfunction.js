@@ -98,36 +98,44 @@ function updateActivity() {
   // clear timeOut
   clearTimeout(timeoutActivity);
   // get id login
-  let idLogin = localStorage.getItem('loginya')
+  let idLogin = localStorage.getItem("loginya");
   // update activity
   timeoutActivity = setTimeout(() => {
     db.collection("login")
-    .doc(idLogin)
-    .update({ totalActivity: loginActivity });
+      .doc(idLogin)
+      .update({ totalActivity: loginActivity });
     // update loginActivity in localStorage
-    localStorage.setItem("loginActivity", loginActivity)
-    localStorage.setItem("lastActivity", new Date().getTime() + 14400000)
-  }, 2000)
+    localStorage.setItem("loginActivity", loginActivity);
+    localStorage.setItem("lastActivity", new Date().getTime() + 14400000);
+  }, 2000);
 }
 
 async function addActivity(obj) {
   // obj = { type: create, store: nameStore, idRecord: string }
   // get id login
-  let idLogin = localStorage.getItem('loginya')
+  let idLogin = localStorage.getItem("loginya");
   // jika tidak ada loginya
-  if(!idLogin) { 
-    idLogin = "starter"
-    await write("login", "starter", { id: "starter", time: new Date().getTime() })
-    localStorage.setItem('loginya', 'starter')
+  if (!idLogin) {
+    idLogin = "starter";
+    await write("login", "starter", {
+      id: "starter",
+      time: new Date().getTime(),
+    });
+    localStorage.setItem("loginya", "starter");
   }
   // increment login activity
-  loginActivity++
+  loginActivity++;
   // id activity e.g = log22240001_1
-  let idActivity = idLogin+'_'+loginActivity
+  let idActivity = idLogin + "_" + loginActivity;
   // tambahkan activity ke idb
-  await write('activity', idActivity, {...obj, id: idActivity, time: new Date().getTime(), idLogin: idLogin})
-  updateActivity()
-  return {...obj, id: idActivity, time: new Date().getTime()}
+  await write("activity", idActivity, {
+    ...obj,
+    id: idActivity,
+    time: new Date().getTime(),
+    idLogin: idLogin,
+  });
+  updateActivity();
+  return { ...obj, id: idActivity, time: new Date().getTime() };
 }
 
 // ketika aplikasi load, jalankan fungsi ambil summary
@@ -139,39 +147,47 @@ getStoreWithKey("summary").then((result) => {
   }
 });
 
-function reWriteStoreWithKey(value) {
+export function reWriteStoreWithKey(value) {
   // value = {store: nameOfStore: obj: [Array would to wrote]}
   return db.collection(value.store).set(value.obj, { keys: true });
 }
 
-export const update = async function  (value) {
+export const update = async function (value) {
   // { criteria: {id: 001}, obj: { obj: objtoupdate } }
-  await addActivity({ type: "update", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
-  return db.collection(value.store.toLowerCase())
+  await addActivity({
+    type: "update",
+    store: value.store.toLowerCase(),
+    idRecord: value?.criteria?.id,
+  });
+  return db
+    .collection(value.store.toLowerCase())
     .doc(value.criteria)
     .update(value.obj);
-}
+};
 
 export const append = async function (value) {
   //{store: "namastore", obj: {obj: toInput } }
-  let id = value?.obj?.id ? value?.obj?.id : generateId(value.store.toLowerCase());
+  let id = value?.obj?.id
+    ? value?.obj?.id
+    : generateId(value.store.toLowerCase());
   // let result = await
-  if(value?.store !== 'login') {
-    await addActivity({ type: "create", store: value.store.toLowerCase(), idRecord: id })
+  if (value?.store !== "login") {
+    await addActivity({
+      type: "create",
+      store: value.store.toLowerCase(),
+      idRecord: id,
+    });
   }
   return db
     .collection(value.store.toLowerCase())
     .doc(id)
     .set(Object.assign({ id: id }, value.obj));
-}
+};
 
-export const reWrite = function (value) {
-  //(nameStore, [{id: idData}, {key: 'new value'}])
+export const reWrite = function (store, id, value) {
   //write data
-  db.collection(storenya(value.store, value.split, value.period))
-    .doc({ id: value.id })
-    .set(value.obj);
-}
+  return db.collection(store).doc({ id: id }).set(value);
+};
 
 export const getData = function (deData) {
   let store = deData.store.toLowerCase();
@@ -211,28 +227,32 @@ export const getData = function (deData) {
   }
   //   all data without key
   return db.collection(store).get();
-}
+};
 
 export const findData = function (value) {
   return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
-}
+};
 
 export const deleteCollection = function (value) {
   return db.collection(value).delete();
-}
+};
 
 export const deleteDb = function () {
   db.delete();
-}
+};
 
 export const emptyStore = function (value) {
-  db.collection(value).set([{}]);
-}
+  return db.collection(value).set([{}]);
+};
 
 export const deleteDocument = async function (value) {
-  await addActivity({ type: "delete", store: value.store.toLowerCase(), idRecord: value?.criteria?.id })
+  await addActivity({
+    type: "delete",
+    store: value.store.toLowerCase(),
+    idRecord: value?.criteria?.id,
+  });
   db.collection(value.store.toLowerCase()).doc(value.criteria).delete();
-}
+};
 
 export const deleteDocumentByParam = function (value) {
   /*value = {
@@ -246,13 +266,13 @@ value: "c08"
   db.collection(value.store.toLowerCase())
     .doc({ [value.parameter]: value.value })
     .delete();
-}
+};
 
 export const tunggu = function (time) {
   return new Promise((resolve) => {
     setTimeout(() => resolve(), time);
   });
-}
+};
 
 export default {
   append: append,
@@ -341,5 +361,5 @@ export default {
       );
     } //dapatkan waktu penuh dd/mm/yyyy
   },
-  addActivity
+  addActivity,
 };

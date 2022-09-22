@@ -12,14 +12,14 @@
 <script>
 	import Navbar from "../parts/Navbar.vue";
 	import Uncollected from "../../modular/Uncollected/Uncollected.vue"
-	import ImportData from "../../modular/ImportData/ImportData.vue"
+	import ImportData from "@/pages/ImportData.vue"
 	import Collected from "../../modular/Collected/Collected.vue"
 	import Approval from "../../modular/Approval/Approval.vue"
 	import Report from "./Report.vue"
 	import Modal from "../parts/Modal.vue"
 	import Supervisors from "@/pages/Supervisors.vue"
 	import Backup from "@/pages/Backup.vue"
-	import Importbase from "../../pages/Importbase.vue"
+	import Importbase from "@/pages/Importbase.vue"
 	import Base from "../../modular/Base/Base.vue"
 	import Warehouses from "@/pages/Warehouses.vue"
 	import AGGrid from "../parts/AGGrid.vue"
