@@ -230,10 +230,10 @@ export default {
         //     });
         }
 
-        const addPeriod = () => {
-            let res = subscribeMutation(
+        const addPeriod = async () => {
+            let res = await subscribeMutation(
                 "Masukkan periode",
-                "UncollectedForm",
+                "DocumentsGroupForm",
                 {},
                 'Modal/tunnelMessage'
             )

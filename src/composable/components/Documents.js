@@ -33,7 +33,7 @@ export const addData = async (name, periode, shift, head, warehouse) => {
 
 export const approveDocument = (idDocument, day) => {
   let doc = findDocument(idDocument)
-  let newDoc = { ...doc}
+  let newDoc = { ...doc }
 }
 
 export const findDocument = (idDocument) => {
