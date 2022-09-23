@@ -27,8 +27,8 @@ export const full = (payload) => {
     return details.date + " " + MMM[details.month] + " " + details.year + " " + details.hours + ":" + details.minutes;
 } //dapatkan waktu penuh dd mmm yyyy hh:mm
 
-export const dayPlus1 = (payload) => {
-    let date = getDetails(payload)
+export const dayPlus1 = (yourDate) => {
+    let date = yourDate ? new Date(yourDate) : new Date()
     date.setDate(date.getDate() +1)
     return date.getTime()
 } 
@@ -49,16 +49,13 @@ export const ddmmyyyy = (payload, splitter) =>  {
     return details.date+splitter+(details.month > 8 ? details.month+1 : '0' + (details.month+1))+splitter+details.year      
 } 
 
-const dateFormat =  {
-        time, full, dayPlus1, ymdTime
-    }
+export const dayMinus = (yourDate, minusNumber) => {
+    let date = yourDate ? new Date(yourDate) : new Date()
+    date.setDate( date.getDate() - minusNumber )
+    return date.getTime()
+}
 
-export default dateFormat
-// // hari selanjutnya pada jam 00:00
-//     else if (a[0] == "-1") {
-//       a001.setDate(a002 - 1);
-//       return a001.getTime();
-//     } // 1 hari sebelumnya time
+
 //     else if (a[0] == "-2") {
 //       a001.setDate(a002 - 2);
 //       return a001.getTime();

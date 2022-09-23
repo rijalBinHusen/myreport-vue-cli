@@ -4,7 +4,6 @@ import { dateMonth } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId } from './Warehouses'
-import store from '@/store'
 
 let lists = []
 
@@ -106,7 +105,6 @@ export const addData = async (name, periode, shift, head, warehouse) => {
     await func.append({ store: "Document", obj: newRecord })
         .then((val) => {
             lists.unshift(val?.data)
-            store.commit('Document/append', val.data)
         })
     return
 }

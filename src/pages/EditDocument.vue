@@ -1,8 +1,8 @@
 <template>
 <div class="">
     <div class="w3-border w3-padding w3-container">
-        <label for="periode">Set record to show : </label>
-        <Button id="periode" primary value="Set" type="button" @trig="pickPeriode" />
+        <label >Set record to show : </label>
+        <Button primary value="Set" type="button" @trig="pickPeriode" />
         <Button primary class="w3-right" value="Add" type="button" @trig="handleButton" />
     </div>
     <Datatable

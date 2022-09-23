@@ -3,6 +3,7 @@ const Navbar = {
   state: {
     active: "",
     lists: [
+      { id: 'Documents', title: 'Documents', group: 'reports'},
       { id: "Warehouses", title: "Warehouses", group: "setting" },
       { id: "Uncollected", title: "Uncollected report", group: "reports" },
       { id: "Collected", title: "Collected report", group: "reports" },

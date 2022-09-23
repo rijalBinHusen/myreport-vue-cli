@@ -10,6 +10,7 @@
 </template>
 
 <script>
+	import Documents from "./Documents.vue";
 	import Navbar from "@/components/parts/Navbar.vue";
 	import Uncollected from "@/modular/Uncollected/Uncollected.vue"
 	import ImportData from "@/pages/ImportData.vue"
@@ -76,6 +77,7 @@
 		},
 		name: "Main",
 		components: {
+			Documents,
 			Login,
 			FollowUp,
 			Complains,
