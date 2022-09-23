@@ -84,10 +84,10 @@ function updateSummary() {
   }, 2000);
 }
 
-function write(store, document, value) {
+export function write(store, document, value) {
   //store = namastore, document = "namaKey" value: { obj: toInput } }
   // db.collection(value.store.toLowerCase()).add(value.obj);
-  return db.collection(store.toLowerCase()).doc(document).set(value);
+  return db.collection(store.toLowerCase()).doc(document).set({ ...value });
 }
 
 function getStoreWithKey(store) {
@@ -147,9 +147,9 @@ getStoreWithKey("summary").then((result) => {
   }
 });
 
-export function reWriteStoreWithKey(value) {
+export function reWriteStoreWithKey(store, obj) {
   // value = {store: nameOfStore: obj: [Array would to wrote]}
-  return db.collection(value.store).set(value.obj, { keys: true });
+  return db.collection(store.toLowerCase()).set([ ...obj ], { keys: true });
 }
 
 export const update = async function (value) {

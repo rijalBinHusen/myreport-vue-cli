@@ -32,7 +32,7 @@
 import Checkbox from "@/components/elements/Checkbox.vue"
 import Button from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
-import { emptyStore, reWriteStoreWithKey, reWrite } from '@/myfunction'
+import { deleteCollection, reWriteStoreWithKey, write, tunggu } from '@/myfunction'
 import { onBeforeMount } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 
@@ -51,8 +51,10 @@ export default {
         const selectStore = (ev) => {
             if(importLists.value.includes(ev)) {
                 importLists.value = importLists.value.filter((val) => val !== ev)
+                total.value -= dataToImport.value[ev].length
             } else {
                 importLists.value.push(ev)
+                total.value += dataToImport.value[ev].length
             }
         }
 
@@ -62,35 +64,40 @@ export default {
 
             for(let store of importLists.value) {
                 //delete the exists store
-                await emptyStore(store)
+                await deleteCollection(store)
+                // wait for 3 second to make sure that the proces finished
+                await tunggu(2000)
 
                 let doc = []
 
                 for( let datumToImport of dataToImport.value[store]) {
                     
-                    if(this.mode === 'write') {
-                        doc.push(Object.assign(datumToImport.data, {_key: datumToImport.key })) 
+                    if(mode.value === 'write') {
+                        doc.push({ ...datumToImport.data, _key: datumToImport.key })
                         //if the end of record
-                        if( (i + 1) === dataToImport.value[store].length) {
+                        if( doc.length === dataToImport.value[store].length) {
                             //push to localbase
-                            await reWriteStoreWithKey({store: store.toLowerCase(), obj: doc})
+                            await reWriteStoreWithKey(store, doc)
+                            await tunggu(doc.length * 5)
                         }
                     } 
                     
                     else {
-                        await reWrite(store, datumToImport.key, datumToImport.data)
+                        await write(store, datumToImport.key, datumToImport.data)
+                        await tunggu(5)
                     }
                 }
 
                 //if the end of the importLists, close the loader
-                if((ind + 1) === importLists.value.length) {
+                if(store == importLists.value.slice(-1).toString()) {
+                    // await tunggu(1500)
                     window.location.reload()
                 }
             }
         }
 
         onBeforeMount(() => {
-            console.log(store.getters['Modal/obj'])
+            dataToImport.value = store.getters['Modal/obj']?.obj
         })
 
         return {
