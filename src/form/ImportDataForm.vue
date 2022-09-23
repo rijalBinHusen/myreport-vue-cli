@@ -77,8 +77,10 @@ export default {
                     if(mode.value === 'write') {
                         doc.push(JSON.parse(JSON.stringify({ ...datumToImport.data, _key: datumToImport.key })))
                         //if the end of record
+                        console.log(doc)
                         if( doc.length === dataToImport.value[store].length) {
                             //push to localbase
+                            console.log('masukkan')
                             await reWriteStoreWithKey(store, doc)
                         }
                     } 
@@ -87,19 +89,19 @@ export default {
                         let singleData = JSON.parse(JSON.stringify(datumToImport))
                         await write(store, singleData.key, singleData.data)
                     }   
-
-                    //if the end of the importLists, close the loader
-                    if(store == importListsPicked.value.slice(-1).toString()) {
-                        let res = await subscribeMutation(
-                                        '', 
-                                        'Confirm', 
-                                        { pesan: 'Proses import sudah selesai mohon pastikan tidak ada error di console'}, 
-                                        'Modal/tunnelMessage'
-                                    )
-                        if(res) {
-                            // await tunggu(1500)
-                            window.location.reload()
-                        }
+                    
+                }
+                //if the end of the importLists, close the loader
+                if(store == importListsPicked.value.slice(-1).toString()) {
+                    let res = await subscribeMutation(
+                                    '', 
+                                    'Confirm', 
+                                    { pesan: 'Proses import sudah selesai mohon pastikan tidak ada error di console'}, 
+                                    'Modal/tunnelMessage'
+                                )
+                    if(res) {
+                        // await tunggu(1500)
+                        window.location.reload()
                     }
                 }
             }

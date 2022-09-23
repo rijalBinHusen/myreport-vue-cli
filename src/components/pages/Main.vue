@@ -15,7 +15,7 @@
 	import ImportData from "@/pages/ImportData.vue"
 	import Collected from "../../modular/Collected/Collected.vue"
 	import Approval from "../../modular/Approval/Approval.vue"
-	import Report from "./Report.vue"
+	import ReportExport from "@/pages/ReportExport.vue"
 	import Modal from "../parts/Modal.vue"
 	import Supervisors from "@/pages/Supervisors.vue"
 	import Backup from "@/pages/Backup.vue"
@@ -91,7 +91,7 @@
 			Uncollected,
 			ImportData,
 			Collected,
-			Report,
+			ReportExport,
 			Modal,
 			Warehouses,
 			Supervisors,
