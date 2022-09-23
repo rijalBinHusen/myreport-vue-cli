@@ -10,31 +10,31 @@
 </template>
 
 <script>
-	import Navbar from "../parts/Navbar.vue";
-	import Uncollected from "../../modular/Uncollected/Uncollected.vue"
+	import Navbar from "@/components/parts/Navbar.vue";
+	import Uncollected from "@/modular/Uncollected/Uncollected.vue"
 	import ImportData from "@/pages/ImportData.vue"
-	import Collected from "../../modular/Collected/Collected.vue"
-	import Approval from "../../modular/Approval/Approval.vue"
+	import Collected from "@/modular/Collected/Collected.vue"
+	import Approval from "@/modular/Approval/Approval.vue"
 	import ReportExport from "@/pages/ReportExport.vue"
-	import Modal from "../parts/Modal.vue"
+	import Modal from "@/components/parts/Modal.vue"
 	import Supervisors from "@/pages/Supervisors.vue"
 	import Backup from "@/pages/Backup.vue"
 	import Importbase from "@/pages/Importbase.vue"
-	import Base from "../../modular/Base/Base.vue"
+	import Base from "@/modular/Base/Base.vue"
 	import Warehouses from "@/pages/Warehouses.vue"
-	import AGGrid from "../parts/AGGrid.vue"
+	import AGGrid from "@/components/parts/AGGrid.vue"
 	import Headspv from "@/pages/Headspv.vue"
-	import BaseItem from "../../modular/BaseItem/BaseItem.vue"
-	import ProblemReport from "../../modular/ProblemReport/ProblemReport.vue"
-	import Finished from "../../modular/Finished/Finished.vue"
-	import EditDocument from "../../pages/EditDocument.vue"
-	import Cases from "../../modular/CasesReport/Cases.vue"
-	import Complains from "../../modular/ComplainReport/Complains.vue"
-	import FollowUp from "../../modular/FollowUp/FollowUp.vue"
+	import BaseItem from "@/modular/BaseItem/BaseItem.vue"
+	import ProblemReport from "@/modular/ProblemReport/ProblemReport.vue"
+	import Finished from "@/modular/Finished/Finished.vue"
+	import EditDocument from "./EditDocument.vue"
+	import Cases from "@/modular/CasesReport/Cases.vue"
+	import Complains from "@/modular/ComplainReport/Complains.vue"
+	import FollowUp from "@/modular/FollowUp/FollowUp.vue"
 	import Login from "./Login.vue"
 	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
-	import userSignOut from "../../composable/UserSignOut"
+	import userSignOut from "@/composable/UserSignOut"
 	import FieldProblemVue from '@/pages/FieldProblem.vue';
 	import { getWarehouses } from "@/composable/components/Warehouses";
 	import { getSupervisors } from "@/composable/components/Supervisors";

@@ -1,7 +1,7 @@
 <script>
 	import { ref } from "@vue/reactivity"
 	import { onMounted } from '@vue/runtime-core';
-	import userSignIn from "../../composable/userSignIn"
+	import userSignIn from "@/composable/userSignIn"
 
 	export default {
 		setup() {
