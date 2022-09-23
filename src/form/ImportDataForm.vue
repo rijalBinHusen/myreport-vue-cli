@@ -2,7 +2,7 @@
 <form class="w3-container" @submit.prevent="impor">
     <h2>Select store</h2>
     <div class="w3-row w3-margin-bottom w3-border w3-round-large w3-padding w3-padding-16">
-        <span v-for="(store) in Object.keys(dataToImport)" :key="store" class="w3-col s3">
+        <span v-for="(store) in importLists" :key="store" class="w3-col s3">
             <Checkbox 
                 :label="store" 
                 @check="selectStore($event)"
@@ -35,6 +35,7 @@ import { ref } from '@vue/reactivity'
 import { deleteCollection, reWriteStoreWithKey, write, tunggu } from '@/myfunction'
 import { onBeforeMount } from '@vue/runtime-core'
 import { useStore } from 'vuex'
+import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 export default {
     components: {
@@ -47,13 +48,14 @@ export default {
         const mode = ref(null)
         const dataToImport = ref({})
         const store = useStore()
+        const importListsPicked = ref([])
 
         const selectStore = (ev) => {
-            if(importLists.value.includes(ev)) {
-                importLists.value = importLists.value.filter((val) => val !== ev)
+            if(importListsPicked.value.includes(ev)) {
+                importListsPicked.value = importListsPicked.value.filter((val) => val !== ev)
                 total.value -= dataToImport.value[ev].length
             } else {
-                importLists.value.push(ev)
+                importListsPicked.value.push(ev)
                 total.value += dataToImport.value[ev].length
             }
         }
@@ -62,7 +64,7 @@ export default {
             // Bring up the loader
             store.commit("Modal/active", {judul: "", form: "Loader"});
 
-            for(let store of importLists.value) {
+            for(let store of importListsPicked.value) {
                 //delete the exists store
                 await deleteCollection(store)
                 // wait for 3 second to make sure that the proces finished
@@ -73,36 +75,45 @@ export default {
                 for( let datumToImport of dataToImport.value[store]) {
                     
                     if(mode.value === 'write') {
-                        doc.push({ ...datumToImport.data, _key: datumToImport.key })
+                        doc.push(JSON.parse(JSON.stringify({ ...datumToImport.data, _key: datumToImport.key })))
                         //if the end of record
                         if( doc.length === dataToImport.value[store].length) {
                             //push to localbase
                             await reWriteStoreWithKey(store, doc)
-                            await tunggu(doc.length * 5)
                         }
                     } 
                     
                     else {
-                        await write(store, datumToImport.key, datumToImport.data)
-                        await tunggu(5)
-                    }
-                }
+                        let singleData = JSON.parse(JSON.stringify(datumToImport))
+                        await write(store, singleData.key, singleData.data)
+                    }   
 
-                //if the end of the importLists, close the loader
-                if(store == importLists.value.slice(-1).toString()) {
-                    // await tunggu(1500)
-                    window.location.reload()
+                    //if the end of the importLists, close the loader
+                    if(store == importListsPicked.value.slice(-1).toString()) {
+                        let res = await subscribeMutation(
+                                        '', 
+                                        'Confirm', 
+                                        { pesan: 'Proses import sudah selesai mohon pastikan tidak ada error di console'}, 
+                                        'Modal/tunnelMessage'
+                                    )
+                        if(res) {
+                            // await tunggu(1500)
+                            window.location.reload()
+                        }
+                    }
                 }
             }
         }
-
+            
         onBeforeMount(() => {
-            dataToImport.value = store.getters['Modal/obj']?.obj
+            dataToImport.value = JSON.parse(JSON.stringify(store.getters['Modal/obj']?.obj))
+            importLists.value = Object.keys(dataToImport.value)
         })
 
         return {
-            importLists, total, mode, selectStore, impor, dataToImport
+            importListsPicked, importLists, total, mode, selectStore, impor, dataToImport
         }
-    },
+    }
 }
+
 </script>

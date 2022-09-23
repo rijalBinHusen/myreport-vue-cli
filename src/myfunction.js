@@ -87,7 +87,7 @@ function updateSummary() {
 export function write(store, document, value) {
   //store = namastore, document = "namaKey" value: { obj: toInput } }
   // db.collection(value.store.toLowerCase()).add(value.obj);
-  return db.collection(store.toLowerCase()).doc(document).set({ ...value });
+  return db.collection(store.toLowerCase()).doc(document).set(value);
 }
 
 function getStoreWithKey(store) {
@@ -149,7 +149,11 @@ getStoreWithKey("summary").then((result) => {
 
 export function reWriteStoreWithKey(store, obj) {
   // value = {store: nameOfStore: obj: [Array would to wrote]}
-  return db.collection(store.toLowerCase()).set([ ...obj ], { keys: true });
+  return db.collection(store.toLowerCase()).set(obj, { keys: true })
+        .then((val) => console.log(val))
+        .catch((error) => {
+          console.error('Error to import store: ', store, error)
+        })
 }
 
 export const update = async function (value) {
