@@ -1,4 +1,4 @@
-import func from "../../myfunction"
+import { findData, update, append, deleteDocument } from "../../myfunction"
 import getDatesArray from "../piece/getDaysArray"
 import { dateMonth } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
@@ -12,7 +12,7 @@ export const getDocuments = async (periode1, periode2) => {
     lists = []
     let datesArray = getDatesArray(periode1, periode2)
     let bunchOfPromise = datesArray
-                            .map((date) => func.findData({ store: "Document", criteria: { periode: date } }) )
+                            .map((date) => findData({ store: "Document", criteria: { periode: date } }) )
     let result = await Promise.all(bunchOfPromise)
     // result.filter((res) => res).fla
     lists = result.filter((val) => val).flat()
@@ -27,7 +27,7 @@ export const listsOfDocuments = () => {
 
 // update document
 export const updateDocument = async (idDocument, objToUpdate) => {
-    await func.update({ 
+    await update({ 
         store: 'Document', 
         criteria: { id: idDocument }, 
         obj: objToUpdate 
@@ -102,7 +102,7 @@ export const addData = async (name, periode, shift, head, warehouse) => {
         warehouse,
     }
     // add data
-    await func.append({ store: "Document", obj: newRecord })
+    await append({ store: "Document", obj: newRecord })
         .then((val) => {
             lists.unshift(val?.data)
         })
@@ -110,7 +110,7 @@ export const addData = async (name, periode, shift, head, warehouse) => {
 }
 
 export const isGenerateDocument = (idDocument, val) => {
-    func.update({
+    update({
         store: 'Document',
         criteria: {id: idDocument},
         obj: { isGenerate: val }
@@ -118,11 +118,16 @@ export const isGenerateDocument = (idDocument, val) => {
 }
 
 export const removeDocument = async (idDocument) => {
-    await func.deleteDocument({ store: 'document', criteria: { id: idDocument }})
+    await deleteDocument({ store: 'document', criteria: { id: idDocument }})
     lists = lists.filter((list) => list.id != idDocument)
     return
 }
 
 export const findDocument = (idDocument) => {
     return lists.find((rec) => rec.id == idDocument)
+}
+
+export const getUncollectedDocuments = async () => {
+    lists = await findData({ store: "Document", criteria: { status: 0 }})
+    return true
 }

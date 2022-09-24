@@ -115,6 +115,7 @@ import { ref, onBeforeMount} from "vue"
 import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/composable/components/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { getUncollectedDocuments, listsOfDocuments } from "@/composable/components/DocumentsPeriod"
 
 export default {
     setup() {
@@ -242,8 +243,11 @@ export default {
             }
         }
 
-        onBeforeMount(() => {
+        onBeforeMount( async () => {
             headSPVLists.value = listsHeadSPV
+            await getUncollectedDocuments()
+            lists.value = await listsOfDocuments()
+            console.log(listsOfDocuments())
         })
         
         const collect = (ev) => {
