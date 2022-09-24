@@ -14,11 +14,12 @@
             :value="name.shift+''" @inp="changeShift('Headspv', name.id, $event)"
         />
     </div>
-    <h3>Supervisor</h3>
-    <div v-for="name in spvLists" :key="name.id"  class="w3-col s2 w3-round-large w3-padding-small w3-small">
+    <div v-for="warehouse in warehousesLists" :key="warehouse.id"  class="w3-col s2 w3-round-large w3-padding-small w3-small">
+        <h5>{{ warehouse.name.replace('jadi ', '') }}</h5>
         <Input 
-            :label="name.name.split(' ')[0]" placeholder="Shift" class="w3-row w3-padding" type="number"
-            :value="name.shift+''" @inp="changeShift('Headspv', name.id, $event)"
+            v-for="spv in warehouse.supervisors" :key="spv"
+            :label="spvLists[spv]?.name" placeholder="Shift" class="w3-row w3-padding" type="number"
+            :value="spvLists[spv]?.shift+''" @inp="changeShift('Supervisors', name.id, $event)"
         />
     </div>
 
@@ -42,6 +43,7 @@ import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
 import { updateSupervisor, supervisorsEnabled } from "@/composable/components/Supervisors"
 import { updateHeadspv, headspvEnabled } from "@/composable/components/Headspv"
+import { lists as listsWarehouse } from '@/composable/components/Warehouses'
 
 export default {
     components: {
@@ -51,9 +53,10 @@ export default {
     setup() {
         let timeout = ref('')
         let id = ref('')
-        const spvLists = ref([])
+        const spvLists = ref({})
         const headLists = ref([])
         const periode = ref(new Date())
+        const warehousesLists = ref([])
 
         const changeShift = (store, idFL, shift) => {
             if(id.value == idFL) {
@@ -68,13 +71,16 @@ export default {
         }
 
         onBeforeMount(() => {
-            spvLists.value = supervisorsEnabled()
+            supervisorsEnabled().forEach((spv) => {
+                spvLists.value[spv.id] = spv
+            })
             headLists.value = headspvEnabled()
+            warehousesLists.value = listsWarehouse
             console.log(spvLists.value)
         })
 
         return {
-            changeShift, spvLists, headLists, periode
+            changeShift, spvLists, headLists, periode, warehousesLists
         }
     },
     // methods: {
