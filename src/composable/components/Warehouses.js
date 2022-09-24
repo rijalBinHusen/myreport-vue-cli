@@ -89,3 +89,18 @@ export const disableWarehouse = async (idWarehouse, bool) => {
     })
     return true
 }
+
+export const updateWarehouseVariable = async (idWarehouse, yourVariable) => {
+    update({
+        store: 'Warehouses',
+        criteria: { id: idWarehouse },
+        obj: yourVariable
+    })
+    lists = lists.map((val) => {
+        if(val.id == idWarehouse) {
+            return { ...val, ...yourVariable}
+        }
+        return val
+    })
+    return true
+}

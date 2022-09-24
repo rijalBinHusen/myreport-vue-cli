@@ -52,6 +52,14 @@
           type="button" 
           @trig="disable(prop?.id, prop?.disabled)" 
         />
+
+        <Button
+          :danger="prop?.isGrouped"
+          :primary="!prop?.isGrouped"
+          :value="prop?.isGrouped ? 'Group' : 'No group'"
+          type="button" 
+          @trig="isGrouped(prop?.id, !!!prop?.isGrouped)" 
+        />
     </Table>
 </template>
 
@@ -60,7 +68,7 @@ import Button from "@/components/elements/Button.vue"
 import Table from "@/components/elements/Table.vue"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import { ref, onMounted } from "vue";
-import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId } from '@/composable/components/Warehouses'
+import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId, updateWarehouseVariable } from '@/composable/components/Warehouses'
 
 export default {
   components: { Button, Table },
@@ -108,6 +116,10 @@ export default {
       idWarehouse.value = ev
       warehouse.value = await warehouseId(ev)?.name
     }
+    const isGrouped = async (idWarehouse, isGrouped) => {
+      await updateWarehouseVariable(idWarehouse, { isGrouped })
+      renewLists()
+    }
 
     onMounted(() => {
       renewLists()
@@ -122,7 +134,8 @@ export default {
       edit,
       lists,
       cancel,
-      warehouseLists
+      warehouseLists,
+      isGrouped
     }
 
   },
