@@ -14,13 +14,15 @@
             :value="name.shift+''" @inp="changeShift('Headspv', name.id, $event)"
         />
     </div>
-    <div v-for="warehouse in warehousesLists" :key="warehouse.id"  class="w3-col s2 w3-round-large w3-padding-small w3-small">
+    <div v-for="warehouse in warehousesLists" :key="warehouse.id"  class=" w3-topbar w3-bottombar w3-col s2 w3-round-large w3-padding-small w3-small">
         <h5>{{ warehouse.name.replace('jadi ', '') }}</h5>
-        <Input 
-            v-for="spv in warehouse.supervisors" :key="spv"
-            :label="spvLists[spv]?.name" placeholder="Shift" class="w3-row w3-padding" type="number"
-            :value="spvLists[spv]?.shift+''" @inp="changeShift('Supervisors', name.id, $event)"
-        />
+        <span v-for="spv in warehouse.supervisors" :key="spv">
+            <Input 
+                v-if="spvLists[spv]"
+                :label="spvLists[spv]?.name" placeholder="Shift" class="w3-row w3-padding" type="number"
+                :value="spvLists[spv]?.shift+''" @inp="changeShift('Supervisors', name.id, $event)"
+            />
+        </span>
     </div>
 
     <div class="w3-row">
@@ -75,8 +77,11 @@ export default {
                 spvLists.value[spv.id] = spv
             })
             headLists.value = headspvEnabled()
-            warehousesLists.value = listsWarehouse
-            console.log(spvLists.value)
+            listsWarehouse.forEach((warehouse) => {
+                if(!warehouse.isGrouped) {
+                    warehousesLists.value.push(warehouse)
+                }
+            })
         })
 
         return {
