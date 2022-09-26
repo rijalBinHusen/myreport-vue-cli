@@ -1,4 +1,4 @@
-import { findData, update } from "@/myfunction";
+import { findData, update, append } from "@/myfunction";
 import { ref } from "vue";
 import { dateMonth } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
@@ -88,4 +88,19 @@ export const updateBaseReport = async (id, obj) => {
     })
     await update({ store: 'basereportfile', criteria: { id: id }, obj: obj })
     return true
+}
+
+export const addBaseReportFile = async (periode, warehouse) => {
+    let record = { periode, 
+                    warehouse,
+                    fileName: false,
+                    stock: false,
+                    clock: false,
+                    imported: false,
+                }
+    await append({ store: "BaseReportFile", obj: record })
+            .then((val) => {
+                lists.value.unshift(val?.data)
+            })
+    return
 }

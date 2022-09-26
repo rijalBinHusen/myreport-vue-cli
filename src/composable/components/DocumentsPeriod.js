@@ -131,3 +131,9 @@ export const getUncollectedDocuments = async () => {
     lists = await findData({ store: "Document", criteria: { status: 0 }})
     return true
 }
+
+export const getLastDate = () => {
+    return lists.reduce(function(prev, current) {
+        return (prev.periode > current.periode) ? prev.periode : current.periode
+    })
+}

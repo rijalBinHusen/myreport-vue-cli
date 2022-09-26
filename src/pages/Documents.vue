@@ -247,7 +247,6 @@ export default {
             headSPVLists.value = listsHeadSPV
             await getUncollectedDocuments()
             lists.value = await listsOfDocuments()
-            console.log(listsOfDocuments())
         })
         
         const collect = (ev) => {

@@ -6,6 +6,7 @@
             class="w3-input w3-row" 
             v-model="periode" 
             DateFormat="yyyy-MM-dd"
+            :lowerLimit="lowerPeriode"
         />
         <h3>Kabag</h3>
         <Input 
@@ -44,8 +45,12 @@ import Datepicker from "vue3-datepicker"
 import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
 import { updateSupervisor, supervisorsEnabled } from "@/composable/components/Supervisors"
-import { updateHeadspv, headspvEnabled } from "@/composable/components/Headspv"
+import { updateHeadspv, headspvEnabled, headspvByShift } from "@/composable/components/Headspv"
 import { lists as listsWarehouse } from '@/composable/components/Warehouses'
+import { getLastDate, addData as addNewDocument } from '@/composable/components/DocumentsPeriod'
+import { useStore } from "vuex"
+import { ymdTime } from "@/composable/piece/dateFormat"
+import { addBaseReportFile } from '@/composable/components/BaseReportFile'
 
 export default {
     components: {
@@ -58,7 +63,9 @@ export default {
         const spvLists = ref({})
         const headLists = ref([])
         const periode = ref(new Date())
+        const lowerPeriode = ref('')
         const warehousesLists = ref([])
+        const store = useStore()
 
         const changeShift = (store, idFL, shift) => {
             if(id.value == idFL) {
@@ -82,50 +89,47 @@ export default {
                     warehousesLists.value.push(warehouse)
                 }
             })
+            lowerPeriode.value = new Date(getLastDate())
         })
 
+        const send = async () => {
+            if(periode.value) {
+                // bring up the loader
+                store.commit("Modal/active", {judul: "", form: "Loader"});
+                // jadikkan this.periode sebagai new Date().getTime()
+                let periodeTime = ymdTime(periode.value)
+                //// iterate gudang, kemudian iterate nama spv yang ada didalam gudang
+                for(let warehouse of listsWarehouse) {
+                    if(!warehouse?.disabled) {
+                        // baseReportFile record, masukkan berdasar iteraatenya gudang
+                        await addBaseReportFile(periodeTime, warehouse?.id)
+
+                        // Document record, iterate spv yang ada digudang
+                        for(let spv of warehouse?.supervisors) {
+                            let shiftNow = spvLists.value[spv]?.shift
+                            if(shiftNow) {
+                                await addNewDocument(
+                                    spv, 
+                                    periodeTime, 
+                                    shiftNow,
+                                    headspvByShift(shiftNow == 3 ? 2 : shiftNow ),
+                                    warehouse
+                                )
+                            }
+                        }
+                    }
+                }
+                //close the modeal
+                store.commit('Modal/tunnelMessage', true)
+                store.commit("Modal/active")
+            }
+        }
+
         return {
-            changeShift, spvLists, headLists, periode, warehousesLists
+            changeShift, spvLists, headLists, periode, warehousesLists, lowerPeriode, send
         }
     },
     // methods: {
-    //     async send(){
-    //         if(this.collect.periode) {
-    //             // bring up the loader
-    //             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-    //             // jadikkan this.periode sebagai new Date().getTime()
-    //             let periodeTime = this.GET_DATEFORMAT({format: "ymdTime", time: this.collect.periode})
-    //             // console.log(allName)
-    //             //// iterate gudang, kemudian iterate nama spv yang ada didalam gudang
-    //             for(let i=0; i < this._WAREHOUSES.length; i++) {
-
-    //                 // baseReportFile record, masukkan berdasar iteraatenya gudang
-    //                 await this.$store.dispatch("BaseReportFile/append", { 
-    //                         periode: periodeTime,
-    //                         warehouse: this._WAREHOUSES[i]?.id,
-    //                 })
-
-    //                 // Document record, iterate spv yang ada digudang
-    //                 for(let j = 0; j < this._WAREHOUSES[i]?.supervisors.length; j ++) {
-    //                     // get the supervisor information
-    //                     let spv = this.GET_SUPERVISORID(this._WAREHOUSES[i]?.supervisors[j])
-    //                     if(!spv?.disabled) {
-    //                         await this.$store.dispatch("Document/append", {
-    //                             name: spv?.id, 
-    //                             periode: periodeTime,
-    //                             shift: spv?.shift,
-    //                             head: spv?.shift == 3 
-    //                                     ? this.GET_HEADSHIFT(2)?.id 
-    //                                     : this.GET_HEADSHIFT(spv?.shift)?.id,
-    //                             warehouse: this._WAREHOUSES[i]?.id,
-    //                         })
-    //                     }
-    //                 }
-    //             }
-    //             //close the modeal
-    //             this.$store.commit("Modal/active")
-    //         }
-    //     }
     // },
     // computed: {
     //     ...mapState({
