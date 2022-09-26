@@ -1,5 +1,20 @@
 <template>
 <div class="w3-container w3-margin-top">
+
+        <Dropdown
+            :value="mode + ' Documents'"
+            :lists="[
+                { id: 'Uncollected' },
+                { id: 'Collected' },
+                { id: 'Approval' }
+            ]"
+            listsKey="id"
+            listsValue="id"
+            @trig="mode = $event"
+            class="w3-right"
+            primary
+        />
+
         <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
 
         <Dropdown
@@ -111,7 +126,7 @@
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import Dropdown from "@/components/elements/Dropdown.vue"
-import { ref, onBeforeMount} from "vue"
+import { ref, onBeforeMount, watch } from "vue"
 import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/composable/components/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
@@ -123,6 +138,7 @@ export default {
         const viewByPeriode = ref(true)
         const lists = ref([])
         const headSPVLists = ref([])
+        const mode = ref('Uncollected')
 
         const oneClickMessageToAll = async (ev) => {
             // ambil dulu semua karu
@@ -239,14 +255,17 @@ export default {
                 'Modal/tunnelMessage'
             )
             if(res) {
-                console.log(res)
+                renewLists()
             }
         }
 
         onBeforeMount( async () => {
             headSPVLists.value = listsHeadSPV
-            await getUncollectedDocuments()
-            lists.value = await listsOfDocuments()
+            renewLists()
+        })
+
+        watch([mode], (newVal) => {
+            mode.value = newVal[0]
         })
         
         const collect = (ev) => {
@@ -272,16 +291,18 @@ export default {
                 window.open(`https://wa.me/${ev}?text=${result}`)
                 // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
             }
-        const renewLists = () => {
-                // this.viewByPeriode
-                //     ? this.lists = this.$store.getters["Document/documentByStatus"](0)
-                //     : this.lists = this.$store.getters["Document/documentBySpv"](0)
-                // clearTimeout(this.timeOut)
+        
+        const renewLists = async () => {
+                mode.value == 'Uncollected'
+                    ? await getUncollectedDocuments()
+                    : false
+                
+                lists.value = await listsOfDocuments()
             }
         return { 
             oneClickMessageToAll, pesan, pesanSemua, 
             viewByPeriode, lists, edit, check, addPeriod,
-            headSPVLists, notApproval, collect
+            headSPVLists, notApproval, collect, mode
         }
     },
     components: {

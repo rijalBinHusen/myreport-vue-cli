@@ -112,8 +112,8 @@ export default {
                                     spv, 
                                     periodeTime, 
                                     shiftNow,
-                                    headspvByShift(shiftNow == 3 ? 2 : shiftNow ),
-                                    warehouse
+                                    headspvByShift(shiftNow == 3 ? 2 : shiftNow )?.id,
+                                    warehouse?.id
                                 )
                             }
                         }

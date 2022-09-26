@@ -24,15 +24,32 @@
 </template>
 
 <script>
+import { onBeforeMount, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import Button from "../elements/Button.vue"
 
 export default {
     setup() {
         const store = useStore()
-
         const obj = store.getters["Modal/obj"]?.obj
+
+        const keyDown = (e) => {
+            // if enter
+            if(e.keyCode == 13) {
+                // klick the true button
+                store.commit('Modal/tunnelMessage', true)
+                store.commit('Modal/active')
+            }
+            e.preventDefault()
+        }
  
+        onBeforeMount(() => {
+            window.addEventListener("keydown", keyDown)
+        })
+
+        onBeforeUnmount(() => {
+            window.removeEventListener("keydown", keyDown)
+        })
         return { obj }
     },
     components: {
