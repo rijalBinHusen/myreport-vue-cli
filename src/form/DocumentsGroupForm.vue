@@ -129,32 +129,5 @@ export default {
             changeShift, spvLists, headLists, periode, warehousesLists, lowerPeriode, send
         }
     },
-    // methods: {
-    // },
-    // computed: {
-    //     ...mapState({
-    //         _SPV: state => JSON.parse(JSON.stringify(state.Supervisors.lists)),
-    //         _WAREHOUSES: state => JSON.parse(JSON.stringify(state.Warehouses.lists)),
-    //     }),
-    //     ...mapGetters({
-    //         GET_HEADENABLE: "Headspv/enabled",
-    //         GET_SPVENABLE: "Supervisors/enabled",
-    //         GET_LASTDATE: "Document/lastDate",
-    //         GET_DATEFORMAT: "dateFormat",
-    //         GET_SUPERVISORID: "Supervisors/spvId",
-    //         GET_HEADID: "Headspv/headId",
-    //         GET_HEADSHIFT: "Headspv/shift",
-    //         GET_SPV_WAREHOUSE: "Warehouses/warehouseNameBySpv"
-    //     }),
-    //     names() {
-    //         // warehouse: 123123123, spv [ 1, 2, 3 ], warehousename
-    //         let result = []
-    //         let groupLength = Math.ceil(this.GET_SPVENABLE.length / 3) * 3
-    //         for (let i = 0; i < groupLength; i += 3) {
-    //             result.push(this.GET_SPVENABLE.slice(i, i+3))
-    //         }
-    //         return result
-    //     },
-    // },
 }
 </script>

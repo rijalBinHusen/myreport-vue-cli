@@ -1,6 +1,6 @@
 import { findData, update, append, deleteDocument } from "../../myfunction"
 import getDatesArray from "../piece/getDaysArray"
-import { dateMonth } from '../piece/dateFormat'
+import { dateMonth, dayPlus1 } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId } from './Warehouses'
@@ -132,10 +132,11 @@ export const getUncollectedDocuments = async () => {
     return true
 }
 
-export const getLastDate = async () => {
-    return lists.reduce(function(prev, current) {
+export const getLastDate = () => {
+    let res = lists.reduce(function(prev, current) {
         return (prev.periode > current.periode) ? prev.periode : current.periode
     })
+    return dayPlus1(res)
 }
 
 export const documentsBySupervisor = async () => {
@@ -171,6 +172,48 @@ export const documentsBySupervisor = async () => {
             })
         }
     }
-    console.log(result)
     return result
+}
+
+export const documentMore2DaysBySpv = async (spvId) => {
+  // expected result { warehouseName: [ listOfDocument ] }
+  let result = {};
+  for(let list of lists) {
+    // if list?.name (spvId) === spvId
+    let getWarehouse = await getWarehouseId(list?.warehouse).then((res) => res.name)
+    if (
+      list?.name === spvId 
+      && new Date().getTime() - list.periode >= 172800000
+      && list?.status == 0
+    ) {
+      result[getWarehouse]
+        ? result[getWarehouse].push(
+            "*" 
+            + dateMonth(list?.periode)
+            + "* Shift (" 
+            + list?.shift 
+            + ")"
+          )
+        : (result[getWarehouse] = [
+            "*"
+            + dateMonth(list.periode)
+            + "* Shift ("
+            + list?.shift 
+            + ")",
+          ]);
+    }
+  };
+/* expected result 
+    warehousename:
+        periode1 shift 1
+        periode2 shift 1
+        periode3 shift 1
+*/
+    let listLaporanText = "";
+    Object.keys(result).forEach((val) => {
+        if(val) {
+            listLaporanText += `${result[val].join(", ")} |  ${val }%0a`
+        }
+    })
+  return listLaporanText;
 }
