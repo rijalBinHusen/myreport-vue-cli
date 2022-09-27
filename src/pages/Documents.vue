@@ -62,7 +62,7 @@
                     <td>
                         <Dropdown
                             v-for="doc in obj.documents" :key="doc?.spvId"
-                            :value="doc.title"  
+                            :value="doc.periode2 + ' ' +doc.warehouseName"  
                             :lists="[
                                 { id: -1, isi: '-1 Hari'},
                                 { id: -2, isi: '-2 Hari'},
@@ -135,7 +135,8 @@ import {
     getUncollectedDocuments, 
     listsOfDocuments, 
     documentsBySupervisor,
-    documentMore2DaysBySpv
+    documentMore2DaysBySpv,
+    allDocumentMore2Days
 } from "@/composable/components/DocumentsPeriod"
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 
@@ -178,35 +179,19 @@ export default {
 
         const pesan = async (ev, listsLaporan) => {
             if(!listsLaporan) {
-                listsLaporan = await documentMore2DaysBySpv(ev?.id)
+                listsLaporan = await documentMore2DaysBySpv(ev?.spvId)
             }
-            let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev.name},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listsLaporan}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
-
+            let pesan = `*Tidak perlu dibalas*%0a%0aMohon maaf mengganggu bapak ${ev?.name || ev?.spvName},%0aberikut kami informasikan daftar laporan yang belum dikumpulkan yaitu:%0a%0a${listsLaporan}%0amohon untuk dikumpulkan tidak lebih dari H%2b2.%0aTerimakasih atas perhatianya.`
+            
             window.open(`https://wa.me/${ev.phone}?text=${pesan}`)
         }
 
-        const pesanSemua = (ev) => {
-            // // let nophone = window.prompt()
-            // if(!ev){ return }
-            // let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${store.getters["dateFormat"]({format: "full"})}:%0a%0a`
-            // // get document by spv and iterate, document by spv yang >= H+2
-            // store.getters["Document/documentBySpv"](0).forEach((val) => {
-            //     if(val.documents) {
-            //     // daftar laporan yang melebihi H+2 dari sekarang
-            //     let sekarang = new Date().getTime()
-            //     let listLaporan = []
-            //     val.documents.forEach((val) => {
-            //         if(sekarang - val.periode >= 172800000 ) {
-            //             listLaporan.push(`${val.periode2} | ${val?.warehouseName}%0a`)
-            //         }
-            //     })
-            //     if(listLaporan.length > 0)
-            //         result += `*${val.name} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
-            //     }
-            // })
+        const pesanSemua = async (ev) => {
+            // let nophone = window.prompt()
+            if(!ev) { return }
+            let messageText = await allDocumentMore2Days()
 
-            // window.open(`https://wa.me/${ev}?text=${result}`)
-            // // console.log(result)
+            window.open(`https://wa.me/${ev}?text=${messageText}`)
         }
 
         const edit = (ev) => {

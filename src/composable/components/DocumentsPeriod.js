@@ -157,18 +157,19 @@ export const documentsBySupervisor = async () => {
         // get warehouse name
         let warehouseName = await getWarehouseId(list.warehouse).then((res) => res.name.replace('Gudang jadi ', ''))
         // get supervisor name
-        let spvName = await getSupervisorId(list.name).then(res => res.name)
+        let spv = await getSupervisorId(list.name)
         // if the spv id exists in result
         if(findRes > -1) {
-            result[findRes].documents.push({ id: list.id, title: periode2 + ' ' + warehouseName })
+            result[findRes].documents.push({ id: list.id, periode: list.periode, periode2: periode2, warehouseName, shift: list.shift })
         } 
         // if not
         else {
             result.push({
                 spvId: list.name,
-                spvName,
+                spvName: spv?.name,
                 warehouseName,
-                documents: [{ id: list.id, title: periode2 + ' ' + warehouseName }]
+                phone: spv?.phone,
+                documents: [{ id: list.id, periode: list.periode, periode2: periode2, warehouseName, shift: list.shift }]
             })
         }
     }
@@ -176,44 +177,41 @@ export const documentsBySupervisor = async () => {
 }
 
 export const documentMore2DaysBySpv = async (spvId) => {
-  // expected result { warehouseName: [ listOfDocument ] }
-  let result = {};
-  for(let list of lists) {
-    // if list?.name (spvId) === spvId
-    let getWarehouse = await getWarehouseId(list?.warehouse).then((res) => res.name)
-    if (
-      list?.name === spvId 
-      && new Date().getTime() - list.periode >= 172800000
-      && list?.status == 0
-    ) {
-      result[getWarehouse]
-        ? result[getWarehouse].push(
-            "*" 
-            + dateMonth(list?.periode)
-            + "* Shift (" 
-            + list?.shift 
-            + ")"
-          )
-        : (result[getWarehouse] = [
-            "*"
-            + dateMonth(list.periode)
-            + "* Shift ("
-            + list?.shift 
-            + ")",
-          ]);
-    }
-  };
-/* expected result 
-    warehousename:
-        periode1 shift 1
-        periode2 shift 1
-        periode3 shift 1
-*/
-    let listLaporanText = "";
-    Object.keys(result).forEach((val) => {
-        if(val) {
-            listLaporanText += `${result[val].join(", ")} |  ${val }%0a`
+    let docsBySupervisor = await documentsBySupervisor()
+    let result = ""
+    docsBySupervisor.forEach((val) => {
+        if(val.documents && val.spvId == spvId) {
+        // daftar laporan yang melebihi H+2 dari sekarang
+        let sekarang = new Date().getTime()
+        let listLaporan = []
+        val.documents.forEach((val2) => {
+            if(sekarang - val2.periode >= 172800000 ) {
+                listLaporan.push(`${val2.periode2} Shift ${val2.shift} | Gudang ${val2?.warehouseName}%0a`)
+            }
+        })
+        if(listLaporan.length > 0)
+            result += `*${val.spvName} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
         }
     })
-  return listLaporanText;
+  return result;
+}
+
+export const allDocumentMore2Days = async () => {
+    let docsBySupervisor = await documentsBySupervisor()
+    let result = ""
+    docsBySupervisor.forEach((val) => {
+        if(val.documents) {
+        // daftar laporan yang melebihi H+2 dari sekarang
+        let sekarang = new Date().getTime()
+        let listLaporan = []
+        val.documents.forEach((val2) => {
+            if(sekarang - val2.periode >= 172800000 ) {
+                listLaporan.push(`${val2.periode2} Shift ${val2.shift} | Gudang ${val2?.warehouseName}%0a`)
+            }
+        })
+        if(listLaporan.length > 0)
+            result += `*${val.spvName} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
+        }
+    })
+    return result
 }
