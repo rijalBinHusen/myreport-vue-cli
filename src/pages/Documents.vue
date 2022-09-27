@@ -26,8 +26,9 @@
             class="w3-right"
             secondary
         />
-        <!-- Button to send message a document that uncollected -->
+        <!-- Button to send message a document that un approved -->
         <Dropdown
+            v-if="mode == 'Collected'"
             value="Belum approval"  
             :lists="headSPVLists"
             listsKey="phone"
@@ -102,7 +103,7 @@
                         ]"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="collect({ action: 'collect', val: $event, rec: prop.id })"
+                        @trig="collect({ day: $event, rec: prop.id })"
                         class="w3-small"
                         primary
                     />
@@ -136,7 +137,10 @@ import {
     listsOfDocuments, 
     documentsBySupervisor,
     documentMore2DaysBySpv,
-    allDocumentMore2Days
+    allDocumentMore2Days,
+    collectDocument,
+    ijinDocument,
+    kosongDocument,
 } from "@/composable/components/DocumentsPeriod"
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 
@@ -238,14 +242,19 @@ export default {
             renewLists()
         })
         
-        const collect = (ev) => {
-            // EV =  {action: 'approve', val: -1, rec: doc22050003}
-            // if(isNaN(ev.val)) {
-            //     this.$store.dispatch("Document/handleDocument", { action: ev.val, rec: ev.rec })
-            //     return
-            // }
-            //     this.$store.dispatch("Document/handleDocument", ev)
+        const collect = async (ev) => {
             console.log(ev)
+            if(Number(ev.day) < 1) {
+                await collectDocument(ev.rec, Number(ev.day))
+            } else {
+                if(ev.day == 'ijin') {
+                    await ijinDocument(ev.rec)
+                }
+                else if(ev.day == 'kosong') {
+                    await kosongDocument(ev.rec)
+                }
+            }
+            renewLists()
         }
 
         const notApproval = (ev) => {

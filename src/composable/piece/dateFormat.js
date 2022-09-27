@@ -49,9 +49,9 @@ export const ddmmyyyy = (payload, splitter) =>  {
     return details.date+splitter+(details.month > 8 ? details.month+1 : '0' + (details.month+1))+splitter+details.year      
 } 
 
-export const dayMinus = (yourDate, minusNumber) => {
+export const dayPlusOrMinus = (yourDate, yourNumber) => {
     let date = yourDate ? new Date(yourDate) : new Date()
-    date.setDate( date.getDate() - minusNumber )
+    date.setDate( date.getDate() + yourNumber )
     return date.getTime()
 }
 

@@ -1,6 +1,6 @@
 import { findData, update, append, deleteDocument } from "../../myfunction"
 import getDatesArray from "../piece/getDaysArray"
-import { dateMonth, dayPlus1 } from '../piece/dateFormat'
+import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId } from './Warehouses'
@@ -43,14 +43,14 @@ export const updateDocument = async (idDocument, objToUpdate) => {
 export const finishedDocument = async () => {
     if(lists.length) {
         let filtered = lists.filter((rec) => rec?.isfinished)
-        return await documentsMapper(filtered)
+        return documentsMapper(filtered)
     }
 }
 // unfinished document
 export const unFinishedDocument = async () => {
     if(lists.length) {
         let filtered = lists.filter((rec) => !rec?.isfinished)
-        return await documentsMapper(filtered)
+        return documentsMapper(filtered)
     }
 }
 
@@ -118,8 +118,8 @@ export const isGenerateDocument = (idDocument, val) => {
 }
 
 export const removeDocument = async (idDocument) => {
+    removeFromState(idDocument)
     await deleteDocument({ store: 'document', criteria: { id: idDocument }})
-    lists = lists.filter((list) => list.id != idDocument)
     return
 }
 
@@ -214,4 +214,90 @@ export const allDocumentMore2Days = async () => {
         }
     })
     return result
+}
+
+const removeFromState = (idDocument) => {
+    lists = lists.filter((list) => list.id != idDocument)
+}
+
+export const collectDocument = async (idDocument, day) => {
+    let time;
+    if(day < 0) {
+        time = ymdTime(dayPlusOrMinus('', day))
+    } else {
+        time = ymdTime()
+    }
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { collected: time, status: 1 })
+    return
+}
+
+export const approveDocument = async (idDocument, day) => {
+    let time;
+    if(day < 0) {
+        time = dayPlusOrMinus('', day)
+    } else {
+        time = ymdTime()
+    }
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { approval: time, status: 2 })
+    return
+}
+
+export const unCollectDocument = async (idDocument) => {
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { collected: false, status: 0 })
+    return
+}
+
+export const ijinDocument = async (idDocument) => {
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { 
+        collected: 'Tidak masuk', 
+        status: 2,
+        shared: false,
+        approval: 'Tidak masuk'
+    })
+    return
+}
+
+export const kosongDocument = async (idDocument) => {
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { 
+        collected: 'Laporan tidak ada', 
+        status: 2,
+        approval: 'Laporan tidak ada',
+        shared: false,
+    })
+    return
+}
+
+export const shareDocument = async (idDocument, day) => {
+    let time;
+    if(day < 0) {
+        time = dayPlusOrMinus('', day)
+    } else {
+        time = ymdTime()
+    }
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { shared: time })
+    return
+}
+
+export const unApproveDocument = async (idDocument) => {
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { apprval: false, status: 1 })
+    return
+}
+
+export const finishDocument = async (idDocument, day) => {
+    let time;
+    if(day < 0) {
+        time = dayPlusOrMinus('', day)
+    } else {
+        time = ymdTime()
+    }
+    removeFromState(idDocument)
+    await updateDocument(idDocument, { finished: time, isfinished: true })
+    return
 }
