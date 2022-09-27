@@ -90,22 +90,13 @@
                         @trig="pesan(prop)" 
 					/>
                     
-                    <Dropdown
+                    <DocumentOptions 
                         v-if="viewByPeriode"
-                        value="Collect"  
-                        :lists="[
-                            { id: -1, isi: '-1 Hari'},
-                            { id: -2, isi: '-2 Hari'},
-                            { id: -3, isi: '-3 Hari'},
-                            { id: 0, isi: '0 Hari' },
-                            { id: 'ijin', isi: 'Tidak masuk'},
-                            { id: 'kosong', isi: 'Laporan tidak ada'},
-                        ]"
-                        listsKey="id"
-                        listsValue="isi"
-                        @trig="collect({ day: $event, rec: prop.id })"
                         class="w3-small"
-                        primary
+                        isPrimary
+                        @clicked="collect({ day: $event, rec: prop.id })"
+                        :isFull="true"
+                        value="Collected"
                     />
 
                     <Button
@@ -143,8 +134,15 @@ import {
     kosongDocument,
 } from "@/composable/components/DocumentsPeriod"
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
+import DocumentOptions from "@/components/parts/DocumentOptions.vue"
 
 export default {
+    components: {
+    Button,
+    Datatable,
+    Dropdown,
+    DocumentOptions,
+},
     setup() {
         const store = useStore()
         const viewByPeriode = ref(true)
@@ -294,11 +292,6 @@ export default {
             viewByPeriode, lists, edit, check, addPeriod,
             headSPVLists, notApproval, collect, mode, renderTable
         }
-    },
-    components: {
-        Button,
-        Datatable,
-        Dropdown
     },
 }
 </script>
