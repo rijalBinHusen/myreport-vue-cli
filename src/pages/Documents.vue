@@ -1,6 +1,6 @@
 <template>
 <div class="w3-container w3-margin-top">
-
+        <!-- Mode uncollected, collected or approval -->
         <Dropdown
             :value="mode + ' Documents'"
             :lists="[
@@ -14,9 +14,9 @@
             class="w3-right"
             primary
         />
-
+        <!-- Button to add new document -->
         <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
-
+        <!-- Button to message to all spv and head -->
         <Dropdown
             value="Message to all"  
             :lists="headSPVLists"
@@ -26,7 +26,7 @@
             class="w3-right"
             secondary
         />
-
+        <!-- Button to send message a document that uncollected -->
         <Dropdown
             value="Belum approval"  
             :lists="headSPVLists"
@@ -36,7 +36,7 @@
             class="w3-right"
             secondary
         />
-
+        <!-- Button to switch between view by supervisor or by periode -->
         <Button 
             class="w3-right" 
             primary 
@@ -46,9 +46,10 @@
         />
 
 		<Datatable
+           v-if="renderTable"
           :datanya="lists"
           :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Gudang', 'Nama']"
-          :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['warehouseName', 'name']"
+          :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['warehouseName', 'spvName']"
           option
           :id="viewByPeriode ? 'uncollectedByPeriode' : 'uncollectedBySpv'"
         >
@@ -60,8 +61,8 @@
                 <template #td="{ obj }" v-if="!viewByPeriode">
                     <td>
                         <Dropdown
-                            v-for="doc in obj.documents" :key="doc?.id"
-                            :value="doc?.periode2+' | '+doc?.warehouseName.replace('Gudang jadi ', '')"  
+                            v-for="doc in obj.documents" :key="doc?.spvId"
+                            :value="doc.title"  
                             :lists="[
                                 { id: -1, isi: '-1 Hari'},
                                 { id: -2, isi: '-2 Hari'},
@@ -70,7 +71,7 @@
                             ]"
                             listsKey="id"
                             listsValue="isi"
-                            @trig="check({val: $event, id: doc?.id})"
+                            @trig="check({ val: $event, id: doc?.id })"
                             class="w3-small"
                             primary
                         />
@@ -130,7 +131,7 @@ import { ref, onBeforeMount, watch } from "vue"
 import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/composable/components/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { getUncollectedDocuments, listsOfDocuments } from "@/composable/components/DocumentsPeriod"
+import { getUncollectedDocuments, listsOfDocuments, documentsBySupervisor } from "@/composable/components/DocumentsPeriod"
 
 export default {
     setup() {
@@ -139,6 +140,7 @@ export default {
         const lists = ref([])
         const headSPVLists = ref([])
         const mode = ref('Uncollected')
+        const renderTable = ref(true)
 
         const oneClickMessageToAll = async (ev) => {
             // ambil dulu semua karu
@@ -261,11 +263,11 @@ export default {
 
         onBeforeMount( async () => {
             headSPVLists.value = listsHeadSPV
-            renewLists()
+            renewLists(true)
         })
 
-        watch([mode], (newVal) => {
-            mode.value = newVal[0]
+        watch([mode, viewByPeriode], () => {
+            renewLists()
         })
         
         const collect = (ev) => {
@@ -292,17 +294,28 @@ export default {
                 // shell.openExternal(`https://wa.me/${ev}?text=${result}`)
             }
         
-        const renewLists = async () => {
-                mode.value == 'Uncollected'
-                    ? await getUncollectedDocuments()
-                    : false
-                
-                lists.value = await listsOfDocuments()
-            }
+        const renewLists = async (isGetNewDocument) => {
+            renderTable.value = false
+                if(isGetNewDocument) {
+                    if(mode.value == 'Uncollected') {
+                        await getUncollectedDocuments()
+                    }
+                }
+                // if view by periode
+                if(viewByPeriode.value) {
+                    lists.value = await listsOfDocuments()
+                } 
+                // if view by supervisor
+                else {
+                    lists.value = await documentsBySupervisor()
+                }
+            renderTable.value = true
+        }
+
         return { 
             oneClickMessageToAll, pesan, pesanSemua, 
             viewByPeriode, lists, edit, check, addPeriod,
-            headSPVLists, notApproval, collect, mode
+            headSPVLists, notApproval, collect, mode, renderTable
         }
     },
     components: {

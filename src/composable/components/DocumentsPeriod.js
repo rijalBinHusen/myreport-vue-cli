@@ -132,8 +132,45 @@ export const getUncollectedDocuments = async () => {
     return true
 }
 
-export const getLastDate = () => {
+export const getLastDate = async () => {
     return lists.reduce(function(prev, current) {
         return (prev.periode > current.periode) ? prev.periode : current.periode
     })
+}
+
+export const documentsBySupervisor = async () => {
+    /*expected result [
+        {
+        spvId: '',
+        warehouseName: '', 
+        spvName: '', 
+        documents: [ id: '', title: 'warehousename 12-Sept' ],
+        }
+    ] */
+    let result = []
+    for(let list of lists) {
+        // find index first, it may pushed before
+        let findRes = result.findIndex((res) => res.spvId == list.name)
+        // date in date month format
+        let periode2 = dateMonth(list.periode)
+        // get warehouse name
+        let warehouseName = await getWarehouseId(list.warehouse).then((res) => res.name.replace('Gudang jadi ', ''))
+        // get supervisor name
+        let spvName = await getSupervisorId(list.name).then(res => res.name)
+        // if the spv id exists in result
+        if(findRes > -1) {
+            result[findRes].documents.push({ id: list.id, title: periode2 + ' ' + warehouseName })
+        } 
+        // if not
+        else {
+            result.push({
+                spvId: list.name,
+                spvName,
+                warehouseName,
+                documents: [{ id: list.id, title: periode2 + ' ' + warehouseName }]
+            })
+        }
+    }
+    console.log(result)
+    return result
 }
