@@ -26,7 +26,7 @@
 <script>
 
 import DocumentsGroupForm from "@/form/DocumentsGroupForm.vue"
-import UncollectedEditForm from "../../modular/Uncollected/UncollectedEditForm.vue"
+import DocumentCheckForm from "@/form/DocumentCheckForm.vue"
 import ApprovalForm from "../../modular/Approval/ApprovalForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "@/form/ImportDataForm.vue"
@@ -60,7 +60,7 @@ export default {
       WarehouseSupervisorsForm,
       BaseProblemForm,
       PeriodePicker,
-      UncollectedEditForm,
+      DocumentCheckForm,
       BaseStockForm,
       BaseClockForm,
       DocumentsGroupForm,

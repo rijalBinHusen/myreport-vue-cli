@@ -61,20 +61,13 @@
 
                 <template #td="{ obj }" v-if="!viewByPeriode">
                     <td>
-                        <Dropdown
+                        <DocumentOptions 
                             v-for="doc in obj.documents" :key="doc?.spvId"
-                            :value="doc.periode2 + ' ' +doc.warehouseName"  
-                            :lists="[
-                                { id: -1, isi: '-1 Hari'},
-                                { id: -2, isi: '-2 Hari'},
-                                { id: -3, isi: '-3 Hari'},
-                                { id: 0, isi: '0 Hari' }
-                            ]"
-                            listsKey="id"
-                            listsValue="isi"
-                            @trig="check({ val: $event, id: doc?.id })"
                             class="w3-small"
-                            primary
+                            isPrimary
+                            @clicked="check({ day: $event, rec: doc.id })"
+                            :isFull="true"
+                            :value="doc.periode2 + ' ' +doc.warehouseName"
                         />
                     </td>
                 </template>
@@ -135,6 +128,7 @@ import {
 } from "@/composable/components/DocumentsPeriod"
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 import DocumentOptions from "@/components/parts/DocumentOptions.vue"
+import { dateMonth, dayPlusOrMinus } from "@/composable/piece/dateFormat"
 
 export default {
     components: {
@@ -205,18 +199,17 @@ export default {
         //         mode: "edit"
         }
 
-        const check = (ev) => {
-            console.log('check')
-                    //     this.$store.commit("Modal/active", {
-        //         judul: `Report collected at ${
-        //             this.GET_DATEFORMAT({format: "dateMonth", time: this.GET_DATEFORMAT({format: ev.val})})
-        //         }`, 
-        //         form: "UncollectedEditForm",
-        //         id: ev.id,
-        //         mode: "edit",
-        //         time: ev.val,
-        //         next: "collect"
-        //     });
+        const check = async (ev) => {
+            let time = dayPlusOrMinus('', Number(ev.day))
+            let res = await subscribeMutation(
+                `Report collected at ${dateMonth(time)}`,
+                "DocumentCheckForm",
+                { id: ev.rec, time: ev.day, mode: 'edit' },
+                'Modal/tunnelMessage'
+            )
+            if(res) {
+                renewLists()
+            }
         }
 
         const addPeriod = async () => {
@@ -241,7 +234,6 @@ export default {
         })
         
         const collect = async (ev) => {
-            console.log(ev)
             if(Number(ev.day) < 1) {
                 await collectDocument(ev.rec, Number(ev.day))
             } else {

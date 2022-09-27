@@ -15,16 +15,22 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
+import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
+import { supervisorsEnabled, lists as supervisorLists } from '@/composable/components/Supervisors'
 export default {
     emit: ['selectedSpv'],
     props: ['inSelectSpv', 'disabled', 'spvEnabled'],
     setup(props, { emit }) {
-        const store = useStore()
-        const supervisors = props?.spvEnabled 
-                            ? store.getters['Supervisors/enabled'] 
-                            :store.state.Supervisors.lists
+        const supervisors = ref([])
+
+        onBeforeMount(() => {
+            if(props?.spvEnabled) {
+                supervisors.value = supervisorsEnabled()
+            } else {
+                supervisors.value = supervisorLists
+            }
+        })
                             
         const handleChange = (ev) => {
             emit('selectedSpv', ev)

@@ -15,14 +15,20 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
+import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
+import { lists } from '@/composable/components/Headspv';
+
 export default {
     emit: ['selectedHead'],
     props: ['inSelectHead', 'disabled'],
     setup(props, { emit }) {
-        const store = useStore()
-        const head = store.state.Headspv.lists
+        const head = ref([])
+        
+        onBeforeMount(() => {
+            head.value = lists
+        })
+
         const handleChange = (ev) => {
             emit('selectedHead', ev)
         }

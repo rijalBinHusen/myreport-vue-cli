@@ -15,14 +15,20 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
+import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
+import { lists } from '@/composable/components/Warehouses';
+
 export default {
     emit: ['selectedWarehouse'],
     props: ['inSelectWarehouse', 'disabled'],
     setup(props, { emit }) {
-        const store = useStore()
-        const warehouses = store.state.Warehouses.lists
+        const warehouses = ref([])
+
+        onBeforeMount(() => {
+            warehouses.value = lists
+        })
+
         const handleChange = (ev) => {
             emit('selectedWarehouse', ev)
         }
