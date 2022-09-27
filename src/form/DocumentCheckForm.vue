@@ -82,7 +82,7 @@ export default {
             if(isEdit.value) {
                 // supervisor 
                 if(record['supervisor'] != newVal[1]) {
-                    changed.value['supervisor'] = newVal[1]
+                    changed.value['name'] = newVal[1]
                 }
                 // head
                 if(record['head'] != newVal[2]) {
@@ -110,16 +110,17 @@ export default {
             timeCollected.value = Number(obj.time)
             setTimeout(() => {
                 isEdit.value = obj.mode === 'edit'
-            }, 300)
+            }, 90)
         })
 
         const save = async () => {
             // if the record changed
-            console.log(record, changed.value)
             if(Object.keys(changed.value).length) {
                 await updateDocument(record.id, changed.value)
             } 
-            await collectDocument(record.id, timeCollected.value)
+            if(timeCollected.value) {
+                await collectDocument(record.id, timeCollected.value)
+            }
             store.commit('Modal/tunnelMessage', true)
             //close the modal
             store.commit("Modal/active")
@@ -127,30 +128,14 @@ export default {
 
         return { record, isEdit, date, supervisor, head, shift, warehouse, save }
     },
-    methods: {
-    },
-    computed: {
-        names() {
-            return this.$store.state.Supervisors.lists
-        },
-        heads() {
-            return JSON.parse(JSON.stringify(this.$store.state.Headspv.lists))
-        },
-    },
-    // mounted() {
-    //     this.record = this.$store.getters["Document/getId"](this.$store.getters["Modal/obj"].id)
-    //     this.more = this.$store.getters["Modal/obj"]
-
-    // },
     components: {
-    Input,
-    Select,
-    Button,
-    SelectSupervisors,
-    SelectHead,
-    SelectShift,
-    SelectWarehouse
-},
-    name: "UncollectedEditForm",
+        Input,
+        Select,
+        Button,
+        SelectSupervisors,
+        SelectHead,
+        SelectShift,
+        SelectWarehouse
+    },
 }
 </script>

@@ -190,25 +190,32 @@ export default {
             window.open(`https://wa.me/${ev}?text=${messageText}`)
         }
 
-        const edit = (ev) => {
-            console.log(ev)
-         //   this.$store.commit("Modal/active", {
-        //         judul: "Edit record", 
-        //         form: "UncollectedEditForm",
-        //         id: ev,
-        //         mode: "edit"
+        const edit = async (ev) => {
+            let res = await subscribeMutation(
+                        `Edit document`,
+                        "DocumentCheckForm",
+                        { id: ev,  mode: 'edit' },
+                        'Modal/tunnelMessage'
+                    )
+                if(res) {
+                    renewLists()
+                }
         }
 
         const check = async (ev) => {
-            let time = dayPlusOrMinus('', Number(ev.day))
-            let res = await subscribeMutation(
-                `Report collected at ${dateMonth(time)}`,
-                "DocumentCheckForm",
-                { id: ev.rec, time: ev.day, mode: 'edit' },
-                'Modal/tunnelMessage'
-            )
-            if(res) {
-                renewLists()
+            if(!isNaN(ev.day)) {
+                let time = dayPlusOrMinus('', Number(ev.day))
+                let res = await subscribeMutation(
+                    `Report collected at ${dateMonth(time)}`,
+                    "DocumentCheckForm",
+                    { id: ev.rec, time: ev.day, mode: 'edit' },
+                    'Modal/tunnelMessage'
+                    )
+                    if(res) {
+                        renewLists()
+                    }
+            } else {
+                collect(ev)
             }
         }
 
