@@ -3,7 +3,8 @@ import getDatesArray from "../piece/getDaysArray"
 import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
-import { getWarehouseId } from './Warehouses'
+import { getWarehouseId, warehouseNameBySpv } from './Warehouses'
+import sortFunc from '../piece/sort'
 
 let lists = []
 
@@ -132,6 +133,11 @@ export const getUncollectedDocuments = async () => {
     return true
 }
 
+export const getCollectedDocuments = async () => {
+    lists = await findData({ store: "Document", criteria: { status: 1 }})
+    return true
+}
+
 export const getLastDate = () => {
     let res = lists.reduce(function(prev, current) {
         return (prev.periode > current.periode) ? prev.periode : current.periode
@@ -154,6 +160,8 @@ export const documentsBySupervisor = async () => {
         let findRes = result.findIndex((res) => res.spvId == list.name)
         // date in date month format
         let periode2 = dateMonth(list.periode)
+        // get warehouse name by spv
+        let warehouseNameSpv = warehouseNameBySpv(list.name)
         // get warehouse name
         let warehouseName = await getWarehouseId(list.warehouse).then((res) => res.name.replace('Gudang jadi ', ''))
         // get supervisor name
@@ -167,13 +175,24 @@ export const documentsBySupervisor = async () => {
             result.push({
                 spvId: list.name,
                 spvName: spv?.name,
-                warehouseName,
+                warehouseName: warehouseNameSpv,
                 phone: spv?.phone,
                 documents: [{ id: list.id, periode: list.periode, periode2: periode2, warehouseName, shift: list.shift }]
             })
         }
     }
-    return result
+    return result.sort((a, b) => {
+        let fa = a.spvId.toLowerCase(),
+        fb = b.spvId.toLowerCase();
+
+        if (fa < fb) {
+            return -1;
+        }
+        if (fa > fb) {
+            return 1;
+        }
+        return 0;
+    })
 }
 
 export const documentMore2DaysBySpv = async (spvId) => {

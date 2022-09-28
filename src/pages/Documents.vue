@@ -14,10 +14,26 @@
             class="w3-right"
             primary
         />
+        <!-- Button to switch between view by supervisor or by periode -->
+        <Button 
+            class="w3-right" 
+            primary 
+            :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
+            type="button" 
+            @trig="viewByPeriode = !viewByPeriode" 
+        />
         <!-- Button to add new document -->
-        <Button class="w3-right" primary value="+ Periode" type="button" @trig="addPeriod" />
+        <Button 
+        v-if="mode == 'Uncollected'"
+            class="w3-right" 
+            primary 
+            value="+ Periode" 
+            type="button" 
+            @trig="addPeriod"
+        />
         <!-- Button to message to all spv and head -->
         <Dropdown
+            v-if="mode == 'Uncollected'"
             value="Message to all"  
             :lists="headSPVLists"
             listsKey="phone"
@@ -36,14 +52,6 @@
             @trig="notApproval($event)"
             class="w3-right"
             secondary
-        />
-        <!-- Button to switch between view by supervisor or by periode -->
-        <Button 
-            class="w3-right" 
-            primary 
-            :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
-            type="button" 
-            @trig="viewByPeriode = !viewByPeriode" 
         />
 
 		<Datatable
@@ -66,7 +74,7 @@
                             class="w3-small"
                             isPrimary
                             @clicked="check({ day: $event, rec: doc.id })"
-                            :isFull="true"
+                            :isFull="mode == 'Uncollected'"
                             :value="doc.periode2 + ' ' +doc.warehouseName"
                         />
                     </td>
@@ -88,7 +96,7 @@
                         class="w3-small"
                         isPrimary
                         @clicked="collect({ day: $event, rec: prop.id })"
-                        :isFull="true"
+                        :isFull="mode == 'Uncollected'"
                         value="Collected"
                     />
 
@@ -116,6 +124,7 @@ import { ref, onBeforeMount, watch } from "vue"
 import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/composable/components/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+
 import { 
     getUncollectedDocuments, 
     listsOfDocuments, 
@@ -125,7 +134,9 @@ import {
     collectDocument,
     ijinDocument,
     kosongDocument,
+    getCollectedDocuments
 } from "@/composable/components/DocumentsPeriod"
+
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 import DocumentOptions from "@/components/parts/DocumentOptions.vue"
 import { dateMonth, dayPlusOrMinus } from "@/composable/piece/dateFormat"
@@ -236,8 +247,8 @@ export default {
             renewLists(true)
         })
 
-        watch([mode, viewByPeriode], () => {
-            renewLists()
+        watch([mode, viewByPeriode], (newVal, oldVal) => {
+            renewLists(newVal[0] !== oldVal[0])
         })
         
         const collect = async (ev) => {
@@ -273,6 +284,8 @@ export default {
                 if(isGetNewDocument) {
                     if(mode.value == 'Uncollected') {
                         await getUncollectedDocuments()
+                    } else if(mode.value == 'Collected') {
+                        await getCollectedDocuments()
                     }
                 }
                 // if view by periode
@@ -289,7 +302,7 @@ export default {
         return { 
             oneClickMessageToAll, pesan, pesanSemua, 
             viewByPeriode, lists, edit, check, addPeriod,
-            headSPVLists, notApproval, collect, mode, renderTable
+            headSPVLists, notApproval, collect, mode, renderTable,
         }
     },
 }
