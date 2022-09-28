@@ -137,6 +137,10 @@ export const getCollectedDocuments = async () => {
     return true
 }
 
+export const getApprovedDocuments = async () => {
+    lists = await findData({ store: "Document", criteria: { status: 2, shared: false }})
+    return true
+}
 export const getLastDate = () => {
     let res = lists.reduce(function(prev, current) {
         return (prev.periode > current.periode) ? prev.periode : current.periode

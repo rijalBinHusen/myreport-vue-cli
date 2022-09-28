@@ -58,12 +58,12 @@
 		<Datatable
            v-if="renderTable"
           :datanya="lists"
-          :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Gudang', 'Nama']"
-          :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['warehouseName', 'spvName']"
-          :option="isModeUncollected || isModeApproval"
+          :heads="headsTable"
+          :keys="keysTable"
+          :option="isModeUncollected || isModeApproval || viewByPeriode"
           :id="viewByPeriode ? 'uncollectedByPeriode' : 'uncollectedBySpv'"
         >
-
+            <!-- If view by periode -->
                 <template #th v-if="!viewByPeriode">
                     <th>Daftar periode</th>
                 </template>
@@ -80,6 +80,7 @@
                         />
                     </td>
                 </template>
+            <!-- end of if view by periode -->
 
 				<template #default="{ prop }">
 					<Button
@@ -93,12 +94,12 @@
 					/>
                     
                     <DocumentOptions 
-                        v-if="viewByPeriode"
+                        v-if="viewByPeriode && ( isModeCollected || isModeUncollected)"
                         class="w3-small"
                         isPrimary
                         @clicked="collect({ day: $event, rec: prop.id })"
                         :isFull="isModeUncollected"
-                        value="Collect"
+                        :value="isModeUncollected ? 'Collect' : 'Approve'"
                     />
 
                     <Button
@@ -113,7 +114,7 @@
 
                     
                     <Button
-                        v-if="viewByPeriode && (isModeCollected || isModeApproval)"
+                        v-if="viewByPeriode && isModeCollected"
                         small
                         secondary
                         value="Batal"
@@ -121,6 +122,21 @@
                         :datanya="prop.id"
                         @trig="cancel($event)" 
 					/>
+                    <!-- Approval document button -->
+                    
+                    <Dropdown
+                        v-if="isModeApproval"
+                        :value="prop?.shared ? 
+                                `${dateMonth(prop.shared)} Shared` 
+                                :'Options'"  
+                        :lists="dropDownApprovalOptions(prop)"
+                        listsKey="id"
+                        listsValue="isi"
+                        @trig="handleAction({action: $event, rec: prop?.id})"
+                        class="w3-small"
+                        :danger="!!prop?.shared"
+                        :primary="!!!prop?.shared"
+                    />
                 </template>
         
         </Datatable>
@@ -148,7 +164,8 @@ import {
     getCollectedDocuments,
     approveDocument,
     unApproveDocument,
-    unCollectDocument
+    unCollectDocument,
+    getApprovedDocuments
 } from "@/composable/components/DocumentsPeriod"
 
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
@@ -172,6 +189,49 @@ export default {
         const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
         const isModeCollected = computed(() =>  mode.value == 'Collected' )
         const isModeApproval = computed(() => mode.value == 'Approval')
+        const headsTable = computed(() => {
+            if(viewByPeriode.value) {
+                if(isModeUncollected.value) {
+                    return ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag']
+                } else if(isModeCollected.value) {
+                    return ['Gudang', 'Nama', 'Periode', 'Shift', 'Collected']
+                } else {
+                    return ['Gudang', 'Nama', 'Periode', 'Shift', 'Approved']
+                }
+            } else {
+                return ['Gudang', 'Nama']
+            }
+        })
+        const keysTable = computed(() => {
+            if(viewByPeriode.value) {
+                if(isModeUncollected.value) {
+                    return ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] 
+                } else if(isModeCollected.value) {
+                    return ['warehouseName', 'spvName', 'periode2', 'shift', 'collected2'] 
+                } else {
+                    return ['warehouseName', 'spvName', 'periode2', 'shift', 'approval2'] 
+                }
+            } else {
+                return ['warehouseName', 'spvName']
+            }
+        })
+        const  dropDownApprovalOptions = (prop) => {
+            // v-if="prop.shared == 'false' || !prop.shared "
+            // !isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile
+            let options = []
+            if(!isNaN(prop.isfinished) &&  prop?.baseReportFile) {
+                options.push({ id: 'exportReport', isi: 'Export' })
+            }
+            if(!prop?.shared) {
+                // action: 'unapprove', rec: prop.id }
+                // { action: 'share', rec: prop.id }
+                options.push(
+                    { id: 'unapprove', isi: 'Batal' },
+                    { id: 'share', isi: 'Share' }
+                )
+            }
+            return options
+        }
 
         const oneClickMessageToAll = async (ev) => {
             // ambil dulu semua karu
@@ -312,10 +372,13 @@ export default {
         const renewLists = async (isGetNewDocument) => {
             renderTable.value = false
                 if(isGetNewDocument) {
-                    if(mode.value == 'Uncollected') {
+                    if(isModeUncollected.value) {
                         await getUncollectedDocuments()
-                    } else if(mode.value == 'Collected') {
+                    } else if(isModeCollected.value) {
                         await getCollectedDocuments()
+                    } else {
+                        await getApprovedDocuments()
+                        viewByPeriode.value = true
                     }
                 }
                 // if view by periode
@@ -333,7 +396,8 @@ export default {
             oneClickMessageToAll, pesan, pesanSemua, 
             viewByPeriode, lists, edit, check, addPeriod,
             headSPVLists, notApproval, collect, mode, renderTable,
-            isModeCollected, isModeUncollected, isModeApproval, cancel
+            isModeCollected, isModeUncollected, isModeApproval, cancel,
+            headsTable, keysTable, dropDownApprovalOptions
         }
     },
 }
