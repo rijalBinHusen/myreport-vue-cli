@@ -168,7 +168,8 @@ import {
     unApproveDocument,
     unCollectDocument,
     getApprovedDocuments,
-    getDocuments
+    getDocuments,
+    shareDocument
 } from "@/composable/components/DocumentsPeriod"
 
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
@@ -260,6 +261,10 @@ export default {
                 //close the loader
                 store.commit("Modal/active")
                 return
+            } else if(action === 'unapprove') {
+                cancel(docs.id)
+            } else if(action === 'share') {
+                collect({ rec: docs.id, day: 0 })
             }
             // EV =  {action: 'approve', rec: doc22050003}
             // this.$store.dispatch("Document/handleDocument", ev)
@@ -367,6 +372,8 @@ export default {
                     await collectDocument(ev.rec, Number(ev.day))
                 } else if(isModeCollected.value) {
                     await approveDocument(ev.rec, Number(ev.day))
+                } else if(isModeApproval.value) {
+                    await shareDocument(ev.rec)
                 }
             } else {
                 if(ev.day == 'ijin') {

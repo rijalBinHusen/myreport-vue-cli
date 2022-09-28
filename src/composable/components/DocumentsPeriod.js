@@ -294,15 +294,9 @@ export const kosongDocument = async (idDocument) => {
     return
 }
 
-export const shareDocument = async (idDocument, day) => {
-    let time;
-    if(day < 0) {
-        time = dayPlusOrMinus('', day)
-    } else {
-        time = ymdTime()
-    }
+export const shareDocument = async (idDocument) => {
     removeFromState(idDocument)
-    await updateDocument(idDocument, { shared: time })
+    await updateDocument(idDocument, { shared: ymdTime() })
     return
 }
 
