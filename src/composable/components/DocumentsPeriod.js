@@ -4,7 +4,6 @@ import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateForma
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId, warehouseNameBySpv } from './Warehouses'
-import sortFunc from '../piece/sort'
 
 let lists = []
 
@@ -305,7 +304,7 @@ export const shareDocument = async (idDocument, day) => {
 
 export const unApproveDocument = async (idDocument) => {
     removeFromState(idDocument)
-    await updateDocument(idDocument, { apprval: false, status: 1 })
+    await updateDocument(idDocument, { approval: false, status: 1 })
     return
 }
 

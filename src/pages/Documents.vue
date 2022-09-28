@@ -16,6 +16,7 @@
         />
         <!-- Button to switch between view by supervisor or by periode -->
         <Button 
+            v-if="isModeCollected || isModeUncollected"
             class="w3-right" 
             primary 
             :value="viewByPeriode ? 'View By Supervisors' : 'View by periode'" 
@@ -24,7 +25,7 @@
         />
         <!-- Button to add new document -->
         <Button 
-        v-if="mode == 'Uncollected'"
+        v-if="isModeUncollected"
             class="w3-right" 
             primary 
             value="+ Periode" 
@@ -33,7 +34,7 @@
         />
         <!-- Button to message to all spv and head -->
         <Dropdown
-            v-if="mode == 'Uncollected'"
+            v-if="isModeUncollected"
             value="Message to all"  
             :lists="headSPVLists"
             listsKey="phone"
@@ -44,7 +45,7 @@
         />
         <!-- Button to send message a document that un approved -->
         <Dropdown
-            v-if="mode == 'Collected'"
+            v-if="isModeCollected"
             value="Belum approval"  
             :lists="headSPVLists"
             listsKey="phone"
@@ -59,7 +60,7 @@
           :datanya="lists"
           :heads="viewByPeriode ? ['Gudang', 'Nama', 'Periode', 'Shift', 'Kabag'] : ['Gudang', 'Nama']"
           :keys="viewByPeriode ? ['warehouseName', 'spvName', 'periode2', 'shift', 'headName'] : ['warehouseName', 'spvName']"
-          option
+          :option="isModeUncollected || isModeApproval"
           :id="viewByPeriode ? 'uncollectedByPeriode' : 'uncollectedBySpv'"
         >
 
@@ -74,7 +75,7 @@
                             class="w3-small"
                             isPrimary
                             @clicked="check({ day: $event, rec: doc.id })"
-                            :isFull="mode == 'Uncollected'"
+                            :isFull="isModeUncollected"
                             :value="doc.periode2 + ' ' +doc.warehouseName"
                         />
                     </td>
@@ -83,7 +84,7 @@
 				<template #default="{ prop }">
 					<Button
                         small
-                        v-if="!viewByPeriode"
+                        v-if="!viewByPeriode && isModeUncollected"
                         secondary
                         value="Pesan" 
                         datanya="tes" 
@@ -96,18 +97,29 @@
                         class="w3-small"
                         isPrimary
                         @clicked="collect({ day: $event, rec: prop.id })"
-                        :isFull="mode == 'Uncollected'"
-                        value="Collected"
+                        :isFull="isModeUncollected"
+                        value="Collect"
                     />
 
                     <Button
-                         v-if="viewByPeriode"
+                        v-if="viewByPeriode && isModeUncollected"
                         small
                         secondary
                         value="Edit" 
                         datanya="tes" 
                         type="button" 
                         @trig="edit(prop.id)" 
+					/>
+
+                    
+                    <Button
+                        v-if="viewByPeriode && (isModeCollected || isModeApproval)"
+                        small
+                        secondary
+                        value="Batal"
+                        type="button" 
+                        :datanya="prop.id"
+                        @trig="cancel($event)" 
 					/>
                 </template>
         
@@ -120,11 +132,10 @@
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import Dropdown from "@/components/elements/Dropdown.vue"
-import { ref, onBeforeMount, watch } from "vue"
+import { ref, onBeforeMount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/composable/components/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-
 import { 
     getUncollectedDocuments, 
     listsOfDocuments, 
@@ -134,7 +145,10 @@ import {
     collectDocument,
     ijinDocument,
     kosongDocument,
-    getCollectedDocuments
+    getCollectedDocuments,
+    approveDocument,
+    unApproveDocument,
+    unCollectDocument
 } from "@/composable/components/DocumentsPeriod"
 
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
@@ -155,6 +169,9 @@ export default {
         const headSPVLists = ref([])
         const mode = ref('Uncollected')
         const renderTable = ref(true)
+        const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
+        const isModeCollected = computed(() =>  mode.value == 'Collected' )
+        const isModeApproval = computed(() => mode.value == 'Approval')
 
         const oneClickMessageToAll = async (ev) => {
             // ambil dulu semua karu
@@ -214,7 +231,7 @@ export default {
         }
 
         const check = async (ev) => {
-            if(!isNaN(ev.day)) {
+            if(!isNaN(ev.day) && isModeUncollected.value) {
                 let time = dayPlusOrMinus('', Number(ev.day))
                 let res = await subscribeMutation(
                     `Report collected at ${dateMonth(time)}`,
@@ -253,7 +270,11 @@ export default {
         
         const collect = async (ev) => {
             if(Number(ev.day) < 1) {
-                await collectDocument(ev.rec, Number(ev.day))
+                if(isModeUncollected.value) {
+                    await collectDocument(ev.rec, Number(ev.day))
+                } else if(isModeCollected.value) {
+                    await approveDocument(ev.rec, Number(ev.day))
+                }
             } else {
                 if(ev.day == 'ijin') {
                     await ijinDocument(ev.rec)
@@ -261,6 +282,15 @@ export default {
                 else if(ev.day == 'kosong') {
                     await kosongDocument(ev.rec)
                 }
+            }
+            renewLists()
+        }
+
+        const cancel = async (idDocument) => {
+            if(isModeApproval.value) {
+                await unApproveDocument(idDocument)
+            } else if(isModeCollected.value) {
+                await unCollectDocument(idDocument)
             }
             renewLists()
         }
@@ -303,6 +333,7 @@ export default {
             oneClickMessageToAll, pesan, pesanSemua, 
             viewByPeriode, lists, edit, check, addPeriod,
             headSPVLists, notApproval, collect, mode, renderTable,
+            isModeCollected, isModeUncollected, isModeApproval, cancel
         }
     },
 }
