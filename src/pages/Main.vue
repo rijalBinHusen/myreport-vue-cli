@@ -12,10 +12,7 @@
 <script>
 	import Documents from "./Documents.vue";
 	import Navbar from "@/components/parts/Navbar.vue";
-	import Uncollected from "@/modular/Uncollected/Uncollected.vue"
 	import ImportData from "@/pages/ImportData.vue"
-	import Collected from "@/modular/Collected/Collected.vue"
-	import Approval from "@/modular/Approval/Approval.vue"
 	import ReportExport from "@/pages/ReportExport.vue"
 	import Modal from "@/components/parts/Modal.vue"
 	import Supervisors from "@/pages/Supervisors.vue"
@@ -84,15 +81,12 @@
 			Cases,
 			EditDocument,
 			Finished,
-			Approval,
 			ProblemReport,
 			Headspv,
 			BaseItem,
 			AGGrid, 
 			Navbar,
-			Uncollected,
 			ImportData,
-			Collected,
 			ReportExport,
 			Modal,
 			Warehouses,

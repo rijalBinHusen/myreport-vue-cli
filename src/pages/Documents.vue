@@ -54,8 +54,10 @@
             class="w3-right"
             secondary
         />
-        <!-- Button to show document by periode, in approved documents mode only -->
+        <!-- Approval mode only Button to show document by periode, in approved documents mode only -->
         <Button class="w3-right" v-if="isModeApproval" primary value="Pick periode" type="button" @trig="pickPeriode" />
+        <Button class="w3-right" v-if="isModeApproval" primary :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
+        <Button class="w3-right" v-if="isModeApproval && grouped.length" primary value="Export all" type="button" @trig="exportReportAll" />
 
 		<Datatable
            v-if="renderTable"
@@ -63,24 +65,32 @@
           :heads="headsTable"
           :keys="keysTable"
           :option="isModeUncollected || isModeApproval || viewByPeriode"
-          :id="viewByPeriode ? 'uncollectedByPeriode' : 'uncollectedBySpv'"
+          :id="viewByPeriode ? mode+'ByPeriode' : mode+'BySpv'"
         >
             <!-- If view by periode -->
-                <template #th v-if="!viewByPeriode">
-                    <th>Daftar periode</th>
+                <template #th v-if="!viewByPeriode || isModeApproval">
+                    <th v-if="isModeApproval">Export group</th>
+                    <th v-else>Daftar periode</th>
                 </template>
 
-                <template #td="{ obj }" v-if="!viewByPeriode">
-                    <td>
-                        <DocumentOptions 
-                            v-for="doc in obj.documents" :key="doc?.spvId"
-                            class="w3-small"
-                            isPrimary
-                            @clicked="check({ day: $event, rec: doc.id })"
-                            :isFull="isModeUncollected"
-                            :value="doc.periode2 + ' ' +doc.warehouseName"
-                        />
-                    </td>
+                <template #td="{ obj }" v-if="!viewByPeriode || isModeApproval">
+                    <span v-if="isModeApproval">
+                        <span v-if="obj.isfinished">
+                            <input :id="obj.id" v-model="grouped" :value="obj.id" @input="push(obj.id, obj)" type="checkbox" />
+                            <label :for="obj.id"> Group</label>
+                        </span>
+                        <p v-else>Unfinished</p>
+                    </span>
+
+                    <DocumentOptions
+                        v-else
+                        v-for="doc in obj.documents" :key="doc?.spvId"
+                        class="w3-small"
+                        isPrimary
+                        @clicked="check({ day: $event, rec: doc.id })"
+                        :isFull="isModeUncollected"
+                        :value="doc.periode2 + ' ' +doc.warehouseName"
+                    />
                 </template>
             <!-- end of if view by periode -->
 
@@ -176,6 +186,7 @@ import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 import DocumentOptions from "@/components/parts/DocumentOptions.vue"
 import { dateMonth, dayPlusOrMinus } from "@/composable/piece/dateFormat"
 import DailyReport from "@/excelReport/DailyReport"
+import DailyReportGroup from "@/excelReport/DailyReportGroup"
 
 export default {
     components: {
@@ -221,6 +232,9 @@ export default {
             }
         })
         // Approval documents
+        const grouped = ref([])
+        const groupedObject = ref([])
+
         const  dropDownApprovalOptions = (prop) => {
             // v-if="prop.shared == 'false' || !prop.shared "
             // !isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile
@@ -239,6 +253,73 @@ export default {
             return options
         }
 
+        const markAll = () => {
+            if(grouped.value.length) {
+                grouped.value = []
+                groupedObject.value = []
+                return
+            }
+            lists.value.forEach((rec) => {
+                if(!isNaN(rec?.collected)) {
+                    grouped.value.push(rec.id)
+                    groupedObject.value.push(rec)
+                }
+            })
+        }
+
+        const exportReportAll = async () => {
+            if(!groupedObject.value.length) {
+                return
+            }
+            // Open loader
+            store.commit("Modal/active", { judul: "", form: "Loader" });
+            // group dulu yang spv dan periode yang sama
+            /* expected object = [
+                [{ baseReport }, { baseReport }],
+                [{ baseReport }, { baseReport }],
+                [{ baseReport }, { baseReport }],
+            ]
+            */
+           let groups = []
+        //   grouped { spvperiode: index }
+           let groupedAsObject = {}
+           groupedObject.value.forEach((val) => {
+                //    if the object was groupedAsObject, and else
+               if(groupedAsObject.hasOwnProperty(val?.name+val?.periode)) {
+                // //    console.log("ada sama")
+                //    console.log(val.name+val.periode)
+                //    console.log(groupedAsObject[val?.name+val?.periode])
+                   groups[groupedAsObject[val.name+val.periode]].push({ ...val })
+               } else {
+                   groupedAsObject[val.name+val.periode] = groups.length
+                   groups.push([{ ...val }])
+                // console.log(groupedAsObject)
+                // console.log("tidak sama")
+               }
+           })
+        //    console.log(groups)
+            // // iterate semua yang sudah digroup
+            for (let group of groups) {
+                // console.log(group[i])
+                if(group.length > 1) {
+                    await DailyReportGroup(group)
+                }   else {
+                    await DailyReport(group[0])
+                }
+            }
+            // mark all record as shared
+            for (let rec of groupedObject.value) {
+                if(!rec?.shared) {
+                    await collect({ rec: rec.id, day: 0})
+                }
+            }
+            // empty the groupedAsObject
+            groupedObject.value = []
+            grouped.value = []
+            // Close loader
+            store.commit("Modal/active");
+        }
+
         const pickPeriode = async () => {
             let period = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
             if(period) {
@@ -250,6 +331,16 @@ export default {
                 store.commit("Modal/active")
                 renewLists()
             }
+        }
+
+        const push = (id, obj) => {
+            // if the id is exists,
+            if(grouped.value.includes(id)) {
+                groupedObject.value = groupedObject.value.filter(rec => rec.id != id)
+                return
+            } 
+            // else
+            groupedObject.value.push({ ...obj })
         }
 
         const handleAction = async (action, docs) => {
@@ -438,7 +529,7 @@ export default {
             headSPVLists, notApproval, collect, mode, renderTable,
             isModeCollected, isModeUncollected, isModeApproval, cancel,
             headsTable, keysTable, dropDownApprovalOptions, handleAction,
-            pickPeriode, dateMonth
+            pickPeriode, dateMonth, grouped, push, markAll, exportReportAll
         }
     },
 }

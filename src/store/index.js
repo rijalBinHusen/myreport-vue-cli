@@ -2,7 +2,6 @@ import { createStore } from "vuex";
 import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
-import Collected from "../modular/Collected/Collected";
 import BaseReportFile from "../modular/BaseImport/BaseReportFile";
 import BaseReportClock from "../modular/Base/BaseReportClock";
 import BaseReportStock from "../modular/Base/BaseReportStock";
@@ -21,7 +20,6 @@ export default createStore({
     Baseitem,
     Navbar,
     Modal,
-    Collected,
     BaseReportFile,
     BaseReportClock,
     BaseReportStock,

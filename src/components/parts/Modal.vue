@@ -27,7 +27,6 @@
 
 import DocumentsGroupForm from "@/form/DocumentsGroupForm.vue"
 import DocumentCheckForm from "@/form/DocumentCheckForm.vue"
-import ApprovalForm from "../../modular/Approval/ApprovalForm.vue"
 import Loader from "./Loader.vue"
 import ImporterForm from "@/form/ImportDataForm.vue"
 import BaseReportFile from "@/form/ImportBaseForm.vue"
@@ -64,7 +63,6 @@ export default {
       BaseStockForm,
       BaseClockForm,
       DocumentsGroupForm,
-      ApprovalForm,
       Loader,
       ImporterForm,
       BaseReportFile,
