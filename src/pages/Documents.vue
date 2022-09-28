@@ -134,7 +134,7 @@
                         :lists="dropDownApprovalOptions(prop)"
                         listsKey="id"
                         listsValue="isi"
-                        @trig="handleAction({action: $event, rec: prop?.id})"
+                        @trig="handleAction($event, prop)"
                         class="w3-small"
                         :danger="!!prop?.shared"
                         :primary="!!!prop?.shared"
@@ -251,12 +251,12 @@ export default {
             }
         }
 
-        const handleAction = async (action, idDocument) => {
+        const handleAction = async (action, docs) => {
             if(action === 'exportReport') {
                 //open the loader
                 store.commit("Modal/active", {judul: "", form: "Loader"})
                 // waiting the process
-                await DailyReport(idDocument)
+                await DailyReport(docs)
                 //close the loader
                 store.commit("Modal/active")
                 return
