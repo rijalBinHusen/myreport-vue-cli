@@ -54,6 +54,8 @@
             class="w3-right"
             secondary
         />
+        <!-- Button to show document by periode, in approved documents mode only -->
+        <Button class="w3-right" v-if="isModeApproval" primary value="Pick periode" type="button" @trig="pickPeriode" />
 
 		<Datatable
            v-if="renderTable"
@@ -165,12 +167,14 @@ import {
     approveDocument,
     unApproveDocument,
     unCollectDocument,
-    getApprovedDocuments
+    getApprovedDocuments,
+    getDocuments
 } from "@/composable/components/DocumentsPeriod"
 
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 import DocumentOptions from "@/components/parts/DocumentOptions.vue"
 import { dateMonth, dayPlusOrMinus } from "@/composable/piece/dateFormat"
+import DailyReport from "@/excelReport/DailyReport"
 
 export default {
     components: {
@@ -215,6 +219,7 @@ export default {
                 return ['warehouseName', 'spvName']
             }
         })
+        // Approval documents
         const  dropDownApprovalOptions = (prop) => {
             // v-if="prop.shared == 'false' || !prop.shared "
             // !isNaN(prop.isfinished) && !isNaN(prop.collected) && prop?.baseReportFile
@@ -232,6 +237,34 @@ export default {
             }
             return options
         }
+
+        const pickPeriode = async () => {
+            let period = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
+            if(period) {
+                //open the loader
+                store.commit("Modal/active", {judul: "", form: "Loader"})
+                // wait the process
+                await getDocuments(period?.periode1, period?.periode2)
+                //close the loader
+                store.commit("Modal/active")
+                renewLists()
+            }
+        }
+
+        const handleAction = async (action, idDocument) => {
+            if(action === 'exportReport') {
+                //open the loader
+                store.commit("Modal/active", {judul: "", form: "Loader"})
+                // waiting the process
+                await DailyReport(idDocument)
+                //close the loader
+                store.commit("Modal/active")
+                return
+            }
+            // EV =  {action: 'approve', rec: doc22050003}
+            // this.$store.dispatch("Document/handleDocument", ev)
+        }
+        // End of approval documents
 
         const oneClickMessageToAll = async (ev) => {
             // ambil dulu semua karu
@@ -397,7 +430,8 @@ export default {
             viewByPeriode, lists, edit, check, addPeriod,
             headSPVLists, notApproval, collect, mode, renderTable,
             isModeCollected, isModeUncollected, isModeApproval, cancel,
-            headsTable, keysTable, dropDownApprovalOptions
+            headsTable, keysTable, dropDownApprovalOptions, handleAction,
+            pickPeriode, dateMonth
         }
     },
 }

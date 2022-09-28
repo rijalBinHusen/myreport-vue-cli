@@ -1,8 +1,10 @@
 import func from "../myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
+import { findDocument } from "@/composable/components/DocumentsPeriod";
 
-export default async function (baseReport) {
+export default async function (idDocument) {
+  let baseReport = findDocument(idDocument)
   // delete unneeded property
   const {
     id,
