@@ -17,7 +17,7 @@
 	import Modal from "@/components/parts/Modal.vue"
 	import Supervisors from "@/pages/Supervisors.vue"
 	import Backup from "@/pages/Backup.vue"
-	import Importbase from "@/pages/Importbase.vue"
+	import BaseReportFile from "./BaseReportFile.vue"
 	import Base from "@/modular/Base/Base.vue"
 	import Warehouses from "@/pages/Warehouses.vue"
 	import AGGrid from "@/components/parts/AGGrid.vue"
@@ -92,7 +92,7 @@
 			Warehouses,
 			Supervisors,
 			Backup,
-			Importbase,
+			BaseReportFile,
 			Base,
 			FieldProblemVue
 		},

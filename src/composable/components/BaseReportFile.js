@@ -104,3 +104,8 @@ export const addBaseReportFile = async (periode, warehouse) => {
             })
     return
 }
+
+export const someRecordFinished = async (idRecord) => {
+    await updateBaseReport(idRecord, { isRecordFinished: true })
+    return
+}

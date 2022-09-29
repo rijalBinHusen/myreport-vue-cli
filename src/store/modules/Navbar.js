@@ -5,7 +5,7 @@ const Navbar = {
     lists: [
       { id: 'Documents', title: 'Documents', group: 'reports'},
       { id: "Warehouses", title: "Warehouses", group: "setting" },
-      { id: "Importbase", title: "Import base report", group: "reports" },
+      { id: "BaseReportFile", title: "Base report file", group: "reports" },
       { id: "Supervisors", title: "Supervisors", group: "setting" },
       { id: "Base", title: "Base report", group: "reports" },
       { id: "ProblemReport", title: "Problems report", group: "reports" },
