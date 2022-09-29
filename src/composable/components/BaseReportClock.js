@@ -1,4 +1,4 @@
-import { append, deleteDocument } from "@/myfunction"
+import { append, deleteDocument, findData } from "@/myfunction"
 
 let lists = []
 
@@ -58,4 +58,14 @@ export const appendData = async (parent, shift, noDo, reg, start, finish, rehat)
 export const removeClockByParent = async (parent) => {
     deleteDocument({ store: 'basereportclock', criteria: { parent }})
     return true
+}
+
+export const getBaseClockByParentByShift = async (parent, shift) => {
+    await findData({ store: "BaseReportClock", criteria: { parent, shift } })
+            .then((res) => {
+                if(lists.length) {
+                    lists.concat(res)
+                }
+            })
+    return
 }

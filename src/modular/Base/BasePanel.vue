@@ -101,7 +101,6 @@ export default {
         const warehouses = ref([])
         const shift = ref('')
         const sheet = ref('')
-        const base = ref('')
         const selectedWarehouse = ref('')
         const pickPeriode = async () => {
             let res = await subscribeMutation(
@@ -126,10 +125,11 @@ export default {
         
 
         watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
+            let baseReportFile = isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
             // selectedperiode
             if(newVal[0] != oldVal[0]) {
                 // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
-                if(!isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)) {
+                if(!baseReportFile) {
                     selectedWarehouse.value = null
                     sheet.value = null
                 }
@@ -138,7 +138,8 @@ export default {
             emit('baseReportChanged', { 
                 periode: selectedPeriode.value,
                 warehouse: selectedWarehouse.value,
-                shift: shift.value
+                shift: shift.value,
+                baseReportFile,
              })
         })
   

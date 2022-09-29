@@ -111,5 +111,5 @@ export const someRecordFinished = async (idRecord) => {
 }
 
 export const isRecordExistsByPeriodeAndWarehouse = (periode, idWarehouse) => {
-    return lists.value.some((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
+    return lists.value.find((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
 }

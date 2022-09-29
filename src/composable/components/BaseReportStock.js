@@ -1,6 +1,8 @@
-import { append, deleteDocument } from "@/myfunction"
+import { append, deleteDocument, findData } from "@/myfunction"
 import { problemActive } from '@/composable/components/Problem'
 import { findBaseReportFile } from "./BaseReportFile"
+
+const lists = []
 
 
 export const startImportStock = async (sheets, baseId) => {
@@ -100,4 +102,14 @@ export const appendData = async (parent, shift, item, awal, masuk, keluar, riil)
 export const removeStockByParent = async (parent) => {
     deleteDocument({ store: 'basereportstock', criteria: { parent }})
     return true
+}
+
+export const getBaseStockByParentByShift = async (parent, shift) => {
+    await findData({ store: "BaseReportStock", criteria: { parent, shift } })
+            .then((res) => {
+                if(lists.length) {
+                    lists.concat(res)
+                }
+            })
+    return
 }
