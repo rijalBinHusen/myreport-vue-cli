@@ -16,8 +16,8 @@
 <script>
 import { onMounted, ref } from '@vue/runtime-core'
 import { useStore } from 'vuex'
-import Button from '../../components/elements/Button.vue'
-import { markAsFinished } from "../../composable/components/followUp"
+import Button from '@/components/elements/Button.vue'
+import { markAsFinished } from "@/composable/components/followUp"
 
 export default {
     components: { Button },
@@ -34,6 +34,7 @@ export default {
             }
             // mark as finish record
             markAsFinished(record?.value?.id, answer.value)
+            store.commit('Modal/tunnelMessage', true)
             // close the modal
             store.commit('Modal/active')
         }

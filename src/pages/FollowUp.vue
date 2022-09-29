@@ -34,8 +34,8 @@
 
 <script>
 import Button from '@/components/elements/Button.vue'
-import Datatable from "../../components/parts/Datatable.vue"
-import { unFinished, deleteData } from "../../composable/components/followUp"
+import Datatable from "@/components/parts/Datatable.vue"
+import { unFinished, deleteData } from "@/composable/components/followUp"
 import { onMounted, ref } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
@@ -52,6 +52,7 @@ export default {
         }
         onMounted (() => {
             renewLists()
+            console.log('asdfasdf')
         })
 
         const remove = async (idRecord) => {
@@ -67,29 +68,14 @@ export default {
                 let tanya = `Mohon maaf pak mengganggu,%0a%0aMohon saya diberi konfirmasinya pak, terkait pesan saya pada tanggal ${obj.periode}, %0ayang benar yang seperti apa, biar saya masukkan ke catatan saya.%0a%0aadapun pesan saya pada tanggal ${obj.periode} isinya kurang lebih seebagai berikut:%0a%0a${obj.pesan}`
                 window.open(`https://wa.me/${obj.tujuan}?text=${tanya}`)
             } else if (ev === 'selesai') {
-                let unsubscribe;
-                // create a promise to waiting the update process, and listen to the tunnel message
-                const prom = new Promise(resolve => {
-                        // luncurkan dialog
-                        store.commit('Modal/active', { 
-                            judul: 'Mark as finish', 
-                            form: 'FollowUpFinished', 
-                            obj: obj 
-                        })
-                        // subscribe untuk tanggkap confirm dialog apakah yes atau tidak
-                        unsubscribe = store.subscribe(mutation => {
-                            // if the confirmation button clicked whatever yes or no
-                            if(mutation?.type == 'Modal/active') {
-                                // resolve the messaage, true or false
-                                resolve()
-                            }
-                        })
-                    })
-                    // jika oke kirim pesan
-                    await prom.then(() => {
-                        unsubscribe()
-                        renewLists()
-                    })
+                let prom = await subscribeMutation(
+                                'Tandai sudah selesai', 
+                                'FollowUpFinished', 
+                                obj, 
+                                'Modal/tunnelMessage'
+                            )
+                
+                if(prom) { renewLists() }
             }
         }
 

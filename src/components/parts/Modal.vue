@@ -41,7 +41,7 @@ import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
 import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
 import Confirm from "./Confirm.vue"
-import FollowUpFinished from "../../modular/FollowUp/FollowUpFinished.vue"
+import FollowUpFinished from "@/form/FollowUpFinishedForm.vue"
 import FieldProblemForm from "@/form/FieldProblemForm.vue"
 import DocumentSingleForm from "@/form/DocumentSingleForm.vue"
 
