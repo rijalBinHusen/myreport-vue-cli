@@ -53,23 +53,23 @@
             @selectedShift="shift = $event" 
         />
         <!-- oPEN IN EXCEL MODE -->
-        <!-- <ButtonVue 
-            v-if="lists.length"
+        <ButtonVue 
+            v-if="shift"
             class="w3-left w3-col s1 w3-margin-top w3-padding " 
             primary 
             value="Excel" 
             type="button" 
-            @trig="excelMode = true" 
-        /> -->
+            @trig="mode('Excel')" 
+        />
         <!-- MArk as finished -->
-        <!-- <ButtonVue
-            v-if="lists.length"
+        <ButtonVue
+            v-if="shift"
             class="w3-left w3-col s2 w3-margin-top" 
             primary 
             value="Mark as finished" 
             type="button" 
-            @trig="BaseFinishForm = true"
-        /> -->
+            @trig="mode('BaseFinishedForm')"
+        />
     </div>
 </template>
 
@@ -77,14 +77,13 @@
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
 import { 
-    getBaseReportFile, 
-    listsAllBaseReportFile, 
+    getBaseReportFile,
     dateBaseReportFileImported,
     warehouseByDate,
     isRecordExistsByPeriodeAndWarehouse
 } from '@/composable/components/BaseReportFile';
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, watch  } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
 
@@ -95,7 +94,7 @@ export default {
         SelectVue,
         SelectShift,
     },
-    emits: ['baseReportChanged'],
+    emits: ['baseReportChanged', 'mode'],
     setup(props, { emit }) {
         const selectedPeriode = ref(null)
         const warehouses = ref([])
@@ -144,6 +143,10 @@ export default {
                 sheet: sheet.value,
              })
         })
+
+        const mode = (ev) => {
+            emit('mode', ev)
+        }
   
         return { 
             shift, 
@@ -152,7 +155,8 @@ export default {
             dateBaseReportFile, 
             warehouses, 
             selectedPeriode,
-            selectedWarehouse,             
+            selectedWarehouse,
+            mode,         
         }
     },
 }

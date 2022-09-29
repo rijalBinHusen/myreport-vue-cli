@@ -1,4 +1,4 @@
-import { append, deleteDocument, findData } from "@/myfunction"
+import { append, deleteDocument, findData, update } from "@/myfunction"
 import { totalTime } from "../piece/totalTimeAsMinute"
 
 export let lists = []
@@ -76,4 +76,15 @@ export const baseReportClockLists = () => {
               totalTime: totalTime(rec?.start, rec?.finish) - (rec.rehat * 60)
             })
         )
+}
+
+export const updateBaseClock = async (id, objtToUpdate) => {
+    lists = lists.map((val) => {
+        if(val.id == id) {
+            return { ...val, ...objtToUpdate}
+        }
+        return val
+    })
+    await update({ store: 'BaseReportClock', criteria: { id: id }, obj: objtToUpdate })
+    return true
 }

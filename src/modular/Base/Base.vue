@@ -2,10 +2,10 @@
     <div>
         <AGGrid
             v-if="isExcelMode"
-            :originColumn="originColumn"
+            :originColumn="table?.excelColumn"
             :rowData="lists"
-            :tableName="tableName"
-            @exit="excelMode = false"
+            :tableName="table?.excelId"
+            @exit="changeMode('Main')"
             @save="save($event)"
             rowHeight="70"
         >   
@@ -13,17 +13,17 @@
                 <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
             </template>
             <template #text>
-                {{ $store.getters["dateFormat"]({format: "dateMonth", time: Number(selectedPeriode) })
+                <!-- {{ $store.getters["dateFormat"]({format: "dateMonth", time: Number(selectedPeriode) })
                     + ", " +
                     $store.getters["Warehouses/warehouseId"](selectedWarehouse)?.name
                     + ", Shift: " +
                      shift 
-                }}
+                }} -->
             </template>
         </AGGrid>
         <div v-if="isMainMode" class="w3-margin-top w3-container">
             <!-- Panel base report -->
-            <BasePanelVue @baseReportChanged="renewLists" />
+            <BasePanelVue @baseReportChanged="renewLists" @mode="changeMode($event)" />
             <!-- Panel base report -->
             <div>
             <Datatable
@@ -108,9 +108,9 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists } from '@/composable/components/BaseReportClock'
+import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock } from '@/composable/components/BaseReportClock'
 import { getBaseStockByParentByShift, baseReportStockLists } from '@/composable/components/BaseReportStock'
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 // import { shell } from 'electron'
 
@@ -214,8 +214,10 @@ export default {
             // });
         }
 
-        const launchForm = () => {
-            console.log('launch form')
+        const launchForm = (ev) => {
+            console.log('launch form', ev)
+            console.log(isMainMode.value, isExcelMode.value)
+            // mode.value = ev
             // // jika clock jika stock
             // let form = this.sheet === "clock" ? "BaseClockForm" : "BaseStockForm"
             // // launch modal dan form
@@ -224,6 +226,10 @@ export default {
             //     form: form,
             //     addOn: { parent: this.base.id, shift: +this.shift},
             // });
+        }
+
+        const changeMode = (ev) => {
+            mode.value = ev
         }
 
         const markAsFinished = async (ev) => {
@@ -255,10 +261,16 @@ export default {
             // // tutup loader
             // this.$store.commit("Modal/active");
         }
-        const save = async (ev) => {
-            console.log(ev)
-            // lempar ke dispatch
-            // BaseReportClock/saveFromeExcel and renew the lists
+        const save = async (records) => {
+            for(let record of records) {
+                if(isClockSheet.value) {
+                    await updateBaseClock(record.id, record.changed)
+                }
+            }
+            // console.log(ev)
+            // if(isClockSheet.value) {
+            //     updateBaseClock()
+            // }
             // await this.$store.dispatch(
             //         `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}/saveFromExcelMode`, 
             //         ev)
@@ -286,62 +298,24 @@ export default {
             // }
         }
         const renewLists = async (ev) => {
-            // console.log('renewLists', ev)
-            // //  || !this.shift || !this.sheet) { return }
-            // this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-            // // console.log(this.base)
             
-                if(ev.baseReportFile && ev.shift) {
-                    renderTable.value = false
-                    await getBaseClockByParentByShift(ev.baseReportFile, Number(ev.shift))
-                    await getBaseStockByParentByShift(ev.baseReportFile, Number(ev.shift))
-                    console.log(ev)
-                    if(ev.sheet == 'stock') {
-                        lists.value = baseReportStockLists()
-                        nowSheet.value = 'stock'
-                    } else {
-                        lists.value = baseReportClockLists()
-                        nowSheet.value = 'clock'
-                    }
-                    renderTable.value = true
-                    console.log(lists.value)
+            if(ev.baseReportFile && ev.shift) {
+                renderTable.value = false
+                await getBaseClockByParentByShift(ev.baseReportFile, Number(ev.shift))
+                await getBaseStockByParentByShift(ev.baseReportFile, Number(ev.shift))
+                console.log(ev)
+                if(ev.sheet == 'stock') {
+                    lists.value = baseReportStockLists()
+                    nowSheet.value = 'stock'
+                } else {
+                    lists.value = baseReportClockLists()
+                    nowSheet.value = 'clock'
                 }
-            //     // // jika tidak exists
-            //     this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            //     // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
-            //     await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
-            //     // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
-            //     await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
-            //     this.$store.commit("Modal/active");
-            //     this.renewLists()
-            // }
+                renderTable.value = true
+                console.log(lists.value)
+            }
+                
         }
-
-        const originColumn = computed(() => {
-            return nowSheet.value === "clock"
-                ? [
-                    { headerName: "Nomor", field: "noDo", width: 100 },
-                    { headerName: "Register", field: "reg", width: 100 },
-                    { headerName: "Start", field: "start", width: 100, editable: true },
-                    { headerName: "Finish", field: "finish", width: 100, editable: true },
-                    { headerName: "Istirahat", field: "rehat", editable: true, width: 100 },
-                    { headerName: "Total", field: "totalTime", editable: false, width: 100 },
-                ]
-                : [
-                    { headerName: "Kode Item", field: "item", editable: true, resizable: true },
-                    { headerName: "Nama Item", field: "itemName", editable: false, resizable: true, width: 300 },
-                    { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
-                    { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
-                    { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
-                    { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
-                    { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter' }, 
-                    { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
-                    { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
-                    { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
-                    { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
-                    { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + (+data.awal))'}, 
-                ];
-            })
 
         const table = computed(() => {
             if(nowSheet.value == 'clock') {
@@ -349,14 +323,36 @@ export default {
                     heads: ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat', 'Total'],
                     excelId: 'excelClock',
                     keys: ['noDo', 'reg', 'start', 'finish', 'rehat', 'totalTime'],
-                    idTable: 'BaseReportStockTable'
+                    idTable: 'BaseReportStockTable',
+                    excelColumn: [
+                        { headerName: "Nomor", field: "noDo", width: 100 },
+                        { headerName: "Register", field: "reg", width: 100 },
+                        { headerName: "Start", field: "start", width: 100, editable: true },
+                        { headerName: "Finish", field: "finish", width: 100, editable: true },
+                        { headerName: "Istirahat", field: "rehat", editable: true, width: 100 },
+                        { headerName: "Total", field: "totalTime", editable: false, width: 100 },
+                    ]
                 }
             } else {
                 return {
                     heads: ['Item', 'Selisih', 'Problem'],
                     excelId: 'excelStock',
                     keys: ['itemName', 'selisih', 'problem2'],
-                    idTable: 'BaseReportStockTable'
+                    idTable: 'BaseReportStockTable',
+                    excelColumn: [
+                        { headerName: "Kode Item", field: "item", editable: true, resizable: true },
+                        { headerName: "Nama Item", field: "itemName", editable: false, resizable: true, width: 300 },
+                        { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
+                        { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
+                        { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                        { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
+                        { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter' }, 
+                        { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                        { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
+                        { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
+                        { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                        { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + (+data.awal))'}, 
+                    ]
                 }
             }
         })
@@ -370,7 +366,8 @@ export default {
         return {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
             handleProblem, launchForm, markAsFinished, save, remove, fromAdd,
-            renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet
+            renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
+            changeMode
         }
     }
 }

@@ -113,11 +113,14 @@ export default {
       let isEdited = this.edited.findIndex((val) => val.id === ev.data.id)
       // jika sudah ada
       if(isEdited >= 0) {
-        this.edited[isEdited] = ev.data
+        this.edited[isEdited] = { 
+          id: ev.data.id, 
+          changed: { ...this.edited[isEdited].changed, [ev.colDef.filed]: ev.newValue }
+        }
         return
       }
       // jika belum ada
-      this.edited.push(ev.data)
+      this.edited.push({ id: ev.data.id, changed: { [ev.colDef.field]: ev.newValue } })
     },
     removeRow() {
       // send id that row selected [1,4,5,6,7]
