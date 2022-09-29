@@ -1,6 +1,7 @@
 import { append, deleteDocument, findData } from "@/myfunction"
+import { totalTime } from "../piece/totalTimeAsMinute"
 
-let lists = []
+export let lists = []
 
 export const startImportClock = async (sheets, baseId) => {
     // dapatkan ref
@@ -61,11 +62,18 @@ export const removeClockByParent = async (parent) => {
 }
 
 export const getBaseClockByParentByShift = async (parent, shift) => {
-    await findData({ store: "BaseReportClock", criteria: { parent, shift } })
-            .then((res) => {
-                if(lists.length) {
-                    lists.concat(res)
-                }
-            })
+    let findRecFirst = lists.find((rec) => rec.parent == parent && rec.shift == shift)
+    if(!findRecFirst) {
+        await findData({ store: "BaseReportClock", criteria: { parent, shift } })
+                .then((res) => lists = lists.concat(res) )
+    }
     return
+}
+
+export const baseReportClockLists = () => {
+        return lists.map((rec) => ({
+              ...rec, 
+              totalTime: totalTime(rec?.start, rec?.finish) - (rec.rehat * 60)
+            })
+        )
 }

@@ -25,18 +25,18 @@
             <!-- Panel base report -->
             <BasePanelVue @baseReportChanged="renewLists" />
             <!-- Panel base report -->
-            <div v-if="isBaseFinishedForm">
+            <div>
             <Datatable
-            v-if="renderTable"
-            :datanya="lists"
-            :heads="sheet === 'clock' ? ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat', 'Total'] : ['Item', 'Selisih', 'Problem']"
-            :keys="sheet === 'clock' ? ['noDo', 'reg', 'start', 'finish', 'rehat', 'totalTime'] : ['itemName', 'selisih', 'problem2']"
-            id="tableBaseReport"
-            option
-            #default="{ prop }"
+                v-if="renderTable"
+                :datanya="lists"
+                :heads="table?.heads"
+                :keys="table?.keys"
+                :id="table?.idTable"
+                option
+                #default="{ prop }"
             >   
                 <!-- When there is a problem in base report stock -->
-                <span v-if="(prop.selisih || (prop.problem && prop.problem.length)) && sheet === 'stock'">
+                <span v-if="(prop.selisih || (prop.problem && prop.problem.length)) && isStockSheet">
                     <Dropdown
                         value="Pesan"  
                         :lists="[
@@ -75,7 +75,7 @@
                 />
                 
                 <Button 
-                    v-if="sheet === 'clock'"
+                    v-if="isClockSheet"
                     value="Duplicate" 
                     type="button" 
                     primary
@@ -108,9 +108,10 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift } from '@/composable/components/BaseReportClock'
-import { getBaseStockByParentByShift } from '@/composable/components/BaseReportStock'
+import { getBaseClockByParentByShift, baseReportClockLists } from '@/composable/components/BaseReportClock'
+import { getBaseStockByParentByShift, baseReportStockLists } from '@/composable/components/BaseReportStock'
 import { ref, computed } from "vue"
+import { useStore } from "vuex"
 // import { shell } from 'electron'
 
 export default {
@@ -125,12 +126,15 @@ export default {
         BasePanelVue,
     },
     setup() {
+        const store = useStore()
         const mode = ref('Main')
         const baseId = ref(null)
+        const nowSheet = ref(null)
         const isMainMode = computed(() => mode.value == 'Main')
         const isExcelMode = computed(() => mode.value == 'Excel')
         const isBaseFinishedForm = computed(() => mode.value == 'BaseFinishedForm')
-        const timeout = ref(null)
+        const isClockSheet = computed(() => nowSheet.value == 'clock')
+        const isStockSheet = computed(() => nowSheet.value == 'stock')
         const lists = ref([])
         const renderTable = ref(false)
         
@@ -282,18 +286,25 @@ export default {
             // }
         }
         const renewLists = async (ev) => {
-            console.log('renewLists', ev)
+            // console.log('renewLists', ev)
             // //  || !this.shift || !this.sheet) { return }
             // this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
             // // console.log(this.base)
             
                 if(ev.baseReportFile && ev.shift) {
+                    renderTable.value = false
                     await getBaseClockByParentByShift(ev.baseReportFile, Number(ev.shift))
                     await getBaseStockByParentByShift(ev.baseReportFile, Number(ev.shift))
-                    // this.detailsDocument()
-                    // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
-                    // lists.value = 
-                    return
+                    console.log(ev)
+                    if(ev.sheet == 'stock') {
+                        lists.value = baseReportStockLists()
+                        nowSheet.value = 'stock'
+                    } else {
+                        lists.value = baseReportClockLists()
+                        nowSheet.value = 'clock'
+                    }
+                    renderTable.value = true
+                    console.log(lists.value)
                 }
             //     // // jika tidak exists
             //     this.$store.commit("Modal/active", {judul: "", form: "Loader"});
@@ -307,7 +318,7 @@ export default {
         }
 
         const originColumn = computed(() => {
-            return this.sheet === "clock"
+            return nowSheet.value === "clock"
                 ? [
                     { headerName: "Nomor", field: "noDo", width: 100 },
                     { headerName: "Register", field: "reg", width: 100 },
@@ -332,11 +343,23 @@ export default {
                 ];
             })
 
-        const tableName = () => {
-            return "clock"
-            // this.sheet === 
-            //  ? "ExcelClock" : "excelStock";
-        }
+        const table = computed(() => {
+            if(nowSheet.value == 'clock') {
+                return {
+                    heads: ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat', 'Total'],
+                    excelId: 'excelClock',
+                    keys: ['noDo', 'reg', 'start', 'finish', 'rehat', 'totalTime'],
+                    idTable: 'BaseReportStockTable'
+                }
+            } else {
+                return {
+                    heads: ['Item', 'Selisih', 'Problem'],
+                    excelId: 'excelStock',
+                    keys: ['itemName', 'selisih', 'problem2'],
+                    idTable: 'BaseReportStockTable'
+                }
+            }
+        })
 
         const fromAdd = () => {
             return "clock" 
@@ -346,8 +369,8 @@ export default {
         
         return {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
-            handleProblem, launchForm, markAsFinished, save, remove, tableName, fromAdd,
-            renewLists, isBaseFinishedForm, baseId
+            handleProblem, launchForm, markAsFinished, save, remove, fromAdd,
+            renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet
         }
     }
 }

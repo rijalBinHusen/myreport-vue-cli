@@ -2,7 +2,7 @@ import { append, deleteDocument, findData } from "@/myfunction"
 import { problemActive } from '@/composable/components/Problem'
 import { findBaseReportFile } from "./BaseReportFile"
 
-const lists = []
+let lists = []
 
 
 export const startImportStock = async (sheets, baseId) => {
@@ -105,11 +105,21 @@ export const removeStockByParent = async (parent) => {
 }
 
 export const getBaseStockByParentByShift = async (parent, shift) => {
-    await findData({ store: "BaseReportStock", criteria: { parent, shift } })
-            .then((res) => {
-                if(lists.length) {
-                    lists.concat(res)
-                }
-            })
-    return
+    let findRecFirst = lists.find((rec) => rec.parent == parent && rec.shift == shift)
+    if(!findRecFirst) {
+        await findData({ store: "BaseReportStock", criteria: { parent, shift } })
+                .then((res) => lists = lists.concat(res) )
+    }
 }
+
+export const baseReportStockLists = () => {
+    return lists.length > 0
+      ? lists.map((val) => ({
+            ...val, 
+            selisih: Number(val.real) - (Number(val.awal) + Number(val.in) - Number(val.out)),
+            // problem2: rootGetters["Problem/masalah"](val.problem),
+            planOut: val?.planOut || 0
+        })
+        )
+      : [];
+  }

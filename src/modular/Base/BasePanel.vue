@@ -117,7 +117,8 @@ export default {
                 //close the loader
                 modalClose()
                 // renewLists()
-                listsAllBaseReportFile()
+                selectedWarehouse.value = null
+                sheet.value = null
             }
         }
 
@@ -140,6 +141,7 @@ export default {
                 warehouse: selectedWarehouse.value,
                 shift: shift.value,
                 baseReportFile,
+                sheet: sheet.value,
              })
         })
   
