@@ -65,35 +65,101 @@
 </template>
 
 <script>
-import Button from "../../components/elements/Button.vue"
-import Datatable from "../../components/parts/Datatable.vue"
-import exportWeeklyReportToExcel from "../../excelReport/WeeklyReport"
-import exportWeeklyKabag from "../../excelReport/WeeklyKabag"
-import WeeklyWarehouses from "../../excelReport/WeeklyReportWarehouses"
-import Dropdown from "../../components/elements/Dropdown.vue"
-import { finishedDocument, getDocuments, unFinishedDocument } from '../../composable/components/DocumentsPeriod'
+import Button from "@/components/elements/Button.vue"
+import Datatable from "@/components/parts/Datatable.vue"
+import exportWeeklyReportToExcel from "@/excelReport/WeeklyReport"
+import exportWeeklyKabag from "@/excelReport/WeeklyKabag"
+import WeeklyWarehouses from "@/excelReport/WeeklyReportWarehouses"
+import Dropdown from "@/components/elements/Dropdown.vue"
+import { finishedDocument, getDocuments, unFinishedDocument } from '@/composable/components/DocumentsPeriod'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { ref, onMounted, watch } from "vue"
+import { useStore } from "vuex"
 
 export default {
-    name: "Finished",
-    data() {
-        return {
-            grouped: [],
-            groupedObject: [],
-            unfinished: false,
-            lists: [],
-            renderTable: true
-        };
-    },
     components: {
         Button,
         Datatable,
         Dropdown,
     },
-    methods: {
-        async exportReport(ev) {
+    setup() {
+        const store = useStore()
+        const grouped = ref([])
+        const groupedObject = ref([])
+        const unfinished = ref(false)
+        const lists = ref([])
+        const renderTable = ref(true)
+
+        const markAll = () => {
+            if(grouped.value.length) {
+                grouped.value = []
+                groupedObject.value = []
+                return
+            }
+            lists.value.forEach((val) => {
+                if(val.isfinished) {
+                    grouped.value.push(val.id)
+                    groupedObject.value.push(val)
+                }
+            })
+        }
+        
+        const push = (id, obj) => {
+            // if the id is exists,
+            if(grouped.value.includes(id)) {
+                groupedObject.value = groupedObject.value.filter(val => val.id != id)
+                return
+            } 
+            // else
+            groupedObject.value.push({ ...obj })
+        }
+
+        const pickPeriode = async () => {
+            let periode = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
+            
+            if(periode) {
+                //open the loader
+                store.commit("Modal/active", {judul: "", form: "Loader"})
+                // wait the process
+                await getDocuments(periode?.periode1, periode?.periode2)
+                //close the loader
+                store.commit("Modal/active")
+                renewLists()
+            }
+        }
+        
+        const renewLists = async () => {
+            if(unfinished.value) {
+                lists.value = await unFinishedDocument() 
+            } else {
+                lists.value = await finishedDocument()
+            }
+        }
+
+        const details = (ev) => {
+            // console.log(ev)
+            store.commit("Modal/active", { 
+                judul: "Details document", 
+                form: "FinishedForm", 
+                data: ev
+            });
+		}
+
+        watch([unfinished], () => {
+            renderTable.value = false
+            setTimeout(() => {
+                renderTable.value = true
+            }, 600)
+            renewLists()
+        })
+
+        onMounted(() => {
+            renewLists()
+        })
+
+        const exportReport = async (ev) => {
             // Open loader
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            store.commit("Modal/active", {judul: "", form: "Loader"});
             // group dulu yang spv dan periode yang sama
             /* expected object = [
                 [{ baseReport }, { baseReport }],
@@ -104,7 +170,7 @@ export default {
            let group = []
             //   grouped { spv: index } //seperate by name
            let grouped = {}
-           this.groupedObject.forEach((val) => {
+           groupedObject.value.forEach((val) => {
             //    if the object was grouped, and else
                if(grouped.hasOwnProperty(val[ev])) {
                    group[grouped[val[ev]]].push({ ...val })
@@ -134,73 +200,17 @@ export default {
         else {
             await WeeklyWarehouses(group)
         }
-        this.$store.commit("Modal/active");
+
+        store.commit("Modal/active");
         
-        },
-        markAll() {
-            if(this.grouped.length) {
-                this.grouped = []
-                this.groupedObject = []
-                return
-            }
-            this.$store.getters["Document/finished"].forEach((val) => {
-                if(val.isfinished) {
-                    this.grouped.push(val.id)
-                    this.groupedObject.push(val)
-                }
-            })
-        },
-        push(id, obj) {
-            // if the id is exists,
-            if(this.grouped.includes(id)) {
-                this.groupedObject = this.groupedObject.filter(val => val.id != id)
-                return
-            } 
-            // else
-            this.groupedObject.push({ ...obj })
-        },
-        async pickPeriode() {
-            let periode = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')
-            
-            if(periode) {
-                //open the loader
-                this.$store.commit("Modal/active", {judul: "", form: "Loader"})
-                // wait the process
-                await getDocuments(periode?.periode1, periode?.periode2)
-                //close the loader
-                this.$store.commit("Modal/active")
-                this.renewLists()
-            }
-        },
-        async renewLists() {
-            if(this.unfinished) {
-                this.lists = await unFinishedDocument() 
-            } else {
-                this.lists = await finishedDocument()
-            }
-        },
-		details(ev) {
-            // console.log(ev)
-            this.$store.commit("Modal/active", { 
-                judul: "Details document", 
-                form: "FinishedForm", 
-                data: ev
-            });
-		},
-    },
-    watch: {
-        unfinished() {
-            this.renderTable = false
-            setTimeout(() => {
-
-                this.renderTable = true
-
-            }, 600)
-            this.renewLists()
         }
+
+        return { 
+            unfinished, lists, renderTable, 
+            markAll, push, pickPeriode, details, 
+            exportReport, grouped
+        }
+		
     },
-    mounted() {
-        this.renewLists()
-    }
 }
 </script>

@@ -24,7 +24,7 @@
 	import Headspv from "@/pages/Headspv.vue"
 	import BaseItem from "@/modular/BaseItem/BaseItem.vue"
 	import ProblemReport from "@/modular/ProblemReport/ProblemReport.vue"
-	import Finished from "@/modular/Finished/Finished.vue"
+	import Finished from "./Finished.vue"
 	import EditDocument from "./EditDocument.vue"
 	import Cases from "@/modular/CasesReport/Cases.vue"
 	import Complains from "@/modular/ComplainReport/Complains.vue"

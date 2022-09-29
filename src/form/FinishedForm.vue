@@ -17,9 +17,9 @@
 
 <script>
 
-import Input from "../../components/elements/Input.vue"
-import Button from "../../components/elements/Button.vue"
-import { updateDocument } from '../../composable/components/DocumentsPeriod'
+import Input from "@/components/elements/Input.vue"
+import Button from "@/components/elements/Button.vue"
+import { updateDocument } from '@/composable/components/DocumentsPeriod'
 
 export default {
     methods: {
