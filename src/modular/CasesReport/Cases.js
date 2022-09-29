@@ -1,3 +1,7 @@
+import { getSupervisorId } from "@/composable/components/Supervisors";
+import { getHeadspvId } from "@/composable/components/Headspv";
+import { dateMonth } from "@/composable/piece/dateFormat";
+
 const Cases = {
   namespaced: true,
   state: {
@@ -77,15 +81,15 @@ const Cases = {
       return state.lists.filter((val) => val.import);
     },
     inserted(state, rootState, getters, rootGetters) {
-      return state.lists.filter((val) => {
+      return state.lists.filter( async (val) => {
         if (val.insert) {
           val.periode2 = rootGetters["dateFormat"]({
             format: "dateMonth",
             time: val.periode,
           });
-          val.spvName = rootGetters["Supervisors/spvId"](val?.name)?.name;
-          val.headName = rootGetters["Headspv/headId"](val?.head)?.name;
-          val.insert2 = rootGetters['dateFormat']({ time: val.insert, format: 'dateMonth'})
+          val.spvName = await getSupervisorId(val?.name).then((res) => res.name);
+          val.headName = await getHeadspvId(val?.head).then((res) => res.name);
+          val.insert2 = dateMonth(val.insert)
           return val;
         }
       });
