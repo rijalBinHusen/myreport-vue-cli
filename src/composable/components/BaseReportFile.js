@@ -32,10 +32,10 @@ const documentsMapper = async (docs) => {
     let result = []
     if(docs) {
         for(let doc of docs) {
-            let getWarehouseName = await getWarehouseId(doc.warehouse)
+            let warehouseName = await getWarehouseId(doc.warehouse).then((res) => res.name)
             result.push({
                 ...doc,
-                warehouseName: getWarehouseName?.name,
+                warehouseName,
                 periode2: isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode),
             })
         }
@@ -108,4 +108,8 @@ export const addBaseReportFile = async (periode, warehouse) => {
 export const someRecordFinished = async (idRecord) => {
     await updateBaseReport(idRecord, { isRecordFinished: true })
     return
+}
+
+export const isRecordExistsByPeriodeAndWarehouse = (periode, idWarehouse) => {
+    return lists.value.some((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
 }

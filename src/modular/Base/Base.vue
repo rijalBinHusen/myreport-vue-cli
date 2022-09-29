@@ -24,7 +24,7 @@
     <div v-else class="w3-margin-top w3-container">
         <div v-if="!BaseFinishForm">
         <!-- Panel base report -->
-        <BasePanelVue />
+        <BasePanelVue @baseReportChanged="renewLists" />
         <!-- Panel base report -->
         <Datatable
           :datanya="lists"
@@ -277,17 +277,6 @@ export default {
                 this.renewLists()
             }
         },
-        pickPeriode() {
-            this.$store.commit("Modal/active", { 
-                judul: "Set record to show", 
-                form: "PeriodePicker", 
-                store: [ 
-                    { storeName: "BaseReportFile" },
-                    { storeName: "Document"}
-                ],
-                btnValue: "Show"
-            });
-        },
         detailsDocument() {
             // total waktu, total kendaraan, total do
             if(this.shift && this.base && this.base.id) {
@@ -296,32 +285,33 @@ export default {
             }
         },
         async renewLists() {
-            //  || !this.shift || !this.sheet) { return }
-            this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-            this.listsWarehouse = this.WAREHOUSEBASEREPORT(this.selectedPeriode)
-            // console.log(this.base)
+            console.log('renewLists')
+            // //  || !this.shift || !this.sheet) { return }
+            // this.base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
+            // this.listsWarehouse = this.WAREHOUSEBASEREPORT(this.selectedPeriode)
+            // // console.log(this.base)
             
-            if(this.selectedPeriode && this.selectedWarehouse && this.shift) {
-                // check dulu apakah somerecord exists, 
-                let isExists = 
-                    this.ISCLOCKEXISTS(this.base.id, this.shift) 
-                    && this.ISSTOCKEXISTS( this.base.id, this.shift)
-                // jika exists
-                if(isExists) {
-                    this.detailsDocument()
-                    // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
-                    this.lists = this[`BASEREPORT${this.sheet.toUpperCase()}SHIFTANDPARENT`](this.shift, this.base.id)
-                    return
-                }
-                // // jika tidak exists
-                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-                // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
-                await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
-                // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
-                await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
-                this.$store.commit("Modal/active");
-                this.renewLists()
-            }
+            // if(this.selectedPeriode && this.selectedWarehouse && this.shift) {
+            //     // check dulu apakah somerecord exists, 
+            //     let isExists = 
+            //         this.ISCLOCKEXISTS(this.base.id, this.shift) 
+            //         && this.ISSTOCKEXISTS( this.base.id, this.shift)
+            //     // jika exists
+            //     if(isExists) {
+            //         this.detailsDocument()
+            //         // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
+            //         this.lists = this[`BASEREPORT${this.sheet.toUpperCase()}SHIFTANDPARENT`](this.shift, this.base.id)
+            //         return
+            //     }
+            //     // // jika tidak exists
+            //     this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            //     // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
+            //     await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+            //     // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
+            //     await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
+            //     this.$store.commit("Modal/active");
+            //     this.renewLists()
+            // }
         }
     },
     computed: {

@@ -46,7 +46,12 @@
             @selected="sheet = $event"
         />
         <!-- Shift -->
-        <SelectShift v-if="sheet" class="w3-col s1 w3-margin-right" :inSelectShift="shift" @selectedShift="shift = $event" />
+        <SelectShift 
+            v-if="sheet" 
+            class="w3-col s1 w3-margin-right" 
+            :inSelectShift="shift"
+            @selectedShift="shift = $event" 
+        />
         <!-- oPEN IN EXCEL MODE -->
         <!-- <ButtonVue 
             v-if="lists.length"
@@ -76,6 +81,7 @@ import {
     listsAllBaseReportFile, 
     dateBaseReportFileImported,
     warehouseByDate,
+    isRecordExistsByPeriodeAndWarehouse
 } from '@/composable/components/BaseReportFile';
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
@@ -85,11 +91,12 @@ import SelectShift from '@/components/parts/SelectShift.vue';
 
 export default {
     components: {
-    ButtonVue,
-    SelectVue,
-    SelectShift,
-},
-    setup() {
+        ButtonVue,
+        SelectVue,
+        SelectShift,
+    },
+    emits: ['baseReportChanged'],
+    setup(props, { emit }) {
         const selectedPeriode = ref(null)
         const warehouses = ref([])
         const shift = ref('')
@@ -118,39 +125,23 @@ export default {
         const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
         
 
-        watch(selectedPeriode, async () => {
-            warehouses.value = await warehouseByDate(selectedPeriode.value)
-        })
-
-        const renewLists = async () => {
-            //  || !this.shift || !this.sheet) { return }
-            base = this.BASEIDSELECTED(this.selectedPeriode, this.selectedWarehouse)
-            this.listsWarehouse = this.WAREHOUSEBASEREPORT(this.selectedPeriode)
-            // console.log(this.base)
-            
-            if(this.selectedPeriode && this.selectedWarehouse && this.shift) {
-                // check dulu apakah somerecord exists, 
-                let isExists = 
-                    this.ISCLOCKEXISTS(this.base.id, this.shift) 
-                    && this.ISSTOCKEXISTS( this.base.id, this.shift)
-                // jika exists
-                if(isExists) {
-                    this.detailsDocument()
-                    // renewthe lists using function BASEREPORTSTOCKSHIFTANDPARENT: "BaseReportStock/shiftAndParent",
-                    this.lists = this[`BASEREPORT${this.sheet.toUpperCase()}SHIFTANDPARENT`](this.shift, this.base.id)
-                    return
+        watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
+            // selectedperiode
+            if(newVal[0] != oldVal[0]) {
+                // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
+                if(!isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)) {
+                    selectedWarehouse.value = null
+                    sheet.value = null
                 }
-                // // jika tidak exists
-                this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-                // looping cari baseReportStock dengan criteria { parent: baseReportFile.id }
-                await this.$store.dispatch("BaseReportStock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
-                // // looping cari baseReportClock dengan criteria { parent: baseReportFile.id }
-                await this.$store.dispatch("BaseReportClock/getDataByParentAndShift", { parent: this.base.id, shift: +this.shift });
-                this.$store.commit("Modal/active");
-                this.renewLists()
+                warehouses.value = await warehouseByDate(selectedPeriode.value)
             }
-        }
-        
+            emit('baseReportChanged', { 
+                periode: selectedPeriode.value,
+                warehouse: selectedWarehouse.value,
+                shift: shift.value
+             })
+        })
+  
         return { 
             shift, 
             sheet, 
