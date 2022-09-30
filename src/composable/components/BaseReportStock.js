@@ -1,4 +1,4 @@
-import { append, deleteDocument, findData } from "@/myfunction"
+import { append, deleteDocument, findData, update } from "@/myfunction"
 import { problemActive } from '@/composable/components/Problem'
 import { findBaseReportFile } from "./BaseReportFile"
 
@@ -155,3 +155,33 @@ export const stockDetails = (parent, shift) => {
 
     return result
 }
+
+export const updateBaseStock = async (id, objtToUpdate) => {
+    lists = lists.map((val) => {
+        if(val.id == id) {
+            return { ...val, ...objtToUpdate}
+        }
+        return val
+    })
+    await update({ store: 'BaseReportStock', criteria: { id: id }, obj: objtToUpdate })
+    return true
+}
+
+export async function markStockFinished(parentBaseReportFile, shift, parentDocument) {
+    // iterate the state
+    for (let list of lists) {
+      // if state?.shift == payload.shift && payload?.parent
+      if (
+        list?.shift == shift &&
+        list?.parent == parentBaseReportFile
+      ) {
+        // jika parentDocument kosong
+        if (!lists?.parentDocument) {
+          // update recordnya
+          await updateBaseStock(list.id, { parentDocument });
+        }
+        // jika sudah terisi
+      }
+    }
+    return;
+  }

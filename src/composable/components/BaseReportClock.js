@@ -117,4 +117,23 @@ export const clockDetails = (parent, shift) => {
           totalKendaraan: totalKendaraan,
           totalWaktu: totalWaktu,
         };
+}
+
+export async function markClockFinished(parentBaseReportFile, shift, parentDocument) {
+    // iterate the state
+    for (let list of lists) {
+      // if state?.shift == payload.shift && payload?.parent
+      if (
+        list?.shift == shift &&
+        list?.parent == parentBaseReportFile
+      ) {
+        // jika parentDocument kosong
+        if (!lists?.parentDocument) {
+          // update recordnya
+          await updateBaseClock(list.id, { parentDocument });
+        }
+        // jika sudah terisi
       }
+    }
+    return;
+  }

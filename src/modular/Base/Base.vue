@@ -107,11 +107,13 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock } from '@/composable/components/BaseReportClock'
-import { getBaseStockByParentByShift, baseReportStockLists } from '@/composable/components/BaseReportStock'
+import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished } from '@/composable/components/BaseReportClock'
+import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished } from '@/composable/components/BaseReportStock'
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { markDocumentFinished } from '@/composable/components/DocumentsPeriod'
+import { someRecordFinished } from '@/composable/components/BaseReportFile'
 
 export default {
     components: {
@@ -233,33 +235,22 @@ export default {
         }
 
         const markAsFinished = async (ev) => {
-            console.log(ev)
-            // // buka loader
-            // this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            // // iterate baseReport stocklist dan tambahkan parent document ev.id
-            // // lemparkan ke state saja biar gak bingung
-            // // lempar data yang dibutuhkan, parent
-            // let criteria = Object.assign(ev, {
-            //     shift: this.shift,
-            //     parent: this.base?.id
-            // })
-            // // tambahkan parent document pada basereportclock
-            // await this.$store.dispatch("BaseReportClock/markAsFinished", criteria)
-            // // tambahkan parent document pada basereportstock
-            // await this.$store.dispatch("BaseReportStock/markAsFinished", criteria)
-            // // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
-            // await this.$store.dispatch("Document/handleDocument",
-            //     {
-            //         action: "finished",
-            //         val: Object.assign({baseReportFile: this.base.id}, ev),
-            //         rec: ev?.parentDocument
-            //     }
-            // )
-            // await this.$store.dispatch("BaseReportFile/someRecordFinished", this.base.id)
-            // // close the base finish form
-            // this.BaseFinishForm = false
-            // // tutup loader
-            // this.$store.commit("Modal/active");
+            // console.log(ev)
+            // buka loader
+            store.commit("Modal/active", {judul: "", form: "Loader"});
+            // iterate baseReport stocklist dan tambahkan parent document ev.id
+            // lemparkan ke state saja biar gak bingung
+            // tambahkan parent document pada basereportclock
+            await markClockFinished(baseId.value, nowShift.value, ev.parentDocument)
+            // tambahkan parent document pada basereportstock
+            await markStockFinished(baseId.value, nowShift.value, ev.parentDocument)
+            // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
+            await markDocumentFinished(baseId.value, ev.parentDocument, false)
+            await someRecordFinished(baseId.value)
+            // close the base finish form
+            mode.value = 'Main'
+            // tutup loader
+            store.commit("Modal/active");
         }
         const save = async (records) => {
             for(let record of records) {

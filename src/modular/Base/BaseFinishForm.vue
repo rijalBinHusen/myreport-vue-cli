@@ -36,8 +36,8 @@
             small
             @trig="$emit('exit')" 
         />
-        <!-- v-if="documentRecord?.collected && !documentRecord.isfinished" -->
         <Button 
+        v-if="document.collected && !document.isfinished"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -45,8 +45,8 @@
             small
             @trig="save" 
         />
-        <!-- v-if="documentRecord?.collected && !documentRecord.isfinished"  -->
         <div 
+        v-if="document?.collected && !document.isfinished" 
         class="w3-right w3-large w3-margin-right">
             <label for="generate">Generate report </label>
             <input type="checkbox" id="generate" v-model="generateReport" />
@@ -59,7 +59,7 @@ import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
 import { isGenerateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb as getDocument } from '@/composable/components/DocumentsPeriod'
 import { selectedPeriode, selectedWarehouse, shift } from "@/composable/components/BaseReportPanel"
-import { onMounted, onUnmounted, ref } from "vue"
+import { onMounted, onUnmounted, ref, watch } from "vue"
 import { getHeadspvId } from "@/composable/components/Headspv"
 import { getSupervisorId } from "@/composable/components/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
@@ -74,45 +74,39 @@ export default {
         Select,
         Button,
     },
+    props: {
+        base: {
+            required: true,
+            type: String,
+        }
+    },
     setup(props, { emit }) {
         const supervisor = ref(null)
         const headSpv = ref(null)
         const warehouseName = ref(null)
         const details = ref(null)
-        const generateReport = ref(null)
+        const generateReport = ref(false)
         const timeout = ref(null)
         const freezePage = ref(null)
         const document = ref({})
         const keyPress = ref({})
 
         onMounted(async () => {
-        // find the document first
-        document.value = await getDocument(Number(selectedPeriode.value), selectedWarehouse.value, shift.value).then((res) => res[0])
-        supervisor.value = await getSupervisorId(document.value.name).then((res) => res.name)
-        headSpv.value = await getHeadspvId(document.value.head).then((res) => res.name)
-        warehouseName.value = await getWarehouseId(document.value.warehouse).then((res) => res.name)
-        // if isFinished document
-        if(document.value?.isfinished) {
-            alert('Document finished')
-            details.value = document.value
-        } else {
-            details.value = { ... clockDetails, ...stockDetails }
-        }
-        console.log(details.value)
-
-        // this.documentRecord = this.$store.getters["Document/documentByPeriodeAndWarehouseAndShift"](this.base?.periode, this.base?.warehouse, this.shift)
-        // this.name = this.documentRecord?.name
-        // this.headSpv = this.documentRecord?.head
-        // this.warehouseName = this.$store.getters["Warehouses/warehouseId"](this.base?.warehouse)?.name
-        // this.itemVariance = this.$store.getters["Problem/problemActiveBySpvAndPeriode"](this.name, this.base.periode).length
-        // this.details = Object.assign(this.detailsClock, this.detailsStock, { itemVariance: 0})
-        // // console.log(this.documentRecord,this.base?.periode, this.base?.warehouse, this.shift)
-        // if(!this.documentRecord?.collected) {
-        //     alert("The document record status not collected yet")
-        // }
-        // event listener
-        window.addEventListener("keydown", pressKey)
-        window.addEventListener("keyup", releaseKey)
+            // find the document first
+            document.value = await getDocument(Number(selectedPeriode.value), selectedWarehouse.value, shift.value)
+            supervisor.value = await getSupervisorId(document.value.name).then((res) => res.name)
+            headSpv.value = await getHeadspvId(document.value.head).then((res) => res.name)
+            warehouseName.value = await getWarehouseId(document.value.warehouse).then((res) => res.name)
+            // if isFinished document
+            if(document.value?.isfinished) {
+                alert('Document finished')
+                details.value = document.value
+            } else {
+                details.value = { ... clockDetails(props.base, document.value.shift), ...stockDetails(props.base, document.value.shift) }
+            }
+            // event listener
+            window.addEventListener("keydown", pressKey)
+            window.addEventListener("keyup", releaseKey)
         })
 
         onUnmounted(() => {
@@ -136,35 +130,44 @@ export default {
                 // if the S (83) button pressed ( CTRL + S )
                 if(event.keyCode === 83) {
                 // prevent dialog save as to launch
-                // event.preventDefault()
-                // // if any record edited
-                //     if(this.documentRecord?.collected && !this.documentRecord.isfinished) {
-                //         // save the canged record
-                //         this.save()
-                //         // console.log('ctrl + s')
-                //     }
+                event.preventDefault()
+                // if any record edited
+                    if(document.value.collected && !document.value.isfinished) {
+                        // save the canged record
+                        save()
+                        // console.log('ctrl + s')
+                    }
                 }
             }
             
         }
 
+        const save = () => {
+            // dont do anything when the page freeze
+            if(freezePage.value) { return }
+            // console.log(this.document)
+            emit("finished", Object.assign({
+                parentDocument: document.value.id,
+                generateReport: generateReport.value,
+            }, details.value ))
+        }
+
+        watch([generateReport], (newVal) => {
+            clearTimeout(timeout.value)
+            freezePage.value = true
+            timeout.value = setTimeout(() => {
+                freezePage.value = false
+                isGenerateDocument(document.value.id, newVal[0])
+            }, 600)
+        })
+
         return {
-            supervisor, headSpv, warehouseName, document, dateMonth, details
+            supervisor, headSpv, warehouseName, document, dateMonth, 
+            details, generateReport, save
         }
         
     },
     emits: ["exit", "finished"],
-    methods: {
-        save() {
-            // dont do anything when the page freeze
-            if(this.freezePage) { return }
-            // console.log(this.document)
-            this.$emit("finished", Object.assign({
-                parentDocument: this.documentRecord?.id,
-                generateReport: this.generateReport,
-            }, this.details))
-        },
-    },
     computed: {
         inputs() {
             return [
@@ -181,19 +184,5 @@ export default {
             ]
         }
     },
-    watch: {
-        generateReport(newVal, oldVal) {
-            clearTimeout(this.timeout)
-            this.freezePage = true
-            if(!newVal) {
-                this.freezePage = false
-                return
-            }
-            this.timeout = setTimeout(() => {
-                this.freezePage = false
-                isGenerateDocument(this.documentRecord.id, true)
-            }, 600)
-        }
-    }
 }
 </script>

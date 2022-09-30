@@ -306,7 +306,7 @@ export const unApproveDocument = async (idDocument) => {
     return
 }
 
-export const finishDocument = async (idDocument, day) => {
+export const markDocumentFinished = async (baseReportFileId, idDocument, day) => {
     let time;
     if(day < 0) {
         time = dayPlusOrMinus('', day)
@@ -314,10 +314,10 @@ export const finishDocument = async (idDocument, day) => {
         time = ymdTime()
     }
     removeFromState(idDocument)
-    await updateDocument(idDocument, { finished: time, isfinished: true })
+    await updateDocument(idDocument, { baseReportFileId, finished: time, isfinished: true })
     return
 }
 
 export const getDocumentByPeriodeByWarehouseByShiftFromDb = (periode, warehouse, shift) => {
-    return findData({ store: "Document", criteria: { periode, warehouse, shift} })
+    return findData({ store: "Document", criteria: { periode, warehouse, shift} }).then((res) => res[0])
 }

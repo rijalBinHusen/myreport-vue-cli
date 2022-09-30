@@ -119,23 +119,21 @@ export default {
         }
 
         const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
-        
 
-        watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
+        async function send () {
             let baseReportFile = isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
             // get value for title
             let periode2 = dateBaseReportFile.value.find((val) => val.periode == selectedPeriode.value)
             let warehouseName = warehouses.value.find((val) => val.warehouse == selectedWarehouse.value)
-            // selectedperiode
-            if(newVal[0] != oldVal[0]) {
-                // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
-                if(!baseReportFile) {
-                    selectedWarehouse.value = null
-                    sheet.value = null
-                    shift.value = null
-                }
-                warehouses.value = await warehouseByDate(selectedPeriode.value)
+
+            // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
+            if(!baseReportFile) {
+                selectedWarehouse.value = null
+                sheet.value = null
+                shift.value = null
             }
+
+            warehouses.value = await warehouseByDate(selectedPeriode.value)
 
             emit('baseReportChanged', { 
                 periode: selectedPeriode.value,
@@ -145,41 +143,15 @@ export default {
                 sheet: sheet.value,
                 title: periode2?.periode2 + ' - ' + warehouseName?.warehouseName + ', Shift ' + shift.value
              })
-             saveToLocalStorage()
+        }
+        
+        watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
+            // selectedperiode
+            send()            
         })
 
-        const saveToLocalStorage = () => {
-            // set expired for 3 minutes
-            let record = JSON.stringify({
-                warehouses: warehouses.value,
-                shift: shift.value,
-                sheet: sheet.value,
-                selectedPeriode: selectedPeriode.value,
-                selectedWarehouse: selectedWarehouse.value,
-                expired: new Date().getTime() + 180000
-            })
-            sessionStorage.setItem('BaseReportPanel', record)
-            // localStorage.setItem('BaseReportPanel', record)
-        }
-
-        const getFromLocalStorage = () => {
-            let records =  sessionStorage.getItem('BaseReportPanel')
-            if(records) {
-                let extract = JSON.parse(records)
-                // if the record not expired
-                if(extract.expired > new Date().getTime()) {
-                    warehouses.value = extract.warehouses
-                    shift.value = extract.shift
-                    sheet.value = extract.sheet
-                    selectedPeriode.value = extract.selectedPeriode
-                    selectedWarehouse.value = extract.selectedWarehouse
-                }
-                return
-            }
-        }
-
         onMounted(() => {
-            getFromLocalStorage()
+            send()
         })
 
         const mode = (ev) => {
