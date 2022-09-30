@@ -108,7 +108,7 @@ import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
 import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished } from '@/composable/components/BaseReportClock'
-import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished } from '@/composable/components/BaseReportStock'
+import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock } from '@/composable/components/BaseReportStock'
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
@@ -256,17 +256,10 @@ export default {
             for(let record of records) {
                 if(isClockSheet.value) {
                     await updateBaseClock(record.id, record.changed)
+                } else {
+                    await updateBaseStock(record.id, record.changed)
                 }
             }
-            // console.log(ev)
-            // if(isClockSheet.value) {
-            //     updateBaseClock()
-            // }
-            // await this.$store.dispatch(
-            //         `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}/saveFromExcelMode`, 
-            //         ev)
-            // this.renewLists()
-            
         }
         const remove = async (ev) => {
             console.log(ev)
