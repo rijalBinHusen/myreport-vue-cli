@@ -230,7 +230,7 @@ export default {
             )
             // if the new record coming
             if(res) {
-                renewLists({ baseReportFile: baseId.value, shift: nowShift.value})
+                renewLists({ baseReportFile: baseId.value, shift: nowShift.value, sheet: nowSheet.value})
             }
         }
 

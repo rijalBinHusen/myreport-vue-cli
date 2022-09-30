@@ -25,11 +25,11 @@ export const startImportStock = async (sheets, baseId) => {
             await appendData(
                 baseId,
                 1,
-                sheets["A"+i],
-                sheets["D"+i],
+                sheets["A"+i] ? ["A"+i].v : "No item",
+                sheets["D"+i] ? ["D"+i].v : 0,
                 in1st,
                 out1st,
-                sheets["G"+i]
+                sheets["G"+i] ? ["G"+i].v : 0
                 )
         }
         /*
@@ -43,11 +43,11 @@ export const startImportStock = async (sheets, baseId) => {
             await appendData(
                 baseId,
                 2,
-                sheets["A"+i],
-                sheets["G"+i],
+                sheets["A"+i] ? ["A"+i].v : "No item",
+                sheets["G"+i] ? ["G"+i].v : 0,
                 in2nd,
                 out2nd,
-                sheets["J"+i]
+                sheets["J"+i] ? ["J"+i].v : 0
                 )
         }
 
@@ -68,11 +68,11 @@ export const startImportStock = async (sheets, baseId) => {
             await appendData(
                 baseId,
                 3,
-                sheets["A"+i],
-                sheets["J"+i],
+                sheets["A"+i] ? ["A"+i].v : "No item",
+                sheets["J"+i] ? ["J"+i].v : 0,
                 totalIn,
                 totalOut,
-                sheets["P"+i]
+                sheets["P"+i] ? ["P"+i].v : 0
             )
         }
     }
@@ -86,16 +86,21 @@ export const appendData = async (parent, shift, item, awal, masuk, keluar, riil)
         obj: {
             parent: parent,
             shift: shift,
-            item: item ? item.v : "No item",
-            awal: awal ?  awal.v : 0,
+            item: item,
+            awal: awal,
             in:  masuk,
             out: keluar,
             dateIn: "",
             dateOut: "",
             dateEnd: "",
-            real: riil ? riil.v : 0,
+            real: riil,
             problem: getProblem
         },
+    })
+    .then((val) => {
+        if(lists) {
+            lists.unshift(val?.data)
+        }
     })
     return true
 }

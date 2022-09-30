@@ -30,20 +30,33 @@
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import InputItem from "./InputItem.vue"
+import { appendData } from "@/composable/components/BaseReportStock"
 
 export default {
     methods: {
-      kirim() {
-          this.$store.dispatch("BaseReportStock/addItem", this.pickedItem)
+      async kirim() {
+          // OPEN LOADER
+          this.$store.commit("Modal/active", {judul: "", form: "Loader"})
+          // ITERATE AND WAIT THE PROCESS
+            for(let item of this.pickedItem) {
+              await appendData(
+                item.parent,
+                Number(item.shift),
+                item.item,
+                0,
+                0,
+                0,
+                0
+              )
+            }
+          this.$store.commit("Modal/tunnelMessage", true)
+          // CLOSE LOADER
+          this.$store.commit("Modal/active")
+          // this.$store.dispatch("BaseReportStock/addItem", this.pickedItem)
       },
       add() {
-          this.records.push(
-          {
-              item: null,
-          })
-          this.pickedItem.push(
-          Object.assign({ item: null, }, this.$store.getters["Modal/obj"].addOn)
-          )
+          this.records.push({ item: null })
+          this.pickedItem.push({ item: null,  ...this.$store.getters["Modal/obj"].obj })
       },
       item(index, value) {
         this.pickedItem[index].item = value
@@ -51,8 +64,8 @@ export default {
     },
     data() {
         return {
-            records: [],
-            pickedItem: [],
+          records: [],
+          pickedItem: [],
         }
     },
     components: {
@@ -60,6 +73,5 @@ export default {
         Button,
         InputItem,
     },
-    name: "BaseStockForm"
 }
 </script>

@@ -88,6 +88,8 @@ import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
 import { selectedPeriode, selectedWarehouse, shift, sheet } from '@/composable/components/BaseReportPanel'
 import { useStore } from 'vuex';
+import { dateMonth } from '@/composable/piece/dateFormat';
+import { getWarehouseId } from '@/composable/components/Warehouses';
 
 
 export default {
@@ -125,8 +127,8 @@ export default {
         async function send () {
             let baseReportFile = isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
             // get value for title
-            let periode2 = dateBaseReportFile.value.find((val) => val.periode == selectedPeriode.value)
-            let warehouseName = warehouses.value.find((val) => val.warehouse == selectedWarehouse.value)
+            let periode2 = dateMonth(Number(selectedPeriode.value || new Date()))
+            let warehouseName = await getWarehouseId(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
 
             // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
             if(!baseReportFile) {
@@ -143,7 +145,7 @@ export default {
                 shift: shift.value,
                 baseReportFile,
                 sheet: sheet.value,
-                title: periode2?.periode2 + ' - ' + warehouseName?.warehouseName + ', Shift ' + shift.value
+                title: periode2 + ' - ' + warehouseName + ', Shift ' + shift.value
              })
         }
         
