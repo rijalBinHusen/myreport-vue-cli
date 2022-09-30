@@ -13,6 +13,7 @@
                 <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
             </template>
             <template #text>
+                {{ excelLabel }}
                 <!-- {{ $store.getters["dateFormat"]({format: "dateMonth", time: Number(selectedPeriode) })
                     + ", " +
                     $store.getters["Warehouses/warehouseId"](selectedWarehouse)?.name
@@ -112,7 +113,6 @@ import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock } fr
 import { getBaseStockByParentByShift, baseReportStockLists } from '@/composable/components/BaseReportStock'
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
-// import { shell } from 'electron'
 
 export default {
     components: {
@@ -137,6 +137,7 @@ export default {
         const isStockSheet = computed(() => nowSheet.value == 'stock')
         const lists = ref([])
         const renderTable = ref(false)
+        const excelLabel = ref(null)
         
         const message = (ev, obj) => {
             console.log('message', ev, obj)
@@ -300,19 +301,19 @@ export default {
         const renewLists = async (ev) => {
             
             if(ev.baseReportFile && ev.shift) {
+                console.log(ev)
                 renderTable.value = false
                 await getBaseClockByParentByShift(ev.baseReportFile, Number(ev.shift))
                 await getBaseStockByParentByShift(ev.baseReportFile, Number(ev.shift))
-                console.log(ev)
                 if(ev.sheet == 'stock') {
-                    lists.value = baseReportStockLists()
+                    lists.value = baseReportStockLists(ev.baseReportFile, Number(ev.shift))
                     nowSheet.value = 'stock'
                 } else {
-                    lists.value = baseReportClockLists()
+                    lists.value = baseReportClockLists(ev.baseReportFile, Number(ev.shift))
                     nowSheet.value = 'clock'
                 }
+                excelLabel.value = ev.title
                 renderTable.value = true
-                console.log(lists.value)
             }
                 
         }
@@ -367,7 +368,7 @@ export default {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
             handleProblem, launchForm, markAsFinished, save, remove, fromAdd,
             renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
-            changeMode
+            changeMode, excelLabel
         }
     }
 }

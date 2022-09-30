@@ -83,7 +83,7 @@ import {
     isRecordExistsByPeriodeAndWarehouse
 } from '@/composable/components/BaseReportFile';
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
-import { computed, ref, watch  } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
 
@@ -96,10 +96,10 @@ export default {
     },
     emits: ['baseReportChanged', 'mode'],
     setup(props, { emit }) {
-        const selectedPeriode = ref(null)
         const warehouses = ref([])
         const shift = ref('')
         const sheet = ref('')
+        const selectedPeriode = ref(null)
         const selectedWarehouse = ref('')
         const pickPeriode = async () => {
             let res = await subscribeMutation(
@@ -126,6 +126,9 @@ export default {
 
         watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
             let baseReportFile = isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
+            // get value for title
+            let periode2 = dateBaseReportFile.value.find((val) => val.periode == selectedPeriode.value)
+            let warehouseName = warehouses.value.find((val) => val.warehouse == selectedWarehouse.value)
             // selectedperiode
             if(newVal[0] != oldVal[0]) {
                 // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
@@ -135,13 +138,50 @@ export default {
                 }
                 warehouses.value = await warehouseByDate(selectedPeriode.value)
             }
+
             emit('baseReportChanged', { 
                 periode: selectedPeriode.value,
                 warehouse: selectedWarehouse.value,
                 shift: shift.value,
                 baseReportFile,
                 sheet: sheet.value,
+                title: periode2?.periode2 + ' - ' + warehouseName?.warehouseName + ', Shift ' + shift.value
              })
+             saveToLocalStorage()
+        })
+
+        const saveToLocalStorage = () => {
+            // set expired for 3 minutes
+            let record = JSON.stringify({
+                warehouses: warehouses.value,
+                shift: shift.value,
+                sheet: sheet.value,
+                selectedPeriode: selectedPeriode.value,
+                selectedWarehouse: selectedWarehouse.value,
+                expired: new Date().getTime() + 180000
+            })
+            localStorage.setItem('BaseReportPanel', record)
+        }
+
+        const getFromLocalStorage = () => {
+            let records = localStorage.getItem('BaseReportPanel')
+            if(records) {
+                let extract = JSON.parse(records)
+                // if the record not expired
+                if(extract.expired > new Date().getTime()) {
+                    warehouses.value = extract.warehouses
+                    shift.value = extract.shift
+                    sheet.value = extract.sheet
+                    selectedPeriode.value = extract.selectedPeriode
+                    selectedWarehouse.value = extract.selectedWarehouse
+                    return
+                }
+                localStorage.removeItem('BaseReportPanel')
+            }
+        }
+
+        onMounted(() => {
+            getFromLocalStorage()
         })
 
         const mode = (ev) => {

@@ -70,12 +70,15 @@ export const getBaseClockByParentByShift = async (parent, shift) => {
     return
 }
 
-export const baseReportClockLists = () => {
-        return lists.map((rec) => ({
-              ...rec, 
-              totalTime: totalTime(rec?.start, rec?.finish) - (rec.rehat * 60)
-            })
-        )
+export const baseReportClockLists = (parent, shift) => {
+    return lists.filter((rec) => {
+        if(rec.parent == parent && rec.shift == shift) {
+            return {
+                ...rec, 
+                totalTime: totalTime(rec?.start, rec?.finish) - (rec.rehat * 60)
+            }
+        }
+    })
 }
 
 export const updateBaseClock = async (id, objtToUpdate) => {

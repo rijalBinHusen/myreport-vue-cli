@@ -115,7 +115,7 @@ export default {
       if(isEdited >= 0) {
         this.edited[isEdited] = { 
           id: ev.data.id, 
-          changed: { ...this.edited[isEdited].changed, [ev.colDef.filed]: ev.newValue }
+          changed: { ...this.edited[isEdited].changed, [ev.colDef.field]: ev.newValue }
         }
         return
       }
