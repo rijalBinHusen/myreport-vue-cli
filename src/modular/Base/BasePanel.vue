@@ -86,7 +86,8 @@ import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
-import { selectedPeriode, selectedWarehouse, shift, sheet} from '@/composable/components/BaseReportPanel'
+import { selectedPeriode, selectedWarehouse, shift, sheet } from '@/composable/components/BaseReportPanel'
+import { useStore } from 'vuex';
 
 
 export default {
@@ -97,6 +98,7 @@ export default {
     },
     emits: ['baseReportChanged', 'mode'],
     setup(props, { emit }) {
+        const store = useStore()
         const warehouses = ref([])
         const pickPeriode = async () => {
             let res = await subscribeMutation(
@@ -152,6 +154,8 @@ export default {
 
         onMounted(() => {
             send()
+            store.dispatch('Baseitem/getAllItem')
+            store.dispatch('Problem/getProblemFromDB')
         })
 
         const mode = (ev) => {

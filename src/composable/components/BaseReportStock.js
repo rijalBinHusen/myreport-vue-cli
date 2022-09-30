@@ -1,6 +1,7 @@
 import { append, deleteDocument, findData, update } from "@/myfunction"
 import { problemActive } from '@/composable/components/Problem'
 import { findBaseReportFile } from "./BaseReportFile"
+import store from '@/store'
 
 let lists = []
 
@@ -112,16 +113,20 @@ export const getBaseStockByParentByShift = async (parent, shift) => {
     }
 }
 
-export const baseReportStockLists = () => {
-    return lists.length > 0
-      ? lists.map((val) => ({
-            ...val, 
-            selisih: Number(val.real) - (Number(val.awal) + Number(val.in) - Number(val.out)),
-            // problem2: rootGetters["Problem/masalah"](val.problem),
-            planOut: val?.planOut || 0
-        })
-        )
-      : [];
+export const baseReportStockLists = (parent, shift) => {
+    let result = []
+    lists.forEach((rec) => {
+        if(rec.parent == parent && rec.shift == shift) {
+            result.push({
+                ...rec,
+                itemName: store.getters["Baseitem/baseItemKode"](rec.item).name,
+                problem2: store.getters["Problem/masalah"](rec.problem),
+                selisih: Number(rec.real) - (Number(rec.awal) + Number(rec.in) - Number(rec.out)),
+                planOut: rec?.planOut || 0
+            })
+        }
+    })
+    return result
   }
 
 export const stockDetails = (parent, shift) => {

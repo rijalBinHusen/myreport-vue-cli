@@ -280,14 +280,6 @@ export default {
             //     this.renewLists()
             // }
         }
-        const detailsDocument = () => {
-            console.log('details dcouc')
-            // total waktu, total kendaraan, total do
-            // if(this.shift && this.base && this.base.id) {
-            //     this.detailsStock = this.$store.getters["BaseReportStock/detailsByShiftAndParent"](this.shift, this.base.id)
-            //     this.detailsClock = this.$store.getters["BaseReportClock/detailsByShiftAndParent"](this.shift, this.base.id)
-            // }
-        }
         const renewLists = async (ev) => {
             
             if(ev.baseReportFile && ev.shift) {
