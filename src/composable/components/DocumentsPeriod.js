@@ -317,3 +317,7 @@ export const finishDocument = async (idDocument, day) => {
     await updateDocument(idDocument, { finished: time, isfinished: true })
     return
 }
+
+export const getDocumentByPeriodeByWarehouseByShiftFromDb = (periode, warehouse, shift) => {
+    return findData({ store: "Document", criteria: { periode, warehouse, shift} })
+}

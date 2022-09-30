@@ -38,7 +38,7 @@ export const startImportClock = async (sheets, baseId) => {
     return true
 }
 
-export const appendData = async (parent, shift, noDo, reg, start, finish, rehat) => {
+export const appendData = async (parent, shift, noDo, reg, start, finish, rehat) => {1
     await append({ store: "BaseReportClock", obj: {
             parent: parent,
             shift: shift,
@@ -93,3 +93,28 @@ export const updateBaseClock = async (id, objtToUpdate) => {
     await update({ store: 'BaseReportClock', criteria: { id: id }, obj: objtToUpdate })
     return true
 }
+
+export const clockDetails = (parent, shift) => {
+        let totalDo = 0;
+        let totalKendaraan = 0;
+        let totalWaktu = 0;
+        lists.forEach((val) => {
+          if (
+            val.shift == shift &&
+            val.parent == parent &&
+            val?.start && val?.finish &&
+            val.start.length == 5 &&
+            val.finish.length == 5
+          ) {
+            totalDo += 1;
+            totalKendaraan += 1;
+            // jaddikan menit, masukan total waktu - rehat
+            totalWaktu += totalTime(val?.start, val?.finish) - (val.rehat * 60);
+          }
+        });
+        return {
+          totalDo: totalDo,
+          totalKendaraan: totalKendaraan,
+          totalWaktu: totalWaktu,
+        };
+      }

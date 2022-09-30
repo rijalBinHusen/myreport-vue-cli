@@ -123,3 +123,35 @@ export const baseReportStockLists = () => {
         )
       : [];
   }
+
+export const stockDetails = (parent, shift) => {
+    /*
+     expected result = {
+        totalIn: Number, 
+        totalItemMoving: Number, 
+        totalQtyOut: Number, 
+        totalProductNotFifo: Number 
+    }
+    */
+    let result = {
+      totalItemMoving: 0,
+      totalQTYIn: 0,
+      totalQTYOut: 0,
+      totalProductNotFIFO: 0,
+      planOut: 0,
+      totalItemKeluar: 0,
+    };
+    lists.forEach((val) => {
+      if (val.shift == shift && val.parent == parent) {
+        if (Number(val.out)) {
+          result["totalItemKeluar"]++;
+        }
+        result["totalItemMoving"]++;
+        result["totalQTYIn"] = result["totalQTYIn"] + Number(val.in);
+        result["totalQTYOut"] = result["totalQTYOut"] + Number(val.out);
+        result["planOut"] = result["planOut"] += val?.planOut ? Number(val?.planOut) : 0;
+      }
+    });
+
+    return result
+}

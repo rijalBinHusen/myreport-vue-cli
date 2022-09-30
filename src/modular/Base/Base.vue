@@ -5,7 +5,7 @@
             :originColumn="table?.excelColumn"
             :rowData="lists"
             :tableName="table?.excelId"
-            @exit="changeMode('Main')"
+            @exit="mode = 'Main'"
             @save="save($event)"
             rowHeight="70"
         >   
@@ -24,7 +24,7 @@
         </AGGrid>
         <div v-if="isMainMode" class="w3-margin-top w3-container">
             <!-- Panel base report -->
-            <BasePanelVue @baseReportChanged="renewLists" @mode="changeMode($event)" />
+            <BasePanelVue @baseReportChanged="renewLists" @mode="lists.length ? mode = $event : ''" />
             <!-- Panel base report -->
             <div>
             <Datatable
@@ -86,16 +86,14 @@
 
             </Datatable>
             </div>
-            <!-- <BaseFinishForm 
-                v-else 
-                :base="baseId" 
-                :shift="shift"
-                :detailsClock="detailsClock"
-                :detailsStock="detailsStock"
-                @exit="BaseFinishForm = false"
-                @finished="markAsFinished($event)"
-            /> -->
         </div>
+        <BaseFinishForm 
+            v-if="isBaseFinishedForm"
+            :base="baseId" 
+            :shift="nowShift"
+            @exit="mode = 'Main'"
+            @finished="markAsFinished($event)"
+        />
     </div>
 </template>
 
@@ -234,10 +232,6 @@ export default {
             }
         }
 
-        const changeMode = (ev) => {
-            mode.value = ev
-        }
-
         const markAsFinished = async (ev) => {
             console.log(ev)
             // // buka loader
@@ -374,7 +368,7 @@ export default {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
             handleProblem, launchForm, markAsFinished, save, remove, fromAdd,
             renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
-            changeMode, excelLabel
+            excelLabel, nowShift , mode,
         }
     }
 }

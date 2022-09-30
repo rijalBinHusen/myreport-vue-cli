@@ -86,6 +86,7 @@ import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
+import { selectedPeriode, selectedWarehouse, shift, sheet} from '@/composable/components/BaseReportPanel'
 
 
 export default {
@@ -97,10 +98,6 @@ export default {
     emits: ['baseReportChanged', 'mode'],
     setup(props, { emit }) {
         const warehouses = ref([])
-        const shift = ref('')
-        const sheet = ref('')
-        const selectedPeriode = ref(null)
-        const selectedWarehouse = ref('')
         const pickPeriode = async () => {
             let res = await subscribeMutation(
                 "Pilih periode yang akan ditampilkan", 
@@ -111,7 +108,7 @@ export default {
             if(res) {
                 //open the loader
                 loader()
-                // wait the process
+                // wait the process get base report file
                 await getBaseReportFile(res?.periode1, res?.periode2)
                 //close the loader
                 modalClose()
@@ -161,11 +158,12 @@ export default {
                 selectedWarehouse: selectedWarehouse.value,
                 expired: new Date().getTime() + 180000
             })
-            localStorage.setItem('BaseReportPanel', record)
+            sessionStorage.setItem('BaseReportPanel', record)
+            // localStorage.setItem('BaseReportPanel', record)
         }
 
         const getFromLocalStorage = () => {
-            let records = localStorage.getItem('BaseReportPanel')
+            let records =  sessionStorage.getItem('BaseReportPanel')
             if(records) {
                 let extract = JSON.parse(records)
                 // if the record not expired
@@ -175,9 +173,8 @@ export default {
                     sheet.value = extract.sheet
                     selectedPeriode.value = extract.selectedPeriode
                     selectedWarehouse.value = extract.selectedWarehouse
-                    return
                 }
-                localStorage.removeItem('BaseReportPanel')
+                return
             }
         }
 
