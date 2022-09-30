@@ -135,6 +135,7 @@ export default {
                 if(!baseReportFile) {
                     selectedWarehouse.value = null
                     sheet.value = null
+                    shift.value = null
                 }
                 warehouses.value = await warehouseByDate(selectedPeriode.value)
             }

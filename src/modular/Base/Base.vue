@@ -113,6 +113,7 @@ import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock } fr
 import { getBaseStockByParentByShift, baseReportStockLists } from '@/composable/components/BaseReportStock'
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
+import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 export default {
     components: {
@@ -138,6 +139,7 @@ export default {
         const lists = ref([])
         const renderTable = ref(false)
         const excelLabel = ref(null)
+        const nowShift = ref(null)
         
         const message = (ev, obj) => {
             console.log('message', ev, obj)
@@ -214,19 +216,22 @@ export default {
             //     }
             // });
         }
-
-        const launchForm = (ev) => {
-            console.log('launch form', ev)
-            console.log(isMainMode.value, isExcelMode.value)
+        // add data ( trigger from excel mode )
+        const launchForm = async () => {
             // mode.value = ev
             // // jika clock jika stock
-            // let form = this.sheet === "clock" ? "BaseClockForm" : "BaseStockForm"
+            let form = isClockSheet.value ? "BaseClockForm" : "BaseStockForm"
             // // launch modal dan form
-            // this.$store.commit("Modal/active", {
-            //     judul: `Tambah record ${this.sheet}`, 
-            //     form: form,
-            //     addOn: { parent: this.base.id, shift: +this.shift},
-            // });
+            let res = await subscribeMutation(
+                `Tambah record ${nowSheet.value}`,
+                form,
+                { parent: baseId.value, shift: nowShift.value },
+                'Modal/tunnelMessage'
+            )
+            // if the new record coming
+            if(res) {
+                renewLists({ baseReportFile: baseId.value, shift: nowShift.value})
+            }
         }
 
         const changeMode = (ev) => {
@@ -301,7 +306,6 @@ export default {
         const renewLists = async (ev) => {
             
             if(ev.baseReportFile && ev.shift) {
-                console.log(ev)
                 renderTable.value = false
                 await getBaseClockByParentByShift(ev.baseReportFile, Number(ev.shift))
                 await getBaseStockByParentByShift(ev.baseReportFile, Number(ev.shift))
@@ -312,7 +316,9 @@ export default {
                     lists.value = baseReportClockLists(ev.baseReportFile, Number(ev.shift))
                     nowSheet.value = 'clock'
                 }
+                nowShift.value = ev.shift
                 excelLabel.value = ev.title
+                baseId.value = ev.baseReportFile
                 renderTable.value = true
             }
                 

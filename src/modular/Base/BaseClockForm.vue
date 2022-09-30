@@ -1,11 +1,11 @@
 <template>
     <div>
-        <form @submit.prevent="kirim">
-            <Input label="Masukkan nomor DO" placeholder="Nomor DO" type="text" @inp="clock.noDo = $event" />
-            <Input label="Masukkan Jam register" placeholder="Register" type="text" @inp="clock.reg = $event" />
-            <Input label="Masukkan Jam mulai" placeholder="Start" type="text" @inp="clock.start = $event" />
-            <Input label="Masukkan Jam selesai" placeholder="Finish" type="text" @inp="clock.finish = $event" />
-            <Input label="Masukkan Jumlah istirahat" placeholder="break" type="number" @inp="clock.rehat = +$event" />
+        <form @submit.prevent="send">
+            <Input label="Masukkan nomor DO" placeholder="Nomor DO" type="text" @inp="noDo = $event" />
+            <Input label="Masukkan Jam register" placeholder="Register" type="text" @inp="reg = $event" />
+            <Input label="Masukkan Jam mulai" placeholder="Start" type="text" @inp="start = $event" />
+            <Input label="Masukkan Jam selesai" placeholder="Finish" type="text" @inp="finish = $event" />
+            <Input label="Masukkan Jumlah istirahat" placeholder="break" type="number" @inp="rehat = +$event" />
             <Button 
                 value="Submit" 
                 class="w3-right w3-margin-top"
@@ -18,33 +18,46 @@
 </template>
 
 <script>
-import Input from "../../components/elements/Input.vue"
-import Button from "../../components/elements/Button.vue"
+import Input from "@/components/elements/Input.vue"
+import Button from "@/components/elements/Button.vue"
+import { appendData } from '@/composable/components/BaseReportClock'
+import { ref, onMounted } from "vue"
+import { useStore } from "vuex"
 export default {
-    methods: {
-        kirim() {
-            this.$store.dispatch("append", {
-                        store: "BaseReportClock",
-                        obj: { ...this.clock, ...this.$store.state.Modal.more.addOn },
-                    })
-            this.$store.commit("Modal/active");
+    setup() {
+        const store = useStore()
+        const noDo = ref('')
+        const reg = ref('')
+        const start = ref('')
+        const finish = ref('')
+        const rehat = ref('')
+        const obj = ref({})
+
+        const send = async () => {
+            await appendData(
+                obj.value?.parent, 
+                obj.value?.shift, 
+                noDo.value,
+                reg.value,
+                start.value,
+                finish.value,
+                rehat.value
+            )
+            store.commit('Modal/tunnelMessage', true)
+            store.commit("Modal/active");
         }
-    },
-    data() {
+
+        onMounted(() => {
+            obj.value = store.getters['Modal/obj']?.obj
+        })
+
         return {
-            clock: {
-            noDo: null,
-            reg: null,
-            start: null,
-            finish: null,
-            rehat: null,
-            }
+            noDo, reg, start, finish, rehat, send
         }
     },
     components: {
         Input,
         Button,
     },
-    name: "BaseClockForm"
 }
 </script>

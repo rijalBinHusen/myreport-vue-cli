@@ -27,11 +27,11 @@ export const startImportClock = async (sheets, baseId) => {
         if(i > 5 && clockStatus) {
             await appendData(
                     baseId, 
-                    sheets["B"+i], 
-                    sheets["D"+i], 
-                    sheets["F"+i], 
-                    sheets["G"+i], 
-                    sheets["H"+i],
+                    sheets["B"+i]?.v <= 3 ? shift?.v  : 3, 
+                    sheets["D"+i] ? sheets["D"+i].v : 0, 
+                    sheets["F"+i] ? sheets["F"+i].w : 0, 
+                    sheets["G"+i] ? sheets["G"+i].w : 0 , 
+                    sheets["H"+i] ? sheets["H"+i].w : 0,
                     0)
         }
     }
@@ -41,11 +41,11 @@ export const startImportClock = async (sheets, baseId) => {
 export const appendData = async (parent, shift, noDo, reg, start, finish, rehat) => {
     await append({ store: "BaseReportClock", obj: {
             parent: parent,
-            shift: shift?.v <= 3 ? shift?.v  : 3,
-            noDo: noDo ? noDo.v : 0,
-            reg: reg ? reg.w : 0,
-            start: start ? start.w : 0,
-            finish: finish ? finish.w : 0,
+            shift: shift,
+            noDo: noDo,
+            reg: reg,
+            start: start,
+            finish: finish,
             rehat: rehat,
         }
         })
@@ -71,14 +71,16 @@ export const getBaseClockByParentByShift = async (parent, shift) => {
 }
 
 export const baseReportClockLists = (parent, shift) => {
-    return lists.filter((rec) => {
+    let result = []
+    lists.forEach((rec) => {
         if(rec.parent == parent && rec.shift == shift) {
-            return {
+            result.push({
                 ...rec, 
                 totalTime: totalTime(rec?.start, rec?.finish) - (rec.rehat * 60)
-            }
+            })
         }
     })
+    return result
 }
 
 export const updateBaseClock = async (id, objtToUpdate) => {
