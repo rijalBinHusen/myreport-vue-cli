@@ -90,6 +90,7 @@ import { selectedPeriode, selectedWarehouse, shift, sheet } from '@/composable/c
 import { useStore } from 'vuex';
 import { dateMonth } from '@/composable/piece/dateFormat';
 import { getWarehouseId } from '@/composable/components/Warehouses';
+import { getProblemFromDB } from '@/composable/components/Problem'
 
 
 export default {
@@ -154,10 +155,10 @@ export default {
             send()            
         })
 
-        onMounted(() => {
+        onMounted( async () => {
+            await store.dispatch('Baseitem/getAllItem')
+            await getProblemFromDB()
             send()
-            store.dispatch('Baseitem/getAllItem')
-            store.dispatch('Problem/getProblemFromDB')
         })
 
         const mode = (ev) => {

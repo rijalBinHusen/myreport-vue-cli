@@ -83,6 +83,7 @@ export const problemActive = (warehouse, item) => {
   let result = [];
   lists.forEach((val) => {
     if (!val.isFinished && val.warehouse == warehouse && val.item == item) {
+      console.log(val.waerhouse, warehouse, val.item, item);
       result.push(val.id);
     }
   });

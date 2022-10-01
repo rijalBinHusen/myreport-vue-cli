@@ -196,7 +196,6 @@ export default {
         }
 
         const handleProblem = async (ev, obj) => {
-            console.log('hanlde problem', ev, obj)
             if(ev === "delete") {
                 let confirm = await subscribeMutation('', 'Confirm', { pesan: 'Semua problem akan dihapus!'}, 'Modal/tunnelMessage')
                 if(confirm) {
@@ -343,16 +342,10 @@ export default {
                 }
             }
         })
-
-        const fromAdd = () => {
-            return "clock" 
-            // this.sheet === 
-            // ? "BaseReportClockForm" : "BaseReportStockForm";
-        }
         
         return {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
-            handleProblem, launchForm, markAsFinished, save, remove, fromAdd,
+            handleProblem, launchForm, markAsFinished, save, remove,
             renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
             excelLabel, nowShift , mode,
         }

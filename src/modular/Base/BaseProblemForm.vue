@@ -25,6 +25,7 @@
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import { updateBaseStock } from '@/composable/components/BaseReportStock'
+import { problemByItem } from '@/composable/components/Problem'
 
 	export default {
 		data() {
@@ -49,7 +50,7 @@ import { updateBaseStock } from '@/composable/components/BaseReportStock'
 			this.info = this.$store.getters["Modal/obj"].obj
 			// (periode, warehouse, item)
 			// get all problem by warehouse and item
-			this.listsProblem = this.$store.getters["Problem/problemByItem"](this.info?.warehouse, this.info?.item)
+			this.listsProblem = problemByItem(this.info?.warehouse, this.info?.item)
 			// 
 			this.pickedProblem = this.info.problem
 		},

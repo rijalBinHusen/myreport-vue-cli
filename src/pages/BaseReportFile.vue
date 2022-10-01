@@ -61,6 +61,7 @@ import { getWarehouseId } from "@/composable/components/Warehouses"
 import { useStore } from "vuex"
 import { removeClockByParent } from '@/composable/components/BaseReportClock' 
 import { removeStockByParent } from '@/composable/components/BaseReportStock'
+import { getProblemFromDB } from '@/composable/components/Problem'
 
 export default {
     name: "Collect",
@@ -84,8 +85,10 @@ export default {
                 'Modal/tunnelMessage'
                 )
             if(res) {
+                store.commit('Modal/active', { judul: '', form: 'Loader' })
                 await getBaseReportFile(res?.periode1, res?.periode2)
                 renewLists()
+                store.commit('Modal/active')
             }
         }
 
@@ -97,6 +100,7 @@ export default {
         }
 
         onMounted(() => {
+            getProblemFromDB()
             renewLists()
         })
 
