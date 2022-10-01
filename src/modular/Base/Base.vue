@@ -107,7 +107,7 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished, removeClock } from '@/composable/components/BaseReportClock'
+import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished, removeClock, appendData as appendClockRecord } from '@/composable/components/BaseReportClock'
 import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock, removeStock } from '@/composable/components/BaseReportStock'
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
@@ -185,10 +185,10 @@ export default {
             // // shell.openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         }
         
-        const duplicateRecord = (ev) => {
-            console.log('duplicateRecord')
-            // const { id, ...record } = ev
-            // this.$store.dispatch("append", { store: "BaseReportClock", obj: record })
+        const duplicateRecord = async (ev) => {
+            // console.log('duplicateRecord', ev)
+            await appendClockRecord(ev.parent, ev.shift, +ev.noDo++, ev.reg, ev.start, ev.finish, ev.rehat)
+            renewLists()
         }
 
         const handleProblem = (ev, obj) => {
