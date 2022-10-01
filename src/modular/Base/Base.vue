@@ -112,9 +112,12 @@ import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, u
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { markDocumentFinished } from '@/composable/components/DocumentsPeriod'
+import { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/composable/components/DocumentsPeriod'
 import { someRecordFinished } from '@/composable/components/BaseReportFile'
 import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from '@/composable/components/BaseReportPanel'
+import { getWarehouseId } from "@/composable/components/Warehouses"
+import { getSupervisorId } from "@/composable/components/Supervisors"
+import { dateMonth } from "@/composable/piece/dateFormat"
 
 export default {
     components: {
@@ -140,49 +143,50 @@ export default {
         const renderTable = ref(false)
         const excelLabel = ref(null)
         
-        const message = (ev, obj) => {
+        const message = async (ev, obj) => {
             console.log('message', ev, obj)
-            // // ev = jenis pesan, obj=lengtka
-            // //   "id": "unc22060042020006",
-            // //   "parent": "unc22060042",
-            // //   "shift": 2,
-            // //   "item": "1TOMGCVANBC-4--",
-            // //   "awal": 5084,
-            // //   "in": 0,
-            // //   "out": 118,
-            // //   "dateIn": "",
-            // //   "dateOut": "",
-            // //   "dateEnd": "",
-            // //   "real": 4966,
-            // //   "problem": [
-            // //     "a2722060000",
-            // //     "a2722060001"
-            // //   ],
-            // //   "itemName": "GORIORIO MAGIC LOKAL",
-            // //   "selisih": 0,
-            // //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
-            // //   "planOut": ""
-            // // dapatkan nomor telfon dulu
-            // let spvInfo = this.$store.getters["Document/spvByPeriodeAndWarehouseAndShift"](this.selectedPeriode, this.selectedWarehouse, this.shift)
-            // let warehouseName = this.$store.getters["Warehouses/warehouseId"](this.selectedWarehouse)?.name
-            // let pesan;
-            // let salam = `Assalamu alaikum pak ${spvInfo.name}%0a%0a`
-            // let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${this.GETTIME({format: 'dateMonth', time: +this.selectedPeriode}) }*, shift ${obj.shift} ${warehouseName}, untuk item ${obj.itemName}`
-            // let selisih = `terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn`
-            // let problem = `Dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2.replace('.', ',')}`
+            // ev = jenis pesan, obj=lengtka
+            //   "id": "unc22060042020006",
+            //   "parent": "unc22060042",
+            //   "shift": 2,
+            //   "item": "1TOMGCVANBC-4--",
+            //   "awal": 5084,
+            //   "in": 0,
+            //   "out": 118,
+            //   "dateIn": "",
+            //   "dateOut": "",
+            //   "dateEnd": "",
+            //   "real": 4966,
+            //   "problem": [
+            //     "a2722060000",
+            //     "a2722060001"
+            //   ],
+            //   "itemName": "GORIORIO MAGIC LOKAL",
+            //   "selisih": 0,
+            //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
+            //   "planOut": ""
+            // dapatkan nomor telfon dulu
+            let theDocument = await getDocumentByPeriodeByWarehouseByShiftFromDb(Number(selectedPeriode.value), selectedWarehouse.value, nowShift.value)
+            let spvInfo = await getSupervisorId(theDocument.name)
+            let warehouseName = await getWarehouseId(selectedWarehouse.value).then((res) => res.name)
+            let pesan;
+            let salam = `Assalamu alaikum pak ${spvInfo.name}%0a%0a`
+            let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${dateMonth(selectedPeriode) }*, shift ${nowShift.value} ${warehouseName}, untuk item ${obj.itemName}`
+            let selisih = `terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn`
+            let problem = `Dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2.replace('.', ',')}`
             
-            // if(ev === "apaBaru") {
-            //     pesan = salam+pembuka+' '+selisih+`%0a%0aapakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
-            // } else if (ev === "tidakSama") {
-            //     pesan =  salam+pembuka+` apakah ada selisih baru ya pak? %0a%0a${problem} sedangkan dilaporan bapak `+selisih
-            // } else if (ev === "selesai") {
-            //     pesan =  salam+pembuka+' '+selisih+`%0a%0aApakah ada selisih stock yang sudah tersolusikan? %0a${problem}`
-            // }
-            // addData({ pesan: pembuka+' '+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
-            // // console.log(pesan)
-            // // save to the followup
-            // window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
-            // // shell.openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            if(ev === "apaBaru") {
+                pesan = salam+pembuka+' '+selisih+`%0a%0aapakah itu selisih baru ya pak?%0aSoalnya dicatatan saya belum ada selisih untuk item tersebut.`
+            } else if (ev === "tidakSama") {
+                pesan =  salam+pembuka+` apakah ada selisih baru ya pak? %0a%0a${problem} sedangkan dilaporan bapak `+selisih
+            } else if (ev === "selesai") {
+                pesan =  salam+pembuka+' '+selisih+`%0a%0aApakah ada selisih stock yang sudah tersolusikan? %0a${problem}`
+            }
+            addData({ pesan: pembuka+' '+selisih+' sedangkan '+problem, tujuan: spvInfo.phone })
+            // console.log(pesan)
+            // save to the followup
+            window.open(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
+            // shell.openExternal(`https://wa.me/${spvInfo.phone}?text=${pesan}`)
         }
         
         const duplicateRecord = async (ev) => {
