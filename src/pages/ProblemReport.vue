@@ -35,10 +35,10 @@ import Datatable from "@/components/parts/Datatable.vue"
 import Button from "@/components/elements/Button.vue"
 import ProblemReportForm from "@/form/ProblemReportForm.vue"
 import Dropdown from '@/components/elements/Dropdown.vue'
-import { problem } from '@/composable/periodePickerProps'
 import { useStore } from 'vuex'
-import { onMounted, ref } from "vue"
-import { getProblemFromDB, listsProblem } from '@/composable/components/Problem'
+import { onMounted, ref, watch } from "vue"
+import { getProblemFromDB, listsProblem, getProblemBetweenPeriode, duplicate } from '@/composable/components/Problem'
+import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 
 export default {
     setup() {
@@ -48,33 +48,48 @@ export default {
         const store = useStore()
         const lists = ref([])
 
-        const handleButton = (action, id) => {
+        const handleButton = async (action, id) => {
             if(action === 'edit') {
                 editId.value = id
                 form.value = true
                 return
             }
-            duplicate(id)
+            // THE ACTION is to duplicate record
+            let res = await subscribeMutation(
+                '',
+                'Confirm',
+                { pesan: 'Record akan di gandakan'},
+                'Modal/tunnelMessage'
+            )
+
+            if(res) {
+                await duplicate(id)
+            }
+            renewLists()
         }
 
         
-        const pickPeriode = () => {
-            store.commit("Modal/active", problem);
+        const pickPeriode = async () => {
+            let res = await subscribeMutation(
+                'Masukkan periode yang akan ditampikan',
+                'PeriodePicker',
+                {},
+                'Modal/tunnelMessage'
+            )
+
+            if(res) {
+                store.commit("Modal/active", {judul: "", form: "Loader"});
+                await getProblemBetweenPeriode(res?.periode1, res?.periode2)
+                store.commit("Modal/active");
+            }
+            renewLists()
         }
         
-
-        const duplicate = (ev) =>{
-            let confirm = window.confirm("Apakah anda yakin akan menduplikat record tersebut?")
-            if(!confirm) { return }
-
-            const { id, periode, ...record } = store.getters["Problem/problemId"](ev)
-
-            store.dispatch("append",
-            {
-                store: "Problem",
-                obj: Object.assign(record, { periode: new Date().getTime() })
-            })
-        }
+        watch([ form ], (newVal) => {
+            newVal[0] == false
+            ? renewLists()
+            : ''
+        })
 
         const renewLists = async () => {
             lists.value = await listsProblem()

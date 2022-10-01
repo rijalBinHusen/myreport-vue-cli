@@ -20,39 +20,49 @@ const Baseitem = {
       });
     },
     delete(state, value) {
-      state.lists = state.lists.filter(
-        (val) => val?.id !== value
-      );
+      state.lists = state.lists.filter((val) => val?.id !== value);
     },
   },
 
   actions: {
-    getAllItem({state, dispatch}) {
-      if(state.lists.length <= 200) {
-        dispatch("getDataByCriteria", { store: "Baseitem", allData: true }, {root: true})
+    async getAllItem({ state, dispatch }) {
+      if (state.lists.length <= 200) {
+        await dispatch(
+          "getDataByCriteria",
+          { store: "Baseitem", allData: true },
+          { root: true }
+        );
       }
+      return;
     },
-    update({dispatch, commit}, payload){
+    update({ dispatch, commit }, payload) {
       // payload= { name: "", phone: "", id: ""}
       // state
-      commit("update", payload)
-      
+      commit("update", payload);
+
       //idb
-      dispatch("updateOnly",{
-        store: "Baseitem",
-        criteria: { id: payload?.id},
-        obj : { kode: payload?.kode, name: payload?.name }
-      }, { root: true })
+      dispatch(
+        "updateOnly",
+        {
+          store: "Baseitem",
+          criteria: { id: payload?.id },
+          obj: { kode: payload?.kode, name: payload?.name },
+        },
+        { root: true }
+      );
     },
-    append({dispatch}, payload) {
+    append({ dispatch }, payload) {
       //payload = {name: odjfer, phone: 123123123}
-      dispatch("append", {
-              store: "Baseitem",
-              obj: payload
-            }, {root: true})
-            .then(() => {
-              return true
-            })
+      dispatch(
+        "append",
+        {
+          store: "Baseitem",
+          obj: payload,
+        },
+        { root: true }
+      ).then(() => {
+        return true;
+      });
     },
   },
   getters: {

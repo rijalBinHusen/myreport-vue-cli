@@ -2,10 +2,7 @@ import { createStore } from "vuex";
 import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
-import BaseReportClock from "../modular/Base/BaseReportClock";
-import BaseReportStock from "../modular/Base/BaseReportStock";
 import Baseitem from "../modular/BaseItem/Baseitem";
-import Problem from "../modular/ProblemReport/ProblemReport";
 import Document from "./modules/Document";
 import Cases from "../modular/CasesReport/Cases";
 import Complains from "../modular/ComplainReport/Complains";
@@ -14,20 +11,13 @@ export default createStore({
   modules: {
     Complains,
     Cases,
-    Problem,
     Document,
     Baseitem,
     Navbar,
     Modal,
-    BaseReportClock,
-    BaseReportStock,
   },
   state: {
-    store: [
-      "Baseitem",
-      "Cases",
-      "Complains",
-    ],
+    store: ["Baseitem", "Cases", "Complains"],
   },
   mutations: {},
   actions: {
@@ -39,12 +29,12 @@ export default createStore({
           obj: { key: value, key: value } 
         } 
       */
-      let update = myfunction.update(value)
-      const { obj, ...record } = value
+      let update = myfunction.update(value);
+      const { obj, ...record } = value;
       update.then(async () => {
-        let newRec = await myfunction.findData(record)
+        let newRec = await myfunction.findData(record);
         commit(`${value.store}/update`, newRec[0], { root: true });
-      })
+      });
     },
     append({ commit, rootGetters, dispatch }, value) {
       // check auto backup
@@ -194,13 +184,13 @@ export default createStore({
     async rewriteStore({}, payload) {
       //payload = {store: nameOfStore: obj: [Array would to wrote]}
       await myfunction.reWriteStoreWithKey(payload);
-      console.log('sudah selesaai')
+      console.log("sudah selesaai");
       return myfunction.tunggu(90);
     },
     async emptyStore({}, payload) {
       await myfunction.deleteCollection(payload.toLowerCase());
       // setelah store dihapus biar nunggu 4 detik, agar browser tidak freez
-      console.log('selesai di hapus')
+      console.log("selesai di hapus");
       return myfunction.tunggu(2000);
     },
   },
