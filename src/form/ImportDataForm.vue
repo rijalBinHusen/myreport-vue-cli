@@ -68,7 +68,7 @@ export default {
                 //delete the exists store
                 await deleteCollection(store)
                 // wait for 3 second to make sure that the proces finished
-                await tunggu(2000)
+                await tunggu(600)
 
                 let doc = []
 
@@ -77,10 +77,8 @@ export default {
                     if(mode.value === 'write') {
                         doc.push(JSON.parse(JSON.stringify({ ...datumToImport.data, _key: datumToImport.key })))
                         //if the end of record
-                        console.log(doc)
                         if( doc.length === dataToImport.value[store].length) {
                             //push to localbase
-                            console.log('masukkan')
                             await reWriteStoreWithKey(store, doc)
                         }
                     } 

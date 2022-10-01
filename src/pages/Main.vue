@@ -23,7 +23,7 @@
 	import AGGrid from "@/components/parts/AGGrid.vue"
 	import Headspv from "@/pages/Headspv.vue"
 	import BaseItem from "@/modular/BaseItem/BaseItem.vue"
-	import ProblemReport from "@/modular/ProblemReport/ProblemReport.vue"
+	import ProblemReport from "./ProblemReport.vue"
 	import Finished from "./Finished.vue"
 	import EditDocument from "./EditDocument.vue"
 	import Cases from "@/modular/CasesReport/Cases.vue"
