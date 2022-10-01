@@ -107,13 +107,14 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished } from '@/composable/components/BaseReportClock'
-import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock } from '@/composable/components/BaseReportStock'
+import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished, removeClock } from '@/composable/components/BaseReportClock'
+import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock, removeStock } from '@/composable/components/BaseReportStock'
 import { ref, computed, watch } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { markDocumentFinished } from '@/composable/components/DocumentsPeriod'
 import { someRecordFinished } from '@/composable/components/BaseReportFile'
+import { sheet as nowSheet, shift as nowShift } from '@/composable/components/BaseReportPanel'
 
 export default {
     components: {
@@ -130,7 +131,6 @@ export default {
         const store = useStore()
         const mode = ref('Main')
         const baseId = ref(null)
-        const nowSheet = ref(null)
         const isMainMode = computed(() => mode.value == 'Main')
         const isExcelMode = computed(() => mode.value == 'Excel')
         const isBaseFinishedForm = computed(() => mode.value == 'BaseFinishedForm')
@@ -139,7 +139,6 @@ export default {
         const lists = ref([])
         const renderTable = ref(false)
         const excelLabel = ref(null)
-        const nowShift = ref(null)
         
         const message = (ev, obj) => {
             console.log('message', ev, obj)
@@ -230,7 +229,7 @@ export default {
             )
             // if the new record coming
             if(res) {
-                renewLists({ baseReportFile: baseId.value, shift: nowShift.value, sheet: nowSheet.value})
+                renewLists()
             }
         }
 
@@ -261,34 +260,34 @@ export default {
                 }
             }
         }
-        const remove = async (ev) => {
-            console.log(ev)
-            // let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            // if(sure) {
-            //     //delete from idb
-            //     await this.$store.dispatch("delete", {  
-            //         store: `BaseReport${this.sheet[0].toUpperCase() + this.sheet.slice(1)}`, 
-            //         criteria: {id: ev} 
-            //     })
-            //     this.renewLists()
-            // }
+        const remove = async (idRecord) => {
+            // console.log(ev)
+            let sure = await subscribeMutation('', 'Confirm', {}, 'Modal/tunnelMessage')
+            if(sure) {
+                //delete from idb
+                if(isClockSheet.value) {
+                    await removeClock(idRecord)
+                } else {
+                    await removeStock(idRecord)
+                }
+                renewLists()
+            }
         }
         const renewLists = async (ev) => {
+            baseId.value = ev?.baseReportFile || baseId.value
             
-            if(ev.baseReportFile && ev.shift) {
+            if(baseId.value && nowShift.value) {
                 renderTable.value = false
-                await getBaseClockByParentByShift(ev.baseReportFile, Number(ev.shift))
-                await getBaseStockByParentByShift(ev.baseReportFile, Number(ev.shift))
-                if(ev.sheet == 'stock') {
-                    lists.value = baseReportStockLists(ev.baseReportFile, Number(ev.shift))
+                await getBaseClockByParentByShift(baseId.value, Number(nowShift.value))
+                await getBaseStockByParentByShift(baseId.value, Number(nowShift.value))
+                if(isStockSheet.value) {
+                    lists.value = baseReportStockLists(baseId.value, Number(nowShift.value))
                     nowSheet.value = 'stock'
                 } else {
-                    lists.value = baseReportClockLists(ev.baseReportFile, Number(ev.shift))
+                    lists.value = baseReportClockLists(baseId.value, Number(nowShift.value))
                     nowSheet.value = 'clock'
                 }
-                nowShift.value = ev.shift
-                excelLabel.value = ev.title
-                baseId.value = ev.baseReportFile
+                excelLabel.value = ev?.title || excelLabel.value
                 renderTable.value = true
             }
                 

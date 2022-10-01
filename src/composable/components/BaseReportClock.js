@@ -137,3 +137,9 @@ export async function markClockFinished(parentBaseReportFile, shift, parentDocum
     }
     return;
   }
+
+export const removeClock = async (id) => {
+  lists = lists.filter((rec) => rec.id !== id)
+  deleteDocument({ store: 'basereportclock', criteria: { id }})
+  return true
+}

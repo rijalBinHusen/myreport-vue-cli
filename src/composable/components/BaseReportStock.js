@@ -195,3 +195,9 @@ export async function markStockFinished(parentBaseReportFile, shift, parentDocum
     }
     return;
   }
+
+  export const removeStock = async (id) => {
+    lists = lists.filter((rec) => rec.id !== id)
+    deleteDocument({ store: 'basereportstock', criteria: { id }})
+    return true
+  }
