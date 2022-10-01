@@ -260,7 +260,6 @@ export default {
             this.dlPanjangModel = new Date(this.problem.dlPanjang)
             this.tanggalSelesaiModel = new Date(this.problem.tanggalSelesai)
         }
-        console.log(this.problem)
     },
     emits: ["exit"],
     props: ["id"],

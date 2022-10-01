@@ -75,10 +75,16 @@ export default {
             })
         }
 
+        const renewLists = async () => {
+            lists.value = await Promise.allSettled(store.getters['Problem/lists']).then(res => {
+                return res.map((val) => val.value)
+            })
+        }
+
         onMounted( async () => {
             await store.dispatch("Baseitem/getAllItem");
             await store.dispatch("Problem/getProblemFromDB");
-            lists.value = await Promise.all(store.getters['Problem/lists']).then(res => res)
+            await renewLists()
         })
 
         return { handleButton, form, editId, pickPeriode, lists }
