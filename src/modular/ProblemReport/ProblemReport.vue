@@ -4,7 +4,8 @@
             <Button primary value="Tambah" class="w3-right w3-margin-top" type="button" @trig="form = true"/>
             <Button primary value="Set periode" class="w3-right w3-margin-top" type="button" @trig="pickPeriode" />
             <Datatable
-                :datanya="$store.getters['Problem/lists']"
+                v-if="lists"
+                :datanya="lists"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Karu', 'Status']"
                 :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'supervisor', 'status']"
                 option
@@ -35,8 +36,8 @@ import Button from "../../components/elements/Button.vue"
 import ProblemReportForm from "./ProblemReportForm.vue"
 import Dropdown from '../../components/elements/Dropdown.vue'
 import { problem } from '../../composable/periodePickerProps'
-import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
+import { onMounted, ref } from "vue"
 
 export default {
     setup() {
@@ -44,6 +45,7 @@ export default {
         const form = ref(false)
         const editId =  ref(null)
         const store = useStore()
+        const lists = ref([])
 
         const handleButton = (action, id) => {
             if(action === 'edit') {
@@ -73,18 +75,19 @@ export default {
             })
         }
 
-        
+        onMounted( async () => {
+            await store.dispatch("Baseitem/getAllItem");
+            await store.dispatch("Problem/getProblemFromDB");
+            lists.value = await Promise.all(store.getters['Problem/lists']).then(res => res)
+        })
 
-        return { handleButton, form, editId, pickPeriode }
+        return { handleButton, form, editId, pickPeriode, lists }
     },
     components: {
         Button,
         Datatable,
         ProblemReportForm,
         Dropdown
-    },async mounted() {
-        await this.$store.dispatch("Baseitem/getAllItem");
-        await this.$store.dispatch("Problem/getProblemFromDB");
     },
     name: "ProblemReport",
 }

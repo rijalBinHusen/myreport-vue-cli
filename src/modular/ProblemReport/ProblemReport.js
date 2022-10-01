@@ -1,3 +1,7 @@
+import { getSupervisorId } from "@/composable/components/Supervisors";
+import { getWarehouseId } from "@/composable/components/Warehouses";
+import { dateMonth } from "@/composable/piece/dateFormat";
+
 const Problem = {
   namespaced: true,
   state: {
@@ -43,17 +47,13 @@ const Problem = {
     lists(state, getters, rootState, rootGetters) {
       // let rec =
       return state.lists.length
-        ? state.lists.map((val) => ({
+        ? state.lists.map(async(val) => ({
             id: val.id,
-            namaGudang: rootGetters["Warehouses/warehouseId"](val.warehouse)
-              .name,
+            namaGudang: await getWarehouseId(val.warehouse).then((res) => res.name),
             namaItem: rootGetters["Baseitem/baseItemKode"](val.item).name,
             masalah: val.masalah,
-            periode: rootGetters["dateFormat"]({
-              format: "dateMonth",
-              time: val.periode,
-            }),
-            supervisor: rootGetters['Supervisors/spvId'](val?.nameSpv)?.name,
+            periode: dateMonth(val.periode),
+            supervisor: await getSupervisorId(val.nameSpv).then(res => res?.name),
             status: val?.isFinished ? "Closed" : "Progress",
           }))
         : [];

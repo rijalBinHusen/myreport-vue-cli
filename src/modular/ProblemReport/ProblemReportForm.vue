@@ -11,16 +11,10 @@
 
                 <!-- Nama gudang -->
                 <div class="w3-col s3 w3-padding">
-                    <label for="warehouse">Nama Gudang: </label>
-                    <Select 
-                        id="warehouse"
-                        class="w3-border"
-                        :options="$store.state.Warehouses.lists"
-                        judul="Gudang"
-                        value="id"
-                        text="name"
-                        :inselect="problem.warehouse"
-                        @selected="problem.warehouse = $event"
+                    <SelectWarehouse 
+                        :inSelectWarehouse="problem.warehouse"
+                        @selectedWarehouse="problem.warehouse = $event"
+
                     />
                 </div>
 
@@ -151,6 +145,7 @@ import Button from "../../components/elements/Button.vue"
 import SelectSupervisorsVue from "@/components/parts/SelectSupervisors.vue"
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import SelectShiftVue from "@/components/parts/SelectShift.vue"
+import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 
 export default {
     data() {
@@ -214,15 +209,16 @@ export default {
         }
     },
     components: {
-        Button,
-        Datepicker,
-        Input,
-        InputItem,
-        Select,
-        SelectSupervisorsVue,
-        SelectHeadVue,
-        SelectShiftVue,
-    },
+    Button,
+    Datepicker,
+    Input,
+    InputItem,
+    Select,
+    SelectSupervisorsVue,
+    SelectHeadVue,
+    SelectShiftVue,
+    SelectWarehouse
+},
     watch: {
         periodeModel(newVal, oldVal) {
             this.problem.periode = this.GET_DATEFORMAT({format: "ymdTime", time: newVal})
@@ -264,6 +260,7 @@ export default {
             this.dlPanjangModel = new Date(this.problem.dlPanjang)
             this.tanggalSelesaiModel = new Date(this.problem.tanggalSelesai)
         }
+        console.log(this.problem)
     },
     emits: ["exit"],
     props: ["id"],
