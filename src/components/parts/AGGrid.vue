@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
@@ -140,7 +141,6 @@ export default {
       }
       // jika belum ada
       this.edited.push({ id: ev.data.id, changed: changedCell() })
-      console.log(this.edited)
     },
     removeRow() {
       // send id that row selected [1,4,5,6,7]
@@ -211,7 +211,7 @@ export default {
     releaseKey(event) {
       delete this.keyPress[event.key]
     },
-    pressKey(event) {
+    async pressKey(event) {
       this.keyPress[event.key] = true
       // if the control button still pressed
       if(this.keyPress['Control']) {
@@ -233,26 +233,15 @@ export default {
           event.preventDefault()
           // save the changed record
           this.saveChanged()
-
-          // subscribe to the mutation
-          let unsubscribe;
-
-          const promise = new Promise (resolve => {
-              unsubscribe = this.$store.subscribe(mutation => {
-                  // if the modal close ( there is no mutation payload)
-                  if (!mutation?.payload) {
-                    resolve(true)
-                  }
-              })
-          })
-          
-          // if the mutation payload false, close the excel mode
-          promise.then(() => {
-              //unsubscribe the mutation
-              unsubscribe()
-              //close the excel mode
-              this.exit()
-          })
+          await subscribeMutation(
+                        '', 
+                        'Loader', 
+                        {},
+                        'Modal/tunnelMessage'
+                    ).then(() => {
+                      //close the excel mode
+                      this.exit()
+                    })
         }
       }
     },

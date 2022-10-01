@@ -24,6 +24,7 @@
 <script>
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
+import { updateBaseStock } from '@/composable/components/BaseReportStock'
 
 	export default {
 		data() {
@@ -34,13 +35,11 @@ import Button from "../../components/elements/Button.vue"
 			}
 		},
 		methods:{
-			update() {
-				this.$store.dispatch("BaseReportStock/updateProblem", { 
-						id: this.info.id, 
-						problem: [ ...this.pickedProblem ]
-					})
+			async update() {
+				// console.log(this.info.id, { problem: [...this.pickedProblem ] })
+				await updateBaseStock(this.info.id, { problem: [...this.pickedProblem ] })
+				this.$store.commit("Modal/tunnelMessage", true);
 				this.$store.commit("Modal/active");
-				// console.log([ ...this.pickedProblem ])
 			},
 		},
 		components: {

@@ -114,7 +114,7 @@ import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { markDocumentFinished } from '@/composable/components/DocumentsPeriod'
 import { someRecordFinished } from '@/composable/components/BaseReportFile'
-import { sheet as nowSheet, shift as nowShift } from '@/composable/components/BaseReportPanel'
+import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from '@/composable/components/BaseReportPanel'
 
 export default {
     components: {
@@ -191,29 +191,34 @@ export default {
             renewLists()
         }
 
-        const handleProblem = (ev, obj) => {
-            console.log('hanlde problem')
-            // if(ev === "delete") {
-            //     let confirm = window.confirm("Apakah anda yakin akan menghapus semua problem?")
-            //     if(confirm) {
-            //         this.DELETEPROBLEMFROMSTOCK(obj.id)
-            //     }
-            //     return
-            // }
-            // // buka modal, dan kirim object yang dibutuhkan ke modal state (periode, warehouse, item, etc)
-            // // console.log(obj)
-            // this.$store.commit("Modal/active", {
-            //     judul: "Edit problem", 
-            //     form: "BaseProblemForm",
-            //     obj: {
-            //         id: obj.id,
-            //         periode: this.base.periode,
-            //         warehouse: this.base.warehouse,
-            //         item: obj.item,
-            //         itemName: obj.itemName,
-            //         problem: obj.problem
-            //     }
-            // });
+        const handleProblem = async (ev, obj) => {
+            console.log('hanlde problem', ev, obj)
+            if(ev === "delete") {
+                let confirm = await subscribeMutation('', 'Confirm', { pesan: 'Semua problem akan dihapus!'}, 'Modal/tunnelMessage')
+                if(confirm) {
+                    await updateBaseStock(obj.id, { problem: [] })
+                } else {
+                    return
+                }
+            } else {
+                let edit =  await subscribeMutation(
+                        'Edit problem', 
+                        'BaseProblemForm', 
+                        { 
+                            id: obj.id, 
+                            periode: selectedPeriode.value, 
+                            warehouse: selectedWarehouse.value, 
+                            item: obj.item,
+                            itemName: obj.itemName,
+                            problem: obj.problem
+                        }, 
+                        'Modal/tunnelMessage'
+                    )
+                    if(!edit) {
+                        return
+                    }
+            }
+            renewLists()
         }
         // add data ( trigger from excel mode )
         const launchForm = async () => {
@@ -252,6 +257,7 @@ export default {
             store.commit("Modal/active");
         }
         const save = async (records) => {
+            store.commit("Modal/active", {judul: "", form: "Loader"});
             for(let record of records) {
                 if(isClockSheet.value) {
                     await updateBaseClock(record.id, record.changed)
@@ -259,6 +265,7 @@ export default {
                     await updateBaseStock(record.id, record.changed)
                 }
             }
+            store.commit("Modal/active");
         }
         const remove = async (idRecord) => {
             // console.log(ev)
