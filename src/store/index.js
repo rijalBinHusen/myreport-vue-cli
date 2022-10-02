@@ -4,20 +4,18 @@ import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
 import Baseitem from "../modular/BaseItem/Baseitem";
 import Document from "./modules/Document";
-import Cases from "../modular/CasesReport/Cases";
 import Complains from "../modular/ComplainReport/Complains";
 
 export default createStore({
   modules: {
     Complains,
-    Cases,
     Document,
     Baseitem,
     Navbar,
     Modal,
   },
   state: {
-    store: ["Baseitem", "Cases", "Complains"],
+    store: ["Baseitem", "Complains"],
   },
   mutations: {},
   actions: {

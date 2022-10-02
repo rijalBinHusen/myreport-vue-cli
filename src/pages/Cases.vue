@@ -4,7 +4,7 @@
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" />
         <Button primary class="w3-right" value="Import" @trig="$refs.importerCase.click();" type="button"/>
-        <Button primary :class="['w3-right', inserted ? '' : 'w3-disabled']" value="Imported" @trig="inserted = false" type="button"/>
+        <Button primary :class="['w3-right', inserted ? '' : 'w3-disabled']" value="Imported" @trig="inserted = false;" type="button"/>
         <Button primary :class="['w3-right', inserted ? 'w3-disabled' : '']" value="Cases" @trig="inserted = true" type="button"/>
         <input
             class="w3-hide"
@@ -17,7 +17,7 @@
 
             <Datatable
                 v-if="renderTable"
-                :datanya="table?.lists"
+                :datanya="lists"
                 :heads="table?.heads"
                 :keys="table?.keys"
                 option
@@ -26,8 +26,8 @@
 			
                 <template #default="{ prop }">
                     <Button v-if="!prop?.inserted && !inserted" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-                    <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop)"/>
-                    <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
+                    <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop?.id)"/>
+                    <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop.id)"/>
                     
                 </template>
             </Datatable> 
@@ -36,30 +36,31 @@
 </template>
 
 <script>
-import Button from "../../components/elements/Button.vue"
-import Datatable from "../../components/parts/Datatable.vue"
+import Button from "@/components/elements/Button.vue"
+import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
 import readExcel from "@/composable/readExcel"
+import { getCases, listsCase, addCaseImport } from '@/composable/components/Cases'
+import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 export default {
     data() {
         return {
             inserted: true,
-            renderTable: true,
+            renderTable: false,
+            lists: [],
         }
     },
     computed: {
         table() {
             if(this.inserted) {
                 return {
-                    lists: this.$store.getters["Cases/inserted"],
                     heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Diinput"],
                     keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "insert2"],
                     id: "tableCasesInserted"
                 }
             }
             return {
-                lists: this.$store.getters["Cases/imported"],
                 heads: ['Tanggal','Bagian', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2'],
                 keys: ['periode','bagian', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2'],
                 id: "tableCasesImported"
@@ -80,46 +81,16 @@ export default {
             // console.log(sheet)
             for(let i = 1; i <= lengthRow; i++) {
                 if(sheet["B"+i]) {
-                    await this.$store.dispatch("append", { 
-                        store: "Cases",
-                        obj: { 
-                            periode: sheet["C"+i]?.w, 
-                            divisi: sheet["D"+i]?.v , 
-                            bagian: sheet["E"+i]?.v , 
-                            fokus: sheet["F"+i]?.v , 
-                            temuan: sheet["G"+i]?.v , 
-                            karu: sheet["I"+i]?.v , 
-                            kabag: sheet["J"+i]?.v , 
-                            keterangan1: sheet["L"+i]?.v , 
-                            keterangan2: sheet["M"+i]?.v ,
-                            import: true,
-                        }
-                    })
+                    await addCaseImport(
+                        sheet["E"+i]?.v, sheet["D"+i]?.v, sheet["F"+i]?.v, sheet["J"+i]?.v , sheet["I"+i]?.v , sheet["L"+i]?.v, 
+                        sheet["M"+i]?.v , sheet["C"+i]?.w, sheet["G"+i]?.v
+                    )
                 }
             }
-        // close the loader
-        this.$store.commit("Modal/active");
-        })
-// const file = 
-// let info = { fileName: file.name }
-
-// const promise = new Promise ((resolve, reject) => {
-//     const fileReader = new FileReader();
-//     fileReader.readAsArrayBuffer(file);
-    
-//     fileReader.onload = (e) => {
-//     const bufferArray = e.target.result;
-        
-//     // const wb = XLSX.read(bufferArray, {type: "buffer"});
-//     const wb = XLSX.read(bufferArray);
-//     let sheets = wb.SheetNames
-//     info.sheet = wb.Sheets[sheets[0]]
-        
-//     resolve(info)
-//     };
-    
-//     fileReader.onerror=((error) => { reject(error) })
-// })
+            // close the loader
+            this.$store.commit("Modal/active");
+            })
+            renewLists()
         },
         remove(ev){
             let sure = confirm("Apakah anda yakin akan menghapusnya?")
@@ -131,35 +102,50 @@ export default {
                 criteria: {id: ev}
             })
         },
-        insertCase(obj) {
-            this.$store.commit("Modal/active", { 
-                judul: "Insert Case", 
-                form: "CaseInsertForm",
-                obj: obj
-            });
+        async insertCase(id) {
+            let res = await subscribeMutation(
+                'Edit cases',
+                'CaseInsertForm',
+                { parent: id, edit: false },
+                'Modal/tunnelMessage'
+            )
+            if(res) {
+                renewLists()
+            }
         },
-
-        edit(obj) {
-            this.$store.commit("Modal/active", { 
-                judul: "Edit Case", 
-                form: "CaseInsertForm",
-                obj: { ...obj, edit: true }
-            });
+        async edit(id) {
+            let res = await subscribeMutation(
+                'Edit cases',
+                'CaseInsertForm',
+                { id, edit: true },
+                'Modal/tunnelMessage'
+            )
+            if(res) {
+                this.renewLists()
+            }
         },
+        async renewLists() {
+            this.renderTable = false
+            this.lists = await listsCase(this.inserted)
+            setTimeout(() => {
+                this.renderTable = true
+            }, 150)
+        }
+    },
+    async mounted() {
+        await getCases()
+        this.renewLists()
+    },
+    watch: {
+        inserted() {
+            this.renewLists()
+        }
     },
     components: {
         Button,
         Datatable,
         Input,
         Datatable,
-    },
-    watch: {
-        inserted() {
-            this.renderTable = false
-            setTimeout(() => {
-                this.renderTable = true
-            }, 300)
-        }
     },
     name: "Cases",
 }

@@ -26,7 +26,7 @@
 	import ProblemReport from "./ProblemReport.vue"
 	import Finished from "./Finished.vue"
 	import EditDocument from "./EditDocument.vue"
-	import Cases from "@/modular/CasesReport/Cases.vue"
+	import Cases from "./Cases.vue"
 	import Complains from "@/modular/ComplainReport/Complains.vue"
 	import FollowUp from "./FollowUp.vue"
 	import Login from "./Login.vue"
