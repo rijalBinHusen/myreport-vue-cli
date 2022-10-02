@@ -18,7 +18,7 @@
 
             <Datatable
                 v-if="renderTable"
-                :datanya="table?.lists"
+                :datanya="lists"
                 :heads="table?.heads"
                 :keys="table?.keys"
                 option
@@ -27,8 +27,8 @@
 			
                 <template #default="{ prop }">
                     <Button v-if="!prop?.inserted && !inserted" value="Remove" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-                    <Button v-if="!inserted" value="Insert" primary type="button" class="w3-tiny" @trig="insertComplain(prop)"/>
-                    <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop)"/>
+                    <Button v-if="!inserted" value="Insert" primary type="button" :datanya="prop.id" class="w3-tiny" @trig="insertComplain($event)"/>
+                    <Button v-else value="Edit" secondary type="button" :datanya="prop.id" class="w3-tiny" @trig="edit($event)"/>
                 </template>
 
                 <template v-if="!inserted" #th>
@@ -48,31 +48,32 @@
 </template>
 
 <script>
-import Button from "../../components/elements/Button.vue"
-import Datatable from "../../components/parts/Datatable.vue"
+import Button from "@/components/elements/Button.vue"
+import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
 import readExcel from "@/composable/readExcel"
+import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { removeComplain, listsComplain, getComplains } from '@/composable/components/Complains'
 
 export default {
     data() {
         return {
             inserted: true,
-            renderTable: true,
+            renderTable: false,
             grouped: [],
+            lists: [],
         }
     },
     computed: {
         table() {
             if(this.inserted) {
                 return {
-                    lists: this.$store.getters["Complains/inserted"],
                     heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Inserted"],
                     keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "insert2"],
                     id: "tableComplainsInserted"
                 }
             }
             return {
-                lists: this.$store.getters["Complains/imported"],
                 heads: ['Tanggal Komplain', 'Cutomer', 'Karu', 'Item', 'Selisih'],
                 keys: ['tanggalKomplain', 'customer', 'spv', 'item', 'selisih'],
                 id: "tableComplainsImported"
@@ -80,67 +81,85 @@ export default {
         },
     },
     methods: {
-        readExcelFile(e) {
+        async readExcelFile(e) {
             // bring the loader up
-        this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-        readExcel(e.target.files[0]).then((d) => {
-            // bring up the modal and the form and throw the data (d)
-            this.$store.commit("Modal/active", { judul: "Import complain", form: "ComplainImportForm", obj: d });
-        
-            })
-        },
-        remove(ev){
-            let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
+            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            let excelRead = await readExcel(e.target.files[0])
+            let res = await subscribeMutation(
+                "Import complain", "ComplainImportForm", excelRead, 'Modal/tunnelMessage'
+            )
+
+            if(res) {
+                this.renewLists()
             }
-            this.$store.dispatch("delete", { 
-                store: "Complains", 
-                criteria: {id: ev}
-            })
+        },
+        async remove(ev){
+            let sure = await subscribeMutation(
+                '', 'Confirm', { pesan: 'Record akan dihapus' }, 'Modal/tunnelMessage'
+            )
+            if(sure) {
+                await removeComplain(ev)
+                this.renewLists()
+            }
         },
         async removeAll(){
             // open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-            let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
+            let sure = await subscribeMutation(
+                '', 'Confirm', { pesan: 'Record akan dihapus' }, 'Modal/tunnelMessage'
+            )
+            if(sure) {
+                // iterate the selected record
+                for (let rec of this.grouped) {
+                    // delete record
+                    await removeComplain(rec)
+                }
+                this.grouped = []
+                // close the modal
+                this.$store.commit("Modal/active");
             }
-            // iterate the selected record
-            for (let rec of this.grouped) {
-                // delete record
-                await this.$store.dispatch("delete", { 
-                    store: "Complains", 
-                    criteria: {id: rec}
-                })
-            }
-            this.grouped = []
-            // close the modal
-            this.$store.commit("Modal/active");
         },
-        insertComplain(obj) {
-            this.$store.commit("Modal/active", { 
-                judul: "Insert Complain", 
-                form: "ComplainInsertForm",
-                obj: obj
-            });
+        async insertComplain(id) {
+            let res = await subscribeMutation(
+                "Insert Complain",
+                "ComplainInsertForm",
+                { parent: id, edit: false },
+                'Modal/tunnelMessage'
+            )
+            if(res) {
+                this.renewLists()
+            }
         },
 
-        edit(obj) {
-            this.$store.commit("Modal/active", { 
-                judul: "Edit Complain", 
-                form: "ComplainInsertForm",
-                obj: { ...obj, edit: true }
-            });
+        async edit(id) {
+
+            let res = await subscribeMutation(
+                "Edit Complain",
+                "ComplainInsertForm",
+                { id, edit: true },
+                'Modal/tunnelMessage'
+            )
+            if(res) {
+                this.renewLists()
+            }
         },
+
+        async renewLists() {
+            this.renderTable = false
+            this.lists = await listsComplain(this.inserted)
+            setTimeout(() => {
+                this.renderTable = true
+            }, 150)
+        }
     },
     watch: {
         inserted() {
-            this.renderTable = false
-            setTimeout(() => {
-                this.renderTable = true
-            }, 300)
+            this.renewLists()
         }
+    },
+    async mounted() {
+        await getComplains()
+        this.renewLists()
     },
     components: {
         Button,

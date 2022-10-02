@@ -142,6 +142,7 @@ export default {
         } else {
             this.periodeModel = new Date()
             this.dlModel = new Date()
+            this.parent = obj?.parent
         }
         this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
         

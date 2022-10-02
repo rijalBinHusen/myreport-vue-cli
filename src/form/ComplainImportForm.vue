@@ -14,9 +14,10 @@
 </template>
 
 <script>
-import Select from "../../components/elements/Select.vue"
-import Button from "../../components/elements/Button.vue"
+import Select from "@/components/elements/Select.vue"
+import Button from "@/components/elements/Button.vue"
 import { modalClose, loader } from "@/composable/piece/vuexModalLauncher"
+import { addComplainImport } from '@/composable/components/Complains'
 
 export default {
     components: {
@@ -46,36 +47,22 @@ export default {
                 for( let i = 5; i <= totalRowNumber; i++) {
                     if(sheetByName["P"+i] && sheetByName["P"+i]?.v || (sheetByName["C"+i] && sheetByName["C"+i].v)) {
                         // insert to idb
-                        let typeKesalahan = "";
+                        let typeKesalahan = function () {
+                            if(sheetByName["T"+i]?.v) { typeKesalahan += "Klaim" }
+                            else if(sheetByName["U"+i]?.v) { return "Kurang muat" }
+                            else if(sheetByName["V"+i]?.v) { return "Lebih muat" }
+                            else if(sheetByName["W"+i]?.v) { return "Singsal muat" }
+                            else if(sheetByName["X"+i]?.v) { return "Lain lain" }
+                        }
+                        
+                        await addComplainImport(
+                            sheetByName["I"+i]?.v, sheetByName["N"+i]?.v, sheetByName["A"+i]?.v, sheetByName["M"+i]?.v,
+                            sheetByName["D"+i]?.v, sheetByName["J"+i]?.v, sheetByName["L"+i]?.v, sheetByName["O"+i]?.v,
+                            i < 9 ? sheetName+"0"+i : sheetName+i, sheetByName["C"+i]?.v, sheetByName["B"+i]?.v, sheetByName["F"+i]?.w,
+                            sheetByName["H"+i]?.w, sheetByName["G"+i]?.w, sheetByName["E"+i]?.w, typeKesalahan()
+                        )
 
-                        if(sheetByName["T"+i]?.v) { typeKesalahan += "Klaim" }
-                        if(sheetByName["U"+i]?.v) { typeKesalahan += "Kurang muat" }
-                        if(sheetByName["V"+i]?.v) { typeKesalahan += "Lebih muat" }
-                        if(sheetByName["W"+i]?.v) { typeKesalahan += "Singsal muat" }
-                        if(sheetByName["X"+i]?.v) { typeKesalahan += "Lain lain" }
-
-                        await this.$store.dispatch("append", { 
-                            store: "Complains",
-                            obj: {
-                                row: i < 9 ? sheetName+"0"+i : sheetName+i, 
-                                gudang: sheetByName["A"+i]?.v, 
-                                tally: sheetByName["B"+i]?.v , 
-                                spv: sheetByName["C"+i]?.v , 
-                                kabag: sheetByName["D"+i]?.v , 
-                                tanggalSuratJalan: sheetByName["E"+i]?.w , 
-                                tanggalBongkar: sheetByName["F"+i]?.w , 
-                                tanggalKomplain: sheetByName["G"+i]?.w , 
-                                tanggalInfo: sheetByName["H"+i]?.w , 
-                                customer: sheetByName["I"+i]?.v ,
-                                nomorSJ: sheetByName["J"+i]?.v ,
-                                nopol: sheetByName["L"+i]?.v ,
-                                item: sheetByName["M"+i]?.v ,
-                                do: sheetByName["N"+i]?.v ,
-                                real: sheetByName["O"+i]?.v ,
-                                type: typeKesalahan,
-                                import: true,
-                                }
-                        })
+                        
                     }
                 }
             }

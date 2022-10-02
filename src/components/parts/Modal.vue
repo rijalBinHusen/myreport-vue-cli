@@ -37,9 +37,8 @@ import PeriodePicker from "../parts/PeriodePicker.vue"
 import WarehouseSupervisorsForm from "@/form/WarehouseSupervisorsForm.vue"
 import FinishedForm from "@/form/FinishedForm.vue"
 import CaseInsertForm from "@/form/CaseInsertForm.vue"
-import Complains from "../../modular/ComplainReport/ComplainInsertForm.vue"
-import ComplainImportForm from "../../modular/ComplainReport/ComplainImportForm.vue"
-import ComplainInsertForm from "../../modular/ComplainReport/ComplainInsertForm.vue"
+import ComplainImportForm from "@/form/ComplainImportForm.vue"
+import ComplainInsertForm from "@/form/ComplainInsertForm.vue"
 import Confirm from "./Confirm.vue"
 import FollowUpFinished from "@/form/FollowUpFinishedForm.vue"
 import FieldProblemForm from "@/form/FieldProblemForm.vue"
@@ -52,7 +51,6 @@ export default {
       Confirm,
       ComplainInsertForm,
       ComplainImportForm,
-      Complains,
       CaseInsertForm,
       DocumentSingleForm,
       FinishedForm,
