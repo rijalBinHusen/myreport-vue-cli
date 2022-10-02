@@ -5,7 +5,7 @@
                     obj?.pesan || 'Apakah anda yakin akan menghapusnya' 
                 }}
             </h4>
-          <div class="w3-section">
+          <div class="w3-section" v-if="!obj?.isAlert">
             <Button
                 primary
                 value="Iya" 

@@ -56,7 +56,7 @@ export default {
         })
 
         const remove = async (idRecord) => {
-            let confirm = await subscribeMutation('Hapus record', 'Confirm', false, 'Modal/tunnelMessage')
+            let confirm = await subscribeMutation('', 'Confirm', false, 'Modal/tunnelMessage')
             if(confirm) {
                 await deleteData(idRecord)
                 renewLists()

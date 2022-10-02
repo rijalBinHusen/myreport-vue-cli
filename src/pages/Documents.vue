@@ -179,7 +179,8 @@ import {
     unCollectDocument,
     getApprovedDocuments,
     getDocuments,
-    shareDocument
+    shareDocument,
+    findDocument
 } from "@/composable/components/DocumentsPeriod"
 
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
@@ -462,6 +463,27 @@ export default {
                 if(isModeUncollected.value) {
                     await collectDocument(ev.rec, Number(ev.day))
                 } else if(isModeCollected.value) {
+                    let rec = findDocument(ev.rec)
+                    // is the document unfinished
+                    if(!rec?.isfinished) {
+                        let res = await subscribeMutation(
+                            'Peringatan',
+                            'Confirm',
+                            { pesan: 'Document masih belum selesai dikerjakan', isAlert: true },
+                            'Modal/tunnelMessage'
+                        )
+                        if(!res) { return }
+                    }
+                    // is the document contain item variance
+                    if(rec?.itemVariance) {
+                        let res = await subscribeMutation(
+                            '',
+                            'Confirm',
+                            { pesan: 'Document memiliki selisih stock, silathkan difoto dulu' },
+                            'Modal/tunnelMessage'
+                        )
+                        if(!res) { return }
+                    }
                     await approveDocument(ev.rec, Number(ev.day))
                 } else if(isModeApproval.value) {
                     await shareDocument(ev.rec)
