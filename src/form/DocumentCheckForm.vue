@@ -118,7 +118,7 @@ export default {
             if(Object.keys(changed.value).length) {
                 await updateDocument(record.id, changed.value)
             } 
-            if(timeCollected.value) {
+            if(timeCollected.value < 1) {
                 await collectDocument(record.id, timeCollected.value)
             }
             store.commit('Modal/tunnelMessage', true)

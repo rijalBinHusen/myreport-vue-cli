@@ -28,7 +28,6 @@ export const addWarehouse = async (warehouseName) => {
 
 export const updateSupervisors = async (idWarehouse, arraySupervisorId) => {
     // payload = {id: 123, supervisors: [] }
-    console.log(idWarehouse, arraySupervisorId)
     await update({ 
         store: "Warehouses",  
         criteria: { id: idWarehouse }, 
