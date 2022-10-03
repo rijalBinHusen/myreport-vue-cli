@@ -23,12 +23,12 @@ import { updateDocument } from '@/composable/components/DocumentsPeriod'
 
 export default {
     methods: {
-        editButtonHandle() {
+        async editButtonHandle() {
             if(!this.edit) {
                 this.edit = true
                 return
             }
-            updateDocument(this.more.id, this.changed)
+            await updateDocument(this.more.id, this.changed)
             this.$store.commit("Modal/active");
         },
         changeValue(key, value) {

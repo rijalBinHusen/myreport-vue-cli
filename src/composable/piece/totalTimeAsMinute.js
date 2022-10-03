@@ -1,7 +1,7 @@
 import func from "@/myfunction";
 
 export const totalTime = (start, finish) => {
-    if(!start || finish || start?.length < 5 || finish?.length < 5) { return 0 }
+    if(!start || !finish || start?.length < 5 || finish?.length < 5) { return 0 }
     // start
     let startTime = func.dateFormat(['time', seperateAsClock(start)])
     //finish
