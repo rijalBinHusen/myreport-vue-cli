@@ -15,3 +15,7 @@ export const fieldProblem = () => {
 export const loader = () => {
     store.commit("Modal/active", {judul: "", form: "Loader"});
 }
+
+export function tunnelMessageTrue () {
+    store.commit('Modal/tunnelMessage', true)
+}

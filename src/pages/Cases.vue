@@ -40,7 +40,7 @@ import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
 import readExcel from "@/composable/readExcel"
-import { getCases, listsCase, addCaseImport } from '@/composable/components/Cases'
+import { getCases, listsCase, addCaseImport, removeCase } from '@/composable/components/Cases'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 export default {
@@ -90,17 +90,19 @@ export default {
             // close the loader
             this.$store.commit("Modal/active");
             })
-            renewLists()
+            this.renewLists()
         },
-        remove(ev){
-            let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!sure) {
-                return;
+        async remove(ev){
+            let res = await subscribeMutation(
+                '',
+                'Confirm',
+                {},
+                'Modal/tunnelMessage'
+            )
+            if(res) {
+                await removeCase(ev)
+                this.renewLists()
             }
-            this.$store.dispatch("delete", { 
-                store: "Cases", 
-                criteria: {id: ev}
-            })
         },
         async insertCase(id) {
             let res = await subscribeMutation(
@@ -110,7 +112,7 @@ export default {
                 'Modal/tunnelMessage'
             )
             if(res) {
-                renewLists()
+                this.renewLists()
             }
         },
         async edit(id) {

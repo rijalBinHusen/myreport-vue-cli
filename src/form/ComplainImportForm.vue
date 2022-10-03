@@ -16,7 +16,7 @@
 <script>
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
-import { modalClose, loader } from "@/composable/piece/vuexModalLauncher"
+import { modalClose, loader, tunnelMessageTrue } from "@/composable/piece/vuexModalLauncher"
 import { addComplainImport } from '@/composable/components/Complains'
 
 export default {
@@ -61,11 +61,10 @@ export default {
                             i < 9 ? sheetName+"0"+i : sheetName+i, sheetByName["C"+i]?.v, sheetByName["B"+i]?.v, sheetByName["F"+i]?.w,
                             sheetByName["H"+i]?.w, sheetByName["G"+i]?.w, sheetByName["E"+i]?.w, typeKesalahan()
                         )
-
-                        
                     }
                 }
             }
+            tunnelMessageTrue()
             modalClose()
         },
     },

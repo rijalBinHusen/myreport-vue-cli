@@ -54,6 +54,7 @@ import Input from '@/components/elements/Input.vue'
 import readExcel from "@/composable/readExcel"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { removeComplain, listsComplain, getComplains } from '@/composable/components/Complains'
+import { loader } from "@/composable/piece/vuexModalLauncher"
 
 export default {
     data() {
@@ -83,7 +84,7 @@ export default {
     methods: {
         async readExcelFile(e) {
             // bring the loader up
-            this.$store.commit("Modal/active", {judul: "", form: "Loader"});
+            loader()
             let excelRead = await readExcel(e.target.files[0])
             let res = await subscribeMutation(
                 "Import complain", "ComplainImportForm", excelRead, 'Modal/tunnelMessage'
@@ -106,9 +107,10 @@ export default {
             // open loader
             this.$store.commit("Modal/active", {judul: "", form: "Loader"});
             let sure = await subscribeMutation(
-                '', 'Confirm', { pesan: 'Record akan dihapus' }, 'Modal/tunnelMessage'
+                '', 'Confirm', { pesan: 'Semua record akan dihapus' }, 'Modal/tunnelMessage'
             )
             if(sure) {
+                loader()
                 // iterate the selected record
                 for (let rec of this.grouped) {
                     // delete record
@@ -118,6 +120,7 @@ export default {
                 // close the modal
                 this.$store.commit("Modal/active");
             }
+            this.renewLists()
         },
         async insertComplain(id) {
             let res = await subscribeMutation(

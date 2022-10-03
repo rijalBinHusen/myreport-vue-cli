@@ -1,10 +1,9 @@
 import { getSupervisorId } from "@/composable/components/Supervisors";
 import { getHeadspvId } from "@/composable/components/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
-import { append, getData, update } from "@/myfunction";
+import { append, getData, update, deleteDocument } from "@/myfunction";
 
 let lists = [];
-let isImported = false;
 
 export async function addComplain(
   periode,
@@ -62,7 +61,7 @@ export async function addComplainImport(
 ) {
   let rec = {
     customer,
-    Do,
+    do: Do,
     gudang,
     item,
     kabag,
@@ -81,9 +80,7 @@ export async function addComplainImport(
     inserted: false,
   };
   await append({ store: "Complains", obj: rec }).then((res) => {
-    if (isImported) {
       lists.unshift(res.data);
-    }
   });
   return;
 }
@@ -115,6 +112,7 @@ export async function listsComplain(isInsert) {
         spvName: await getSupervisorId(list?.name).then((res) => res?.name),
         headName: await getHeadspvId(list?.head).then((res) => res?.name),
         insert2: dateMonth(list?.insert),
+        selisih: (Number(list?.real) || 1) - (Number(list?.do) || 1)
       });
     }
   }
@@ -141,7 +139,7 @@ export async function updateComplain(idComplain, objToUpdate) {
 }
 
 export const removeComplain = async (idComplain) => {
-  lists = lists.filter((rec) => rec !== idComplain);
+  lists = lists.filter((rec) => rec.id !== idComplain);
   await deleteDocument({ store: "Complains", criteria: { id: idComplain } });
   return;
 };

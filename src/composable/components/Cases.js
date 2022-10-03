@@ -1,7 +1,7 @@
 import { getSupervisorId } from "@/composable/components/Supervisors";
 import { getHeadspvId } from "@/composable/components/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
-import { append, getData, update } from "@/myfunction";
+import { append, getData, update, deleteDocument } from "@/myfunction";
 
 let lists = [];
 let isImported = false;
@@ -120,3 +120,10 @@ export async function updateCase(idCase, objToUpdate) {
   });
   return;
 }
+
+
+export const removeCase = async (id) => {
+  lists = lists.filter((rec) => rec.id !== id);
+  deleteDocument({ store: "Cases", criteria: { id } });
+  return true;
+};
