@@ -105,7 +105,7 @@ export const appendData = async (
     },
   }).then((val) => {
     if (lists) {
-      lists.unshift(val?.data);
+      lists.push(val?.data);
     }
   });
   return true;

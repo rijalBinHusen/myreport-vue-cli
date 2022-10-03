@@ -144,7 +144,6 @@ export default {
         const excelLabel = ref(null)
         
         const message = async (ev, obj) => {
-            console.log('message', ev, obj)
             // ev = jenis pesan, obj=lengtka
             //   "id": "unc22060042020006",
             //   "parent": "unc22060042",
@@ -242,7 +241,6 @@ export default {
         }
 
         const markAsFinished = async (ev) => {
-            // console.log(ev)
             // buka loader
             store.commit("Modal/active", {judul: "", form: "Loader"});
             // iterate baseReport stocklist dan tambahkan parent document ev.id
@@ -252,7 +250,8 @@ export default {
             // tambahkan parent document pada basereportstock
             await markStockFinished(baseId.value, nowShift.value, ev.parentDocument)
             // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
-            await markDocumentFinished(baseId.value, ev.parentDocument, false)
+            const { parentDocument, ...details } = ev
+            await markDocumentFinished(ev.parentDocument, false, { ...details, baseReportFile: baseId.value})
             await someRecordFinished(baseId.value)
             // close the base finish form
             mode.value = 'Main'

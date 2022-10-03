@@ -306,7 +306,7 @@ export const unApproveDocument = async (idDocument) => {
     return
 }
 
-export const markDocumentFinished = async (baseReportFileId, idDocument, day) => {
+export const markDocumentFinished = async (idDocument, day, details) => {
     let time;
     if(day < 0) {
         time = dayPlusOrMinus('', day)
@@ -314,7 +314,7 @@ export const markDocumentFinished = async (baseReportFileId, idDocument, day) =>
         time = ymdTime()
     }
     removeFromState(idDocument)
-    await updateDocument(idDocument, { baseReportFileId, finished: time, isfinished: true })
+    await updateDocument(idDocument, { ...details, finished: time, isfinished: true })
     return
 }
 
