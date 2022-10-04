@@ -4,7 +4,6 @@ import { dateMonth } from "@/composable/piece/dateFormat";
 import { append, getData, update, deleteDocument } from "@/myfunction";
 
 let lists = [];
-let isImported = false;
 
 export async function addCase(
   periode,
@@ -33,9 +32,7 @@ export async function addCase(
     sumberMasalah,
   };
   await append({ store: "Cases", obj: rec }).then((res) => {
-    if (!isImported) {
       lists.unshift(res.data);
-    }
   });
   return;
 }
@@ -65,9 +62,7 @@ export async function addCaseImport(
     inserted: false,
   };
   await append({ store: "Cases", obj: rec }).then((res) => {
-    if (isImported) {
       lists.unshift(res.data);
-    }
   });
   return;
 }

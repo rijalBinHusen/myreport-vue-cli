@@ -123,6 +123,7 @@ export default {
                 }
             } else {
                 await addComplain(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah, this.type)
+                await updateComplain(this.parent, { inserted: true })
             }
             this.$store.commit("Modal/tunnelMessage", true)
             this.$store.commit("Modal/active")

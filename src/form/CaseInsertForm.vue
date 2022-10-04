@@ -86,6 +86,7 @@ export default {
                 await updateCase(this.id, this.changed)
             } else {
                 await addCase(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah)
+                await updateCase(this.parent, { inserted: true })
             }
             this.$store.commit("Modal/tunnelMessage", true)
             this.$store.commit("Modal/active")

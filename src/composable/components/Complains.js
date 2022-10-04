@@ -34,9 +34,7 @@ export async function addComplain(
     type,
   };
   await append({ store: "Complains", obj: rec }).then((res) => {
-    if (!isImported) {
       lists.unshift(res.data);
-    }
   });
   return;
 }
