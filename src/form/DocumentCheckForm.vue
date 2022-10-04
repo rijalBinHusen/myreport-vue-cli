@@ -15,7 +15,6 @@
                     <SelectSupervisors 
                         :inSelectSpv="supervisor"
                         :disabled="!isEdit"
-                        :spvEnabled="true"
                         @selectedSpv="supervisor = $event"
                         />
                 </div>

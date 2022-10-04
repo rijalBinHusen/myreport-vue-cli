@@ -24,6 +24,7 @@
     <br />
     <br />
     <Table 
+      v-if="renderTable"
       :headers="['Nama']" 
       :lists="listSupervisors" 
       :keys="['name']"
@@ -63,7 +64,6 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import Table from "@/components/elements/Table.vue"
@@ -78,7 +78,7 @@ export default {
     Select
   },
   setup() {
-    const store = useStore()
+    const renderTable = ref(false)
     const supervisor = ref('')
     const phone = ref('')
     const idSupervisor = ref('')
@@ -86,7 +86,11 @@ export default {
     let timeout = ''
 
     const renewLists = () => {
+      renderTable.value = false
       listSupervisors.value = lists
+      setTimeout(() => {
+        renderTable.value = true
+      }, 200)
     }
 
     onMounted(() => {
@@ -150,7 +154,8 @@ export default {
       edit,
       changeShift,
       send,
-      cancel
+      cancel,
+      renderTable
      }
 
   },

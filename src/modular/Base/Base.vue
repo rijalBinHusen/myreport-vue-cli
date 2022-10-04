@@ -14,12 +14,6 @@
             </template>
             <template #text>
                 {{ excelLabel }}
-                <!-- {{ $store.getters["dateFormat"]({format: "dateMonth", time: Number(selectedPeriode) })
-                    + ", " +
-                    $store.getters["Warehouses/warehouseId"](selectedWarehouse)?.name
-                    + ", Shift: " +
-                     shift 
-                }} -->
             </template>
         </AGGrid>
         <div v-if="isMainMode" class="w3-margin-top w3-container">

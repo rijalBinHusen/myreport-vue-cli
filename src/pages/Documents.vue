@@ -185,7 +185,7 @@ import {
 
 import { lists as listsSupervisor } from '@/composable/components/Supervisors'
 import DocumentOptions from "@/components/parts/DocumentOptions.vue"
-import { dateMonth, dayPlusOrMinus } from "@/composable/piece/dateFormat"
+import { dateMonth, dayPlusOrMinus, full } from "@/composable/piece/dateFormat"
 import DailyReport from "@/excelReport/DailyReport"
 import DailyReportGroup from "@/excelReport/DailyReportGroup"
 
@@ -403,9 +403,10 @@ export default {
         const pesanSemua = async (ev) => {
             // let nophone = window.prompt()
             if(!ev) { return }
+            let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${full()}:%0a%0a`
             let messageText = await allDocumentMore2Days()
 
-            window.open(`https://wa.me/${ev}?text=${messageText}`)
+            window.open(`https://wa.me/${ev}?text=${result+messageText}`)
         }
 
         const edit = async (ev) => {

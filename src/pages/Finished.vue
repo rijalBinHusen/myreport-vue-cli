@@ -36,7 +36,7 @@
         :heads="['Periode', 'Nama', 'Kabag', 'Shift']"
         :keys="['periode2', 'spvName', 'headName', 'shift']"
         option
-        id="tableFinished"
+        :id="unfinished ? 'unfinishedTable' : 'tableFinished'"
     >
         <template #default="{ prop }">
             <!-- lihat info detail -->

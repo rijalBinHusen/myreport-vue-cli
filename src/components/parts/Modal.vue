@@ -79,12 +79,25 @@ export default {
   methods: {
     active() {
       this.$store.commit("Modal/active")
+    },
+    pressKey(e) {
+      if(e.keyCode == 27) {
+        this.active()
+      }
     }
   },
   computed: {
     modal() {
       return this.$store.state.Modal.active
     }
+  },
+  mounted() {
+    // add listen event
+      window.addEventListener("keydown", this.pressKey)
+  }, 
+  unmounted() {
+    //remove listen event
+      window.removeEventListener("keydown", this.pressKey)
   },
 };
 </script>

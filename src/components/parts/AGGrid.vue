@@ -87,6 +87,7 @@ export default {
         },
       },
       edited: [],
+      unsubscribe: null,
     };
   },
   props: {
@@ -106,8 +107,11 @@ export default {
   emits: ["exit", "save"],
   methods: {
     saveChanged() {
-      this.$emit("save", this.edited)
-      this.edited = []
+      if(this.edited.length) {
+        this.$emit("save", this.edited)
+        this.edited = []
+        return
+      }
     },
     cellChanged(ev) {
       // periksa dulu apakah sudah ada didalam edited
@@ -227,23 +231,25 @@ export default {
           return false
         }
         // if the W (87) button pressed ( CTRL + W )
+        // if the A (65) keyCode pressed
         //  Save the document and close the excel mode
-        if(event.keyCode === 88) {
+        if(event.keyCode === 65) {
           // prevent default function (closing tab)
           event.preventDefault()
           // save the changed record
-          this.saveChanged()
-          await subscribeMutation(
-                        '', 
-                        'Loader', 
-                        {},
-                        'Modal/tunnelMessage'
-                    ).then(() => {
-                      //close the excel mode
-                      this.exit()
-                    })
+          
+            if(this.edited.length) {
+                this.saveChanged()
+                await subscribeMutation( '',  'Loader',  {}, 'Modal/tunnelMessage')
+            }
+              this.exit()
         }
       }
+      // the esc key
+      if(event.keyCode == 27) {
+        this.exit()
+      }
+      console.log(event)
     },
   },
   watch: {
@@ -265,13 +271,24 @@ export default {
           e.preventDefault();
 
           // Chrome requires returnValue to be set
+          this.saveChanged()
           e.returnValue = 'Really want to quit the app?';
       };
+
+      // subscribe mutation to save record (if record changed) before add new record
+      this.unsubscribe = this.$store.subscribe((mutation) => {
+                // if the confirmation button clicked whatever yes or no
+                if(mutation?.type == 'Modal/active' && mutation?.payload?.judul) {
+                    // resolve the messaage, true or false
+                    this.saveChanged()
+                  }
+            })
   },
   unmounted() {
     //remove listen event
       window.removeEventListener("keydown", this.pressKey)
       window.removeEventListener("keyup", this.releaseKey)
+      this.unsubscribe()
   }
 };
 </script>

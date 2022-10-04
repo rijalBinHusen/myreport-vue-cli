@@ -152,13 +152,15 @@ export default {
             }, details.value ))
         }
 
-        watch([generateReport], (newVal) => {
-            clearTimeout(timeout.value)
-            freezePage.value = true
-            timeout.value = setTimeout(() => {
-                freezePage.value = false
-                isGenerateDocument(document.value.id, newVal[0])
-            }, 600)
+        watch([generateReport, document], (newVal, oldVal) => {
+            if(newVal[0] !== oldVal[0]) {
+                clearTimeout(timeout.value)
+                freezePage.value = true
+                timeout.value = setTimeout(() => {
+                    freezePage.value = false
+                    isGenerateDocument(document.value.id, newVal[0])
+                }, 600)
+            }
         })
 
         return {
