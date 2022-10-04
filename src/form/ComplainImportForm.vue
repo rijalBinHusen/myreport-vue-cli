@@ -48,7 +48,7 @@ export default {
                     if(sheetByName["P"+i] && sheetByName["P"+i]?.v || (sheetByName["C"+i] && sheetByName["C"+i].v)) {
                         // insert to idb
                         let typeKesalahan = function () {
-                            if(sheetByName["T"+i]?.v) { typeKesalahan += "Klaim" }
+                            if(sheetByName["T"+i]?.v) { return "Klaim" }
                             else if(sheetByName["U"+i]?.v) { return "Kurang muat" }
                             else if(sheetByName["V"+i]?.v) { return "Lebih muat" }
                             else if(sheetByName["W"+i]?.v) { return "Singsal muat" }

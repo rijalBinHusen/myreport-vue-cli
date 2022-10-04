@@ -214,6 +214,9 @@ export default {
             this.tanggalSelesaiModel = new Date(newVal.getTime() + 31536000000)
             this.dlModel = new Date(newVal.getTime() + (1000*60*60*24*7))
             this.dlPanjangModel = new Date(newVal.getTime() + (1000*60*60*24*14))
+            if(this.isEditMode) {
+                this.changed['periode'] = ymdTime(newVal)
+            }
         },
         dlModel(newVal, oldVal) {
             this.dl = ymdTime(newVal)
