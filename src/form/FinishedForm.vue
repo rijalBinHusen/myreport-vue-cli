@@ -24,14 +24,23 @@ import { updateDocument } from '@/composable/components/DocumentsPeriod'
 export default {
     methods: {
         async editButtonHandle() {
+            // bukan mode edit
             if(!this.edit) {
+                // jadikan mode edit
                 this.edit = true
                 return
             }
+            // jika mode edit
+            // tunggu update dokumen berdasarkan record yang telah dirubah (changed)
             await updateDocument(this.more.id, this.changed)
+            // kirim pesan ke vuex agar finished component tau bahwa kita merubah sesuatu disini, dan mereka melakukan renew lists disana
+            this.$store.commit('Modal/tunnelMessage', true)
+            // tutup modal
             this.$store.commit("Modal/active");
         },
+        // jika ada value yang berubah
         changeValue(key, value) {
+            // rekam ke object changed
             this.changed[key] = value
         },
     },
@@ -58,7 +67,7 @@ export default {
         }
     },
     mounted() {
-        this.more = this.$store.getters["Modal/obj"]?.data
+        this.more = this.$store.getters["Modal/obj"]?.obj
     },
     components: {
         Input, Button,

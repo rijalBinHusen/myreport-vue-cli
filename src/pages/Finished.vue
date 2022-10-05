@@ -136,13 +136,13 @@ export default {
             }
         }
 
-        const details = (ev) => {
-            // console.log(ev)
-            store.commit("Modal/active", { 
-                judul: "Details document", 
-                form: "FinishedForm", 
-                data: ev
-            });
+        const details = async (ev) => {
+            let res = await subscribeMutation(
+                "Details document", "FinishedForm", ev, 'Modal/tunnelMessage'
+            )
+            if(res) {
+                renewLists()
+            }
 		}
 
         watch([unfinished], () => {
