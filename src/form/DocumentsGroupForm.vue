@@ -21,7 +21,7 @@
             <Input 
                 v-if="spvLists[spv]"
                 :label="spvLists[spv]?.name" placeholder="Shift" class="w3-row w3-padding" type="number"
-                :value="spvLists[spv]?.shift+''" @inp="changeShift('Supervisors', name.id, $event)"
+                :value="spvLists[spv]?.shift+''" @inp="changeShift('Supervisors', spvLists[spv]?.id, $event)"
             />
         </span>
     </div>

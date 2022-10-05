@@ -215,6 +215,13 @@ export default {
     releaseKey(event) {
       delete this.keyPress[event.key]
     },
+    async saveAndExit() {
+      if(this.edited.length) {
+          this.saveChanged()
+          await subscribeMutation( '',  'Loader',  {}, 'Modal/tunnelMessage')
+      }
+      this.exit()
+    },
     async pressKey(event) {
       this.keyPress[event.key] = true
       // if the control button still pressed
@@ -237,19 +244,9 @@ export default {
           // prevent default function (closing tab)
           event.preventDefault()
           // save the changed record
-          
-            if(this.edited.length) {
-                this.saveChanged()
-                await subscribeMutation( '',  'Loader',  {}, 'Modal/tunnelMessage')
-            }
-              this.exit()
+          this.saveAndExit()
         }
       }
-      // the esc key
-      if(event.keyCode == 27) {
-        this.exit()
-      }
-      console.log(event)
     },
   },
   watch: {

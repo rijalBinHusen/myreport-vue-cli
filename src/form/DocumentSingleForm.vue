@@ -12,7 +12,7 @@
         </div>
 
         <div class="w3-col s3" style="padding: 0 16px 0 16px;">
-            <SelectShift :inSelectShift="shift" @selectedShift="shift = $event"  />
+            <SelectShift :showLable="true" :inSelectShift="shift" @selectedShift="shift = $event"  />
         </div>
 
         <div class="w3-col s3">
@@ -45,6 +45,7 @@ import SelectShift from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 import { useStore } from "vuex"
 import { ref, watch, onMounted } from "vue"
+import { ymdTime } from "@/composable/piece/dateFormat"
 
 
 export default {
@@ -64,9 +65,14 @@ export default {
         const store = useStore()
 
         watch([periodeModel, supervisor, shift, head, warehouse, collectedModel, approvalModel], (newVal) => {
+            // periode model 
+            if(newVal[0]) {
+                periodeTime.value = ymdTime(newVal[0])
+            }
+            // if mode edit
             if(idDocument.value) {
                 // periodeModel
-                if(newVal[0]) { changed['periode'] = newVal[0].getTime() }
+                if(newVal[0]) { changed['periode'] = ymdTime(newVal[0]) }
                 // supervisor
                 if(newVal[1]) { changed['name'] = newVal[1] }
                 // shift]
@@ -76,9 +82,9 @@ export default {
                 // warehouse
                 if(newVal[4]) { changed['warehouse'] = newVal[4] }
                 // collectedModel
-                if(newVal[5]) { changed['collected'] = newVal[5].getTime() }
+                if(newVal[5]) { changed['collected'] = ymdTime(newVal[5]) }
                 // approvalModel
-                if(newVal[6]) { changed['approval'] = newVal[6].getTime() }
+                if(newVal[6]) { changed['approval'] = ymdTime(newVal[6]) }
             }
         })
 
