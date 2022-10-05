@@ -8,6 +8,15 @@
             type="button" 
             @trig="pickPeriode" 
         />
+        
+        <Button 
+            class="w3-right" 
+            primary 
+            value="Add periode" 
+            type="button" 
+            @trig="handleAddPeriode" 
+        />
+        
     </div>
         <input
             class="w3-hide"
@@ -53,7 +62,7 @@ import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import readExcelFile from "@/composable/readExcel"
 import { ref, onMounted } from 'vue'
-import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile, updateBaseReport } from "@/composable/components/BaseReportFile"
+import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile, updateBaseReport, addBaseReportFileManual } from "@/composable/components/BaseReportFile"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
@@ -96,6 +105,21 @@ export default {
             lists.value = await listsAllBaseReportFile()
             if(lists.value) {
                 renderTable.value = true
+            }
+        }
+
+        const handleAddPeriode = async () => {
+            let res = await subscribeMutation(
+                'Pilih periode yang akan ditampilkan',
+                'PeriodePicker',
+                {},
+                'Modal/tunnelMessage'
+                )
+            if(res) {
+                store.commit('Modal/active', { judul: '', form: 'Loader' })
+                await addBaseReportFileManual(res?.periode1)
+                renewLists()
+                store.commit('Modal/active')
             }
         }
 
@@ -154,7 +178,7 @@ export default {
 
         return {
             importId, pickPeriode, lists, renderTable, importerBase, launch,
-            readExcel, remove
+            readExcel, remove, handleAddPeriode
         }
     },
 }

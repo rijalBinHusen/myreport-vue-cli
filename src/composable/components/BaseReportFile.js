@@ -1,8 +1,8 @@
 import { findData, update, append } from "@/myfunction";
 import { ref } from "vue";
-import { dateMonth } from "../piece/dateFormat";
+import { dateMonth, ymdTime } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
-import { getWarehouseId } from "./Warehouses";
+import { getWarehouseId, lists as warehouseLists } from "./Warehouses";
 
 const lists = ref([])
 
@@ -112,4 +112,11 @@ export const someRecordFinished = async (idRecord) => {
 
 export const isRecordExistsByPeriodeAndWarehouse = (periode, idWarehouse) => {
     return lists.value.find((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
+}
+
+export const addBaseReportFileManual = async (periode) => {
+    for(let warehouse of warehouseLists) {
+        await addBaseReportFile(ymdTime(periode), warehouse?.id)
+    }
+    return
 }
