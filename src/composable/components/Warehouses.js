@@ -1,4 +1,5 @@
 import { getData, append, update } from '../../myfunction'
+import { getSupervisorId } from './Supervisors'
 
 export let lists = []
 
@@ -102,4 +103,11 @@ export const updateWarehouseVariable = async (idWarehouse, yourVariable) => {
         return val
     })
     return true
+}
+
+export const getSupervisorShift1ByWarehouse = async (idWarehouse) => {
+    let warehouse = lists.find((rec) => rec.id == idWarehouse)
+    let getSupervisor = warehouse['supervisors'].map( (spvId) => getSupervisorId(spvId) )
+    let result = await Promise.all(getSupervisor).then((supervisors) => supervisors.find((spv) => !spv?.disabled && spv?.shift == 1))
+    return result
 }

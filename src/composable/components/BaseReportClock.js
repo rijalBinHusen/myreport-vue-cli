@@ -20,10 +20,9 @@ export const startImportClock = async (sheets, baseId) => {
     // nomor do sebelumnya (atasnya)
     let clockNoBefore = sheets["D" + (i - 1)] ? sheets["D" + (i - 1)].v : false;
     // shift
-    let shift = sheets["B" + i]?.v > 0 ? true : false;
+    let shift = sheets["B" + i]?.v > 0
     // status untuk diimport true or false
-    let clockStatus =
-      shift && clockNo > 0 && clockNoBefore !== clockNo ? true : false;
+    let clockStatus = shift && (clockNo > 1) && (clockNoBefore !== clockNo)
 
     if (i > 5 && clockStatus) {
       await appendData(

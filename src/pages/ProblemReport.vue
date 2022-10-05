@@ -3,6 +3,7 @@
         <div v-if="!form">
             <Button primary value="Tambah" class="w3-right w3-margin-top" type="button" @trig="form = true"/>
             <Button primary value="Set periode" class="w3-right w3-margin-top" type="button" @trig="pickPeriode" />
+            <Button primary value="Broad cast problem" class="w3-right w3-margin-top" type="button" @trig="handleBroadcast" />
             <Datatable
                 v-if="lists"
                 :datanya="lists"
@@ -39,6 +40,7 @@ import { useStore } from 'vuex'
 import { onMounted, ref, watch } from "vue"
 import { getProblemFromDB, listsProblem, getProblemBetweenPeriode, duplicate } from '@/composable/components/Problem'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
+import { getSupervisorShift1ByWarehouse } from '@/composable/components/Warehouses'
 
 export default {
     setup() {
@@ -68,6 +70,64 @@ export default {
             renewLists()
         }
 
+        const handleBroadcast = async () => {
+            let res = await subscribeMutation(
+                '',
+                'Confirm',
+                { pesan: 'Semua problem akan dikirim kepada supervisor yang bertugas shift 1'},
+                'Modal/tunnelMessage'
+            )
+
+            if(res) {
+                // group dulu berdasarkan gudang
+                let group = []
+                //   grouped seperate by name
+                let grouped = {}
+                lists.value.forEach((val) => {
+                    //    if the object was grouped, and else
+                    if(grouped.hasOwnProperty(val['warehouse'])) {
+                        group[grouped[val['warehouse']]].push({ ...val })
+                    } else {
+                            if(["Gudang jadi jabon", "Gudang jadi biscuit"].includes(val?.namaGudang)) {
+                            // if('namaGudang' && (val?.namaGudang.includes("jabon") || val?.namaGudang.includes("biscuit"))) {
+                                grouped["WHS22050004"] = group.length
+                                grouped["WHS22050005"] = group.length
+                            } 
+                            else if(["Gudang jadi corn chip", "Gudang jadi Hall 3"].includes(val?.namaGudang)) {
+                                grouped["war22060000"] = group.length
+                                grouped["WHS22050001"] = group.length
+                            }
+                        grouped[val['warehouse']] = group.length
+                        group.push([{ ...val }])
+                    }
+                })
+                sendBroadcast(group)
+                // dapatkan supervisor yang bertugas shift 1
+                // kirim pesan
+            }
+        }
+
+        const sendBroadcast = async (groupss) => {
+            for(let groups of groupss) {
+                let getSupervisor = await getSupervisorShift1ByWarehouse(groups[0]?.warehouse)
+                // confirm to send message
+                let confirm = await subscribeMutation(
+                                '',
+                                'Confirm',
+                                { pesan: `Kita akan mengirimkan pesan kepada ${getSupervisor?.name}`},
+                                'Modal/tunnelMessage'
+                            )
+                if(confirm) {
+                    let problemLists = groups.map((val, index) => ([
+                        `*${index+1}.* ${val?.namaGudang} ${val?.namaItem} selisih ${val?.masalah} karu *${val?.supervisor}* mulai tanggal *${val.periode}*`
+                    ]))
+                    let message = `Selamat pagi bapak ${getSupervisor?.name}, berikut kami kirimkan catatan kami terkait selisih stock digudang :%0a%0a`
+                    let closingMessage = '%0a%0aKami mohon untuk dikoreksi apabila terdapat catatan yang tidak sesuai, terimakasih.'
+                    let pesan = message+problemLists.join('%0a%0a')+closingMessage
+                    window.open(`https://wa.me/${getSupervisor.phone}?text=${pesan}`)
+                }
+            }
+        }
         
         const pickPeriode = async () => {
             let res = await subscribeMutation(
@@ -101,7 +161,7 @@ export default {
             await renewLists()
         })
 
-        return { handleButton, form, editId, pickPeriode, lists }
+        return { handleButton, form, editId, pickPeriode, lists, handleBroadcast }
     },
     components: {
         Button,

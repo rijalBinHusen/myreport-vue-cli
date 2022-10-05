@@ -53,6 +53,7 @@ export const listsProblem = async () => {
 
     await Promise.all(getInfo).then((val) => {
       result.push({
+        warehouse: list.warehouse,
         id: list.id,
         namaGudang: val[0],
         namaItem: val[2],
