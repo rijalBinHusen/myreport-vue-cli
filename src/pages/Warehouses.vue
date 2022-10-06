@@ -27,39 +27,54 @@
       :lists="warehouseLists" 
       :keys="['name']"
       options
-      #default="{ prop }"
-    >
-      <Button 
-        secondary 
-        value="Supervisors" 
-        :datanya="prop.id" 
-        type="button" 
-        @trig="supervisors($event)" 
-        />
+    > 
 
-      <Button 
-        primary 
-        value="Edit" 
-        :datanya="prop.id" 
-        type="button" 
-        @trig="edit($event)" 
-        />
+    <!-- Warehouse group -->
+    <template #th>
+        <th>Group gudang</th>
+    </template>
 
-        <Button
-          :danger="prop?.disabled"
-          :primary="!prop?.disabled"
-          :value="prop?.disabled ? 'Disabled' : 'Enabled'"
-          type="button" 
-          @trig="disable(prop?.id, prop?.disabled)" 
+    <template #td="{ obj }">
+       
+      <div class="w3-round-large w3-small">
+        <SelectWarehouse 
+        :inSelectWarehouse="obj.group"
+        @selectedWarehouse="setGroup(obj.id, $event)"
+        :noLabel="true"
         />
+      </div>
+            
+    </template>
+    <!-- End of warehouse group -->
+    <!-- Button button -->
+        <template #default="{ prop }">
+        <div class="w3-margin-top w3-margin-bottom">
+          <Button 
+            secondary 
+            value="Supervisors" 
+            :datanya="prop.id" 
+            type="button" 
+            @trig="supervisors($event)" 
+            />
 
-        <Button
-          :danger="prop?.isGrouped"
-          :primary="!prop?.isGrouped"
-          :value="prop?.isGrouped ? 'Group' : 'No group'"
-          type="button" 
-          @trig="isGrouped(prop?.id, !!!prop?.isGrouped)" 
-        />
+          <Button 
+            primary 
+            value="Edit" 
+            :datanya="prop.id" 
+            type="button" 
+            @trig="edit($event)" 
+            />
+            
+            <Button
+            :danger="prop?.disabled"
+            :primary="!prop?.disabled"
+            :value="prop?.disabled ? 'Disabled' : 'Enabled'"
+            type="button" 
+            @trig="disable(prop?.id, prop?.disabled)" 
+            />
+          </div>
+        </template>
+      <!-- End of button button -->
     </Table>
 </template>
 
@@ -69,9 +84,10 @@ import Table from "@/components/elements/Table.vue"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import { ref, onMounted } from "vue";
 import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId, updateWarehouseVariable } from '@/composable/components/Warehouses'
+import SelectWarehouse from "@/components/parts/SelectWarehouse.vue";
 
 export default {
-  components: { Button, Table },
+  components: { Button, Table, SelectWarehouse },
   setup () {
     const warehouse = ref('')
     const idWarehouse = ref('')
@@ -116,8 +132,8 @@ export default {
       idWarehouse.value = ev
       warehouse.value = await warehouseId(ev)?.name
     }
-    const isGrouped = async (idWarehouse, isGrouped) => {
-      await updateWarehouseVariable(idWarehouse, { isGrouped })
+    const setGroup = async (idWarehouse, idWarehouseGroup) => {
+      await updateWarehouseVariable(idWarehouse, { group: idWarehouseGroup })
       renewLists()
     }
 
@@ -135,7 +151,7 @@ export default {
       lists,
       cancel,
       warehouseLists,
-      isGrouped
+      setGroup
     }
 
   },

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label for="warehouses" class="w3-margin-top">Pilih gudang</label>
+        <label v-if="!noLabel" for="warehouses" class="w3-margin-top">Pilih gudang</label>
         <SelectVue 
             id="warehouses"
             :options="warehouses" 
@@ -21,7 +21,7 @@ import { lists } from '@/composable/components/Warehouses';
 
 export default {
     emit: ['selectedWarehouse'],
-    props: ['inSelectWarehouse', 'disabled'],
+    props: ['inSelectWarehouse', 'disabled', 'noLabel'],
     setup(props, { emit }) {
         const warehouses = ref([])
 

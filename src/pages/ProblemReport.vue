@@ -40,7 +40,7 @@ import { useStore } from 'vuex'
 import { onMounted, ref, watch } from "vue"
 import { getProblemFromDB, listsProblem, getProblemBetweenPeriode, duplicate } from '@/composable/components/Problem'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
-import { getSupervisorShift1ByWarehouse } from '@/composable/components/Warehouses'
+import { getSupervisorShift1ByWarehouse, warehouseId } from '@/composable/components/Warehouses'
 
 export default {
     setup() {
@@ -84,24 +84,26 @@ export default {
                 //   grouped seperate by name
                 let grouped = {}
                 lists.value.forEach((val) => {
+                    if(val?.status == "Progress") {
                     //    if the object was grouped, and else
-                    if(grouped.hasOwnProperty(val['warehouse'])) {
-                        group[grouped[val['warehouse']]].push({ ...val })
-                    } else {
-                            if(["Gudang jadi jabon", "Gudang jadi biscuit"].includes(val?.namaGudang)) {
-                            // if('namaGudang' && (val?.namaGudang.includes("jabon") || val?.namaGudang.includes("biscuit"))) {
-                                grouped["WHS22050004"] = group.length
-                                grouped["WHS22050005"] = group.length
-                            } 
-                            else if(["Gudang jadi corn chip", "Gudang jadi Hall 3"].includes(val?.namaGudang)) {
-                                grouped["war22060000"] = group.length
-                                grouped["WHS22050001"] = group.length
-                            }
-                        grouped[val['warehouse']] = group.length
-                        group.push([{ ...val }])
+                        if(grouped.hasOwnProperty(val['warehouse'])) {
+                            group[grouped[val['warehouse']]].push({ ...val })
+                        } else {
+                                let warehouse = warehouseId(val.warehouse)
+                                if(warehouse?.group) {
+                                // if('namaGudang' && (val?.namaGudang.includes("jabon") || val?.namaGudang.includes("biscuit"))) {
+                                    grouped[val.warehouse] = group.length
+                                    grouped[warehouse?.group] = group.length
+                                } 
+                                else {
+                                    grouped[val.warehouse] = group.length
+                                }
+                            group.push([{ ...val }])
+                        }
                     }
                 })
                 sendBroadcast(group)
+                // console.log(group)
                 // dapatkan supervisor yang bertugas shift 1
                 // kirim pesan
             }

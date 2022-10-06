@@ -80,12 +80,14 @@ export default {
         }
 
         onBeforeMount(() => {
+            warehousesLists.value.length = 0
             supervisorsEnabled().forEach((spv) => {
                 spvLists.value[spv.id] = spv
             })
             headLists.value = headspvEnabled()
             listsWarehouse.forEach((warehouse) => {
-                if(!warehouse.isGrouped) {
+                let findGroup = warehousesLists.value.findIndex((warehouseList) => warehouseList.group == warehouse.id)
+                if(findGroup < 0) {
                     warehousesLists.value.push(warehouse)
                 }
             })

@@ -75,6 +75,7 @@ import { finishedDocument, getDocuments, unFinishedDocument } from '@/composable
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { ref, onMounted, watch } from "vue"
 import { useStore } from "vuex"
+import { warehouseId } from "@/composable/components/Warehouses"
 
 export default {
     components: {
@@ -172,21 +173,21 @@ export default {
            let grouped = {}
            groupedObject.value.forEach((val) => {
             //    if the object was grouped, and else
-               if(grouped.hasOwnProperty(val[ev])) {
-                   group[grouped[val[ev]]].push({ ...val })
-               } else {
-                    if('warehouse' && ["jabon", "biscuit"].includes(val?.warehouseName)) {
-                    // if('warehouse' && (val?.warehouseName.includes("jabon") || val?.warehouseName.includes("biscuit"))) {
-                        grouped["WHS22050004"] = group.length
-                        grouped["WHS22050005"] = group.length
+                if(grouped.hasOwnProperty(val[ev])) {
+                    group[grouped[val[ev]]].push({ ...val })
+                } else {
+                    let warehouse = warehouseId(val.warehouse)
+                    if(warehouse?.group) {
+                    // if('namaGudang' && (val?.namaGudang.includes("jabon") || val?.namaGudang.includes("biscuit"))) {
+                        grouped[val.warehouse] = group.length
+                        grouped[warehouse?.group] = group.length
                     } 
-                    else if('warehouse' && (val?.warehouseName.includes("chip") || val?.warehouseName.includes("Hall"))) {
-                        grouped["war22060000"] = group.length
-                        grouped["WHS22050001"] = group.length
+                    else {
+                        grouped[val.warehouse] = group.length
                     }
-                   grouped[val[ev]] = group.length
-                   group.push([{ ...val }])
-               }
+                    grouped[val[ev]] = group.length
+                    group.push([{ ...val }])
+                }
            })
         // export report weekly by spv
         if(ev == 'name') {
@@ -200,6 +201,7 @@ export default {
         else {
             await WeeklyWarehouses(group)
         }
+        // console.log(group)
 
         store.commit("Modal/active");
         
