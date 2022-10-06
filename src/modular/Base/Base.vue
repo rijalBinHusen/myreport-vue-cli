@@ -324,13 +324,13 @@ export default {
                         { headerName: "Nama Item", field: "itemName", editable: false, resizable: true, width: 300 },
                         { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
                         { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
-                        { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                        { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue }, 
                         { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
                         { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter' }, 
                         { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue}, 
                         { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
                         { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
-                        { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                        { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue }, 
                         { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + (+data.awal))'}, 
                     ]
                 }

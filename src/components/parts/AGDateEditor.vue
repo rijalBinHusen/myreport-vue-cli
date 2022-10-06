@@ -1,5 +1,5 @@
 <template>
-    <input type="number" v-model="value" ref="input" style="width: 100%" />
+    <input type="text" v-model="value" ref="input" style="width: 100%" />
 </template>
 
 <script >
@@ -14,8 +14,21 @@ export default {
         /* Component Editor Lifecycle methods */
         // the final value to send to the grid, on completion of editing
         getValue() {
-            // this simple editor doubles any value entered into the input
-            return this.value * 2;
+            // now
+            let now = new Date()
+            // date now
+            let dateNow = now.getDate()
+            // month now
+            let monthNow = now.getMonth()
+            // if value is number
+            //return 20/3/2022
+            if(!isNaN(this.value)) {
+                return `${this.value}/${(monthNow+1)}/${now.getFullYear()}`
+            } 
+            // else i just want to input 1/4 then the year we got from here
+            else {
+                return `${this.value}/${now.getFullYear()}`
+            }
         },
         
         // Gets called once before editing starts, to give editor a chance to
@@ -32,7 +45,7 @@ export default {
         }
     },
     mounted() {
-        this.value = this.params.value;
+        this.value = '';
         nextTick(() => this.$refs.input.focus());
     }
 }
