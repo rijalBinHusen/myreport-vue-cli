@@ -17,7 +17,8 @@ export async function addComplain(
   solusi,
   status,
   sumberMasalah,
-  type
+  type,
+  isCount,
 ) {
   let rec = {
     periode,
@@ -32,6 +33,7 @@ export async function addComplain(
     status,
     sumberMasalah,
     type,
+    isCount,
   };
   await append({ store: "Complains", obj: rec }).then((res) => {
       lists.unshift(res.data);
@@ -55,7 +57,7 @@ export async function addComplainImport(
   tanggalInfo,
   tanggalKomplain,
   tanggalSuratJalan,
-  type
+  type,
 ) {
   let rec = {
     customer,

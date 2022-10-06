@@ -15,7 +15,7 @@ export default function (criteria) {
           solusi: val?.solusi,
           pic: val?.pic,
           dl: myfunction.dateFormat(["dateMonth", val?.dl]),
-          periode2: +myfunction.dateFormat(["dateMonth", val?.periode]).match(/\d+/)[0],
+          periode2: val?.isCount ? +myfunction.dateFormat(["dateMonth", val?.periode]).match(/\d+/)[0] : '',
         }));
       }
     });

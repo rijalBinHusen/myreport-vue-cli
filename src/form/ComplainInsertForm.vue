@@ -57,6 +57,9 @@
             
             <label for="status">Status done?</label>
             <input type="checkbox" v-model="status" />
+            <br/>
+            <label for="status">Dihitung?</label>
+            <input type="checkbox" v-model="isCount" />
 
             <Button primary :value=" id ? 'Update' : 'Tambah'" class="w3-right" type="button" @trig="send"/>
         </div>
@@ -96,7 +99,8 @@ export default {
             pic: "",
             status: false,
             id: null,
-            changed: {}
+            changed: {},
+            isCount: false
         }
     },
     methods: {
@@ -122,7 +126,7 @@ export default {
                     await updateComplain(this.id, { ...this.changed })
                 }
             } else {
-                await addComplain(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah, this.type)
+                await addComplain(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah, this.type, this.isCount)
                 await updateComplain(this.parent, { inserted: true })
             }
             this.$store.commit("Modal/tunnelMessage", true)
@@ -164,6 +168,9 @@ export default {
         status(newVal) {
             this.id ? this.changed['status'] = newVal : false
         },
+        isCount(newVal) {
+            this.id ? this.changed['isCount'] = newVal : false
+        },
     },
     created() {
         let obj = this.$store.getters["Modal/obj"].obj
@@ -183,6 +190,7 @@ export default {
             this.type = getComplain?.type
             this.pic = getComplain?.pic
             this.status = getComplain?.status,
+            this.isCount = getComplain?.isCount
             setTimeout(() => {
                 this.id = obj?.id
             }, 300)
