@@ -343,7 +343,7 @@ export default {
       // set ttl 60 second
       let ttl = new Date().getTime() + 60000
       let item = Object.assign(this.deData, { ttl: ttl })
-      localStorage.setItem(this.id, JSON.stringify(item));
+      sessionStorage.setItem(this.id, JSON.stringify(item));
     },
     //get data from localStorage
     getData() {
@@ -358,12 +358,12 @@ export default {
             allPages: 0,
             sortAsc: true,
           };
-      const itemStr  = localStorage.getItem(this.id)
+      const itemStr  = sessionStorage.getItem(this.id)
       const item = JSON.parse(itemStr)
       const now = new Date().getTime()
 
       if(!itemStr || now > item.ttl) {
-        localStorage.removeItem(this.id)
+        sessionStorage.removeItem(this.id)
         return result
       }
 

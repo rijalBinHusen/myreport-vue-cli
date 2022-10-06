@@ -1,4 +1,4 @@
-import { findData, update, append } from "@/myfunction";
+import { findData, update, append, deleteDocument } from "@/myfunction";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
@@ -118,5 +118,11 @@ export const addBaseReportFileManual = async (periode) => {
     for(let warehouse of warehouseLists) {
         await addBaseReportFile(ymdTime(periode), warehouse?.id)
     }
+    return
+}
+
+export const removeBaseReport = async (idBaseReport) => {
+    lists.value = lists.value.filter((rec) => rec.id !== idBaseReport)
+    await deleteDocument({ store: 'BaseReportFile', criteria: { id: idBaseReport }})
     return
 }

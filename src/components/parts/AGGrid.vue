@@ -117,10 +117,12 @@ export default {
       // periksa dulu apakah sudah ada didalam edited
       let isEdited = this.edited.findIndex((val) => val.id === ev.data.id)
       let changedCell = () => {
+        // jika yang berubah adalah date out
         if(ev.colDef.field == 'dateOut') {
-          // jika stock akhir 0
-          if(Boolean(ev.data.real)) {
+          // jika stock akhir > 0
+          if(Number(ev.data.real) > 0) {
             return { 
+              // samakan date end dengan date out
               [ev.colDef.field]: ev.newValue ,
               dateEnd: ev.newValue,
             }

@@ -38,6 +38,7 @@
 
                 <div v-if="!prop.imported">
                     <Button value="Import file" :datanya="prop.id" primary type="button" class="w3-tiny" @trig="launch($event)" />
+                    <Button value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="removeBase($event)" />
                 </div>
                 <div v-else>
     				<Button 
@@ -62,7 +63,7 @@ import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import readExcelFile from "@/composable/readExcel"
 import { ref, onMounted } from 'vue'
-import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile, updateBaseReport, addBaseReportFileManual } from "@/composable/components/BaseReportFile"
+import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile, updateBaseReport, addBaseReportFileManual, removeBaseReport } from "@/composable/components/BaseReportFile"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
@@ -85,6 +86,14 @@ export default {
         const renderTable = ref(false)
         const importerBase = ref(null)
         const store = useStore()
+
+        const removeBase = async (idBaseReport) => {
+            let res = await subscribeMutation('', 'Confirm', {pesan: 'Apakah anda yakin akan menghapus record?'}, 'Modal/tunnelMessage')
+            if(res) {
+                await removeBaseReport(idBaseReport)
+                renewLists()
+            }
+        }
 
         const pickPeriode = async () => { 
             let res = await subscribeMutation(
@@ -178,7 +187,7 @@ export default {
 
         return {
             importId, pickPeriode, lists, renderTable, importerBase, launch,
-            readExcel, remove, handleAddPeriode
+            readExcel, remove, handleAddPeriode, removeBase
         }
     },
 }
