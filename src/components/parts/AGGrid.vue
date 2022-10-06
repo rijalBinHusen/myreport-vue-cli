@@ -190,23 +190,28 @@ export default {
         this.width = tableInfo.width
         // ag grid height
         this.height = tableInfo.height
-        return
+      } else {
+        // else
+        //show all column original
+        this.columnShow = this.originColumn.map((val) => val.headerName)
+        // original column as column defsinition
+        this.columnDefs = this.originColumn
+        // agg grid set width default
+        this.width = 1000;
       }
-      // else
-      //show all column original
-      this.columnShow = this.originColumn.map((val) => val.headerName)
-      // original column as column defsinition
-      this.columnDefs = this.originColumn
-      // agg grid set width default
-      this.width = 1000;
     },
     saveTableInfo() {
+      let columnFiltered = this.columnDefs.filter((col) => !col?.cellEditor)
       localStorage.setItem(this.tableName, JSON.stringify({
-          column: this.columnDefs,
+          column: columnFiltered,
           width: this.width,
           height: this.height,
         })
       )
+    },
+    editMode() {
+      let columnToShow = this.originColumn.filter((col) => col?.cellEditor)
+      columnToShow.forEach((col) => this.toggleColumn(col.headerName))
     },
     exit() {
       	this.$emit("exit")
@@ -242,11 +247,16 @@ export default {
         // if the W (87) button pressed ( CTRL + W )
         // if the A (65) keyCode pressed
         //  Save the document and close the excel mode
-        if(event.keyCode === 65) {
+        else if(event.keyCode === 65) {
           // prevent default function (closing tab)
           event.preventDefault()
           // save the changed record
           this.saveAndExit()
+        }
+        // if CTRL + E (keycode 69), go to editMode
+        else if(event.keyCode === 69) {
+          event.preventDefault()
+          this.editMode()
         }
       }
     },

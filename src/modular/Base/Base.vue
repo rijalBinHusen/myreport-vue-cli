@@ -112,6 +112,7 @@ import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriod
 import { getWarehouseId } from "@/composable/components/Warehouses"
 import { getSupervisorId } from "@/composable/components/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
+import AGDateEditorVue from "@/components/parts/AGDateEditor.vue"
 
 export default {
     components: {
@@ -326,7 +327,7 @@ export default {
                         { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
                         { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
                         { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter' }, 
-                        { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
+                        { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue}, 
                         { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
                         { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
                         { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, width: 100, wrapText: true, autoHeight: true }, 
