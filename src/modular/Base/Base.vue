@@ -303,7 +303,7 @@ export default {
                     heads: ['Nomor', 'Register', 'Start', 'Finish', 'Istirahat', 'Total'],
                     excelId: 'excelClock',
                     keys: ['noDo', 'reg', 'start', 'finish', 'rehat', 'totalTime'],
-                    idTable: 'BaseReportStockTable',
+                    idTable: 'BaseReportClockTable',
                     excelColumn: [
                         { headerName: "Nomor", field: "noDo", width: 100 },
                         { headerName: "Register", field: "reg", width: 100 },

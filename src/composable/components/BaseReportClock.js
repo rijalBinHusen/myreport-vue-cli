@@ -22,7 +22,7 @@ export const startImportClock = async (sheets, baseId) => {
     // shift
     let shift = sheets["B" + i]?.v > 0
     // status untuk diimport true or false
-    let clockStatus = shift && clockNo && (clockNoBefore !== clockNo)
+    let clockStatus = shift && clockNo > 0 && (clockNoBefore !== clockNo)
 
     if (i > 5 && clockStatus) {
       await appendData(
