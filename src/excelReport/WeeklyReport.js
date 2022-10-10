@@ -66,7 +66,7 @@ export default function (arrayOfArrayOfDocuments) {
             shift: val2.shift,
             spvName: val2.spvName,
             warehouseName: val2.warehouseName,
-            itemVariance: +val2.itemVariance,
+            itemVariance: +val2?.itemVariance,
             totalItemMoving: val2.totalItemMoving,
             totalQTYIn: val2.totalQTYIn,
             totalQTYOut: val2.totalQTYOut,

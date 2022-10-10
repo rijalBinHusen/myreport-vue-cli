@@ -163,6 +163,7 @@ export const stockDetails = (parent, shift) => {
     totalProductNotFIFO: 0,
     planOut: 0,
     totalItemKeluar: 0,
+    itemVariance: 0,
   };
   lists.forEach((val) => {
     if (val.shift == shift && val.parent == parent) {

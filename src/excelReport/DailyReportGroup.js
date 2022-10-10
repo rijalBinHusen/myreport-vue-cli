@@ -29,10 +29,12 @@ export default async function (baseReport) {
     //  add new promise
     tunggu.push(func.tunggu(1000));
     //   item name
-    let item = await func.findData({
-      store: "Baseitem",
-      criteria: { kode: reportData[i].item },
-    });
+    let item = reportData[i]?.item ? 
+                await func.findData({
+                  store: "Baseitem",
+                  criteria: { kode: reportData[i]?.item },
+                })
+                : ''
     //   problem info
     let problem = await getProblem(reportData[i].problem);
     result.push(

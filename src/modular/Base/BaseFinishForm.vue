@@ -66,6 +66,7 @@ import { dateMonth } from "@/composable/piece/dateFormat"
 import { getWarehouseId } from "@/composable/components/Warehouses"
 import { clockDetails } from '@/composable/components/BaseReportClock'
 import { stockDetails } from '@/composable/components/BaseReportStock'
+import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 
 
@@ -90,6 +91,7 @@ export default {
         const freezePage = ref(null)
         const document = ref({})
         const keyPress = ref({})
+        // const selisih
 
         onMounted(async () => {
             // find the document first
@@ -99,7 +101,7 @@ export default {
             warehouseName.value = await getWarehouseId(document.value.warehouse).then((res) => res.name)
             // if isFinished document
             if(document.value?.isfinished) {
-                alert('Document finished')
+                await subscribeMutation('', 'Confirm', { pesan: 'Document sudah diselesaikan', isAlert: true }, 'Modal/tunnelMessage')
                 details.value = document.value
             } else {
                 details.value = { ... clockDetails(props.base, document.value.shift), ...stockDetails(props.base, document.value.shift) }
