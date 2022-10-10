@@ -36,7 +36,7 @@ export default async function (baseReport) {
                 })
                 : ''
     //   problem info
-    let problem = await getProblem(reportData[i].problem);
+    let problem = await getProblem(reportData[i]?.problem);
     result.push(
       Object.assign(
         {

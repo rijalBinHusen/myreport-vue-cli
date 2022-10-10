@@ -13,7 +13,7 @@ export default async function (arrayOfProblemId) {
     dlPanjang: "",
   };
 
-  if (arrayOfProblemId.length) {
+  if (arrayOfProblemId && arrayOfProblemId.length) {
     let allProblem = await Promise.all(
       arrayOfProblemId.map((val) =>
         func.findData({ store: "Problem", criteria: { id: val } })

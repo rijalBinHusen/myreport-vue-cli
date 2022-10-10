@@ -327,6 +327,7 @@ export default {
             this.solusiPanjang = getProblem.solusiPanjang
             this.picPanjang = getProblem.picPanjang
             this.shiftSelesai = getProblem.shiftSelesai
+            this.isFinished = getProblem?.isFinished
             setTimeout(() => {
                 this.isEditMode = true
             }, 300)
