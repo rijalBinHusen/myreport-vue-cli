@@ -27,16 +27,17 @@ export const listsOfDocuments = () => {
 
 // update document
 export const updateDocument = async (idDocument, objToUpdate) => {
-    await update({ 
-        store: 'Document', 
-        criteria: { id: idDocument }, 
-        obj: objToUpdate 
-    })
     
     lists = lists.map((val) => {
         return val?.id === idDocument
             ? { ...val, ...objToUpdate }
             : val
+    })
+    
+    await update({ 
+        store: 'Document', 
+        criteria: { id: idDocument }, 
+        obj: objToUpdate 
     })
 }
 // finished document

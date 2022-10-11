@@ -6,7 +6,7 @@
                 :placeholder="dat.title" 
                 class="w3-margin-bottom" 
                 :value="more?.[dat.valueFrom]"
-                @change="changeValue(dat.valueFrom, $event.target.value)"
+                @inp="changeValue(dat.valueFrom, $event)"
                 :disabled="!edit || !dat?.editable"
                 :type="dat.type"
             />
@@ -41,7 +41,7 @@ export default {
         // jika ada value yang berubah
         changeValue(key, value) {
             // rekam ke object changed
-            this.changed[key] = value
+            this.changed[key] = +value
         },
     },
     data() {

@@ -3,8 +3,7 @@
 
     <div class="w3-border w3-padding w3-container">
         
-        <Button 
-            id="periode"
+        <Button
             class="w3-col s2 w3-right" 
             primary 
             value="Set periode" 
