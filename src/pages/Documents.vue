@@ -403,10 +403,17 @@ export default {
         const pesanSemua = async (ev) => {
             // let nophone = window.prompt()
             if(!ev) { return }
+            const prom = await subscribeMutation(
+                                    "", 
+                                    "Confirm",
+                                    { pesan: `Kamu akan mengirim pesan kepada ${ev} `},
+                                    'Modal/tunnelMessage'
+                                    )
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${full()}:%0a%0a`
             let messageText = await allDocumentMore2Days()
-
-            window.open(`https://wa.me/${ev}?text=${result+messageText}`)
+            if(prom) {
+                window.open(`https://wa.me/${ev}?text=${result+messageText}`)
+            }
         }
 
         const edit = async (ev) => {

@@ -160,12 +160,12 @@ export default {
             //   "problem2": "+ 1 Indikasi kurang muat maseh, +3 Indikasi kurang muat maseh",
             //   "planOut": ""
             // dapatkan nomor telfon dulu
-            let theDocument = await getDocumentByPeriodeByWarehouseByShiftFromDb(Number(selectedPeriode.value), selectedWarehouse.value, nowShift.value)
+            let theDocument = await getDocumentByPeriodeByWarehouseByShiftFromDb(Number(+selectedPeriode.value), selectedWarehouse.value, nowShift.value)
             let spvInfo = await getSupervisorId(theDocument.name)
             let warehouseName = await getWarehouseId(selectedWarehouse.value).then((res) => res.name)
             let pesan;
             let salam = `Assalamu alaikum pak ${spvInfo.name}%0a%0a`
-            let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${dateMonth(selectedPeriode) }*, shift ${nowShift.value} ${warehouseName}, untuk item ${obj.itemName}`
+            let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${dateMonth(+selectedPeriode.value) }*, shift ${nowShift.value} ${warehouseName}, untuk item ${obj.itemName}`
             let selisih = `terdapat selisih sebanyak *${ +obj.real - ((+obj.in) - (+obj.out) + (+obj.awal))}* Ctn`
             let problem = `Dicatatan saya untuk item tersebut masih ada selisih ${obj.problem2.replace('.', ',')}`
             
@@ -203,7 +203,7 @@ export default {
                         'BaseProblemForm', 
                         { 
                             id: obj.id, 
-                            periode: selectedPeriode.value, 
+                            periode: +selectedPeriode.value, 
                             warehouse: selectedWarehouse.value, 
                             item: obj.item,
                             itemName: obj.itemName,
@@ -262,6 +262,7 @@ export default {
                     await updateBaseStock(record.id, record.changed)
                 }
             }
+            await renewLists()
             store.commit("Modal/active");
         }
         const remove = async (idRecord) => {
@@ -322,14 +323,14 @@ export default {
                     excelColumn: [
                         { headerName: "Kode Item", field: "item", editable: true, resizable: true },
                         { headerName: "Nama Item", field: "itemName", editable: false, resizable: true, width: 300 },
-                        { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100 }, 
-                        { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter'}, 
+                        { headerName: "Awal", field: "awal", editable: true, resizable: true, width: 100, valueParser: params => Number(params.newValue) }, 
+                        { headerName: "Masuk", field: "in", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter', valueParser: params => Number(params.newValue) }, 
                         { headerName: "Tanggal masuk", field: "dateIn", editable: true, resizable: true, maxWidth: 120, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue }, 
-                        { headerName: "Plan Out", field: "planOut", editable: true, resizable: true, width: 100 }, 
-                        { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter' }, 
+                        { headerName: "Coret DO", field: "planOut", editable: true, resizable: true, width: 100, valueParser: params => Number(params.newValue)  }, 
+                        { headerName: "Keluar", field: "out", editable: true, resizable: true, width: 100, filter: 'agNumberColumnFilter', valueParser: params => Number(params.newValue)  }, 
                         { headerName: "Tanggal keluar", field: "dateOut", editable: true, resizable: true, maxWidth: 120, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue}, 
                         { headerName: "Akhir", editable: false, resizable: true, valueGetter: '(+data.in) - (+data.out) + data.awal', width: 100 },
-                        { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100 },
+                        { headerName: "Real stock", field: "real", editable: true, resizable: true, width: 100, valueParser: params => Number(params.newValue)  },
                         { headerName: "Tanggal terlama", field: "dateEnd", editable: true, resizable: true, maxWidth: 120, wrapText: true, autoHeight: true, cellEditor: AGDateEditorVue }, 
                         { headerName: "Selisih", editable: false, width:80, valueGetter: 'data.real - ((+data.in) - (+data.out) + (+data.awal))'}, 
                     ]
