@@ -104,6 +104,9 @@ export default {
                 await subscribeMutation('', 'Confirm', { pesan: 'Document sudah diselesaikan', isAlert: true }, 'Modal/tunnelMessage')
                 details.value = document.value
             } else {
+                if(!document.value?.collected) {
+                    await subscribeMutation('', 'Confirm', { pesan: 'Document belum di kumpulkan', isAlert: true }, 'Modal/tunnelMessage')
+                }
                 details.value = { ... clockDetails(props.base, document.value.shift), ...stockDetails(props.base, document.value.shift) }
             }
             // event listener
