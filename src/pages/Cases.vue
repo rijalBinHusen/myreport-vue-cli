@@ -89,8 +89,8 @@ export default {
             }
             // close the loader
             this.$store.commit("Modal/active");
-            })
             this.renewLists()
+            })
         },
         async remove(ev){
             let res = await subscribeMutation(

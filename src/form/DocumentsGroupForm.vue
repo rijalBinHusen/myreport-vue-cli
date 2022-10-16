@@ -76,7 +76,7 @@ export default {
                     store == 'Supervisors'
                         ? updateSupervisor(idFL, { shift })
                         : updateHeadspv(idFL, { shift })
-              }, 1000)
+              }, 300)
         }
 
         onBeforeMount(() => {
