@@ -1,5 +1,5 @@
 import { dateMonth } from "./dateFormat"
-import addDocument from "../firebaseAddStore"
+import addDocument from "./firebaseAddStore"
 import func from "../../myfunction"
 
 const syncProblem = async (idProblem) => {

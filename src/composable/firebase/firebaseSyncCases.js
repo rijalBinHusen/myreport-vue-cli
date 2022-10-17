@@ -1,5 +1,5 @@
 import myfunction from "@/myfunction"
-import addDocument from "../firebaseAddStore"
+import addDocument from "./firebaseAddStore"
 
 const syncCases = async (store, docId) => {
     // find the record

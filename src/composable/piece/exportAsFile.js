@@ -1,5 +1,5 @@
-import { uploadFile } from "./firebaseStorageUpload"
-import addDocument from "../firebaseAddStore";
+import uploadFile from "../firebase/firebaseStorageUpload"
+import addDocument from "../firebase/firebaseAddStore";
 
 export const startExport = async (records, fileName, sendToCloud) => {
     // create a download file
@@ -9,9 +9,13 @@ export const startExport = async (records, fileName, sendToCloud) => {
     
     if(sendToCloud) {
         // upload to firebase
-        uploadFile(file, fileName)
+        const { error, downloadURL } = await uploadFile(file, fileName)
         // record document that saved to firebase
-        addDocument('activitySaved', fileName, { uploaded: true })
+        if(error.value) {
+            console.log(error.value)
+            alert('Something went wrong, check the console')
+        }
+        addDocument('activitySaved', fileName, { uploaded: true, downloadURL: downloadURL.value })
     }
     // append file
     a.href = URL.createObjectURL(file);

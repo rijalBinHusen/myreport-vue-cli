@@ -50,7 +50,7 @@
 	import Button from "../elements/Button.vue";
 	import { mapGetters } from "vuex"
 	import signOut from "../../composable/UserSignOut"
-	import { listsFile } from '@/composable/piece/firebaseStorageLists'
+	import { listsFile } from '@/composable/firebase/firebaseStorageLists'
 	
 	export default {
 		setup() {

@@ -2,7 +2,7 @@ import { db } from "@/firebase/firebaseApp";
 import { doc, getDoc } from "firebase/firestore"
 import func from "../myfunction"
 import syncProblem from "./piece/firebaseSyncProblem"
-import addData from "./firebaseAddStore"
+import addData from "./firebase/firebaseAddStore"
 import syncCases from "./piece/firebaseSyncCases"
 
 // the store that we're gonna sync
