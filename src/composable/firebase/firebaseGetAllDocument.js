@@ -1,9 +1,17 @@
 import { db } from "@/firebase/firebaseApp";
 import { collection, getDocs } from "firebase/firestore"
+import { ref } from "vue";
 
-const getStore = async (store, key) => {
+export const result = ref([])
+const nowStore = ref('')
+
+export const getStore = async (store, key) => {
+    nowStore.value = store
+    if(nowStore.value == store && result.value.length) { return }
     const querySnapshot = await getDocs(collection(db, store));
-    console.log(querySnapshot?.empty)
+    if(!querySnapshot?.empty){
+        querySnapshot.forEach((doc) => {
+            result.value.push({ id: doc.id, ...doc.data() })
+        })
+    }
 }
-
-export default getStore

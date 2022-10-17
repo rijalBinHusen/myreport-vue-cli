@@ -30,6 +30,7 @@
 	import Complains from "./Complains.vue"
 	import FollowUp from "./FollowUp.vue"
 	import Login from "./Login.vue"
+	import Listsbackup from './Listsbackup.vue'
 	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
 	import userSignOut from "@/composable/UserSignOut"
@@ -74,6 +75,7 @@
 		},
 		name: "Main",
 		components: {
+			Listsbackup,
 			Documents,
 			Login,
 			FollowUp,

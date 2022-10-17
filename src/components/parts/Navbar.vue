@@ -30,13 +30,6 @@
 				/>
 				<Button 
 					noborder 
-					class="w3-bar-item w3-text-black" 
-					value="Lists backup" 
-					type="button"  
-					@trig="listsFile" 
-				/>
-				<Button 
-					noborder 
 					class="w3-bar-item w3-text-black w3-hover-pink" 
 					value="Sign out" 
 					type="button"  
@@ -50,11 +43,10 @@
 	import Button from "../elements/Button.vue";
 	import { mapGetters } from "vuex"
 	import signOut from "../../composable/UserSignOut"
-	import { listsFile } from '@/composable/firebase/firebaseStorageLists'
 	
 	export default {
 		setup() {
-			return { signOut, listsFile }
+			return { signOut  }
 		},
 		name: "Navbar",
 		data() {

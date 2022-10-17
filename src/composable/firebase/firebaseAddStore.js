@@ -1,8 +1,8 @@
 import { db } from "@/firebase/firebaseApp";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 const addDocument = (nameStore, keyStore, data) => {
-  return setDoc(doc(db, nameStore, keyStore), { ...data, time: serverTimestamp() });
+  return setDoc(doc(db, nameStore, keyStore), { ...data, time: new Date().getTime() });
 };
 
 export default addDocument;

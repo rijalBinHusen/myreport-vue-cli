@@ -1,8 +1,8 @@
 import Localbase from "localbase";
 let db = new Localbase("myreport");
 import func from "../myfunction"
+import { dateMonth } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
-
 
 export const storeBackup = async (sendToCloud) => {
     // will store all document that we saved in idexeddb
@@ -84,6 +84,7 @@ export const seperateUsers = async (sendToCloud) => {
                 }
                 // waiting for exporting data as file
                 if(record.hasOwnProperty(userActivities[0]?.store)) {
+                    // console.log(record)
                     await func.update({
                         store: 'login',
                         criteria: {id: userActivities[0]?.idLogin },
@@ -92,10 +93,11 @@ export const seperateUsers = async (sendToCloud) => {
                     await startExport({
                         activities: userActivities,
                         record: record
-                    }, 
-                    userActivities[0]?.idLogin+'.json', 
+                    },
+                    dateMonth(userActivities[0]?.time) +'.json', 
                     sendToCloud                    
                     )
+                    alert('success upload')
                 }
             }
         }
