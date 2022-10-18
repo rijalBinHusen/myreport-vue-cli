@@ -38,6 +38,7 @@
 	import { getWarehouses } from "@/composable/components/Warehouses";
 	import { getSupervisors } from "@/composable/components/Supervisors";
 	import { getHeadspv } from "@/composable/components/Headspv";
+	import ImportActivityUser from './ImportActivity.vue'
 	
 
 	export default {
@@ -96,7 +97,8 @@
 			Backup,
 			BaseReportFile,
 			Base,
-			FieldProblemVue
+			FieldProblemVue,
+			ImportActivityUser,
 		},
 	}
 </script>

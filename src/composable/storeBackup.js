@@ -97,7 +97,6 @@ export const seperateUsers = async (sendToCloud) => {
                     dateMonth(userActivities[0]?.time) +'.json', 
                     sendToCloud                    
                     )
-                    alert('success upload')
                 }
             }
         }
