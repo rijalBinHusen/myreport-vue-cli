@@ -62,7 +62,7 @@ export default {
         let id = ref('')
         const spvLists = ref({})
         const headLists = ref([])
-        const periode = ref(new Date())
+        const periode = ref()
         const lowerPeriode = ref('')
         const warehousesLists = ref([])
         const store = useStore()
