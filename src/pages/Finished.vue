@@ -10,23 +10,30 @@
             type="button" 
             @trig="pickPeriode" 
         />
-        <Button primary class="w3-right" :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
-        
-        <Dropdown
-        value="Report"
-        :lists="[
-            { id: 'name', isi: 'SPV Weekly'},
-            { id: 'head', isi: 'Kabag Weekly'},
-            { id: 'warehouse', isi: 'Warehouses Weekly'},
-        ]"
-        listsKey="id"
-        listsValue="isi"
-        class="w3-right"
-        @trig="exportReport"
-        primary
-        />
 
-        <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
+        <div v-if="renderTable && lists" >
+        
+            <Button primary class="w3-right"  :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
+
+            <Button primary class="w3-right"  value="Broadcast message" type="button" @trig="broadcastDocument"/>
+            
+            <Dropdown
+            value="Report"
+            :lists="[
+                { id: 'name', isi: 'SPV Weekly'},
+                { id: 'head', isi: 'Kabag Weekly'},
+                { id: 'warehouse', isi: 'Warehouses Weekly'},
+            ]"
+            listsKey="id"
+            listsValue="isi"
+            class="w3-right"
+            @trig="exportReport"
+            primary
+            />
+
+            <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
+            
+        </div>
     </div>
 
     <Datatable
@@ -134,6 +141,8 @@ export default {
             } else {
                 lists.value = await finishedDocument()
             }
+            groupedObject.value.length = 0
+            grouped.value.length =  0
         }
 
         const details = async (ev) => {
@@ -157,9 +166,11 @@ export default {
             renewLists()
         })
 
-        const exportReport = async (ev) => {
-            // Open loader
-            store.commit("Modal/active", {judul: "", form: "Loader"});
+        const groupingDocument = async (ev) => {
+            if(!groupedObject.value.length) {
+                await subscribeMutation('Peringatan', 'Confirm', { pesan: 'Tidak ada document yang akan dibroadcast!', isAlert: true }, 'Modal/tunnelMessage')
+                return
+            }
             // group dulu yang spv dan periode yang sama
             /* expected object = [
                 [{ baseReport }, { baseReport }],
@@ -188,28 +199,103 @@ export default {
                     group.push([{ ...val }])
                 }
            })
-        // export report weekly by spv
-        if(ev == 'name') {
-            await exportWeeklyReportToExcel(group)
+           return group
         }
-        // export report weekly by head
-        else if(ev == 'head') {
-            await exportWeeklyKabag(group)
-        }
-        // export report weekly by warehouse
-        else {
-            await WeeklyWarehouses(group)
-        }
-        // console.log(group)
 
-        store.commit("Modal/active");
+        const exportReport = async (ev) => {
+            // Open loader
+            store.commit("Modal/active", {judul: "", form: "Loader"});
+
+            let group = await groupingDocument(ev)
+                
+            // export report weekly by spv
+            if(ev == 'name') {
+                await exportWeeklyReportToExcel(group)
+            }
+            // export report weekly by head
+            else if(ev == 'head') {
+                await exportWeeklyKabag(group)
+            }
+            // export report weekly by warehouse
+            else {
+                await WeeklyWarehouses(group)
+            }
+
+            store.commit("Modal/active");
+        }
+
+        const mappingResult = (arrayOfDocument) => {
+            // expected result
+            // 12 Oktober:
+            // Total produk masuk
+            return arrayOfDocument.map((doc) => ([
+                `Periode ${doc.periode2}`,
+                // Point 1
+                // Total produk masuk gudang
+                `Total produk masuk gudang: ${doc.totalQTYIn}`,
+                // Total item yang moving
+                `Total item yang bergerak: ${doc.totalItemMoving}`,
+                // jumlah item yang terdapat variance
+                `Total item yang terdapat variance: ${doc.itemVariance}`,
+                // Pencapaian = (item moving - item variance) / item moving
+                `Pencapaian: ${((doc.totalItemMoving - doc.itemVariance) / doc.totalItemMoving) * 100}%`,
+                // End of Point 1
         
+                // Point 2
+                // Total item yang keluar
+                `Total item yang keluar: ${doc.totalItemKeluar}`,
+                // Total item yang tidak FIFO
+                `Total item yang tidak FIFO: ${doc.totalProductNotFIFO}`,
+                // Pencapaian = ( item keluar - item tidak fifo) / item keluar
+                `Pencapaian: ${((doc.totalItemKeluar - doc.totalProductNotFIFO) / doc.totalItemKeluar) * 100}%`,
+                // End of point 2
+                
+                // Point 3
+                // Total DO
+                `Total DO: ${doc.totalDo}`,
+                // Total Produk keluar pada DO
+                `Total produk keluar pada DO: ${doc.totalQTYOut}`,
+                // Total produk yang termuat
+                `Total produk yang termuat: ${doc.totalQTYOut - doc.planOut}`,
+                // Pencapaian Total DO yang termuat = 100%
+                `Pencapaian total DO yang termuat: 100%`,
+                // Pencapaian jumlah produk termuat = produk termuat / total produk diDO
+                `Pencapaian total kuantity produk yang termuat: ${((doc.totalQTYOut - doc.planOut) / doc.totalQTYOut) * 100}%`,
+                // End of point 3
+        
+                // point 4
+                // Standart waktu muat
+                `Standart waktu muat: ${(doc.totalQTYOut - doc.planOut) / 10}`,
+                // Realisasi waktu muat
+                `Realisasi waktu muat: ${ doc.totalWaktu }`,
+                // Pencapaian = Realisasi waktu muat < (produk termuat / 10) ? ok : not ok
+                `Pencapaian: ${ doc.totalWaktu < ((doc.totalQTYOut - doc.planOut) / 10 ) ? 'Oke' : 'Not oke'}`
+                // End of point 4
+        
+                // Total komplain customer
+            ]))
+
+        }
+
+        const broadcastDocument = async () => {
+            // grouping document
+            let group = await groupingDocument('name')
+            // map the group then map the document
+            group.forEach( async (docs) => {
+                let res = mappingResult(docs)
+                let confirm = await subscribeMutation('Peringatan', 'Confirm', { pesan: 'Anda akan mengirim pesan kepada namaorang' }, 'Modal/tunnelMessage')
+                if(confirm) {
+                    console.log(res)
+                }
+
+            })
+            // console.log(group)
         }
 
         return { 
             unfinished, lists, renderTable, 
             markAll, push, pickPeriode, details, 
-            exportReport, grouped
+            exportReport, grouped, broadcastDocument
         }
 		
     },
