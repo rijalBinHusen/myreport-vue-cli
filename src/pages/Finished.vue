@@ -15,7 +15,7 @@
         
             <Button primary class="w3-right"  :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
 
-            <Button primary class="w3-right"  value="Broadcast message" type="button" @trig="broadcastDocument"/>
+            <!-- <Button primary class="w3-right"  value="Broadcast message" type="button" @trig="broadcastDocument"/> -->
             
             <Dropdown
             value="Report"
@@ -78,6 +78,7 @@ import exportWeeklyKabag from "@/excelReport/WeeklyKabag"
 import WeeklyWarehouses from "@/excelReport/WeeklyReportWarehouses"
 import Dropdown from "@/components/elements/Dropdown.vue"
 import { finishedDocument, getDocuments, unFinishedDocument } from '@/composable/components/DocumentsPeriod'
+import { getSupervisorId } from '@/composable/components/Supervisors'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { ref, onMounted, watch } from "vue"
 import { useStore } from "vuex"
@@ -224,73 +225,78 @@ export default {
             store.commit("Modal/active");
         }
 
-        const mappingResult = (arrayOfDocument) => {
-            // expected result
-            // 12 Oktober:
-            // Total produk masuk
-            return arrayOfDocument.map((doc) => ([
-                `Periode ${doc.periode2}`,
-                // Point 1
-                // Total produk masuk gudang
-                `Total produk masuk gudang: ${doc.totalQTYIn}`,
-                // Total item yang moving
-                `Total item yang bergerak: ${doc.totalItemMoving}`,
-                // jumlah item yang terdapat variance
-                `Total item yang terdapat variance: ${doc.itemVariance}`,
-                // Pencapaian = (item moving - item variance) / item moving
-                `Pencapaian: ${((doc.totalItemMoving - doc.itemVariance) / doc.totalItemMoving) * 100}%`,
-                // End of Point 1
+        // const mappingResult = (arrayOfDocument) => {
+        //     // expected result
+        //     // 12 Oktober:
+        //     // Total produk masuk
+        //     return arrayOfDocument.map((doc) => ([
+        //         `Periode ${doc.periode2} ${doc.warehouseName}:%0a%0a`,
+        //         // Point 1
+        //         // Total produk masuk gudang
+        //         `Total produk masuk gudang: ${doc.totalQTYIn} Karton%0a`,
+        //         // Total item yang moving
+        //         `Total item yang bergerak: ${doc.totalItemMoving} item%0a`,
+        //         // jumlah item yang terdapat variance
+        //         `Total item yang terdapat variance: ${doc.itemVariance} item%0a`,
+        //         // Pencapaian = (item moving - item variance) / item moving
+        //         `Pencapaian: *${((doc.totalItemMoving - doc.itemVariance) / doc.totalItemMoving) * 100}%*%0a%0a`,
+        //         // End of Point 1
         
-                // Point 2
-                // Total item yang keluar
-                `Total item yang keluar: ${doc.totalItemKeluar}`,
-                // Total item yang tidak FIFO
-                `Total item yang tidak FIFO: ${doc.totalProductNotFIFO}`,
-                // Pencapaian = ( item keluar - item tidak fifo) / item keluar
-                `Pencapaian: ${((doc.totalItemKeluar - doc.totalProductNotFIFO) / doc.totalItemKeluar) * 100}%`,
-                // End of point 2
+        //         // Point 2
+        //         // Total item yang keluar
+        //         `Total item yang keluar: ${doc.totalItemKeluar} Karton%0a`,
+        //         // Total item yang tidak FIFO
+        //         `Total item yang tidak FIFO: ${doc.totalProductNotFIFO} item%0a`,
+        //         // Pencapaian = ( item keluar - item tidak fifo) / item keluar
+        //         `Pencapaian: *${((doc.totalItemKeluar - doc.totalProductNotFIFO) / doc.totalItemKeluar) * 100}%*%0a%0a`,
+        //         // End of point 2
                 
-                // Point 3
-                // Total DO
-                `Total DO: ${doc.totalDo}`,
-                // Total Produk keluar pada DO
-                `Total produk keluar pada DO: ${doc.totalQTYOut}`,
-                // Total produk yang termuat
-                `Total produk yang termuat: ${doc.totalQTYOut - doc.planOut}`,
-                // Pencapaian Total DO yang termuat = 100%
-                `Pencapaian total DO yang termuat: 100%`,
-                // Pencapaian jumlah produk termuat = produk termuat / total produk diDO
-                `Pencapaian total kuantity produk yang termuat: ${((doc.totalQTYOut - doc.planOut) / doc.totalQTYOut) * 100}%`,
-                // End of point 3
+        //         // Point 3
+        //         // Total DO
+        //         `Total DO: ${doc.totalDo} DO%0a`,
+        //         // Total Produk keluar pada DO
+        //         `Total produk keluar pada DO: ${doc.totalQTYOut} Karton%0a`,
+        //         // Total produk yang termuat
+        //         `Total produk yang termuat: ${doc.totalQTYOut - doc.planOut} Karton%0a`,
+        //         // Pencapaian Total DO yang termuat = 100%
+        //         `Pencapaian total DO yang termuat: *100%*`,
+        //         // Pencapaian jumlah produk termuat = produk termuat / total produk diDO
+        //         `Pencapaian total kuantity produk yang termuat: ${((doc.totalQTYOut - doc.planOut) / doc.totalQTYOut) * 100}%%0a%0a`,
+        //         // End of point 3
         
-                // point 4
-                // Standart waktu muat
-                `Standart waktu muat: ${(doc.totalQTYOut - doc.planOut) / 10}`,
-                // Realisasi waktu muat
-                `Realisasi waktu muat: ${ doc.totalWaktu }`,
-                // Pencapaian = Realisasi waktu muat < (produk termuat / 10) ? ok : not ok
-                `Pencapaian: ${ doc.totalWaktu < ((doc.totalQTYOut - doc.planOut) / 10 ) ? 'Oke' : 'Not oke'}`
-                // End of point 4
+        //         // point 4
+        //         // Standart waktu muat
+        //         `Standart waktu muat: ${(doc.totalQTYOut - doc.planOut) / 10} Menit%0a`,
+        //         // Realisasi waktu muat
+        //         `Realisasi waktu muat: ${ doc.totalWaktu } Menit%0a`,
+        //         // Pencapaian = Realisasi waktu muat < (produk termuat / 10) ? ok : not ok
+        //         `Pencapaian: ${ doc.totalWaktu < ((doc.totalQTYOut - doc.planOut) / 10 ) ? 'Oke' : 'Not oke'}`
+        //         // End of point 4
         
-                // Total komplain customer
-            ]))
+        //         // Total komplain customer
+        //     ])).join('%0a%0a')
 
-        }
+        // }
 
-        const broadcastDocument = async () => {
-            // grouping document
-            let group = await groupingDocument('name')
-            // map the group then map the document
-            group.forEach( async (docs) => {
-                let res = mappingResult(docs)
-                let confirm = await subscribeMutation('Peringatan', 'Confirm', { pesan: 'Anda akan mengirim pesan kepada namaorang' }, 'Modal/tunnelMessage')
-                if(confirm) {
-                    console.log(res)
-                }
+        // const broadcastDocument = async () => {
+        //     // grouping document
+        //     let group = await groupingDocument('name')
+        //     // map the group then map the document
+        //     if(!group) { return }
+        //     for(let docs of group) {
+        //         let res = mappingResult(docs)
+        //         let confirm = await subscribeMutation('Peringatan', 'Confirm', { pesan: `Anda akan mengirim pesan kepada ${docs[0]?.spvName}` }, 'Modal/tunnelMessage')
+        //         if(confirm) {
+        //             // get supervisor info
+        //             let supervisor = await getSupervisorId(docs[0]?.name)
+        //             // send message
+        //             window.open(`https://wa.me/${supervisor.phone}?text=${res}`)
+        //             // console.log(supervisor)
+        //         }
 
-            })
-            // console.log(group)
-        }
+        //     }
+        //     console.log(group)
+        // }
 
         return { 
             unfinished, lists, renderTable, 
