@@ -130,6 +130,9 @@
             <span class="w3-xlarge">
                 <label for="isFinished">Finished?</label>
                 <input type="checkbox" class="w3-xlarge" v-model="isFinished" id="isFinished">
+                *
+                <label for="linkedToDocument">Linked as item variance to document?</label>
+                <input type="checkbox" class="w3-xlarge" v-model="linkedToDocument" id="linkedToDocument">
             </span>
         </form>
     </div>
@@ -148,6 +151,7 @@ import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 import { addProblem, problemId, updateProblem } from '@/composable/components/Problem'
 import { getSupervisorId } from '@/composable/components/Supervisors'
 import { ymdTime } from '@/composable/piece/dateFormat'
+import { updateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/composable/components/DocumentsPeriod'
 
 export default {
     data() {
@@ -174,7 +178,8 @@ export default {
             shiftSelesai: "",
             isFinished: false,
             changed: {},
-            isEditMode: false
+            isEditMode: false,
+            linkedToDocument: false,
         }
     },
     methods: {
@@ -192,7 +197,16 @@ export default {
         },
         async setPic(ev) {
             this.pic = await getSupervisorId(ev).then((res) => res.name)
-        }
+        },
+        async linkToDocument (bool) {
+            if(bool) {
+                let doc = await getDocumentByPeriodeByWarehouseByShiftFromDb(this.periode, this.warehouse, this.shiftMulai)
+                // reflect the variance to document
+                updateDocument(doc?.id, { itemVariance: doc?.itemVariance ? doc?.itemVariance + 1 : 1 })
+                // update the problem
+                updateProblem(this.id, { linkedToDocument: true })
+            }
+        },
     },
     components: {
     Button,
@@ -301,6 +315,9 @@ export default {
                 this.changed['isFinished'] = newVal
             }
         },
+        linkedToDocument(newVal) {
+            this.linkToDocument(newVal)
+        },
 
     },
     created() {
@@ -328,6 +345,7 @@ export default {
             this.picPanjang = getProblem.picPanjang
             this.shiftSelesai = getProblem.shiftSelesai
             this.isFinished = getProblem?.isFinished
+            this.linkedToDocument = getProblem?.linkedToDocument
             setTimeout(() => {
                 this.isEditMode = true
             }, 300)

@@ -67,7 +67,7 @@ import { getWarehouseId } from "@/composable/components/Warehouses"
 import { clockDetails } from '@/composable/components/BaseReportClock'
 import { stockDetails } from '@/composable/components/BaseReportStock'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { problemActiveBySpvAndPeriode } from '@/composable/components/Problem'
+import { problemActiveBySpvAndPeriode, updateProblem } from '@/composable/components/Problem'
 
 
 
@@ -115,6 +115,10 @@ export default {
             }
             // get item variance ffrom problem
             const itemVariance = problemActiveBySpvAndPeriode(document.value.name, document.value.periode)
+            // reflecte the variacne to problem
+            if(itemVariance.length) {
+                updateProblem(itemVariance?.id, { linkedToDocument: true })
+            }
             // automate set item variance 
             details.value.itemVariance = itemVariance.length
             // event listener
