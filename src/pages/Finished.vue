@@ -32,8 +32,8 @@
     <Datatable
         v-if="renderTable && lists"
         :datanya="lists"
-        :heads="['Periode', 'Nama', 'Kabag', 'Shift']"
-        :keys="['periode2', 'spvName', 'headName', 'shift']"
+        :heads="['Periode', 'Nama', 'Gudang', 'Kabag', 'Shift']"
+        :keys="['periode2', 'spvName', 'warehouseName', 'headName', 'shift']"
         option
         :id="unfinished ? 'unfinishedTable' : 'tableFinished'"
     >
