@@ -67,6 +67,7 @@ import { getWarehouseId } from "@/composable/components/Warehouses"
 import { clockDetails } from '@/composable/components/BaseReportClock'
 import { stockDetails } from '@/composable/components/BaseReportStock'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { problemActiveBySpvAndPeriode } from '@/composable/components/Problem'
 
 
 
@@ -99,6 +100,9 @@ export default {
             supervisor.value = await getSupervisorId(document.value.name).then((res) => res.name)
             headSpv.value = await getHeadspvId(document.value.head).then((res) => res.name)
             warehouseName.value = await getWarehouseId(document.value.warehouse).then((res) => res.name)
+            // console.log('supervisor' supervisor.value)
+            // console.log('warehouseName', )
+            
             // if isFinished document
             if(document.value?.isfinished) {
                 await subscribeMutation('', 'Confirm', { pesan: 'Document sudah diselesaikan', isAlert: true }, 'Modal/tunnelMessage')
@@ -109,6 +113,10 @@ export default {
                 }
                 details.value = { ... clockDetails(props.base, document.value.shift), ...stockDetails(props.base, document.value.shift) }
             }
+            // get item variance ffrom problem
+            const itemVariance = problemActiveBySpvAndPeriode(document.value.name, document.value.periode)
+            // automate set item variance 
+            details.value.itemVariance = itemVariance.length
             // event listener
             window.addEventListener("keydown", pressKey)
             window.addEventListener("keyup", releaseKey)

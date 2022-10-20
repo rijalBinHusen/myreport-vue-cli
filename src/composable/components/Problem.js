@@ -160,7 +160,7 @@ export const addProblem = async (
   return;
 };
 
-export const updateBaseReport = async (id, obj) => {
+export const updateProblem = async (id, obj) => {
   lists = lists.map((val) => {
     if (val.id == id) {
       return { ...val, ...obj };

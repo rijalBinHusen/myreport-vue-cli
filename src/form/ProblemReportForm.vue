@@ -145,7 +145,7 @@ import SelectSupervisorsVue from "@/components/parts/SelectSupervisors.vue"
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import SelectShiftVue from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
-import { addProblem, problemId, updateBaseReport } from '@/composable/components/Problem'
+import { addProblem, problemId, updateProblem } from '@/composable/components/Problem'
 import { getSupervisorId } from '@/composable/components/Supervisors'
 import { ymdTime } from '@/composable/piece/dateFormat'
 
@@ -182,7 +182,7 @@ export default {
             // console.log({ ...this.changed })
             this.$store.commit('Modal/active', { judul: '', form: 'Loader' })
             if(this.id) {
-                await updateBaseReport(this.id, { ...this.changed })
+                await updateProblem(this.id, { ...this.changed })
             } else {
                 await addProblem(this.warehouse, this.nameSpv, this.nameHeadSpv, this.item, this.periode, this.shiftMulai, this.pic, this.dl, this.masalah,
                 this.sumberMasalah, this.solusi, this.solusiPanjang, this.dlPanjang, this.picPanjang, this.tanggalSelesai, this.shiftSelesai, this.isFinished)

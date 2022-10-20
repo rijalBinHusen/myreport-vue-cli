@@ -301,7 +301,8 @@ export default {
         return { 
             unfinished, lists, renderTable, 
             markAll, push, pickPeriode, details, 
-            exportReport, grouped, broadcastDocument
+            exportReport, grouped, 
+            // broadcastDocument
         }
 		
     },
