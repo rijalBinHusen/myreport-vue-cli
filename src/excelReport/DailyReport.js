@@ -1,37 +1,15 @@
 import func from "../myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
+import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
 
 export default async function (baseReport) {
-  // delete unneeded property
-  const {
-    id,
-    periode,
-    warehouse,
-    collected,
-    approval,
-    status,
-    shared,
-    finished,
-    finished2,
-    baseReportFile,
-    isfinished,
-    name,
-    head,
-    collected2,
-    approval2,
-    parentDocument,
-    totalItemMoving,
-    totalQTYIn,
-    totalQTYOut,
-    totalItemKeluar,
-    standartWaktu,
-    generateReport,
-    parent,
-    planOut,
-    ...details
-  } = baseReport;
-  //   console.log(baseReport);
+  // console.log(baseReport)
+  const { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2 } = baseReport
+  const details = { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2 }
+
+  let fieldProblem = await GetFieldProblemByPeriodeBySpv(baseReport?.periode, baseReport?.name)
+
   let fileName = `${baseReport?.periode2} ${baseReport?.warehouseName} Shift ${baseReport.shift} ${baseReport.spvName} `;
   // tunggu
   let tunggu = [];
@@ -86,6 +64,7 @@ export default async function (baseReport) {
       result: [{ id: "Bismillah" }],
       base: result,
       notes: [details],
+      kendalaLapangan: fieldProblem || { periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' },
     },
     fileName
   );

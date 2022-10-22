@@ -1,11 +1,13 @@
 import func from "../myfunction";
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
+import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
 
 export default async function (baseReport) {
   // baseReport must be a group, e.g = [baseReport, baseReport]
   let details = detailsDocument(baseReport);
   // console.log(details);
+  let fieldProblem = await GetFieldProblemByPeriodeBySpv(baseReport[0]?.periode, baseReport[0]?.name)
   let fileName = `${details?.periode2} ${details?.warehouseName} Shift ${details.shift} ${details.spvName} `;
   // tunggu
   let tunggu = [];
@@ -62,6 +64,7 @@ export default async function (baseReport) {
       result: [{ id: "Bismillah" }],
       base: result,
       notes: [details],
+      kendalaLapangan: fieldProblem || { periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' },
     },
     fileName
   );

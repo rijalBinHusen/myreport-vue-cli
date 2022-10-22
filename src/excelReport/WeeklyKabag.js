@@ -30,7 +30,7 @@ export default function (arrayOfArrayOfDocuments) {
         let arrProblem = [];
         let newArrayOfDocuments = [
           {
-            periode: 1,
+            periode: '',
             totalKendaraan: 2,
             totalWaktu: 3,
             shift: 4,
