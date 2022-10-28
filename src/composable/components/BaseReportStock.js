@@ -1,7 +1,7 @@
 import { append, deleteDocument, findData, update } from "@/myfunction";
 import { findBaseReportFile } from "./BaseReportFile";
-import store from "@/store";
 import { masalah, problemActive } from "./Problem";
+import { getItemByKode } from './Baseitem'
 
 let lists = [];
 
@@ -130,13 +130,14 @@ export const getBaseStockByParentByShift = async (parent, shift) => {
   }
 };
 
-export const baseReportStockLists = (parent, shift) => {
+export const baseReportStockLists = async (parent, shift) => {
   let result = [];
-  lists.forEach((rec) => {
+  for (let rec of lists ) {
     if (rec.parent == parent && rec.shift == shift) {
+      const itemName = await getItemByKode(rec.item).then((res) => res ? res.name : 'Not found')
       result.push({
         ...rec,
-        itemName: store.getters["Baseitem/baseItemKode"](rec.item).name,
+        itemName,
         problem2: masalah(rec.problem),
         selisih:
           Number(rec.real) -
@@ -144,7 +145,7 @@ export const baseReportStockLists = (parent, shift) => {
         planOut: rec?.planOut || 0,
       });
     }
-  });
+  };
   return result;
 };
 

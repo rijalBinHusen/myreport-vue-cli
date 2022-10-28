@@ -156,7 +156,6 @@ export default {
         })
 
         onMounted( async () => {
-            await store.dispatch('Baseitem/getAllItem')
             await getProblemFromDB()
             send()
         })

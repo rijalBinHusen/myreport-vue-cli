@@ -286,7 +286,7 @@ export default {
                 await getBaseClockByParentByShift(baseId.value, Number(nowShift.value))
                 await getBaseStockByParentByShift(baseId.value, Number(nowShift.value))
                 if(isStockSheet.value) {
-                    lists.value = baseReportStockLists(baseId.value, Number(nowShift.value))
+                    lists.value = await baseReportStockLists(baseId.value, Number(nowShift.value))
                     nowSheet.value = 'stock'
                 } else {
                     lists.value = baseReportClockLists(baseId.value, Number(nowShift.value))

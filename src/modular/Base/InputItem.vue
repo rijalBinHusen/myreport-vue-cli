@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import { getAllItems, lists as stateItems } from '@/composable/components/Baseitem'
+
 export default {
     methods: {
         chose(ev) {
@@ -20,7 +22,7 @@ export default {
     data () {
         return {
             item: "",
-            lists: this.$store.state.Baseitem.lists,
+            lists: stateItems
         }
     },
     computed: {
@@ -35,5 +37,8 @@ export default {
         value: String,
     },
     name: "InputItem",
+    async mounted() {
+        await getAllItems()
+    },
 }
 </script>

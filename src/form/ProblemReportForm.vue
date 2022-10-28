@@ -316,7 +316,9 @@ export default {
             }
         },
         linkedToDocument(newVal) {
-            this.linkToDocument(newVal)
+            if(this.isEditMode){
+                this.linkToDocument(newVal)
+            }
         },
 
     },

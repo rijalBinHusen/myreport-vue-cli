@@ -1,4 +1,4 @@
-import { update, append, getData, deleteDocument } from '@/myfunction'
+import { update, append, getData, deleteDocument, findData } from '@/myfunction'
 
 export let lists = []
 
@@ -31,14 +31,17 @@ export const getItemById = (id) => {
     return lists.find((list) => list.id == id)
 }
 
-export const baseItemByKode = (kode) => {
+export const getItemByKode = async (kode) => {
+    await getAllItems()
     return lists.find(list => list.kode == kode)
 }
 
 export const getAllItems = async () => {
-    await getData({ store, orderBy: 'id', desc: true }).then((res) => {
-        lists = res
-    })
+    if(lists.length < 21) {
+        await getData({ store, orderBy: 'id', desc: true }).then((res) => {
+            lists = res
+        })
+    }
     return
 }
 
@@ -49,8 +52,10 @@ export const removeItem = async (id) => {
 }
 
 export const get20Item = async () => {
-    await getData({ store, orderBy: 'id', desc: true, limit: 20 }).then((res) => {
-        lists = res
-    })
+    if(!lists.length) {
+        await getData({ store, orderBy: 'id', desc: true, limit: 20 }).then((res) => {
+            lists = res
+        })
+    }
     return
 }

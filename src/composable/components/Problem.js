@@ -2,8 +2,8 @@ import { findData, append, update } from "@/myfunction";
 import { dateMonth } from "../piece/dateFormat";
 import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
-import store from "@/store";
 import getDaysArray from "../piece/getDaysArray";
+import { getItemByKode } from './Baseitem'
 
 let lists = [];
 let isProblemFinishedFalse = false;
@@ -48,7 +48,7 @@ export const listsProblem = async () => {
     let getInfo = [
       getWarehouseId(list.warehouse).then((res) => res.name),
       getSupervisorId(list.nameSpv).then((res) => res.name),
-      store.getters["Baseitem/baseItemKode"](list.item).name,
+      getItemByKode(list.item).then((res) => res ? res.name : 'Not found'),
     ];
 
     await Promise.all(getInfo).then((val) => {
