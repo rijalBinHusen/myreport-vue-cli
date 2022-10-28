@@ -22,7 +22,7 @@
 	import Warehouses from "@/pages/Warehouses.vue"
 	import AGGrid from "@/components/parts/AGGrid.vue"
 	import Headspv from "@/pages/Headspv.vue"
-	import BaseItem from "@/modular/BaseItem/BaseItem.vue"
+	import BaseItem from "@/pages/BaseItem.vue"
 	import ProblemReport from "./ProblemReport.vue"
 	import Finished from "./Finished.vue"
 	import EditDocument from "./EditDocument.vue"
@@ -58,7 +58,6 @@
 				getWarehouses()
 				getSupervisors()
 				getHeadspv()
-				store.dispatch("getStart");
 				isSignIn.value = localStorage.getItem('loginya')
 				store.subscribe(() => {
 					// get time last activity that stored

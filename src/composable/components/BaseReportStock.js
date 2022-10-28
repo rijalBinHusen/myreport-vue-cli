@@ -86,15 +86,16 @@ export const appendData = async (
   keluar,
   riil
 ) => {
+  // because we need warehouse id
   let parentDetails = findBaseReportFile(parent);
   let getProblem = problemActive(parentDetails?.warehouse, item);
   await append({
     store: "BaseReportStock",
     obj: {
-      parent: parent,
-      shift: shift,
-      item: item,
-      awal: awal,
+      parent,
+      shift,
+      item,
+      awal,
       in: masuk,
       out: keluar,
       dateIn: "",
@@ -108,7 +109,7 @@ export const appendData = async (
       lists.push(val?.data);
     }
   });
-  return true;
+  return;
 };
 
 export const removeStockByParent = async (parent) => {

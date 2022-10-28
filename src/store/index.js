@@ -2,18 +2,13 @@ import { createStore } from "vuex";
 import myfunction from "../myfunction";
 import Navbar from "./modules/Navbar";
 import Modal from "./modules/Modal";
-import Baseitem from "../modular/BaseItem/Baseitem";
 import Document from "./modules/Document";
 
 export default createStore({
   modules: {
     Document,
-    Baseitem,
     Navbar,
     Modal,
-  },
-  state: {
-    store: ["Baseitem"],
   },
   mutations: {},
   actions: {
@@ -84,24 +79,6 @@ export default createStore({
       // payload = {store: "BaseReportStock", criteria: { id: stk22050003 }, obj: { problem: [] }}
       myfunction.update(payload);
       return myfunction.tunggu(130);
-    },
-
-    getStart({ commit, state, rootGetters }) {
-      // iterate the store
-      state.store.forEach((val) => {
-        myfunction
-          .getData({
-            store: val.toLowerCase(),
-            limit: 200,
-            orderBy: "id",
-            desc: true,
-          })
-          .then((result) => {
-            if (result.length > 0) {
-              commit(`${val}/${val.toLowerCase()}`, result, { root: true });
-            }
-          });
-      });
     },
     getAllData({}, value) {
       return myfunction.getData({ store: value.toLowerCase(), withKey: true });

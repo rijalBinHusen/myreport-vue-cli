@@ -3,14 +3,14 @@
     <form ref="spvForm" class="margin-bottom" @submit.prevent="send">
     <p class="w3-col s2 w3-right-align w3-margin-right">Add new item : </p>
     <input 
-      v-model="Baseitem.kode" 
+      v-model="kode" 
       class="w3-col s2 w3-input w3-large w3-margin-right" 
       type="text" 
       placeholder="Item id" 
     />
     
     <input 
-      v-model="Baseitem.name" 
+      v-model="name" 
       class="w3-col s5 w3-input w3-large w3-margin-right" 
       type="text" 
       placeholder="Item name" 
@@ -50,7 +50,8 @@
     </form>
   </div>
     <Datatable
-      :datanya="$store.state.Baseitem.lists"
+      v-if="renderTable"
+      :datanya="listItems"
       :heads="['Kode item', 'Nama item']"
       :keys="['kode', 'name']"
       option
@@ -76,10 +77,11 @@
 </template>
 
 <script>
-import Button from "../../components/elements/Button.vue"
-import Select from "../../components/elements/Select.vue"
-import Datatable from "../../components/parts/Datatable.vue"
+import Button from "../components/elements/Button.vue"
+import Select from "../components/elements/Select.vue"
+import Datatable from "../components/parts/Datatable.vue"
 import * as XLSX from "xlsx";
+import { addItem, updateItem, lists as stateItems, getItemById, removeItem, get20Item } from '@/composable/components/Baseitem'
 
 export default {
   components: {
@@ -90,36 +92,57 @@ export default {
   name: "Baseitem",
   data() {
     return {
-      Baseitem: {},
+      kode: '',
+      name: '',
       editId: "",
+      edited: {},
+      listItems: [],
+      renderTable: false,
     }
   },
   methods: {
-    send() {
-      if(!this.Baseitem?.name && !this.Baseitem?.kode) { return }
+    async send() {
+      if(!this.name && !this.kode) { return }
     // jika update
       if(this.editId) {
-        this.$store.dispatch("Baseitem/update",{ ...this.Baseitem, id: this.editId })
+        await updateItem(this.editId, this.edited )
+        // this.$store.dispatch("Baseitem/update",{ ...this.Baseitem, id: this.editId })
       }
       // jika tidak
       else {
-        this.$store.dispatch("append",{ obj: { ...this.Baseitem }, store: "Baseitem" })
+        // this.$store.dispatch("append",{ obj: { ...this.Baseitem }, store: "Baseitem" })
+        await addItem(this.kode, this.name)
       }
       // reset the form
       this.cancel()
+      // renewlist
+      this.renewLists()
     },
     edit(ev) {
       this.editId = ev
-      this.Baseitem = { ...this.$store.getters["Baseitem/baseItemId"](ev) }
+      const item = getItemById(ev)
+      this.kode = item.kode
+      this.name = item.name
     },
     cancel() {
       this.editId = ""
-      this.Baseitem = {}
+      this.name = ''
+      this.kode = ''
     },
-    remove(ev) {
+    renewLists() {
+      this.renderTable = false
+      this.listItems = stateItems
+      setTimeout(() => {
+        this.renderTable = true
+      }, 100)
+    },
+    async remove(ev) {
       let confirm = window.confirm(`Apakah anda yakin akan menghapus item tersebut?`)
       if(!confirm) { return }
-      this.$store.dispatch("delete", { store: "Baseitem", criteria: { id: ev } })
+      await removeItem(ev)
+      this.renewLists()
+      // this.$store.dispatch("delete", { store: "Baseitem", criteria: { id: ev } })
+      
     },        
     // to launch file picker
     launch() {
@@ -155,10 +178,11 @@ export default {
         let lengthRow = +infoRow[1].match(/\d+/)[0]
         for(let i = 1; i <= lengthRow; i++) {
           if(d.sheet["A"+i]) {
-            await this.$store.dispatch("append", { 
-              store: "Baseitem",
-              obj: { kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v }
-             })
+            await addItem(d.sheet["A"+i].v, d.sheet["B"+i].v )
+            // await this.$store.dispatch("append", { 
+            //   store: "Baseitem",
+            //   obj: { kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v }
+            //  })
           }
         }
         // close the loader
@@ -166,8 +190,22 @@ export default {
 			})
 		}
   },
-  mounted() {
+  async mounted() {
     this.cancel();
+    await get20Item()
+    this.renewLists()
   },
+  watch: {
+    kode(newVal) {
+      if(this.editId) {
+        this.edited['kode'] = newVal
+      }
+    },
+    name(newVal) {
+      if(this.editId) {
+        this.edited['name'] = newVal
+      }
+    },
+  }
 };
 </script>
