@@ -86,44 +86,18 @@ function detailsDocument(arrayOfDocumentDetails) {
   // console.log(resultTemp);
 
   // delete unneeded property
-  const {
-    id,
-    periode,
-    warehouse,
-    collected,
-    approval,
-    status,
-    shared,
-    finished,
-    finished2,
-    baseReportFile,
-    isfinished,
-    name,
-    head,
-    collected2,
-    approval2,
-    headName,
-    parentDocument,
-    periode2,
-    shift,
-    spvName,
-    warehouseName,
-    totalItemMoving,
-    totalQTYIn,
-    totalQTYOut,
-    totalItemKeluar,
-    standartWaktu,
-    generateReport,
-    parent,
-    planOut,
-    ...details
-  } = resultTemp;
+  const { totalDo, totalKendaraan, totalWaktu, totalProductNotFIFO, itemVariance } = resultTemp;
 
-  return Object.assign(details, {
+  return {
+    totalDo,
+    totalKendaraan,
+    totalWaktu,
+    totalProductNotFIFO,
+    itemVariance,
     shift: arrayOfDocumentDetails[0]?.shift,
     spvName: arrayOfDocumentDetails[0]?.spvName,
     warehouseName: arrayOfDocumentDetails[0]?.warehouseName,
     periode2: arrayOfDocumentDetails[0]?.periode2,
     headName: arrayOfDocumentDetails[0]?.headName,
-  });
+  };
 }

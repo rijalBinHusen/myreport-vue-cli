@@ -6,7 +6,7 @@ export default function (periode, supervisor, head) {
     .findData({ store: "fieldProblem", criteria: criteria })
     .then((data) => {
       if (data && data?.length) {
-        let result = data.map(async (val) => {
+        result = data.map(async (val) => {
           let getSupervisor = await myfunction.findData({ store: "supervisors", criteria: { id: val?.supervisor } });
           return {
             periode: myfunction.dateFormat(["dateMonth", val.periode]),
@@ -16,9 +16,17 @@ export default function (periode, supervisor, head) {
             pic: val.pic,
             dl: myfunction.dateFormat(["dateMonth", val.dl]),
           };
-      })
-      return Promise.all(result)
+        })
+        return Promise.all(result)
     }
+    return [{
+      periode: '',
+      masalah: '',
+      sumberMasalah: '',
+      solusi: '',
+      pic: '',
+      dl: '',
+    }]
   })
   .then((result) => result);
 }

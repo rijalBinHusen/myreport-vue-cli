@@ -5,8 +5,8 @@ import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
 
 export default async function (baseReport) {
   // console.log(baseReport)
-  const { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2 } = baseReport
-  const details = { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2 }
+  const { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2, headName } = baseReport
+  const details = { totalDo, totalKendaraan, totalWaktu, totalProductNotFIFO, shift, spvName, warehouseName, periode2, headName }
 
   let fieldProblem = await GetFieldProblemByPeriodeBySpv(baseReport?.periode, baseReport?.name)
 
