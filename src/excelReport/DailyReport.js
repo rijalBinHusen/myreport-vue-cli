@@ -64,7 +64,7 @@ export default async function (baseReport) {
       result: [{ id: "Bismillah" }],
       base: result,
       notes: [details],
-      kendalaLapangan: fieldProblem || { periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' },
+      kendalaLapangan: fieldProblem || [{ periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' }],
     },
     fileName
   );

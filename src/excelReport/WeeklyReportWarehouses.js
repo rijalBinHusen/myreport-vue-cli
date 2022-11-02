@@ -93,10 +93,10 @@ export default function (arrayOfArrayOfDocuments) {
           ),
           result?.base[1]?.warehouseName +
             " " +
+            " Semua karu " +
             result?.base[1]?.periodeBulan +
             " - " +
-            result?.base.slice(-1)[0]?.periodeBulan +
-            " Semua karu"
+            result?.base.slice(-1)[0]?.periodeBulan
         );
         await myfunction.tunggu(500)
     }

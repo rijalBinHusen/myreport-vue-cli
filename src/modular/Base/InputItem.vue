@@ -3,13 +3,14 @@
 <input type="text" :value="value" :placeholder="placeholder" @change="chose($event.target.value)" :class="className" list="item" />
 
 <datalist id="item">
-    <option v-for="list in lists" :key="list.kode" :value="list.kode + ' * ' + list.name" />
+    <option v-for="list in dataListsItem" :key="list.id" :value="list" />
 </datalist>
 
 </template>
 
 <script>
 import { getAllItems, lists as stateItems } from '@/composable/components/Baseitem'
+import { dateMonth } from '@/composable/piece/dateFormat'
 
 export default {
     methods: {
@@ -28,6 +29,9 @@ export default {
     computed: {
         className() {
             return this.class
+        },
+        dataListsItem() {
+            return stateItems.map((item) => `${item.kode} * ${item.name} ${ item?.lastUsed ? 'Dipakai '+ dateMonth(item?.lastUsed) : 'Tidak dipakai'}`)
         }
     },
     emits: ["chose"],

@@ -19,14 +19,6 @@ export default function (periode, supervisor, head) {
         })
         return Promise.all(result)
     }
-    return [{
-      periode: '',
-      masalah: '',
-      sumberMasalah: '',
-      solusi: '',
-      pic: '',
-      dl: '',
-    }]
   })
   .then((result) => result);
 }
