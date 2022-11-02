@@ -1,6 +1,6 @@
 <template>
 <!-- Input text -->
-<input type="text" :value="value" :placeholder="placeholder" @change="chose($event.target.value)" :class="className" list="item" />
+<input v-if="render" type="text" :value="value" :placeholder="placeholder" @change="chose($event.target.value)" :class="className" list="item" />
 
 <datalist id="item">
     <option v-for="list in dataListsItem" :key="list.id" :value="list" />
@@ -23,7 +23,8 @@ export default {
     data () {
         return {
             item: "",
-            lists: stateItems
+            lists: stateItems,
+            render: false
         }
     },
     computed: {
@@ -39,10 +40,12 @@ export default {
         class: String,
         placeholder: String,
         value: String,
+        id: String,
     },
     name: "InputItem",
     async mounted() {
         await getAllItems()
+        this.render = true
     },
 }
 </script>

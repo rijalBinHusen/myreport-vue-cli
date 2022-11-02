@@ -4,7 +4,7 @@ import { dateMonth, ymdTime } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
 import { getWarehouseId, lists as warehouseLists } from "./Warehouses";
 
-const lists = ref([])
+export const lists = ref([])
 
 export const getBaseReportFile = async (periode1, periode2) => {
     lists.value = []

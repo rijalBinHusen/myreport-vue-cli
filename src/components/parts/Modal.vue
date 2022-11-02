@@ -43,10 +43,12 @@ import Confirm from "./Confirm.vue"
 import FollowUpFinished from "@/form/FollowUpFinishedForm.vue"
 import FieldProblemForm from "@/form/FieldProblemForm.vue"
 import DocumentSingleForm from "@/form/DocumentSingleForm.vue"
+import WarehouseAndItem from "./WarehouseAndItem.vue"
 
 export default {
   name: "Modal",
     components: {
+      WarehouseAndItem,
       FollowUpFinished,
       Confirm,
       ComplainInsertForm,
