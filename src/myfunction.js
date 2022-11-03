@@ -367,3 +367,10 @@ export default {
   },
   addActivity,
 };
+
+export const updateWithoutAddActivity = (store, criteriaAsObj, objToUpdate) => {
+  return db
+    .collection(store.toLowerCase())
+    .doc(criteriaAsObj)
+    .update(objToUpdate);
+}

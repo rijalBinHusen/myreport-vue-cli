@@ -51,12 +51,7 @@ export default {
                     'Modal/tunnelMessage'
                     )
                 if(res) {
-                    //open the loader
-                    store.commit("Modal/active", {judul: "", form: "Loader"})
-                    // wait the process
-                    await exportDocuments(res?.periode1, res?.periode2)
-                    //close the loader
-                    store.commit("Modal/active")
+                    exportReport(id, res?.periode1, res?.periode2)
                 }
             } else if (id === 'report002') {
                 let warehouseAndItem = await subscribeMutation(
@@ -72,10 +67,25 @@ export default {
                         '',
                         'Modal/tunnelMessage'
                         )
-                    console.log(warehouseAndItem, periode)
-                    await getStockCard(periode.periode1, periode.periode2, warehouseAndItem.warehouse, warehouseAndItem.item)
+                    if(periode) {
+                        exportReport(id, periode.periode1, periode.periode2, warehouseAndItem.warehouse, warehouseAndItem.item)
+                    }
                 }
             }
+        }
+
+        const exportReport = async (reportId, periode1, periode2, warehouse, item) => {
+            //open the loader
+            store.commit("Modal/active", {judul: "", form: "Loader"})
+            if(reportId === 'report001') {
+                // wait the process
+                await exportDocuments(periode1, periode2)
+            } else if (reportId === 'report002') {
+                // wait the process
+                await getStockCard(periode1, periode2, warehouse, item)
+            }
+            //close the loader
+            store.commit("Modal/active")
         }
 
         return { reportNow, reports, launch}

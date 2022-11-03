@@ -1,5 +1,9 @@
 import { findData } from "@/myfunction";
 import getDaysArray from "@/composable/piece/getDaysArray";
+import { getItemByKode } from "@/composable/components/Baseitem";
+import { dateMonth, ddmmyyyy } from "@/composable/piece/dateFormat";
+import GetProblemByArrayId from "./GetProblemByArrayId";
+import exportToXls from "@/exportToXls";
 
 export const getStockCard = async (date1, date2, warehouse, kode) => {
     let dates;
@@ -11,21 +15,54 @@ export const getStockCard = async (date1, date2, warehouse, kode) => {
         // jika berbeda
         dates = getDaysArray(date1, date2)
     }
-    console.log(dates)
     // cari semua base report file berdasarkan tanggal dan gudang
     let basesReport = await Promise.all(
          dates.map((date) => findData({ store: 'basereportfile', criteria: { periode: date, warehouse }}) )
     )
-    console.log(basesReport)
     // cari item berdasarkan basereport id dan items
     let stockCard = await 
                     Promise.all(basesReport.flat()
                     .map((baseReportFile) => {
                         if(baseReportFile) {
                             return findData({ store: 'basereportstock', criteria: { parent: baseReportFile.id, item: kode}})
+                                        .then((resArr) => {
+                                            if(resArr) {
+                                                return resArr.map((res) => ({ ...res, periode: baseReportFile.periode }))
+                                            }
+                                        })
                         }
                     })
                 )
-    let result = await Promise.all(stockCard)
-    console.log(result.flat())
+    let resultPromise = await Promise.all(stockCard)
+
+    let result = []
+    
+    let item = await getItemByKode(kode)
+
+    for (let res of resultPromise.flat()) {
+        if(res) {
+            let problem = await GetProblemByArrayId(res?.problem)
+            // periode, shift, nama item, awal, in, dateIn, out, dateOut, real, dateEnd, selisih, problem
+            const { shift, awal, dateIn, out, dateOut, real, dateEnd } = res
+            result.push({ 
+                periode: dateMonth(res.periode),
+                shift,
+                item: item?.name,
+                awal,
+                in: res?.in,
+                dateIn,
+                out,
+                dateOut,
+                akhir: awal + res?.in - out,
+                dateEnd,
+                real,
+                selisih: real - (awal + res?.in - out),
+                problem: problem?.masalah
+            })
+        }
+    }
+
+    exportToXls(result, `Kartu stock ${item?.name.toLowerCase()} periode ${ddmmyyyy(date1, '-')} sampai dengan ${ddmmyyyy(date2, '-')} `)
+    // console.log(result.)
+    return
 }

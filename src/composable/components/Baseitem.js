@@ -1,4 +1,4 @@
-import { update, append, getData, deleteDocument, findData } from '@/myfunction'
+import { update, append, getData, deleteDocument, updateWithoutAddActivity } from '@/myfunction'
 import { ymdTime } from '../piece/dateFormat'
 
 export let lists = []
@@ -37,7 +37,7 @@ export const getItemByKode = async (kode) => {
     let res =  lists.find(list => list.kode == kode)
     if(res) {
         if(!res?.lastUsed || res?.lastUsed < ymdTime()) {
-            updateItem(res.id, { lastUsed: ymdTime() })
+            await updateWithoutAddActivity('baseitem', { id: res.id }, { lastUsed: ymdTime() })
         }
     }
     return res
