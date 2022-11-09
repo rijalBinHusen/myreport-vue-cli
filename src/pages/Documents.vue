@@ -487,7 +487,7 @@ export default {
                         let res = await subscribeMutation(
                             '',
                             'Confirm',
-                            { pesan: 'Document memiliki selisih stock, silathkan difoto dulu' },
+                            { pesan: 'Document memiliki selisih stock, silahkan difoto dulu' },
                             'Modal/tunnelMessage'
                         )
                         if(!res) { return }

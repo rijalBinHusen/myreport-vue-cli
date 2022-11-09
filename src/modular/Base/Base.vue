@@ -101,9 +101,9 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "../../composable/components/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, markClockFinished, removeClock, appendData as appendClockRecord } from '@/composable/components/BaseReportClock'
+import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, removeClock, appendData as appendClockRecord } from '@/composable/components/BaseReportClock'
 import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock, removeStock } from '@/composable/components/BaseReportStock'
-import { ref, computed, watch } from "vue"
+import { ref, computed } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/composable/components/DocumentsPeriod'
@@ -241,7 +241,8 @@ export default {
             // iterate baseReport stocklist dan tambahkan parent document ev.id
             // lemparkan ke state saja biar gak bingung
             // tambahkan parent document pada basereportclock
-            await markClockFinished(baseId.value, nowShift.value, ev.parentDocument)
+            // ternyata kita tidak perlu melakukanya pada clock, kayak gaada gunanya gitu
+            // await markClockFinished(baseId.value, nowShift.value, ev.parentDocument)
             // tambahkan parent document pada basereportstock
             await markStockFinished(baseId.value, nowShift.value, ev.parentDocument)
             // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu

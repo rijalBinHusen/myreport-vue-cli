@@ -24,11 +24,7 @@ const signIn = async (username, password) => {
             time: new Date().getTime(), 
             totalActivity: 0,
             backup: false,
-        }}).then((val) => {
-            localStorage.setItem('loginya', val?.data?.id)
-            localStorage.setItem('loginActivity', 0)
-            localStorage.setItem('lastActivity', new Date().getTime() + 14400000)
-        })
+        }})
         await func.tunggu(2500)
         return true
     } catch(err) {

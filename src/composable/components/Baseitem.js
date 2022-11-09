@@ -38,6 +38,7 @@ export const getItemByKode = async (kode) => {
     if(res) {
         if(!res?.lastUsed || res?.lastUsed < ymdTime()) {
             await updateWithoutAddActivity('baseitem', { id: res.id }, { lastUsed: ymdTime() })
+            lists = lists.map((rec) => rec?.id == res?.id ? { ...rec, lastUsed: ymdTime() } : rec)
         }
     }
     return res

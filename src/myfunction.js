@@ -175,13 +175,18 @@ export const append = async function (value) {
     ? value?.obj?.id
     : generateId(value.store.toLowerCase());
   // let result = await
-  if (value?.store !== "login") {
-    await addActivity({
-      type: "create",
-      store: value.store.toLowerCase(),
-      idRecord: id,
-    });
+  if (value?.store == "login") {
+    localStorage.setItem('loginya', id)
+    localStorage.setItem('loginActivity', 0)
+    localStorage.setItem('lastActivity', new Date().getTime() + 14400000)
   }
+  
+  await addActivity({
+    type: "create",
+    store: value.store.toLowerCase(),
+    idRecord: id,
+  });
+
   return db
     .collection(value.store.toLowerCase())
     .doc(id)
