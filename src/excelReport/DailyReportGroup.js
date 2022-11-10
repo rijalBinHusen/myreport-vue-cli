@@ -46,12 +46,12 @@ export default async function (baseReport) {
           namaItem: item?.length ? item[0]?.name : "Item tidak ditemukan",
           awal: reportData[i]?.awal || 0,
           Masuk: reportData[i]?.in || 0,
-          TanggalMasuk: reportData[i]?.dateIn ? reportData[i]?.dateIn : "-",
-          planKeluar: 0,
+          TanggalMasuk: reportData[i]?.dateIn || "-",
+          "Coret DO": reportData[i].planOut || 0,
           Keluar: reportData[i]?.out || 0,
-          TanggalKeluar: reportData[i]?.dateOut ? reportData[i]?.dateOut : "-",
+          TanggalKeluar: reportData[i]?.dateOut || "-",
           real: reportData[i]?.real || 0,
-          TanggalAkhir: reportData[i]?.dateEnd ? reportData[i]?.dateEnd : "-",
+          TanggalAkhir: reportData[i]?.dateEnd || "-",
         },
         problem
       )

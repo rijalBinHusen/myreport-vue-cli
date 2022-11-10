@@ -12,7 +12,6 @@ export const addItem = async (kode, name) => {
     }).then((res) => {
         if(lists.length) {
             lists.unshift(res.data)
-            console.log(lists)
         }
     })
     return

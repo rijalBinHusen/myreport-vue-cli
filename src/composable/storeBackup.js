@@ -1,7 +1,7 @@
 import Localbase from "localbase";
 let db = new Localbase("myreport");
 import func from "../myfunction"
-import { dateMonth } from "./piece/dateFormat";
+import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
 
 export const storeBackup = async (sendToCloud) => {
@@ -94,7 +94,7 @@ export const seperateUsers = async (sendToCloud) => {
                         activities: userActivities,
                         record: record
                     },
-                    dateMonth(userActivities[0]?.time) +'.json', 
+                    full(userActivities[0]?.time) +'.json', 
                     sendToCloud                    
                     )
                 }

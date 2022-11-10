@@ -40,18 +40,12 @@ export default async function (baseReport) {
           "Nama item": item?.length ? item[0]?.name : "Item tidak ditemukan",
           "Stock awal": +reportData[i].awal,
           "Produk masuk": +reportData[i].in,
-          "Tanggal produk masuk": reportData[i]?.dateIn
-            ? reportData[i].dateIn
-            : "-",
-          "Coret DO": +reportData[i]?.planOut ? reportData[i].planOut : 0,
+          "Tanggal produk masuk": reportData[i].dateIn || "-",
+          "Coret DO": reportData[i].planOut || 0,
           "Produk keluar": +reportData[i].out,
-          "Tanggal produk keluar": reportData[i]?.dateOut
-            ? reportData[i].dateOut
-            : "-",
+          "Tanggal produk keluar": reportData[i].dateOut || "-",
           "Real stock": +reportData[i].real,
-          "Tanggal produk akhir": reportData[i]?.dateEnd
-            ? reportData[i].dateEnd
-            : "-",
+          "Tanggal produk akhir": reportData[i].dateEnd || "-",
         },
         problem
       )

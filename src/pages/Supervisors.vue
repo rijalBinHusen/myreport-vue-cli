@@ -88,9 +88,7 @@ export default {
     const renewLists = () => {
       renderTable.value = false
       listSupervisors.value = lists
-      setTimeout(() => {
-        renderTable.value = true
-      }, 200)
+      renderTable.value = true
     }
 
     onMounted(() => {
