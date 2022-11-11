@@ -6,19 +6,18 @@
             listsKey="id"
             listsValue="value"
             @trig="handleDropdown($event, res?.downloadURL, res?.id)"
-        /> 
-        <!-- <a target="_blank" class="w3-button w3-round w3-teal w3-margin" v-for="res in result" :key="res.id" :href="res?.downloadURL">
-            {{ res?.id }}
-        </a> -->
+            primary
+        />
     </div>
 </template>
 
 <script setup>
     import DropdownVue from '@/components/elements/Dropdown.vue';
-    import { result, getStore } from '@/composable/firebase/firebaseGetAllDocument'
     import { onMounted } from 'vue';
     import { deleteFile } from '@/composable/firebase/storage'
-    import { deleteDocumentByKey } from '@/composable/firebase/fireStore'
+    import { result, getStore, deleteDocumentByKey } from '@/composable/firebase/fireStore'
+    import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
+import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 
     const handleDropdown = async (res, url, fileName) => {
         // jika kunjungi
@@ -28,9 +27,13 @@
         } 
         // Jika hapus
         else {
-            await deleteFile('myreport/'+fileName)
-            await deleteDocumentByKey('activitySaved', fileName)
-            console.log('file deleted')
+            const confirm =  await subscribeMutation('', 'Confirm', { pesan: 'Apakah anda yakin akan menghapusnya?'}, 'Modal/tunnelMessage')
+            if(confirm) {
+                loader()
+                await deleteFile('myreport/'+fileName)
+                await deleteDocumentByKey('activitySaved', fileName)
+                modalClose()
+            }
         }
     }
 
