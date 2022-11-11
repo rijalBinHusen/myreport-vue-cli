@@ -1,5 +1,5 @@
-import uploadFile from "../firebase/firebaseStorageUpload"
-import addDocument from "../firebase/firebaseAddStore";
+import { uploadFile } from "../firebase/storage"
+import { addDocument } from "../firebase/fireStore";
 
 export const startExport = async (records, fileName, sendToCloud) => {
     // create a download file

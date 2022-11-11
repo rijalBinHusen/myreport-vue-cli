@@ -313,7 +313,10 @@ export default {
         isFinished(newVal) {
             if(this.isEditMode) {
                 this.changed['isFinished'] = newVal
+                this.tanggalSelesaiModel = new Date()
+                this.shiftSelesai = '1'
             }
+
         },
         linkedToDocument(newVal) {
             if(this.isEditMode){
