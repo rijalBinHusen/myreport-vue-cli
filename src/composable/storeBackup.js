@@ -1,6 +1,6 @@
 import Localbase from "localbase";
 let db = new Localbase("myreport");
-import func from "../myfunction"
+import func, { updateWithoutAddActivity } from "../myfunction"
 import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
 
@@ -46,8 +46,9 @@ export const seperateUsers = async (sendToCloud) => {
     
     if(!logins) {  return true }
     
-    let activities = logins.map((val) => {
+    let activities = logins.map( async (val) => {
         if(val) {
+            await updateWithoutAddActivity('login', { id: val?.id }, { backup: true })
             return func.findData({ store: 'activity', criteria: { idLogin: val?.id }})
         }
     })
@@ -85,11 +86,6 @@ export const seperateUsers = async (sendToCloud) => {
                 // waiting for exporting data as file
                 if(record.hasOwnProperty(userActivities[0]?.store)) {
                     // console.log(record)
-                    await func.update({
-                        store: 'login',
-                        criteria: {id: userActivities[0]?.idLogin },
-                        obj: { backup: true }
-                    })
                     await startExport({
                         activities: userActivities,
                         record: record
