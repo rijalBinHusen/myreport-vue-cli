@@ -115,7 +115,7 @@ export default {
       }
       // jika tidak
       else {
-        await addHeadspv(name.value, phone.value)
+        await addHeadspv(head.value, phone.value)
       }
       renewLists()
       cancel()

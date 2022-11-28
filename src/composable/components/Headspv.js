@@ -28,13 +28,13 @@ export const updateHeadspv = async (idHeadspv, objectToUpdate) =>{
 }
 
 export const addHeadspv = async (name, phone) => {
-    await append({ store: 'Headspv', obj: { name, phone }})
+    await append({ store: 'Headspv', obj: { name, phone, disabled: true, shift: 1 }})
             .then((val) => {
                 if(lists.length) {
-                    lists.concat(val)
+                    lists = lists.concat(val.data)
                 }
             })
-    return true
+    return;
 }
 
 export const headspvEnabled = () => {

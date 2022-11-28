@@ -37,9 +37,8 @@ export const updateSupervisor = async (idSupervisor, objectToUpdate) => {
 export const addSupervisor = async (nameSupervisor, phone) => {
   await append({ store: "Supervisors", obj: { name: nameSupervisor, phone } })
         .then((val) => {
-          console.log(val)
             if(lists.length) {
-                lists.unshift(val.data)
+              lists = lists.concat(val.data)
             }
         })
         return true

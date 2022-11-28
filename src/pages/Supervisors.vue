@@ -23,12 +23,12 @@
   </div>
     <br />
     <br />
-    <Table 
+    <DatatableVue 
       v-if="renderTable"
-      :headers="['Nama']" 
-      :lists="listSupervisors" 
+      :datanya="listSupervisors" 
+      :heads="['Nama']" 
       :keys="['name']"
-      options
+      option
     >
       <template #th>
           <th>Shift</th>
@@ -36,19 +36,26 @@
 
       <template #td="{ obj }">
         <td>
-          <input type="number" min="1" class="w3-round w3-border" style="width:60px" max="3" :value="obj.shift ? obj.shift : 1" @change="changeShift(obj.id, $event.target.value)" >
-          <!-- {{ obj }} -->
+          <input 
+              type="number" 
+              min="1" 
+              class="w3-round w3-border" 
+              style="width:60px" 
+              max="3" 
+              :value="obj?.shift" 
+              @change="changeShift(obj.id, $event.target.value)" 
+            >
         </td>
       </template>
 
-      <template v-slot:default="{ prop }">
+      <template #default="{ prop }">
       
-      <Button 
-        primary 
-        value="Edit" 
-        :datanya="prop?.id" 
-        type="button" 
-        @trig="edit($event)" 
+        <Button 
+          primary 
+          value="Edit" 
+          :datanya="prop?.id" 
+          type="button" 
+          @trig="edit($event)" 
         />
 
         <Button
@@ -60,13 +67,13 @@
         />
 
       </template>
-    </Table>
+    </DatatableVue>
 </template>
 
 <script>
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
-import Table from "@/components/elements/Table.vue"
+import DatatableVue from "@/components/parts/Datatable.vue";
 import { warehouseNameBySpv } from '@/composable/components/Warehouses';
 import { updateSupervisor, addSupervisor, getSupervisorId, lists } from '@/composable/components/Supervisors'
 import { ref, onMounted } from 'vue';
@@ -74,7 +81,7 @@ import { ref, onMounted } from 'vue';
 export default {
   components: {
     Button,
-    Table,
+    DatatableVue,
     Select
   },
   setup() {
