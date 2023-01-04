@@ -27,9 +27,14 @@ export default {
             let numberValue = !isNaN(this.value) && Number(this.value)
             //return 20/3/2022
             if(numberValue) {
+                // if user input number more than date now
                 if(numberValue > dateNow) {
-                    return `${this.value}/${(monthNow-1) > 0 ? monthNow-1 : 12 }/${year}`
+                    // return number / month before now / year value
+                    const monthToReturn = (monthNow-1) > 0 ? monthNow-1 : 12
+                    const yearToReturn = (monthNow-1) > 0 ? year : Number(year)-1
+                    return `${this.value}/${monthToReturn}/${yearToReturn}`
                 }
+                // return number / month now / year now
                 return `${this.value}/${monthNow}/${year}`
             } 
             // else i just want to input 1/4 then the year we got from here

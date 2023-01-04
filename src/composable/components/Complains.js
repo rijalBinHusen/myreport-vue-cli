@@ -91,7 +91,7 @@ export async function getComplains() {
   }
   await getData({
     store: "Complains",
-    limit: 100,
+    limit: 200,
     orderBy: "id",
     desc: true,
   }).then((result) => {
