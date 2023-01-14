@@ -20,6 +20,7 @@ export const getDocuments = async (periode1, periode2) => {
 }
 
 export const listsOfDocuments = () => {
+    console.log(lists)
     // await getDocuments()
     if(!lists.length) { return [] }
     return documentsMapper(lists)
@@ -129,24 +130,39 @@ export const findDocument = (idDocument) => {
 }
 
 export const getUncollectedDocuments = async () => {
-    lists = await findData({ store: "Document", criteria: { status: 0 }})
-    return true
+    const uncollectedDocs = await findData({ store: "Document", criteria: { status: 0 }})
+    if(uncollectedDocs) {
+        lists = uncollectedDocs
+        return
+    }
+    lists = []
 }
 
 export const getCollectedDocuments = async () => {
-    lists = await findData({ store: "Document", criteria: { status: 1 }})
-    return true
+    const collectedDocs = await findData({ store: "Document", criteria: { status: 1 }})
+    if(collectedDocs) {
+        lists = collectedDocs
+        return true
+    }
+    lists = []
 }
 
 export const getApprovedDocuments = async () => {
-    lists = await findData({ store: "Document", criteria: { status: 2, shared: false }})
-    return true
+    const approvedDocs = await findData({ store: "Document", criteria: { status: 2, shared: false }})
+    if(approvedDocs) {
+        lists = approvedDocs
+        return true
+    }
+    lists = []
 }
 export const getLastDate = () => {
-    let res = lists.reduce(function(prev, current) {
-        return (prev.periode > current.periode) ? prev.periode : current.periode
-    })
-    return dayPlus1(res)
+    if(lists.length) {
+        let res = lists.reduce(function(prev, current) {
+            return (prev.periode > current.periode) ? prev.periode : current.periode
+        })
+        return dayPlus1(res)
+    }
+    return dayPlusOrMinus(false, -14)
 }
 
 export const documentsBySupervisor = async () => {
