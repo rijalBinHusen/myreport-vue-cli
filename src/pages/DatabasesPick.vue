@@ -10,12 +10,14 @@
 					style="witdth: 300px"
 				/>
 				<Button
+					v-if="currentEditId"
 					small
 					secondary
 					value="Update" 
 					datanya="tes" 
 					type="button"
 					class="w3-col s2"
+					@trig="handleUpdate"
 				/>
 			</form>
 		</div>
@@ -30,55 +32,69 @@
 				class="w3-margin-top"
 			>
 				<template #default="{ prop }">
-					<Button
-						small
-						secondary
-						value="Create new database from this" 
-						datanya="tes" 
-						type="button"
-					/>
-					<Button
-						small
-						secondary
-						value="Edit" 
-						datanya="tes" 
-						type="button"
-					/>
+					<div v-if="prop?.isAllowToDuplicate">
+						<Button
+							small
+							secondary
+							value="Create new this" 
+							:datanya="prop.id" 
+							type="button"
+							@trig="handleBtnTable('duplicate', $event)"
+						/>
+						<Button
+							small
+							secondary
+							value="Edit" 
+							:datanya="prop.id"
+							type="button"
+							@trig="handleBtnTable('edit', $event)"
+						/>
+					</div>
 				</template>
 			</Table>
 			<button @click="emit('exit')" class="w3-center w3-button w3-block w3-section w3-padding w3-teal w3-round-large" type="button">Login page</button>
 		</div>
+		{{ messageToShow }}
     </div>
 </template>
 
 <script setup>
 import Table from "@/components/elements/Table.vue";
-import { useLocalbase } from "../utils/localbase"
 import Button from "@/components/elements/Button.vue";
 import { onMounted, ref, defineEmits } from "vue";
+import { databases, getAllDatabase, getDatabaseById, updateDatabaseById, duplicateDatabase, messageToShow } from "../composable/components/DatabasePick"
 
 const name = ref(null)
 
 const emit = defineEmits(['exit'])
-// database
-const db = useLocalbase('database_lists')
-// store
-const store = 'databases'
-// database lists
-const databases = ref([])
+// current edit id
+const currentEditId = ref(null)
 
 onMounted( async () => {
-// // if user enter to database page
-    // get our original database (myreport)
-    const isOriginalDBExists = db.getDataById(store, 'myreport')
-    // if doesn exists  create new one
-    if(!isOriginalDBExists) {
-        // create origin database record
-        db.write(store, 'myreport', { id: 'myreport', name: '21 Juli 2022'})
-    }
-    // get all databases lists
-    const databaseLists = await db.getData(store)
-    // push to state
-    databases.value.push(databaseLists)
+	// get database
+	await getAllDatabase()
 })
+
+const handleBtnTable = async (operation, e) => {
+	if(operation == 'edit') {
+		// get the record
+		const record = await getDatabaseById(e)
+		// put name in to v-model
+		name.value = record.name
+		// put the id
+		currentEditId.value = e
+	} else {
+		// duplicate database from id database (e)
+		await duplicateDatabase(e)
+	}
+}
+
+const handleUpdate = async () => {
+	// update database
+	await updateDatabaseById(currentEditId.value, name.value)
+	// reset name
+	name.value = null
+	// reset current id
+	currentEditId.value = null
+}
 </script>

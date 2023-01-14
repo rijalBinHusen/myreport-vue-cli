@@ -27,6 +27,10 @@ export const useLocalbase = (databaseName) => {
     function getStoreWithKey(store) {
         return db.collection(store).get({ keys: true });
       }
+    
+    function getDataOrderByKey(store, key) {
+        return db.collection(store).orderBy(key).get()
+    }
 
-    return { write, updateRecordById, getData, getDataById, getStoreWithKey }
+    return { write, updateRecordById, getData, getDataById, getStoreWithKey, getDataOrderByKey }
 }
