@@ -1,4 +1,7 @@
 import store from '@/store'
+import { ref } from 'vue';
+
+export const messageLoaderToShow = ref(null)
 
 export const modalLauncher = (title, formName) => {
     store.commit("Modal/active", {judul: title, form: formName});
@@ -18,4 +21,8 @@ export const loader = () => {
 
 export function tunnelMessageTrue () {
     store.commit('Modal/tunnelMessage', true)
+}
+
+export const setMessageLoader = (message) => {
+    messageLoaderToShow.value = message
 }

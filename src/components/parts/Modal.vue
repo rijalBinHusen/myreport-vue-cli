@@ -83,7 +83,7 @@ export default {
       this.$store.commit("Modal/active")
     },
     pressKey(e) {
-      if(e.keyCode == 27) {
+      if(e.keyCode == 27) { 
         this.active()
       }
     }
@@ -94,8 +94,11 @@ export default {
     }
   },
   mounted() {
-    // add listen event
-      window.addEventListener("keydown", this.pressKey)
+    // if(this.form != 'Loader') {
+    //   // add listen event
+    //     window.addEventListener("keydown", this.pressKey)
+    //   return
+    // }
   }, 
   unmounted() {
     //remove listen event

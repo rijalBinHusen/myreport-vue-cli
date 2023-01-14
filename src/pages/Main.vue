@@ -39,6 +39,7 @@
 	import { getSupervisors } from "@/composable/components/Supervisors";
 	import { getHeadspv } from "@/composable/components/Headspv";
 	import ImportActivityUser from './ImportActivity.vue'
+	import { getAllDatabase } from "../composable/components/DatabasePick"
 	
 
 	export default {
@@ -55,9 +56,12 @@
 			})
 			
 			onBeforeMount(() => {
-				getWarehouses()
-				getSupervisors()
-				getHeadspv()
+				if(isSignIn.value) {
+					getWarehouses()
+					getSupervisors()
+					getHeadspv()
+				}
+				getAllDatabase()
 				isSignIn.value = localStorage.getItem('loginya')
 				store.subscribe(() => {
 					// get time last activity that stored

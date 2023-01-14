@@ -36,6 +36,7 @@ import { deleteCollection, reWriteStoreWithKey, write, tunggu } from '@/myfuncti
 import { onBeforeMount } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
+import { setMessageLoader } from "../composable/piece/vuexModalLauncher"
 
 export default {
     components: {
@@ -72,8 +73,10 @@ export default {
 
                 let doc = []
 
-                for( let datumToImport of dataToImport.value[store]) {
-                    
+                for(let datumToImport of dataToImport.value[store]) {
+                    setMessageLoader(`Writing ${total.value} record remaining!`)
+                    // total - 1
+                    total.value = total.value - 1
                     if(mode.value === 'write') {
                         doc.push(JSON.parse(JSON.stringify({ ...datumToImport.data, _key: datumToImport.key })))
                         //if the end of record

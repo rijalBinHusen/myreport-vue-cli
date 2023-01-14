@@ -4,7 +4,7 @@
       class="w3-hide"
       @change.prevent="impor($event)"
       type="file"
-      accept=".js"
+      accept=".json"
       ref="importerField"
     />
     <br />

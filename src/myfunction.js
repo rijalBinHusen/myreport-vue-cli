@@ -1,7 +1,5 @@
 import Localbase from "localbase";
-
-// initiate new db
-let db = new Localbase("myreport");
+import { currentDatabaseUsed } from "./composable/components/DatabasePick"
 
 let summary = {};
 let storeToUpdate = []; //store that would to update
@@ -85,16 +83,22 @@ function updateSummary() {
 }
 
 export function write(store, document, value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   //store = namastore, document = "namaKey" value: { obj: toInput } }
   // db.collection(value.store.toLowerCase()).add(value.obj);
   return db.collection(store.toLowerCase()).doc(document).set(value);
 }
 
 function getStoreWithKey(store) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   return db.collection(store).get({ keys: true });
 }
 
 function updateActivity() {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   // clear timeOut
   clearTimeout(timeoutActivity);
   // get id login
@@ -149,6 +153,8 @@ getStoreWithKey("summary").then((result) => {
 
 export function reWriteStoreWithKey(store, obj) {
   // value = {store: nameOfStore: obj: [Array would to wrote]}
+// initiate new db
+let db = new Localbase(currentDatabaseUsed.value);
   return db.collection(store.toLowerCase()).set(obj, { keys: true })
         .then((val) => console.log(val))
         .catch((error) => {
@@ -170,6 +176,8 @@ export const update = async function (value) {
 };
 
 export const append = async function (value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   //{store: "namastore", obj: {obj: toInput } }
   let id = value?.obj?.id
     ? value?.obj?.id
@@ -195,11 +203,15 @@ export const append = async function (value) {
 
 export const reWrite = function (store, id, value) {
   //write data
+// initiate new db
+let db = new Localbase(currentDatabaseUsed.value);
   return db.collection(store).doc({ id: id }).set(value);
 };
 
 export const getData = function (deData) {
   let store = deData.store.toLowerCase();
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
 
   //limit order desc
   if (deData.limit && deData.orderBy && deData.desc) {
@@ -239,22 +251,32 @@ export const getData = function (deData) {
 };
 
 export const findData = function (value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
 };
 
 export const deleteCollection = function (value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   return db.collection(value).delete();
 };
 
 export const deleteDb = function () {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   db.delete();
 };
 
 export const emptyStore = function (value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   return db.collection(value).set([{}]);
 };
 
 export const deleteDocument = async function (value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   await addActivity({
     type: "delete",
     store: value.store.toLowerCase(),
@@ -264,6 +286,8 @@ export const deleteDocument = async function (value) {
 };
 
 export const deleteDocumentByParam = function (value) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   /*value = {
 store: "nameStore", 
 split: "tahun/bulan/false",
@@ -278,6 +302,8 @@ value: "c08"
 };
 
 export const tunggu = function (time) {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   return new Promise((resolve) => {
     setTimeout(() => resolve(), time);
   });
@@ -374,6 +400,8 @@ export default {
 };
 
 export const updateWithoutAddActivity = (store, criteriaAsObj, objToUpdate) => {
+  // initiate new db
+  let db = new Localbase(currentDatabaseUsed.value);
   return db
     .collection(store.toLowerCase())
     .doc(criteriaAsObj)

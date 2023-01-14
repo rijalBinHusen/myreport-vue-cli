@@ -2,14 +2,12 @@
 <div class="w3-center">
   <br /><br /><br />
   <div class="lds-hourglass w3-margin-top"></div>
-  <p class="w3-large">Mohon tunggu...</p>
+  <p class="w3-large">{{ messageLoaderToShow || 'Mohon tunggu...' }}</p>
   </div>
 </template>
 
-<script>
-export default {
-  name: "LoaderForm",
-};
+<script setup>
+  import { messageLoaderToShow } from "../../composable/piece/vuexModalLauncher"
 </script>
 
 <style scoped>

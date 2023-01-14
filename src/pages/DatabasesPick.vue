@@ -24,7 +24,6 @@
 		<!-- end of form -->
 		<div>
 			<Table
-				style="width: 600px;"
 				:headers="['id', 'Keterangan']" 
 				:lists="databases" 
 				:keys="['id', 'name']"
@@ -32,23 +31,33 @@
 				class="w3-margin-top"
 			>
 				<template #default="{ prop }">
-					<div v-if="prop?.isAllowToDuplicate">
+					<div>
 						<Button
 							small
 							secondary
-							value="Create new this" 
-							:datanya="prop.id" 
-							type="button"
-							@trig="handleBtnTable('duplicate', $event)"
-						/>
-						<Button
-							small
-							secondary
-							value="Edit" 
+							:value="prop?.isUsed ? 'Current' : 'Set'" 
 							:datanya="prop.id"
 							type="button"
-							@trig="handleBtnTable('edit', $event)"
+							@trig="setCurrentDatabaseUsed($event)"
 						/>
+						<span v-if="prop?.isAllowToDuplicate">
+							<Button
+								small
+								secondary
+								value="Edit" 
+								:datanya="prop.id"
+								type="button"
+								@trig="handleBtnTable('edit', $event)"
+							/>
+							<Button
+								small
+								secondary
+								value="Create new this" 
+								:datanya="prop.id" 
+								type="button"
+								@trig="handleBtnTable('duplicate', $event)"
+							/>
+						</span>
 					</div>
 				</template>
 			</Table>
@@ -62,7 +71,7 @@
 import Table from "@/components/elements/Table.vue";
 import Button from "@/components/elements/Button.vue";
 import { onMounted, ref, defineEmits } from "vue";
-import { databases, getAllDatabase, getDatabaseById, updateDatabaseById, duplicateDatabase, messageToShow } from "../composable/components/DatabasePick"
+import { databases, getAllDatabase, getDatabaseById, updateDatabaseById, duplicateDatabase, messageToShow, setCurrentDatabaseUsed } from "../composable/components/DatabasePick"
 
 const name = ref(null)
 

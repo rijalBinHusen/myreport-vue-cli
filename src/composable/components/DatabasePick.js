@@ -17,6 +17,8 @@ export const setMessageToShow = (message) => {
     messageToShow.value = message
 }
 
+export const currentDatabaseUsed = ref(null)
+
 // record = { id, name, isAllowToDuplicate }
 
 export const getAllDatabase = async () => {
@@ -33,8 +35,14 @@ export const getAllDatabase = async () => {
     }
     // get all databases lists
     databases.value = await db.getDataOrderByKey(store, 'id')
-    // push to state
-    // databases.value = databaseLists
+    // set current database used
+    databases.value.forEach((rec) => {
+        if(rec?.isUsed) {
+            currentDatabaseUsed.value = rec?.id
+        }
+    })
+    // console.log(currentDatabaseUsed.value)
+    // console.log(databases.value)
 }
 
 export const getDatabaseById = async (id) => {
@@ -101,6 +109,30 @@ export const duplicateDatabase = async (currentDbId) => {
     }
     // finished, update to current db to prevent to duplicate
     await db.updateRecordById(store, currentDbId, { isAllowToDuplicate: false })
+}
+
+
+export const setCurrentDatabaseUsed = async (id) => {
+    currentDatabaseUsed.value = id
+    // write to database
+	await db.updateRecordById(store, id, { isUsed: true })
+	// update state
+	databases.value = databases.value.map((rec) => {
+		if(rec?.id === id) {
+			return { ...rec, isUsed: true }
+		}
+		return { ...rec, isUsed: false }
+	})
+    // update each database id
+    for (const dbList of databases.value) {
+        // update it
+        // console.log(dbList.id !== id)
+        if(dbList.id !== id) {
+            await db.updateRecordById(store, dbList.id, { isUsed: false })
+        }
+    }
+    
+    return;
 }
 
 // const databaseName = (idRecord, periode) => {
