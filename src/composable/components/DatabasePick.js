@@ -66,14 +66,14 @@ export const updateDatabaseById = async (id, name) => {
 export const duplicateDatabase = async (currentDbId) => {
     // duplicate the database
     // create new database
-        // generate new id for database
-        const nextdbId = generateId('db_22030004')
-        console.log(nextdbId)
-        // create db based on nextdb
-        await db.write(store, nextdbId, { id: nextdbId, name: 'Fresh database', isAllowToDuplicate: true })
-        // initiate next db
-        const nextDb = useLocalbase(nextdbId)
-        databases.value.unshift({ id: nextdbId, name: 'Fresh database' })
+        // // generate new id for database
+        // const nextdbId = generateId('db_22030004')
+        // console.log(nextdbId)
+        // // create db based on nextdb
+        // await db.write(store, nextdbId, { id: nextdbId, name: 'Fresh database', isAllowToDuplicate: true })
+        // // initiate next db
+        // const nextDb = useLocalbase(nextdbId)
+        // databases.value.unshift({ id: nextdbId, name: 'Fresh database' })
     // initiate current db
     const currentDB = useLocalbase(currentDbId)
     // get all base item that the last used < 60 day
@@ -82,33 +82,37 @@ export const duplicateDatabase = async (currentDbId) => {
     // get all complain that periode greater than now date
     const complains = await currentDB.getData('complains').then((res) => res.filter((rec) => rec?.periode >= ymdTime()))
     // get all head spv
-    const head_spv = await currentDB.getData('headspv')
+    const headspv = await currentDB.getData('headspv')
     // get all problem that no finished
     const problems = await currentDB.getData('problem').then((res) => res.filter((rec) => !rec?.isFinished))
     // get all supervisor
     const supervisors = await currentDB.getData('supervisors')
     // get all warehouses
     const warehouses = await currentDB.getData('warehouses')
+    // get all users
+    const users = await currentDB.getData('user')
     // set as array
     const dataToInsert = [
         { store: 'baseitem', data: baseItem},
         { store: 'complains', data: complains },
-        { store: 'head_spv', data: head_spv },
+        { store: 'headspv', data: headspv },
         { store: 'problems', data: problems },
         { store: 'supervisors', data: supervisors },
-        { store: 'warehouses', data: warehouses }
+        { store: 'warehouses', data: warehouses },
+        { store: 'user', data: users}
     ]
-    for(const [index, db] of dataToInsert.entries()) {
-        // looping db.data
-        for(const [index2, data] of db.data.entries()) {
-            // set message
-            setMessageToShow(`Duplicate ${index} of ${dataToInsert.length} database, write ${index2} of ${data.length} record!`)
-            // insert into db
-            await nextDb.write(db.store, data.id, data);
-        }
-    }
+    // for(const [index, db] of dataToInsert.entries()) {
+    //     // looping db.data
+    //     for(const [index2, data] of db.data.entries()) {
+    //         // set message
+    //         setMessageToShow(`Duplicate ${index} of ${dataToInsert.length} database, write ${index2} of ${data.length} record!`)
+    //         // insert into db
+    //         await nextDb.write(db.store, data.id, data);
+    //     }
+    // }
     // finished, update to current db to prevent to duplicate
-    await db.updateRecordById(store, currentDbId, { isAllowToDuplicate: false })
+    // await db.updateRecordById(store, currentDbId, { isAllowToDuplicate: false })
+    console.log(dataToInsert)
 }
 
 
@@ -133,6 +137,28 @@ export const setCurrentDatabaseUsed = async (id) => {
     }
     
     return;
+}
+
+export const removeDatabase = async (id) => {
+    try {
+        // delete record from database lists
+        await db.removeDataById(store, id)
+        // init db
+        const dbToRemove = useLocalbase(id)
+        // delete database
+        await dbToRemove.removeDatabase()
+    } catch(err) {
+        // 
+        const message = `Terjadi kesalahan saat menghapus database: , ${err}`
+        alert(message)
+        console.log(message)
+    } finally {
+        // remove data from state
+        // find index
+        const idx = databases.value.findIndex((rec) => rec.id === id)
+        // remove data
+        databases.value.splice(idx, 1)
+    }
 }
 
 // const databaseName = (idRecord, periode) => {

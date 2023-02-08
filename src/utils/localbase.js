@@ -32,5 +32,13 @@ export const useLocalbase = (databaseName) => {
         return db.collection(store).orderBy(key).get()
     }
 
-    return { write, updateRecordById, getData, getDataById, getStoreWithKey, getDataOrderByKey }
+    function removeDataById(store, id) {
+        return db.collection(store).doc(id).delete()
+    }
+    
+    function removeDatabase() {
+        return db.delete()
+    }
+
+    return { write, updateRecordById, getData, getDataById, getStoreWithKey, getDataOrderByKey, removeDataById, removeDatabase }
 }

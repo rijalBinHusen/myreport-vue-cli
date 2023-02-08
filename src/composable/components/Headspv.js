@@ -1,24 +1,34 @@
+import { ref } from "vue"
 import { getData, update, append } from '../../myfunction'
 
-export let lists = []
+export let lists = ref([])
+// name of store/table in database
+const store = 'Headspv'
 
 export const getHeadspv = async () => {
-    lists = []
-    lists = await getData({ store: 'Headspv', orderBy: 'id', desc: true })
+    // check is state empty
+    if(lists.length) {
+        return
+    }
+    // empty state
+    lists.value.length = 0
+    // get head spv order by id
+    lists.value = await getData({ store, orderBy: 'id', desc: true })
+    // return
     return true
 }
 
 export const getHeadspvId = async (headId) => {
-    if(!lists.length) {
+    if(!lists.value.length) {
         await getHeadspv()
     }
-    return lists.find((rec) => rec?.id === headId)
+    return lists.value.find((rec) => rec?.id === headId)
 }
 
 export const updateHeadspv = async (idHeadspv, objectToUpdate) =>{
   //idb
-  await update({ store: "Headspv", criteria: { id: idHeadspv}, obj : objectToUpdate })
-  lists = lists.map((val) => {
+  await update({ store, criteria: { id: idHeadspv}, obj : objectToUpdate })
+  lists.value = lists.value.map((val) => {
     if(val.id == idHeadspv) {
         return { ...val, ...objectToUpdate }
     }
@@ -28,21 +38,21 @@ export const updateHeadspv = async (idHeadspv, objectToUpdate) =>{
 }
 
 export const addHeadspv = async (name, phone) => {
-    await append({ store: 'Headspv', obj: { name, phone, disabled: true, shift: 1 }})
+    await append({ store, obj: { name, phone, disabled: true, shift: 1 }})
             .then((val) => {
-                if(lists.length) {
-                    lists = lists.concat(val.data)
+                if(lists.value.length) {
+                    lists.value = lists.value.concat(val.data)
                 }
             })
     return;
 }
 
 export const headspvEnabled = () => {
-    return lists.filter((val) => !val.disabled);
+    return lists.value.filter((val) => !val.disabled);
 }
 
 export const headspvByShift = (shift) => {
-let rec = lists.find((val) => val.shift == shift);
+let rec = lists.value.find((val) => val.shift == shift);
     return rec && rec.name && !rec?.disabled
         ? rec
         : {

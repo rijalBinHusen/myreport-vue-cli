@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :class="isDisabled ? 'w3-disabled' : ''">
 		<div style="margin-bottom">
 			<form @submit.prevent="" action="#" >
 				<input 
@@ -40,7 +40,7 @@
 							type="button"
 							@trig="setCurrentDatabaseUsed($event)"
 						/>
-						<span v-if="prop?.isAllowToDuplicate">
+						<!-- <span v-if="prop?.isAllowToDuplicate"> -->
 							<Button
 								small
 								secondary
@@ -49,6 +49,14 @@
 								type="button"
 								@trig="handleBtnTable('edit', $event)"
 							/>
+							<!-- <Button
+								small
+								danger
+								value="Remove" 
+								:datanya="prop.id" 
+								type="button"
+								@trig="handleBtnTable('remove', $event)"
+							/> -->
 							<Button
 								small
 								secondary
@@ -57,7 +65,7 @@
 								type="button"
 								@trig="handleBtnTable('duplicate', $event)"
 							/>
-						</span>
+						<!-- </span> -->
 					</div>
 				</template>
 			</Table>
@@ -71,9 +79,10 @@
 import Table from "@/components/elements/Table.vue";
 import Button from "@/components/elements/Button.vue";
 import { onMounted, ref, defineEmits } from "vue";
-import { databases, getAllDatabase, getDatabaseById, updateDatabaseById, duplicateDatabase, messageToShow, setCurrentDatabaseUsed } from "../composable/components/DatabasePick"
+import { databases, getAllDatabase, getDatabaseById, updateDatabaseById, duplicateDatabase, messageToShow, setCurrentDatabaseUsed, removeDatabase } from "../composable/components/DatabasePick"
 
 const name = ref(null)
+const isDisabled = ref(false)
 
 const emit = defineEmits(['exit'])
 // current edit id
@@ -92,10 +101,27 @@ const handleBtnTable = async (operation, e) => {
 		name.value = record.name
 		// put the id
 		currentEditId.value = e
-	} else {
+		return;
+	} 
+
+	// disable all component
+	isDisabled.value = true
+	// remove database
+	if(operation === 'remove') {
+		// 
+		const conf = confirm("Apakah anda yakin akan menghapusnya?")
+		if(conf) {
+			await removeDatabase(e)
+		}
+	} 
+	// else
+	else {
 		// duplicate database from id database (e)
 		await duplicateDatabase(e)
 	}
+	// enable all component
+	isDisabled.value = false
+	
 }
 
 const handleUpdate = async () => {
