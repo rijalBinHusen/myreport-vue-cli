@@ -46,7 +46,7 @@ function generateId(store) {
   //if the week not same
   else {
     // if the week 9 change to 09
-    weekNow = weekNow < 9 ? "0" + weekNow : weekNow;
+    weekNow = weekNow < 10 ? "0" + weekNow : weekNow;
     id += fullYear.slice(2) + weekNow;
     increment = "0";
   }
