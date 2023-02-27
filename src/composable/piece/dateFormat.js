@@ -55,6 +55,12 @@ export const dayPlusOrMinus = (yourDate, yourNumber) => {
     return date.getTime()
 }
 
+export function JSToExcelDate(yourDate) {
+    let date = new Date(yourDate);
+    let converted = 25569.0 + ((date.getTime() - (date.getTimezoneOffset() * 60 * 1000)) / (1000 * 60 * 60 * 24));
+    return converted
+}
+
 
 //     else if (a[0] == "-2") {
 //       a001.setDate(a002 - 2);

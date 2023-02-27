@@ -4,6 +4,7 @@ import getProblem from "./GetProblemByPeriodeBySpv";
 import getCases from "./GetCasesByPeriodeBySpv";
 import GetComplains from "./GetComplainByPeriodeBySpv";
 import GetFieldProblem from "./GetFieldProblemByPeriodeBySpv";
+import { JSToExcelDate } from "@/composable/piece/dateFormat";
 
 /*
   periode
@@ -60,7 +61,7 @@ export default function (arrayOfArrayOfDocuments) {
           // new details document
           newArrayOfDocuments.push({
             periodeBulan: val2.periode2,
-            periode: +val2.periode2.match(/\d+/)[0],
+            periode: JSToExcelDate(val2.periode),
             totalKendaraan: val2.totalKendaraan,
             totalWaktu: val2.totalWaktu,
             shift: val2.shift,
