@@ -1,5 +1,5 @@
 import { findData, append, update } from "@/myfunction";
-import { dateMonth } from "../piece/dateFormat";
+import { ddmmyyyy } from "../piece/dateFormat";
 import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
 import getDaysArray from "../piece/getDaysArray";
@@ -58,7 +58,7 @@ export const listsProblem = async () => {
         namaGudang: val[0],
         namaItem: val[2],
         masalah: list.masalah,
-        periode: dateMonth(list.periode),
+        periode: ddmmyyyy(list.periode, '-'),
         supervisor: val[1],
         status: list?.isFinished ? "Closed" : "Progress",
       });

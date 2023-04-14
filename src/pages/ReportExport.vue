@@ -30,8 +30,10 @@ import Button from "@/components/elements/Button.vue"
 import exportDocuments from "@/excelReport/Documents"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { useStore } from "vuex"
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { getStockCard } from '@/excelReport/StockCard'
+import exportProblem from "@/excelReport/ProblemReport"
+import { getAllItems } from "@/composable/components/Baseitem"
 
 export default {
     components: { Table, Button },
@@ -39,7 +41,8 @@ export default {
         const reportNow = ref('')
         const reports = ref([
                 { id: "report001",  judul: "Export pengumpulan dokumen", keterangan: "Export periode pengumpulan dokumen berdasarkan tanggal" },
-                { id: 'report002', judul: 'Export kartu stock', keterangan: 'Export kartu stock item per tanggal' }
+                { id: 'report002', judul: 'Export kartu stock', keterangan: 'Export kartu stock item per tanggal' },
+                { id: 'report003', judul: 'Export masalah gudang', keterangan: 'Export problem berdasarkan tanggal' }
             ])
         const store = useStore()
         const launch = async (id) => {
@@ -71,6 +74,16 @@ export default {
                         exportReport(id, periode.periode1, periode.periode2, warehouseAndItem.warehouse, warehouseAndItem.item)
                     }
                 }
+            } else if (id === 'report003') {
+                let res = await subscribeMutation(
+                    'Pilih record yang akan di export',
+                    'PeriodePicker',
+                    '',
+                    'Modal/tunnelMessage'
+                    )
+                if(res) {
+                    exportReport(id, res?.periode1, res?.periode2)
+                }
             }
         }
 
@@ -83,12 +96,18 @@ export default {
             } else if (reportId === 'report002') {
                 // wait the process
                 await getStockCard(periode1, periode2, warehouse, item)
+            } else if (reportId === 'report003') {
+                await exportProblem(periode1, periode2)
             }
             //close the loader
             store.commit("Modal/active")
         }
 
-        return { reportNow, reports, launch}
+        onMounted(() => {
+            getAllItems()
+        })
+
+        return { reportNow, reports, launch }
     },
 }
 </script>

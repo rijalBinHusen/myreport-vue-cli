@@ -41,11 +41,10 @@
                     <Button value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="removeBase($event)" />
                 </div>
                 <div v-else>
-    				<Button 
-                        v-if="!prop?.isRecordFinished" 
+    				<Button  
                         value="Delete imported" 
                         type="button" 
-                        :datanya="prop.id" 
+                        :datanya="prop.id"
                         danger 
                         class="w3-tiny" 
                         @trig="remove($event)" 
