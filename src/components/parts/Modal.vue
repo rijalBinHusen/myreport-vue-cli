@@ -44,6 +44,7 @@ import FollowUpFinished from "@/form/FollowUpFinishedForm.vue"
 import FieldProblemForm from "@/form/FieldProblemForm.vue"
 import DocumentSingleForm from "@/form/DocumentSingleForm.vue"
 import WarehouseAndItem from "./WarehouseAndItem.vue"
+import WarehouseHeadForm from "@/form/WarehouseHeadForm.vue"
 
 export default {
   name: "Modal",
@@ -66,7 +67,8 @@ export default {
       Loader,
       ImporterForm,
       BaseReportFile,
-      FieldProblemForm
+      FieldProblemForm,
+      WarehouseHeadForm
     },
   props: {
     judul: {

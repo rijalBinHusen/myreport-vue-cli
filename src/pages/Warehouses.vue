@@ -58,6 +58,14 @@
             />
 
           <Button 
+            secondary 
+            value="Head" 
+            :datanya="prop.id" 
+            type="button" 
+            @trig="head($event)" 
+            />
+
+          <Button 
             primary 
             value="Edit" 
             :datanya="prop.id" 
@@ -104,6 +112,19 @@ export default {
         renewLists()
       }
     }
+
+    const head = async (ev) => {
+      let res = await subscribeMutation(
+        "Edit Head",
+        "WarehouseHeadForm",
+        { id: ev },
+        'Modal/tunnelMessage'
+      )
+      if(res) {
+        renewLists()
+      }
+    }
+
     const send = async () => {
       // jika update
       if(idWarehouse.value) { await updateWarehouse(idWarehouse.value, warehouse.value) }
@@ -151,7 +172,8 @@ export default {
       lists,
       cancel,
       warehouseLists,
-      setGroup
+      setGroup,
+      head
     }
 
   },

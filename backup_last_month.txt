@@ -1,0 +1,20 @@
+Backup last 1 month
+activiy = We dont need this
+backup = We also dont need this
+baseitem = We just need the item last used > last 3 month
+basereportclock = We just need the 1 month before
+basereportfile = We just need the 1 month before
+basereportstock = We just need the 1 month before
+cases = We just need the 1 month before
+complains = We just need the 1 month before
+document = We just need the 1 month before
+filedproblem = We just need the 1 month before
+followup = we dont need this
+headspv = backup all
+login = We just need the 1 month before
+problem = We need record that isFinished === false || periode < 1 month
+summary = We need all
+supervisors = we need all
+user = we need all
+warehouses = we need all
+
