@@ -13,14 +13,11 @@
   },
   "main": "background.js",
   "dependencies": {
-    "@handsontable/vue3": "^11.1.0",
     "ag-grid-community": "^27.1.0",
     "ag-grid-vue3": "^27.1.0",
     "core-js": "^3.8.3",
     "firebase": "^9.9.4",
-    "handsontable": "^11.1.0",
     "localbase": "^0.7.5",
-    "sheetjs-style": "^0.15.8",
     "uid": "^2.0.0",
     "vue": "^3.2.13",
     "vue3-datepicker": "^0.3.2",
@@ -31,9 +28,6 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
-    "electron": "^12.0.0",
-    "electron-devtools-installer": "^3.1.0",
-    "vue-cli-plugin-electron-builder": "~2.1.1"
+    "@vue/cli-service": "~5.0.0"
   }
 }
