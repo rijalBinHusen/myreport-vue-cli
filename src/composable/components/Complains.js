@@ -2,8 +2,10 @@ import { getSupervisorId } from "@/composable/components/Supervisors";
 import { getHeadspvId } from "@/composable/components/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
 import { append, getData, update, deleteDocument } from "@/myfunction";
+import { postData } from "../../utils/sendDataToServer";
 
 let lists = [];
+const storeName = "Complains";
 
 export async function addComplain(
   periode,
@@ -143,3 +145,82 @@ export const removeComplain = async (idComplain) => {
   await deleteDocument({ store: "Complains", criteria: { id: idComplain } });
   return;
 };
+
+
+
+export async function syncComplainsToServer () {
+
+  let allData = await getData({ store: storeName })
+
+  for(let datum of allData) {
+
+    // customer, do, gudang, id, import, inserted, item
+    // kabag, nomorSJ, nopol, real, row, spv, tally, tanggalBongkar
+    // tanggalInfo, tanggalKomplain, tanggalSuratJalan, type
+
+    let dataToSend;
+    let endPoint;
+
+    if(datum?.import) {
+
+      dataToSend = {
+        "id": datum?.id,
+        "customer": datum?.customer,
+        "do_": datum?.do,
+        "gudang": datum?.gudang,
+        "item": datum?.item,
+        "kabag": datum?.kabag,
+        "nomor_SJ": datum?.nomorSJ,
+        "nopol": datum?.nopol,
+        "real_": datum?.real,
+        "row_": datum?.row,
+        "spv": datum?.spv,
+        "tally": datum?.tally,
+        "tanggal_bongkar": datum?.tanggalBongkar,
+        "tanggal_info": datum?.tanggalInfo,
+        "tanggal_komplain": datum?.tanggalKomplain,
+        "tanggal_SJ": datum?.tanggalSuratJalan,
+        "type_": datum?.type
+      }
+
+      endPoint = "complain_import";
+
+    } 
+
+    // complain
+    // dl, head, id, insert, insert2, masalah, name, parent
+    // periode, pic, solusi, status, sumberMasalah, type
+    else {
+
+      dataToSend = {
+        "id": datum?.id,
+        "periode": datum?.periode,
+        "head_spv_id": datum?.head,
+        "dl": datum?.dl,
+        "inserted": datum?.insert,
+        "masalah": datum?.masalah,
+        "supervisor_id": datum?.name,
+        "parent": datum?.parent,
+        "pic": datum?.pic,
+        "solusi": datum?.solusi,
+        "is_status_done": datum?.status,
+        "sumber_masalah": datum?.sumberMasalah,
+        "type": datum?.type,
+        "is_count": datum?.isCount
+      }
+
+      endPoint = "complain";
+
+    }
+
+    try {
+
+        await postData(endPoint, dataToSend);
+
+    } catch(err) {
+
+        alert(err); 
+
+    }
+  }
+}

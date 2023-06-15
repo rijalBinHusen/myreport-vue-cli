@@ -1,5 +1,6 @@
 import { update, append, getData, deleteDocument, updateWithoutAddActivity } from '@/myfunction'
 import { ymdTime } from '../piece/dateFormat'
+import { postData } from "../../utils/sendDataToServer";
 
 export let lists = []
 
@@ -65,4 +66,29 @@ export const get20Item = async () => {
         })
     }
     return
+}
+
+export async function syncItemToServer() {
+    await getAllItems();
+
+    for(let list of lists) {
+
+        const dataToSend = {
+            "id": list.id,
+            "item_kode": list.kode,
+            "item_name": list.name,
+            "last_used": list.lastUsed
+        }
+
+        try {
+
+            await postData('base_item',dataToSend);
+
+        } catch(err) {
+
+            alert(err);
+
+        }
+
+    }
 }

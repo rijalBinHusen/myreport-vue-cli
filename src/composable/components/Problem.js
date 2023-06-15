@@ -1,11 +1,13 @@
-import { findData, append, update } from "@/myfunction";
+import { findData, append, update, getData } from "@/myfunction";
 import { ddmmyyyy } from "../piece/dateFormat";
 import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
 import getDaysArray from "../piece/getDaysArray";
 import { getItemByKode } from './Baseitem'
+import { postData } from "../../utils/sendDataToServer"
 
 let lists = [];
+const storeName = "problem";
 let isProblemFinishedFalse = false;
 
 export const getProblemBetweenPeriode = async (periode1, periode2) => {
@@ -192,3 +194,46 @@ export const duplicate = async (idRecord) => {
   );
   return;
 };
+
+
+export async function syncProblemToServer () {
+
+  let allData = await getData({ store: storeName })
+  //dl dlPanjang, id, isFinished, item, masalah, nameHeadSpv, 
+  // nameSpv, periode, pic, picPanjang, shiftMulai, shiftSelesai, 
+  // solusi, solusiPanjang, sumberMasalah, tanggalSelesai, warehouse  
+
+  for(let datum of allData) {
+
+    let dataToSend = {
+        "id": datum?.id,
+        "warehouse_id": datum?.warehouse,
+        "supervisor_id": datum?.nameSpv,
+        "head_spv_id": datum?.nameHeadSpv,
+        "item_kode": datum?.item,
+        "tanggal_mulai": datum?.periode,
+        "shift_mulai": datum?.shiftMulai,
+        "pic": datum?.pic,
+        "dl": datum?.dl,
+        "masalah": datum?.masalah,
+        "sumber_masalah": datum?.sumberMasalah,
+        "solusi": datum?.solusi,
+        "solusi_panjang": datum?.solusiPanjang,
+        "dl_panjang": datum?.dlPanjang,
+        "pic_panjang": datum?.picPanjang,
+        "tanggal_selesai": datum?.tanggalSelesai,
+        "shift_selesai": datum?.shiftSelesai,
+        "is_finished": datum?.isFinished
+      }
+
+    try {
+
+        await postData('problem', dataToSend);
+
+    } catch(err) {
+
+        alert(err); 
+
+    }
+  }
+}

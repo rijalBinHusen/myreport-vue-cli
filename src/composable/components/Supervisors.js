@@ -1,6 +1,8 @@
 import { getData, update, append } from '../../myfunction'
+import { postData } from "../../utils/sendDataToServer"
 
 export let lists = []
+const storeName = "Supervisors";
 
 export const getSupervisors = async () => {
     lists = []
@@ -46,4 +48,33 @@ export const addSupervisor = async (nameSupervisor, phone) => {
 
 export const supervisorsEnabled = () => {
   return lists.filter((val) => val.disabled === false)
+}
+
+
+export async function syncSupervisorToServer () {
+
+  let allData = await getData({ store: storeName })
+  //disabled, id, name, phone, shift, warehouse, warehouseName
+
+  for(let datum of allData) {
+
+    let dataToSend = {
+      "id": datum?.id,
+      "supervisor_name": datum?.name,
+      "supervisor_phone": datum?.phone,
+      "supervisor_warehouse": datum?.warehouse,
+      "supervisor_shift": datum?.shift,
+      "is_disabled": datum?.disabled
+    }
+
+    try {
+
+        await postData('supervisor', dataToSend);
+
+    } catch(err) {
+
+        alert(err); 
+
+    }
+  }
 }

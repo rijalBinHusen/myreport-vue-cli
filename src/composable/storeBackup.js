@@ -4,8 +4,6 @@ import func, { updateWithoutAddActivity } from "../myfunction"
 import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
 
-const backendURL = "http://localhost/rest-php/myreport/";
-
 export const storeBackup = async (sendToCloud) => {
     // will store all document that we saved in idexeddb
     let allDocuments = {}
@@ -34,67 +32,6 @@ export const storeBackup = async (sendToCloud) => {
         sendToCloud
     )
 }
-
-export async function syncToServer () {
-    const stores = ["baseitem", "basereportclock", "basereportfile", "basereportstock", "cases", "complains", "document", "fieldproblem", "headspv", "problem", "supervisors", "warehouses"]
-
-    for(let store of stores) {
-        const records = await getDocument(store);
-        for(let record of records) {
-
-        }
-    }
-}
-
-async function sendWarehouse(warehouseRecord) {
-    const data = {
-        "warehouse_name": warehouseRecord?.name,
-        "warehouse_group": warehouseRecord?.group || "",
-        "warehouse_supervisors": warehouseRecord?.supervisors.toString()
-      };
-    
-    await postData(data, 'warehouse');
-}
-
-async function postData (data, endPoint) {
-    
-    let headersList = {
-        "Accept": "application/json",
-        "JWT-Authorization": "",
-        "Content-Type": "application/json"
-       }
-       
-       let bodyContent = JSON.stringify(data);
-       
-       let response = await fetch(backendURL + endPoint, { 
-         method: "POST",
-         body: bodyContent,
-         headers: headersList
-       });
-}
-
-export async function syncToServerByActivity() {
-
-}
-
-/**
- * 
- * 
- * base_clock, 
-base_item, 
-base_report_file, 
-base_stock, 
-cases, 
-case_import, 
-complains, 
-complain_improt, 
-document, 
-field_problem, 
-head_spv, 
-problem, 
-supervisor, 
-warehouse
- */
 
 function getDocument (store) {
     return db.collection(store).get({ keys: true });

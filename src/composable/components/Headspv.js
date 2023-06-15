@@ -1,6 +1,8 @@
 import { getData, update, append } from '../../myfunction'
+import { postData } from "../../utils/sendDataToServer"
 
 export let lists = []
+const storeName = "Headspv";
 
 export const getHeadspv = async () => {
     lists = []
@@ -51,3 +53,33 @@ let rec = lists.find((val) => val.shift == shift);
         };
 }
   
+
+
+export async function syncHeadSpvToServer () {
+
+    let allData = await getData({ store: storeName })
+    
+    //disabled, id, name, phone, shift
+    
+  
+    for(let datum of allData) {
+  
+        let dataToSend = {
+            "id": datum?.id,
+            "head_name": datum?.name,
+            "head_phone": datum?.phone,
+            "head_shift": datum?.shift,
+            "is_disabled": datum?.disabled
+          }
+  
+      try {
+  
+          await postData('head_spv', dataToSend);
+  
+      } catch(err) {
+  
+          alert(err); 
+  
+      }
+    }
+  }

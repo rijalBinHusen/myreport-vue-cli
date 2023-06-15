@@ -1,9 +1,11 @@
-import { append, deleteDocument, findData, update } from "@/myfunction";
+import { append, deleteDocument, findData, update, getData } from "@/myfunction";
 import { findBaseReportFile } from "./BaseReportFile";
 import { masalah, problemActive } from "./Problem";
 import { getItemByKode } from './Baseitem'
+import { postData } from "../../utils/sendDataToServer";
 
 let lists = [];
+const storeName = "BaseReportStock";
 
 export const startImportStock = async (sheets, baseId) => {
   // dapatkan !ref
@@ -224,3 +226,41 @@ export const removeStock = async (id) => {
   deleteDocument({ store: "basereportstock", criteria: { id } });
   return true;
 };
+
+
+export async function syncBaseStockToServer () {
+
+  let allData = await getData({ store: storeName })
+
+  for(let datum of allData) {
+  // awal, dateEnd, dateIn, dateOut, id, in, item, 
+  //out, parent, parentDocument, planOut
+//  problem, real, shift
+
+    let dataToSend = {
+      "id": datum?.id,
+      "parent": datum?.parent,
+      "shift": datum?.shift,
+      "item": datum?.item,
+      "awal": datum?.awal,
+      "in_stock": datum?.in,
+      "out_stock": datum?.out,
+      "date_in": datum?.dateIn,
+      "plan_out": datum?.planOut,
+      "date_out": datum?.dateOut,
+      "date_end": datum?.dateEnd,
+      "real_stock": datum?.real,
+      "problem": datum?.problem.toString()
+    }
+
+    try {
+
+        await postData('base_stock', dataToSend);
+
+    } catch(err) {
+
+        alert(err); 
+
+    }
+  }
+}

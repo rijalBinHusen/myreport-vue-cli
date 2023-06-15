@@ -2,8 +2,10 @@ import { append, getData, update, findData, deleteDocument } from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorId } from '@/composable/components/Supervisors'
 import { getHeadspvId } from './Headspv'
+import { postData } from "../../utils/sendDataToServer"
 
 let lists = []
+const storeName = "fieldproblem";
 
 const getFieldProblem = async () => {
     if(!lists.length) {
@@ -94,3 +96,39 @@ export const deleteData = (idRecord) => {
     
     return deleteDocument({ store: 'fieldproblem', criteria: { id: idRecord} })
 }
+
+
+
+export async function syncFieldProblemToServer () {
+
+    let allData = await getData({ store: storeName })
+    
+    // dl, head, id, masalah, periode, pic, solusi, sumberMasalah
+    //    supervisor
+    
+  
+    for(let datum of allData) {
+  
+        let dataToSend = {
+            "id": datum?.id,
+            "periode": datum?.periode,
+            "supervisor_id": datum?.supervisor,
+            "head_spv_id": datum?.head,
+            "masalah": datum?.masalah,
+            "sumber_masalah": datum?.sumberMasalah,
+            "solusi": datum?.solusi,
+            "pic": datum?.pic,
+            "dl": datum?.dl
+          }
+  
+      try {
+  
+          await postData('field_problem', dataToSend);
+  
+      } catch(err) {
+  
+          alert(err); 
+  
+      }
+    }
+  }

@@ -4,8 +4,10 @@ import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateForma
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId, warehouseNameBySpv } from './Warehouses'
+import { postData } from "../../utils/sendDataToServer";
 
 let lists = []
+const storeName = "Document";
 
 // get all documents by periode
 export const getDocuments = async (periode1, periode2) => {
@@ -322,3 +324,57 @@ export const markDocumentFinished = async (idDocument, day, details) => {
 export const getDocumentByPeriodeByWarehouseByShiftFromDb = (periode, warehouse, shift) => {
     return findData({ store: "Document", criteria: { periode, warehouse, shift} }).then((res) => res[0])
 }
+
+
+export async function syncDocumentToServer () {
+
+    let allData = await getData({ store: storeName })
+
+    // (v)approval, (v)baseReportFile, (v)collected, (v)finished, (v)generateReport
+    // (v)head, (v)id, (v)isfinished, itemVariance, (v)name, parent, parentDocument
+    // (v)periode, planOut, (v)shared, (v)shift, (v)status, (v)totalDo, totalItemKeluar
+    // totalItemMoving, (v)totalKendaraan, totalProductNotFIFO, totalQTYIn
+    // totalQTYOut, (v)totalWaktu, (v)warehouse
+  
+    for(let datum of allData) {
+  
+        let dataToSend = {
+            "id": datum?.id,
+            "collected": datum?.collected,
+            "approval": datum?.approval,
+            "status": datum?.status,
+            "shared": datum?.shared,
+            "finished": datum?.finished,
+            "total_do": datum?.totalDo,
+            "total_kendaraan": datum?.totalKendaraan,
+            "total_waktu": datum?.totalWaktu,
+            "base_report_file": datum?.baseReportFile,
+            "is_finished": datum?.isfinished,
+            "supervisor_id": datum?.name,
+            "periode": datum?.periode,
+            "shift": datum?.shift,
+            "head_spv_id": datum?.head,
+            "warehouse_id": datum?.warehouse,
+            "is_generated_document": datum?.generateReport,
+            "item_variance": datum?.itemVariance,
+            "parent": datum?.parent,
+            "parent_document": datum?.parentDocument,
+            "plan_out": datum?.planOut,
+            "total_item_keluar": datum?.totalItemKeluar,
+            "total_item_moving": datum?.totalItemMoving,
+            "total_product_not_FIFO": datum?.totalProductNotFIFO,
+            "total_qty_in": datum?.totalQTYIn,
+            "total_qty_out": datum?.totalQTYOut
+          }
+  
+      try {
+  
+          await postData('document', dataToSend);
+  
+      } catch(err) {
+  
+          alert(err); 
+  
+      }
+    }
+  }

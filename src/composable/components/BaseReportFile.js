@@ -1,10 +1,12 @@
-import { findData, update, append, deleteDocument } from "@/myfunction";
+import { findData, update, append, deleteDocument, getData } from "@/myfunction";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
 import { getWarehouseId, lists as warehouseLists } from "./Warehouses";
+import { postData } from "../../utils/sendDataToServer";
 
 export const lists = ref([])
+const storeName = "BaseReportFile";
 
 export const getBaseReportFile = async (periode1, periode2) => {
     lists.value = []
@@ -126,3 +128,33 @@ export const removeBaseReport = async (idBaseReport) => {
     await deleteDocument({ store: 'BaseReportFile', criteria: { id: idBaseReport }})
     return
 }
+
+
+export async function syncBaseFileToServer () {
+
+    let allData = await getData({ store: storeName })
+  
+    for(let datum of allData) {
+    //   clock, fileName, id, imported, periode, stock, warehouse
+
+      let dataToSend = {
+        "id": datum?.id,
+        "periode": datum?.periode,
+        "warehouse_id": datum?.warehouse,
+        "file_name": datum?.fileName,
+        "stock_sheet": datum?.stock,
+        "clock_sheet": datum?.clock,
+        "is_imported": datum?.imported
+      }
+  
+      try {
+  
+          await postData('base_file', dataToSend);
+  
+      } catch(err) {
+  
+          alert(err); 
+  
+      }
+    }
+  }

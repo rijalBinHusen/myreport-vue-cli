@@ -2,6 +2,7 @@ import { getData, append, update } from '../../myfunction'
 import { getSupervisorId } from './Supervisors'
 
 export let lists = []
+const storeName = "Warehouses";
 
 export const getWarehouses = async () => {
     lists = []
@@ -127,3 +128,30 @@ export const getSupervisorShift1ByWarehouse = async (idWarehouse) => {
     let result = await Promise.all(getSupervisor).then((supervisors) => supervisors.find((spv) => !spv?.disabled && spv?.shift == 1))
     return result
 }
+
+
+export async function syncWarehouseToServer () {
+
+    let allData = await getData({ store: storeName })
+    //group, id, isGrouped, name, supervisors
+  
+    for(let datum of allData) {
+  
+        let dataToSend = {
+            "id": datum?.id,
+            "warehouse_name": datum?.name,
+            "warehouse_group": datum?.group,
+            "warehouse_supervisors": datum?.supervisors
+        }
+  
+      try {
+  
+          await postData('warehouse', dataToSend);
+  
+      } catch(err) {
+  
+          alert(err); 
+  
+      }
+    }
+  }

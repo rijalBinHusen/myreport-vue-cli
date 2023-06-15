@@ -18,6 +18,7 @@
             <br />
             <ButtonVue primary value="Mulai backup" type="button" @trig="handleBackup"/>
         </div>
+        <ButtonVue primary value="Login" type="button" @trig="tryToLogin"/>
     </div>
 </template>
 
@@ -27,6 +28,7 @@ import { storeBackup, seperateUsers } from "@/composable/storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
+import { loginToServer } from "../utils/loginToServer";
 
 export default {
     setup() {
@@ -57,7 +59,17 @@ export default {
 
         const checkedOption = ref([])
 
-        return { handleBackup, options, checkedOption }
+        async function tryToLogin () {
+            let email = window.prompt('Insert your email');
+            let password = window.prompt('Insert your password');
+
+            let startlogin = await loginToServer(email, password);
+            
+            console.log(startlogin)
+
+        }
+
+        return { handleBackup, options, checkedOption, tryToLogin }
     },
     name: "Backup",
     components: {

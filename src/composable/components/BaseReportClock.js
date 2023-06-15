@@ -1,7 +1,9 @@
-import { append, deleteDocument, findData, update } from "@/myfunction";
+import { append, deleteDocument, findData, update, getData } from "@/myfunction";
 import { totalTime } from "../piece/totalTimeAsMinute";
+import { postData } from "../../utils/sendDataToServer"
 
 export let lists = [];
+let storeName = "BaseReportClock";
 
 export const startImportClock = async (sheets, baseId) => {
   // dapatkan ref
@@ -165,3 +167,32 @@ export const removeClock = async (id) => {
   deleteDocument({ store: "basereportclock", criteria: { id } });
   return true;
 };
+
+export async function syncClockToServer () {
+
+  let allData = await getData({ store: storeName })
+
+  for(let datum of allData) {
+
+    let dataToSend = {
+      "id": datum?.id,
+      "parent": datum?.parent,
+      "shift": datum?.shift,
+      "no_do": datum?.noDo,
+      "reg": datum?.reg,
+      "start": datum?.start,
+      "finish": datum?.finish,
+      "rehat": datum?.rehat
+    }
+
+    try {
+
+        await postData('base_clock', dataToSend);
+
+    } catch(err) {
+
+        alert(err); 
+
+    }
+  }
+}

@@ -4,6 +4,7 @@ import { dateMonth } from "@/composable/piece/dateFormat";
 import { append, getData, update, deleteDocument } from "@/myfunction";
 
 let lists = [];
+const storeName = "Cases";
 
 export async function addCase(
   periode,
@@ -122,3 +123,73 @@ export const removeCase = async (id) => {
   deleteDocument({ store: "Cases", criteria: { id } });
   return true;
 };
+
+
+export async function syncCasesToServer () {
+
+  let allData = await getData({ store: storeName })
+
+  for(let datum of allData) {
+    // awal, dateEnd, dateIn, dateOut, id, in, item, 
+    //out, parent, parentDocument, planOut
+    //  problem, real, shift
+
+    // case import
+    // bagian, divisi, fokus, id, import, inserted, kabag, karu
+    // keterangan1, keterangan2, periode, temuan
+    let dataToSend;
+    let endPoint;
+
+    if(datum?.import) {
+
+      dataToSend = {
+        "id": datum?.id,
+        "bagian": datum?.bagian,
+        "divisi": datum?.divisi,
+        "fokus": datum?.fokus,
+        "kabag": datum?.kabag,
+        "karu": datum?.karu,
+        "keterangan1": datum?.keterangan1,
+        "keterangan2": datum?.keterangan2,
+        "periode": datum?.periode,
+        "temuan": datum?.temuan
+      }
+
+      endPoint = "case_import";
+
+    } 
+
+    // case
+    // dl, head, id, insert, masalah, name, parent, periode, pic
+    // solusi, status, sumberMasalah
+    else {
+
+      dataToSend = {
+        "id": datum?.id,
+        "periode": datum?.periode,
+        "head_spv_id": datum?.head,
+        "dl": datum?.dl,
+        "masalah": datum?.masalah,
+        "supervisor_id": datum?.name,
+        "parent": datum?.parent,
+        "pic": datum?.pic,
+        "solusi": datum?.solusi,
+        "status": datum?.status,
+        "sumber_masalah": datum?.sumberMasalah
+      }
+
+      endPoint = "case";
+
+    }
+
+    try {
+
+        await postData(endPoint, dataToSend);
+
+    } catch(err) {
+
+        alert(err); 
+
+    }
+  }
+}
