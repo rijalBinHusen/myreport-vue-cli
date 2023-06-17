@@ -325,7 +325,7 @@ export const getDocumentByPeriodeByWarehouseByShiftFromDb = (periode, warehouse,
     return findData({ store: "Document", criteria: { periode, warehouse, shift} }).then((res) => res[0])
 }
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncDocumentToServer () {
 
     let allData = await getData({ store: storeName })
@@ -336,7 +336,7 @@ export async function syncDocumentToServer () {
     // totalItemMoving, (v)totalKendaraan, totalProductNotFIFO, totalQTYIn
     // totalQTYOut, (v)totalWaktu, (v)warehouse
   
-    for(let datum of allData) {
+    for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
             "id": datum?.id,
@@ -368,13 +368,16 @@ export async function syncDocumentToServer () {
           }
   
       try {
-  
-          await postData('document', dataToSend);
+        progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+        await postData('document', dataToSend);
   
       } catch(err) {
+        
+        alert(err); 
+        return false;
   
-          alert(err); 
   
       }
     }
+    return true
   }

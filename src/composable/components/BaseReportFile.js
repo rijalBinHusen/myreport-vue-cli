@@ -129,12 +129,12 @@ export const removeBaseReport = async (idBaseReport) => {
     return
 }
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncBaseFileToServer () {
 
     let allData = await getData({ store: storeName })
   
-    for(let datum of allData) {
+    for(let [index, datum] of allData.entries()) {
     //   clock, fileName, id, imported, periode, stock, warehouse
 
       let dataToSend = {
@@ -148,13 +148,15 @@ export async function syncBaseFileToServer () {
       }
   
       try {
-  
-          await postData('base_file', dataToSend);
+        progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+        await postData('base_file', dataToSend);
   
       } catch(err) {
   
           alert(err); 
+          return false;
   
       }
     }
+    return true;
   }

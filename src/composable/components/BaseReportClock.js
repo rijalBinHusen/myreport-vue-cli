@@ -168,31 +168,35 @@ export const removeClock = async (id) => {
   return true;
 };
 
+
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncClockToServer () {
 
   let allData = await getData({ store: storeName })
 
-  for(let datum of allData) {
+  for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
       "id": datum?.id,
       "parent": datum?.parent,
-      "shift": datum?.shift,
-      "no_do": datum?.noDo,
-      "reg": datum?.reg,
-      "start": datum?.start,
-      "finish": datum?.finish,
-      "rehat": datum?.rehat
+      "shift": datum?.shift || "00:00",
+      "no_do": datum?.noDo || "00:00",
+      "reg": datum?.reg || "00:00",
+      "start": datum?.start || "00:00",
+      "finish": datum?.finish || "00:00",
+      "rehat": datum?.rehat || "00:00"
     }
 
     try {
-
-        await postData('base_clock', dataToSend);
+      progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+      await postData('base_clock', dataToSend);
 
     } catch(err) {
 
         alert(err); 
+        return false;
 
     }
   }
+  return true
 }

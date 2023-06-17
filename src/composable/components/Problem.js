@@ -195,7 +195,7 @@ export const duplicate = async (idRecord) => {
   return;
 };
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state"
 export async function syncProblemToServer () {
 
   let allData = await getData({ store: storeName })
@@ -203,7 +203,7 @@ export async function syncProblemToServer () {
   // nameSpv, periode, pic, picPanjang, shiftMulai, shiftSelesai, 
   // solusi, solusiPanjang, sumberMasalah, tanggalSelesai, warehouse  
 
-  for(let datum of allData) {
+  for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
         "id": datum?.id,
@@ -227,13 +227,15 @@ export async function syncProblemToServer () {
       }
 
     try {
-
-        await postData('problem', dataToSend);
+      progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+      await postData('problem', dataToSend);
 
     } catch(err) {
-
-        alert(err); 
+              
+      alert(err); 
+      return false;
 
     }
   }
+  return true
 }

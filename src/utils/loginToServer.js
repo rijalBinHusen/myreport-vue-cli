@@ -23,7 +23,6 @@ export function loginToServer(email, password) {
         if (response.status === 200) {
           
           resolve(response);
-          console.log(response);
 
         } else {
           reject(new Error(`Request failed with status code ${response.status}`));

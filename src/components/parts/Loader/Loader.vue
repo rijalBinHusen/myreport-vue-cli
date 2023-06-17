@@ -2,14 +2,14 @@
 <div class="w3-center">
   <br /><br /><br />
   <div class="lds-hourglass w3-margin-top"></div>
-  <p class="w3-large">Mohon tunggu...</p>
+  <p class="w3-large">{{ loaderMessage || "Mohon tunggu..."}}</p>
+  <p class="w3-large">{{ progressMessage }}</p>
+  <p class="w3-large">{{ progressMessage2 }}</p>
   </div>
 </template>
 
-<script>
-export default {
-  name: "LoaderForm",
-};
+<script setup>
+import { loaderMessage, progressMessage, progressMessage2 } from "./state";
 </script>
 
 <style scoped>

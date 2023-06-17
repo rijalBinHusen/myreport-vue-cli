@@ -124,12 +124,12 @@ export const removeCase = async (id) => {
   return true;
 };
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncCasesToServer () {
 
   let allData = await getData({ store: storeName })
 
-  for(let datum of allData) {
+  for(let [index, datum] of allData.entries()) {
     // awal, dateEnd, dateIn, dateOut, id, in, item, 
     //out, parent, parentDocument, planOut
     //  problem, real, shift
@@ -183,13 +183,15 @@ export async function syncCasesToServer () {
     }
 
     try {
-
-        await postData(endPoint, dataToSend);
+      progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+      await postData(endPoint, dataToSend);
 
     } catch(err) {
 
-        alert(err); 
+        alert(err);
+        return false;
 
     }
   }
+  return true
 }

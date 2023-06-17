@@ -98,7 +98,7 @@ export const deleteData = (idRecord) => {
 }
 
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncFieldProblemToServer () {
 
     let allData = await getData({ store: storeName })
@@ -107,7 +107,7 @@ export async function syncFieldProblemToServer () {
     //    supervisor
     
   
-    for(let datum of allData) {
+    for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
             "id": datum?.id,
@@ -122,13 +122,16 @@ export async function syncFieldProblemToServer () {
           }
   
       try {
-  
-          await postData('field_problem', dataToSend);
+        progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+        await postData('field_problem', dataToSend);
   
       } catch(err) {
+        
+        alert(err); 
+        return false;
   
-          alert(err); 
   
       }
     }
+    return true
   }

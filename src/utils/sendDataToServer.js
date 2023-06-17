@@ -23,7 +23,7 @@ export function postData(endpoint, dataToSend) {
         headers: headersList,
     })
     .then(response => {
-        if (response.status === 200) {
+        if (response.ok) {
           resolve(response);
         } else {
           reject(new Error(`Request failed with status code ${response.status}`));

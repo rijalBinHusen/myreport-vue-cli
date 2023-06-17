@@ -147,12 +147,12 @@ export const removeComplain = async (idComplain) => {
 };
 
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncComplainsToServer () {
 
   let allData = await getData({ store: storeName })
 
-  for(let datum of allData) {
+  for(let [index, datum] of allData.entries()) {
 
     // customer, do, gudang, id, import, inserted, item
     // kabag, nomorSJ, nopol, real, row, spv, tally, tanggalBongkar
@@ -214,13 +214,16 @@ export async function syncComplainsToServer () {
     }
 
     try {
-
-        await postData(endPoint, dataToSend);
+      progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+      await postData(endPoint, dataToSend);
 
     } catch(err) {
+        
+      alert(err); 
+      return false;
 
-        alert(err); 
 
     }
   }
+  return true
 }

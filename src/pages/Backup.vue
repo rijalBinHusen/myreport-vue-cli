@@ -19,6 +19,7 @@
             <ButtonVue primary value="Mulai backup" type="button" @trig="handleBackup"/>
         </div>
         <ButtonVue primary value="Login" type="button" @trig="tryToLogin"/>
+        <ButtonVue primary value="Sync data" type="button" @trig="syncAllDataToServer"/>
     </div>
 </template>
 
@@ -29,6 +30,8 @@ import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
 import { loginToServer } from "../utils/loginToServer";
+import { setJWTToken } from "../utils/cookie";
+import { syncAllDataToServer } from "../composable/storeBackup";
 
 export default {
     setup() {
@@ -63,13 +66,16 @@ export default {
             let email = window.prompt('Insert your email');
             let password = window.prompt('Insert your password');
 
-            let startlogin = await loginToServer(email, password);
+            let reqLogin = await loginToServer(email, password);
             
-            console.log(startlogin)
+            if(reqLogin?.status === 200 && reqLogin?.ok === true) {
+                const resp = await reqLogin.json();
+                setJWTToken(resp.token);
+            }
 
         }
 
-        return { handleBackup, options, checkedOption, tryToLogin }
+        return { handleBackup, options, checkedOption, tryToLogin, syncAllDataToServer }
     },
     name: "Backup",
     components: {

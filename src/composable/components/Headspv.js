@@ -54,7 +54,7 @@ let rec = lists.find((val) => val.shift == shift);
 }
   
 
-
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncHeadSpvToServer () {
 
     let allData = await getData({ store: storeName })
@@ -62,7 +62,7 @@ export async function syncHeadSpvToServer () {
     //disabled, id, name, phone, shift
     
   
-    for(let datum of allData) {
+    for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
             "id": datum?.id,
@@ -73,13 +73,16 @@ export async function syncHeadSpvToServer () {
           }
   
       try {
-  
-          await postData('head_spv', dataToSend);
+        progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+        await postData('head_spv', dataToSend);
   
       } catch(err) {
-  
+        
           alert(err); 
+          return false;
   
       }
     }
+
+    return true
   }

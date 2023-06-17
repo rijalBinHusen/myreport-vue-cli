@@ -3,6 +3,22 @@ let db = new Localbase("myreport");
 import func, { updateWithoutAddActivity } from "../myfunction"
 import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
+import { getJWTToken, setJWTToken } from "../utils/cookie";
+import { syncClockToServer } from "../composable/components/BaseReportClock";
+import { syncBaseFileToServer } from "../composable/components/BaseReportFile";
+import { syncBaseStockToServer } from "../composable/components/BaseReportStock";
+import { syncItemToServer } from "../composable/components/Baseitem";
+import { syncCasesToServer } from "../composable/components/Cases";
+import { syncComplainsToServer } from "../composable/components/Complains";
+import { syncDocumentToServer } from "../composable/components/DocumentsPeriod";
+import { syncFieldProblemToServer } from "../composable/components/FieldProblem";
+import { syncHeadSpvToServer } from "../composable/components/Headspv";
+import { syncProblemToServer } from "../composable/components/Problem";
+import { syncSupervisorToServer } from "../composable/components/Supervisors";
+import { syncWarehouseToServer } from "../composable/components/Warehouses";
+import { modalClose, loader} from "./piece/vuexModalLauncher";
+import { loaderMessage, progressMessage } from "../components/parts/Loader/state";
+import { loginToServer } from "../utils/loginToServer"
 
 export const storeBackup = async (sendToCloud) => {
     // will store all document that we saved in idexeddb
@@ -35,6 +51,127 @@ export const storeBackup = async (sendToCloud) => {
 
 function getDocument (store) {
     return db.collection(store).get({ keys: true });
+}
+
+export async function syncAllDataToServer() {
+    const isTokenExists =  getJWTToken();
+
+    if(isTokenExists == null) {
+        const tryLogin = await login();
+
+        if(tryLogin === false) {
+            return
+        }
+    }
+
+    const functionsToSync = [syncClockToServer, syncBaseFileToServer, syncBaseStockToServer, syncItemToServer, syncCasesToServer, syncComplainsToServer, syncDocumentToServer, syncFieldProblemToServer, syncHeadSpvToServer, syncProblemToServer, syncSupervisorToServer, syncWarehouseToServer];
+
+    // launch modal
+    loader();
+    loaderMessage.value = "Mengirim data ke server";
+
+    for(let [index, func] of functionsToSync.entries()) {
+        progressMessage.value = `Sinkronisasi table ${index} dari ${functionsToSync.length}`;
+        const isSynced = await func()
+        if(!isSynced) {
+            modalClose();
+            return;
+        }
+    }
+
+    // const isClockSynced = await syncClockToServer();
+
+    // if(!isClockSynced) {
+    //     return;
+    // }
+
+    // const isBaseFileSynced = await syncBaseFileToServer();
+
+    // if(!isBaseFileSynced) {
+    //     return;
+    // }
+
+    // const isBaseStockSynced = await syncBaseStockToServer();
+
+    // if(!isBaseStockSynced) {
+    //     return;
+    // }
+
+    // const isItemSynced = await syncItemToServer();
+
+    // if(!isItemSynced) {
+    //     return;
+    // }
+
+    // const isCasesSynced = await syncCasesToServer();
+
+    // if(!isCasesSynced) {
+    //     return;
+    // }
+
+    // const isComplainSynced = await syncComplainsToServer();
+
+    // if(!isComplainSynced) {
+    //     return;
+    // }
+
+    // const isDocumentSynced = await syncDocumentToServer();
+
+    // if(!isDocumentSynced) {
+    //     return;
+    // }
+
+    // const isFieldProblemSynced = await syncFieldProblemToServer();
+
+    // if(!isFieldProblemSynced) {
+    //     return;
+    // }
+
+    // const isHeadSpvSynced = await syncHeadSpvToServer();
+
+    // if(!isHeadSpvSynced) {
+    //     return;
+    // }
+
+    // const isProblemSynced = await syncProblemToServer();
+
+    // if(!isProblemSynced) {
+    //     return;
+    // }
+
+    // const isSupervisorSynced = await syncSupervisorToServer();
+
+    // if(!isSupervisorSynced) {
+    //     return;
+    // }
+
+    // const isWarehouseSynced = await syncWarehouseToServer();
+
+    // if(!isWarehouseSynced) {
+    //     return;
+    // }
+
+    alert("All document synced")
+    modalClose();
+
+
+}
+
+async function login() {
+    let email = window.prompt('Insert your email');
+    let password = window.prompt('Insert your password');
+
+    let reqLogin = await loginToServer(email, password);
+    
+    const resp = await reqLogin.json();
+
+    if(reqLogin?.status === 200 && reqLogin?.ok === true) {
+        setJWTToken(resp?.token);
+        return true
+    } else {
+        alert(resp.message)
+        return false
+    }
 }
 
 

@@ -1,5 +1,6 @@
 import { getData, update, append } from '../../myfunction'
 import { postData } from "../../utils/sendDataToServer"
+import { progressMessage2 } from "../../components/parts/Loader/state"
 
 export let lists = []
 const storeName = "Supervisors";
@@ -56,7 +57,7 @@ export async function syncSupervisorToServer () {
   let allData = await getData({ store: storeName })
   //disabled, id, name, phone, shift, warehouse, warehouseName
 
-  for(let datum of allData) {
+  for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
       "id": datum?.id,
@@ -68,13 +69,16 @@ export async function syncSupervisorToServer () {
     }
 
     try {
-
-        await postData('supervisor', dataToSend);
+      progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+      await postData('supervisor', dataToSend);
 
     } catch(err) {
-
+        
         alert(err); 
+        return false;
 
     }
   }
+
+  return true;
 }
