@@ -125,9 +125,10 @@ export const removeCase = async (id) => {
 };
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
+import { postData } from "../../utils/sendDataToServer";
 export async function syncCasesToServer () {
 
-  let allData = await getData({ store: storeName })
+  let allData = await getData({ store: storeName, withKey: true })
 
   for(let [index, datum] of allData.entries()) {
     // awal, dateEnd, dateIn, dateOut, id, in, item, 
@@ -143,16 +144,16 @@ export async function syncCasesToServer () {
     if(datum?.import) {
 
       dataToSend = {
-        "id": datum?.id,
-        "bagian": datum?.bagian,
-        "divisi": datum?.divisi,
-        "fokus": datum?.fokus,
-        "kabag": datum?.kabag,
-        "karu": datum?.karu,
-        "keterangan1": datum?.keterangan1,
-        "keterangan2": datum?.keterangan2,
-        "periode": datum?.periode,
-        "temuan": datum?.temuan
+        "id": datum?.key || 0,
+        "bagian": datum?.data?.bagian || 0,
+        "divisi": datum?.data?.divisi || 0,
+        "fokus": datum?.data?.fokus || 0,
+        "kabag": datum?.data?.kabag || 0,
+        "karu": datum?.data?.karu || 0,
+        "keterangan1": datum?.data?.keterangan1 || 0,
+        "keterangan2": datum?.data?.keterangan2 || 0,
+        "periode": datum?.data?.periode || 0,
+        "temuan": datum?.data?.temuan || 0
       }
 
       endPoint = "case_import";
@@ -160,22 +161,22 @@ export async function syncCasesToServer () {
     } 
 
     // case
-    // dl, head, id, insert, masalah, name, parent, periode, pic
-    // solusi, status, sumberMasalah
+    // dl || 0, head || 0, id || 0, insert || 0, masalah || 0, name || 0, parent || 0, periode || 0, pic
+    // solusi || 0, status || 0, sumberMasalah
     else {
 
       dataToSend = {
-        "id": datum?.id,
-        "periode": datum?.periode,
-        "head_spv_id": datum?.head,
-        "dl": datum?.dl,
-        "masalah": datum?.masalah,
-        "supervisor_id": datum?.name,
-        "parent": datum?.parent,
-        "pic": datum?.pic,
-        "solusi": datum?.solusi,
-        "status": datum?.status,
-        "sumber_masalah": datum?.sumberMasalah
+        "id": datum?.key,
+        "periode": datum?.data?.periode || 0,
+        "head_spv_id": datum?.data?.head || 0,
+        "dl": datum?.data?.dl || 0,
+        "masalah": datum?.data?.masalah || 0,
+        "supervisor_id": datum?.data?.name || 0,
+        "parent": datum?.data?.parent || 0,
+        "pic": datum?.data?.pic || 0,
+        "solusi": datum?.data?.solusi || 0,
+        "status": datum?.data?.status || 0,
+        "sumber_masalah": datum?.data?.sumberMasalah || 0
       }
 
       endPoint = "case";
@@ -188,8 +189,9 @@ export async function syncCasesToServer () {
 
     } catch(err) {
 
-        alert(err);
-        return false;
+        // alert(err);
+        console.log(err)
+        // return false;
 
     }
   }

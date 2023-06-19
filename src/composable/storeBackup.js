@@ -64,7 +64,9 @@ export async function syncAllDataToServer() {
         }
     }
 
-    const functionsToSync = [syncClockToServer, syncBaseFileToServer, syncBaseStockToServer, syncItemToServer, syncCasesToServer, syncComplainsToServer, syncDocumentToServer, syncFieldProblemToServer, syncHeadSpvToServer, syncProblemToServer, syncSupervisorToServer, syncWarehouseToServer];
+    // const functionsToSync = [syncItemToServer, syncCasesToServer, syncComplainsToServer, syncDocumentToServer, syncFieldProblemToServer, syncHeadSpvToServer, syncProblemToServer, syncSupervisorToServer, syncWarehouseToServer, syncClockToServer, syncBaseFileToServer, syncBaseStockToServer];
+    // error syncComplainsToServer, syncBaseStockToServer, syncClockToServer];
+    const functionsToSync = [syncBaseFileToServer]
 
     // launch modal
     loader();

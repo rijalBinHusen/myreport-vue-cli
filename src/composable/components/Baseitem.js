@@ -68,20 +68,21 @@ export const get20Item = async () => {
     return
 }
 
+import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncItemToServer() {
     await getAllItems();
 
-    for(let list of lists) {
+    for(let [index, list] of lists.entries()) {
 
         const dataToSend = {
             "id": list.id,
-            "item_kode": list.kode,
-            "item_name": list.name,
-            "last_used": list.lastUsed
+            "item_kode": list.kode || 0,
+            "item_name": list.name || 0,
+            "last_used": list.lastUsed || 0
         }
 
         try {
-
+            progressMessage2.value = `Mengirim data ${index} dari ${lists.length}`
             await postData('base_item',dataToSend);
 
         } catch(err) {
@@ -91,4 +92,5 @@ export async function syncItemToServer() {
         }
 
     }
+    return true;
 }

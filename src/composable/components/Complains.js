@@ -150,7 +150,7 @@ export const removeComplain = async (idComplain) => {
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncComplainsToServer () {
 
-  let allData = await getData({ store: storeName })
+  let allData = await getData({ store: storeName, withKey: true })
 
   for(let [index, datum] of allData.entries()) {
 
@@ -164,23 +164,23 @@ export async function syncComplainsToServer () {
     if(datum?.import) {
 
       dataToSend = {
-        "id": datum?.id,
-        "customer": datum?.customer,
-        "do_": datum?.do,
-        "gudang": datum?.gudang,
-        "item": datum?.item,
-        "kabag": datum?.kabag,
-        "nomor_SJ": datum?.nomorSJ,
-        "nopol": datum?.nopol,
-        "real_": datum?.real,
-        "row_": datum?.row,
-        "spv": datum?.spv,
-        "tally": datum?.tally,
-        "tanggal_bongkar": datum?.tanggalBongkar,
-        "tanggal_info": datum?.tanggalInfo,
-        "tanggal_komplain": datum?.tanggalKomplain,
-        "tanggal_SJ": datum?.tanggalSuratJalan,
-        "type_": datum?.type
+        "id": datum?.key,
+        "customer": datum?.data?.customer || 0,
+        "do_": datum?.data?.do || 0,
+        "gudang": datum?.data?.gudang || 0,
+        "item": datum?.data?.item || 0,
+        "kabag": datum?.data?.kabag || 0,
+        "nomor_SJ": datum?.data?.nomorSJ || 0,
+        "nopol": datum?.data?.nopol || 0,
+        "real_": datum?.data?.real || 0,
+        "row_": datum?.data?.row || 0,
+        "spv": datum?.data?.spv || 0,
+        "tally": datum?.data?.tally || 0,
+        "tanggal_bongkar": datum?.data?.tanggalBongkar || 0,
+        "tanggal_info": datum?.data?.tanggalInfo || 0,
+        "tanggal_komplain": datum?.data?.tanggalKomplain || 0,
+        "tanggal_SJ": datum?.data?.tanggalSuratJalan || 0,
+        "type_": datum?.data?.type || 0
       }
 
       endPoint = "complain_import";
@@ -188,25 +188,25 @@ export async function syncComplainsToServer () {
     } 
 
     // complain
-    // dl, head, id, insert, insert2, masalah, name, parent
-    // periode, pic, solusi, status, sumberMasalah, type
+    // dl || 0, head || 0, id || 0, insert || 0, insert2 || 0, masalah || 0, name || 0, parent
+    // periode || 0, pic || 0, solusi || 0, status || 0, sumberMasalah || 0, type
     else {
 
       dataToSend = {
-        "id": datum?.id,
-        "periode": datum?.periode,
-        "head_spv_id": datum?.head,
-        "dl": datum?.dl,
-        "inserted": datum?.insert,
-        "masalah": datum?.masalah,
-        "supervisor_id": datum?.name,
-        "parent": datum?.parent,
-        "pic": datum?.pic,
-        "solusi": datum?.solusi,
-        "is_status_done": datum?.status,
-        "sumber_masalah": datum?.sumberMasalah,
-        "type": datum?.type,
-        "is_count": datum?.isCount
+        "id": datum?.key || 0,
+        "periode": datum?.data?.periode || 0,
+        "head_spv_id": datum?.data?.head || 0,
+        "dl": datum?.data?.dl || 0,
+        "inserted": datum?.data?.insert || 0,
+        "masalah": datum?.data?.masalah || 0,
+        "supervisor_id": datum?.data?.name || 0,
+        "parent": datum?.data?.parent || 0,
+        "pic": datum?.data?.pic || 0,
+        "solusi": datum?.data?.solusi || 0,
+        "is_status_done": datum?.data?.status || 0,
+        "sumber_masalah": datum?.data?.sumberMasalah || 0,
+        "type": datum?.data?.type || 0,
+        "is_count": datum?.data?.isCount || 0
       }
 
       endPoint = "complain";
@@ -219,8 +219,9 @@ export async function syncComplainsToServer () {
 
     } catch(err) {
         
-      alert(err); 
-      return false;
+      // alert(err); 
+        console.log(err)
+      // return false;
 
 
     }

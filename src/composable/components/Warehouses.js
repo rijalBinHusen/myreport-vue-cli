@@ -131,18 +131,19 @@ export const getSupervisorShift1ByWarehouse = async (idWarehouse) => {
 
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
+import { postData } from "../../utils/sendDataToServer";
 export async function syncWarehouseToServer () {
 
-    let allData = await getData({ store: storeName })
+    let allData = await getData({ store: storeName, withKey: true })
     //group, id, isGrouped, name, supervisors
   
     for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
-            "id": datum?.id,
-            "warehouse_name": datum?.name,
-            "warehouse_group": datum?.group,
-            "warehouse_supervisors": datum?.supervisors
+            "id": datum?.key,
+            "warehouse_name": datum?.data?.name || 0,
+            "warehouse_group": datum?.data?.group || 0,
+            "warehouse_supervisors": datum?.data?.supervisors.toString()
         }
   
       try {
@@ -151,8 +152,9 @@ export async function syncWarehouseToServer () {
   
       } catch(err) {
   
-          alert(err); 
-          return false;
+        //   alert(err); 
+        console.log(err)
+        //   return false;
       }
     }
 

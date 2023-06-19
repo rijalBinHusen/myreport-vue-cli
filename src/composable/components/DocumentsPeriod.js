@@ -1,4 +1,4 @@
-import { findData, update, append, deleteDocument } from "../../myfunction"
+import { findData, update, append, deleteDocument, getData } from "../../myfunction"
 import getDatesArray from "../piece/getDaysArray"
 import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
@@ -328,7 +328,7 @@ export const getDocumentByPeriodeByWarehouseByShiftFromDb = (periode, warehouse,
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncDocumentToServer () {
 
-    let allData = await getData({ store: storeName })
+    let allData = await getData({ store: storeName, withKey: true })
 
     // (v)approval, (v)baseReportFile, (v)collected, (v)finished, (v)generateReport
     // (v)head, (v)id, (v)isfinished, itemVariance, (v)name, parent, parentDocument
@@ -339,32 +339,32 @@ export async function syncDocumentToServer () {
     for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
-            "id": datum?.id,
-            "collected": datum?.collected,
-            "approval": datum?.approval,
-            "status": datum?.status,
-            "shared": datum?.shared,
-            "finished": datum?.finished,
-            "total_do": datum?.totalDo,
-            "total_kendaraan": datum?.totalKendaraan,
-            "total_waktu": datum?.totalWaktu,
-            "base_report_file": datum?.baseReportFile,
-            "is_finished": datum?.isfinished,
-            "supervisor_id": datum?.name,
-            "periode": datum?.periode,
-            "shift": datum?.shift,
-            "head_spv_id": datum?.head,
-            "warehouse_id": datum?.warehouse,
-            "is_generated_document": datum?.generateReport,
-            "item_variance": datum?.itemVariance,
-            "parent": datum?.parent,
-            "parent_document": datum?.parentDocument,
-            "plan_out": datum?.planOut,
-            "total_item_keluar": datum?.totalItemKeluar,
-            "total_item_moving": datum?.totalItemMoving,
-            "total_product_not_FIFO": datum?.totalProductNotFIFO,
-            "total_qty_in": datum?.totalQTYIn,
-            "total_qty_out": datum?.totalQTYOut
+            "id": datum?.key,
+            "collected": datum?.data?.collected || 0,
+            "approval": datum?.data?.approval || 0,
+            "status": datum?.data?.status || 0,
+            "shared": datum?.data?.shared || 0,
+            "finished": datum?.data?.finished || 0,
+            "total_do": datum?.data?.totalDo || 0,
+            "total_kendaraan": datum?.data?.totalKendaraan || 0,
+            "total_waktu": datum?.data?.totalWaktu || 0,
+            "base_report_file": datum?.data?.baseReportFile || 0,
+            "is_finished": datum?.data?.isfinished || 0,
+            "supervisor_id": datum?.data?.name || 0,
+            "periode": datum?.data?.periode || 0,
+            "shift": datum?.data?.shift || 0,
+            "head_spv_id": datum?.data?.head || 0,
+            "warehouse_id": datum?.data?.warehouse || 0,
+            "is_generated_document": datum?.data?.generateReport || 0,
+            "item_variance": datum?.data?.itemVariance || 0,
+            "parent": datum?.data?.parent || 0,
+            "parent_document": datum?.data?.parentDocument || 0,
+            "plan_out": datum?.data?.planOut || 0,
+            "total_item_keluar": datum?.data?.totalItemKeluar || 0,
+            "total_item_moving": datum?.data?.totalItemMoving || 0,
+            "total_product_not_FIFO": datum?.data?.totalProductNotFIFO || 0,
+            "total_qty_in": datum?.data?.totalQTYIn || 0,
+            "total_qty_out": datum?.data?.totalQTYOut || 0,
           }
   
       try {
@@ -373,8 +373,9 @@ export async function syncDocumentToServer () {
   
       } catch(err) {
         
-        alert(err); 
-        return false;
+        // alert(err); 
+        console.log(err)
+        // return false;
   
   
       }

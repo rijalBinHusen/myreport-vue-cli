@@ -198,7 +198,7 @@ export const duplicate = async (idRecord) => {
 import { progressMessage2 } from "../../components/parts/Loader/state"
 export async function syncProblemToServer () {
 
-  let allData = await getData({ store: storeName })
+  let allData = await getData({ store: storeName, withKey: true })
   //dl dlPanjang, id, isFinished, item, masalah, nameHeadSpv, 
   // nameSpv, periode, pic, picPanjang, shiftMulai, shiftSelesai, 
   // solusi, solusiPanjang, sumberMasalah, tanggalSelesai, warehouse  
@@ -206,24 +206,24 @@ export async function syncProblemToServer () {
   for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
-        "id": datum?.id,
-        "warehouse_id": datum?.warehouse,
-        "supervisor_id": datum?.nameSpv,
-        "head_spv_id": datum?.nameHeadSpv,
-        "item_kode": datum?.item,
-        "tanggal_mulai": datum?.periode,
-        "shift_mulai": datum?.shiftMulai,
-        "pic": datum?.pic,
-        "dl": datum?.dl,
-        "masalah": datum?.masalah,
-        "sumber_masalah": datum?.sumberMasalah,
-        "solusi": datum?.solusi,
-        "solusi_panjang": datum?.solusiPanjang,
-        "dl_panjang": datum?.dlPanjang,
-        "pic_panjang": datum?.picPanjang,
-        "tanggal_selesai": datum?.tanggalSelesai,
-        "shift_selesai": datum?.shiftSelesai,
-        "is_finished": datum?.isFinished
+        "id": datum?.key,
+        "warehouse_id": datum?.data?.warehouse || 0,
+        "supervisor_id": datum?.data?.nameSpv || 0,
+        "head_spv_id": datum?.data?.nameHeadSpv || 0,
+        "item_kode": datum?.data?.item || 0,
+        "tanggal_mulai": datum?.data?.periode || 0,
+        "shift_mulai": datum?.data?.shiftMulai || 0,
+        "pic": datum?.data?.pic || 0,
+        "dl": datum?.data?.dl || 0,
+        "masalah": datum?.data?.masalah || 0,
+        "sumber_masalah": datum?.data?.sumberMasalah || 0,
+        "solusi": datum?.data?.solusi || 0,
+        "solusi_panjang": datum?.data?.solusiPanjang || 0,
+        "dl_panjang": datum?.data?.dlPanjang || 0,
+        "pic_panjang": datum?.data?.picPanjang || 0,
+        "tanggal_selesai": datum?.data?.tanggalSelesai || 0,
+        "shift_selesai": datum?.data?.shiftSelesai || 0,
+        "is_finished": datum?.data?.isFinished || 0
       }
 
     try {
@@ -232,8 +232,9 @@ export async function syncProblemToServer () {
 
     } catch(err) {
               
-      alert(err); 
-      return false;
+      // alert(err); 
+        console.log(err)
+      // return false;
 
     }
   }

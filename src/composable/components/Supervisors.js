@@ -54,18 +54,18 @@ export const supervisorsEnabled = () => {
 
 export async function syncSupervisorToServer () {
 
-  let allData = await getData({ store: storeName })
+  let allData = await getData({ store: storeName, withKey: true })
   //disabled, id, name, phone, shift, warehouse, warehouseName
 
   for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
-      "id": datum?.id,
-      "supervisor_name": datum?.name,
-      "supervisor_phone": datum?.phone,
-      "supervisor_warehouse": datum?.warehouse,
-      "supervisor_shift": datum?.shift,
-      "is_disabled": datum?.disabled
+      "id": datum?.key,
+      "supervisor_name": datum?.data?.name || 0,
+      "supervisor_phone": datum?.data?.phone || 0,
+      "supervisor_warehouse": datum?.data?.warehouse || 0,
+      "supervisor_shift": datum?.data?.shift || 0,
+      "is_disabled": datum?.data?.disabled || 0
     }
 
     try {
@@ -74,8 +74,9 @@ export async function syncSupervisorToServer () {
 
     } catch(err) {
         
-        alert(err); 
-        return false;
+        // alert(err); 
+        console.log(err)
+        // return false;
 
     }
   }

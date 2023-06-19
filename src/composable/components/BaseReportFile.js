@@ -132,19 +132,23 @@ export const removeBaseReport = async (idBaseReport) => {
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncBaseFileToServer () {
 
-    let allData = await getData({ store: storeName })
+    let allData = await getData({ store: storeName, withKey: true })
   
     for(let [index, datum] of allData.entries()) {
     //   clock, fileName, id, imported, periode, stock, warehouse
 
+    const warehouseToSend = typeof datum?.data?.warehouse === 'object' 
+                                ? datum?.data?.warehouse.id
+                                : datum?.data?.warehouse;
+
       let dataToSend = {
-        "id": datum?.id,
-        "periode": datum?.periode,
-        "warehouse_id": datum?.warehouse,
-        "file_name": datum?.fileName,
-        "stock_sheet": datum?.stock,
-        "clock_sheet": datum?.clock,
-        "is_imported": datum?.imported
+        "id": datum?.key,
+        "periode": datum?.data?.periode || 0,
+        "warehouse_id": warehouseToSend || 0,
+        "file_name": datum?.data?.fileName || 0,
+        "stock_sheet": datum?.data?.stock || 0,
+        "clock_sheet": datum?.data?.clock || 0,
+        "is_imported": datum?.data?.imported || 0
       }
   
       try {
@@ -153,8 +157,9 @@ export async function syncBaseFileToServer () {
   
       } catch(err) {
   
-          alert(err); 
-          return false;
+        //   alert(err); 
+        console.log(err)
+        //   return false;
   
       }
     }

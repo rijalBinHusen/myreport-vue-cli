@@ -101,7 +101,7 @@ export const deleteData = (idRecord) => {
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncFieldProblemToServer () {
 
-    let allData = await getData({ store: storeName })
+    let allData = await getData({ store: storeName, withKey: true })
     
     // dl, head, id, masalah, periode, pic, solusi, sumberMasalah
     //    supervisor
@@ -110,15 +110,15 @@ export async function syncFieldProblemToServer () {
     for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
-            "id": datum?.id,
-            "periode": datum?.periode,
-            "supervisor_id": datum?.supervisor,
-            "head_spv_id": datum?.head,
-            "masalah": datum?.masalah,
-            "sumber_masalah": datum?.sumberMasalah,
-            "solusi": datum?.solusi,
-            "pic": datum?.pic,
-            "dl": datum?.dl
+            "id": datum?.key,
+            "periode": datum?.data?.periode || 0,
+            "supervisor_id": datum?.data?.supervisor || 0,
+            "head_spv_id": datum?.data?.head || 0,
+            "masalah": datum?.data?.masalah || 0,
+            "sumber_masalah": datum?.data?.sumberMasalah || 0,
+            "solusi": datum?.data?.solusi || 0,
+            "pic": datum?.data?.pic || 0,
+            "dl": datum?.data?.dl || 0
           }
   
       try {
@@ -127,8 +127,9 @@ export async function syncFieldProblemToServer () {
   
       } catch(err) {
         
-        alert(err); 
-        return false;
+        // alert(err); 
+        console.log(err)
+        // return false;
   
   
       }

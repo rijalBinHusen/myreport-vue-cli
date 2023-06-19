@@ -1,4 +1,5 @@
 import { getJWTToken } from "./cookie";
+import { append } from "../myfunction"
 
 export function postData(endpoint, dataToSend) {
     
@@ -22,10 +23,15 @@ export function postData(endpoint, dataToSend) {
         body: bodyContent,
         headers: headersList,
     })
-    .then(response => {
-        if (response.ok) {
+    .then(async response => {
+      const res = await response.json();
+        if (res.success === true) {
           resolve(response);
         } else {
+          append({
+            store: "errorsync",
+            obj: { endpoint, dataToSend, errorMessage: res?.message }
+          });
           reject(new Error(`Request failed with status code ${response.status}`));
         }
       })

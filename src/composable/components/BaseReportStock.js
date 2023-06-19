@@ -230,7 +230,7 @@ export const removeStock = async (id) => {
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncBaseStockToServer () {
 
-  let allData = await getData({ store: storeName })
+  let allData = await getData({ store: storeName, withKey: true })
 
   for(let [index, datum] of allData.entries()) {
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
@@ -238,19 +238,19 @@ export async function syncBaseStockToServer () {
 //  problem, real, shift
 
     let dataToSend = {
-      "id": datum?.id,
-      "parent": datum?.parent,
-      "shift": datum?.shift,
-      "item": datum?.item,
-      "awal": datum?.awal,
-      "in_stock": datum?.in,
-      "out_stock": datum?.out,
-      "date_in": datum?.dateIn,
-      "plan_out": datum?.planOut,
-      "date_out": datum?.dateOut,
-      "date_end": datum?.dateEnd,
-      "real_stock": datum?.real,
-      "problem": datum?.problem.toString()
+      "id": datum?.key,
+      "parent": datum?.data?.parent || 0,
+      "shift": datum?.data?.shift || 0,
+      "item": datum?.data?.item || 0,
+      "awal": datum?.data?.awal || 0,
+      "in_stock": datum?.data?.in || 0,
+      "out_stock": datum?.data?.out || 0,
+      "date_in": datum?.data?.dateIn || 0,
+      "plan_out": datum?.data?.planOut || 0,
+      "date_out": datum?.data?.dateOut || 0,
+      "date_end": datum?.data?.dateEnd || 0,
+      "real_stock": datum?.data?.real || 0,
+      "problem": datum?.data?.problem.toString()  || 0
     }
 
     try {
@@ -259,8 +259,9 @@ export async function syncBaseStockToServer () {
 
     } catch(err) {
 
-        alert(err); 
-        return false;
+        // alert(err); 
+        console.log(err)
+        // return false;
 
     }
   }
