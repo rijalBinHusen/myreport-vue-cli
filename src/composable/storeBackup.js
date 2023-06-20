@@ -65,8 +65,8 @@ export async function syncAllDataToServer() {
     }
 
     // const functionsToSync = [syncItemToServer, syncCasesToServer, syncComplainsToServer, syncDocumentToServer, syncFieldProblemToServer, syncHeadSpvToServer, syncProblemToServer, syncSupervisorToServer, syncWarehouseToServer, syncClockToServer, syncBaseFileToServer, syncBaseStockToServer];
-    // error syncComplainsToServer, , syncClockToServer];
-    const functionsToSync = [syncBaseStockToServer]
+    // error , , ];
+    const functionsToSync = [syncComplainsToServer]
 
     // launch modal
     loader();
