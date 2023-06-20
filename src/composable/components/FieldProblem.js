@@ -1,4 +1,4 @@
-import { append, getData, update, findData, deleteDocument } from '@/myfunction'
+import { append, getData, update, findData, deleteDocument, getDataByKey} from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorId } from '@/composable/components/Supervisors'
 import { getHeadspvId } from './Headspv'
@@ -133,6 +133,56 @@ export async function syncFieldProblemToServer () {
   
   
       }
+    }
+    return true
+  }
+
+  export async function syncFieldProblemRecordToServer (idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert('Id record field problem must be a string');
+        return;
+    }
+
+    let record = await getDataByKey(storeName, idRecord);
+    
+    // dl, head, id, masalah, periode, pic, solusi, sumberMasalah
+    //    supervisor
+  
+    let dataToSend = {
+        "id": idRecord,
+        "periode": record?.periode || 0,
+        "supervisor_id": record?.supervisor || 0,
+        "head_spv_id": record?.head || 0,
+        "masalah": record?.masalah || 0,
+        "sumber_masalah": record?.sumberMasalah || 0,
+        "solusi": record?.solusi || 0,
+        "pic": record?.pic || 0,
+        "dl": record?.dl || 0
+        }
+
+    try {
+
+        if(mode === 'create') {
+    
+          await postData('field_problem', dataToSend);
+    
+        } 
+      
+        else if(mode === 'update') {
+    
+            await putData('field_problem/'+ idRecord, dataToSend)
+    
+        }
+
+    } catch(err) {
+    
+    const errorMessage = 'Failed to send field problem record with error message: ' + err;
+    alert(errorMessage); 
+    console.log(errorMessage)
+    return false;
+
+
     }
     return true
   }

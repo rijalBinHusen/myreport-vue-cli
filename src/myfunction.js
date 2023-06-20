@@ -242,6 +242,10 @@ export const findData = function (value) {
   return db.collection(value.store.toLowerCase()).doc(value.criteria).get();
 };
 
+export function getDataByKey (storeName, yourKey) {
+  return db.collection(storeName).doc(yourKey).get();
+}
+
 export const deleteCollection = function (value) {
   return db.collection(value).delete();
 };

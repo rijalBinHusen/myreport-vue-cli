@@ -1,4 +1,4 @@
-import { findData, append, update, getData } from "@/myfunction";
+import { findData, append, update, getData, getDataByKey } from "@/myfunction";
 import { ddmmyyyy } from "../piece/dateFormat";
 import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
@@ -238,5 +238,65 @@ export async function syncProblemToServer () {
 
     }
   }
+  return true
+}
+
+
+export async function syncProblemRecordToServer (idRecord, mode) {
+
+  if(typeof idRecord !== 'string') {
+    alert('Id record problem must be a string');
+    return;
+  }
+
+  let record = await getDataByKey(storeName, idRecord);
+  //dl dlPanjang, id, isFinished, item, masalah, nameHeadSpv, 
+  // nameSpv, periode, pic, picPanjang, shiftMulai, shiftSelesai, 
+  // solusi, solusiPanjang, sumberMasalah, tanggalSelesai, warehouse 
+
+  let dataToSend = {
+      "id": idRecord,
+      "warehouse_id": record?.warehouse || 0,
+      "supervisor_id": record?.nameSpv || 0,
+      "head_spv_id": record?.nameHeadSpv || 0,
+      "item_kode": record?.item || 0,
+      "tanggal_mulai": record?.periode || 0,
+      "shift_mulai": record?.shiftMulai || 0,
+      "pic": record?.pic || 0,
+      "dl": record?.dl || 0,
+      "masalah": record?.masalah || 0,
+      "sumber_masalah": record?.sumberMasalah || 0,
+      "solusi": record?.solusi || 0,
+      "solusi_panjang": record?.solusiPanjang || 0,
+      "dl_panjang": record?.dlPanjang || 0,
+      "pic_panjang": record?.picPanjang || 0,
+      "tanggal_selesai": record?.tanggalSelesai || 0,
+      "shift_selesai": record?.shiftSelesai || 0,
+      "is_finished": record?.isFinished || 0
+    }
+
+  try {
+
+    if(mode === 'create') {
+
+      await postData('problem', dataToSend);
+
+    } 
+  
+    else if(mode === 'update') {
+
+        await putData('problem/'+ idRecord, dataToSend)
+
+    }
+
+  } catch(err) {
+
+    const errorMessage = 'Failed to sync problem record with error message: ' + err;
+    alert(errorMessage); 
+    console.log(errorMessage);
+    return false;
+
+  }
+
   return true
 }

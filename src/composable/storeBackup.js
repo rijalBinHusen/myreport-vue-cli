@@ -4,18 +4,18 @@ import func, { updateWithoutAddActivity } from "../myfunction"
 import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
 import { getJWTToken, setJWTToken } from "../utils/cookie";
-import { syncClockToServer } from "../composable/components/BaseReportClock";
-import { syncBaseFileToServer } from "../composable/components/BaseReportFile";
-import { syncBaseStockToServer } from "../composable/components/BaseReportStock";
-import { syncItemToServer } from "../composable/components/Baseitem";
-import { syncCasesToServer } from "../composable/components/Cases";
-import { syncComplainsToServer } from "../composable/components/Complains";
-import { syncDocumentToServer } from "../composable/components/DocumentsPeriod";
-import { syncFieldProblemToServer } from "../composable/components/FieldProblem";
-import { syncHeadSpvToServer } from "../composable/components/Headspv";
-import { syncProblemToServer } from "../composable/components/Problem";
-import { syncSupervisorToServer } from "../composable/components/Supervisors";
-import { syncWarehouseToServer } from "../composable/components/Warehouses";
+import { syncClockToServer, syncClockRecordToServer } from "../composable/components/BaseReportClock";
+import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../composable/components/BaseReportFile";
+import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../composable/components/BaseReportStock";
+import { syncItemToServer, syncItemRecordToServer } from "../composable/components/Baseitem";
+import { syncCasesToServer, syncCaseRecordToServer } from "../composable/components/Cases";
+import { syncComplainsToServer, syncComplainRecordToServer } from "../composable/components/Complains";
+import { syncDocumentToServer, syncDocumentRecordToServer } from "../composable/components/DocumentsPeriod";
+import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../composable/components/FieldProblem";
+import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../composable/components/Headspv";
+import { syncProblemToServer, syncProblemRecordToServer } from "../composable/components/Problem";
+import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../composable/components/Supervisors";
+import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../composable/components/Warehouses";
 import { modalClose, loader} from "./piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../components/parts/Loader/state";
 import { loginToServer } from "../utils/loginToServer"
@@ -60,6 +60,7 @@ export async function syncAllDataToServer() {
         const tryLogin = await login();
 
         if(tryLogin === false) {
+            alert('Email or password invalid');
             return
         }
     }
@@ -72,88 +73,17 @@ export async function syncAllDataToServer() {
 
     for(let [index, func] of functionsToSync.entries()) {
         progressMessage.value = `Sinkronisasi table ${index} dari ${functionsToSync.length}`;
-        const isSynced = await func()
+        const isSynced = await func();
+        
         if(!isSynced) {
             modalClose();
             return;
         }
+
+        alert("All document synced");
+        modalClose();
+
     }
-
-    // const isClockSynced = await syncClockToServer();
-
-    // if(!isClockSynced) {
-    //     return;
-    // }
-
-    // const isBaseFileSynced = await syncBaseFileToServer();
-
-    // if(!isBaseFileSynced) {
-    //     return;
-    // }
-
-    // const isBaseStockSynced = await syncBaseStockToServer();
-
-    // if(!isBaseStockSynced) {
-    //     return;
-    // }
-
-    // const isItemSynced = await syncItemToServer();
-
-    // if(!isItemSynced) {
-    //     return;
-    // }
-
-    // const isCasesSynced = await syncCasesToServer();
-
-    // if(!isCasesSynced) {
-    //     return;
-    // }
-
-    // const isComplainSynced = await syncComplainsToServer();
-
-    // if(!isComplainSynced) {
-    //     return;
-    // }
-
-    // const isDocumentSynced = await syncDocumentToServer();
-
-    // if(!isDocumentSynced) {
-    //     return;
-    // }
-
-    // const isFieldProblemSynced = await syncFieldProblemToServer();
-
-    // if(!isFieldProblemSynced) {
-    //     return;
-    // }
-
-    // const isHeadSpvSynced = await syncHeadSpvToServer();
-
-    // if(!isHeadSpvSynced) {
-    //     return;
-    // }
-
-    // const isProblemSynced = await syncProblemToServer();
-
-    // if(!isProblemSynced) {
-    //     return;
-    // }
-
-    // const isSupervisorSynced = await syncSupervisorToServer();
-
-    // if(!isSupervisorSynced) {
-    //     return;
-    // }
-
-    // const isWarehouseSynced = await syncWarehouseToServer();
-
-    // if(!isWarehouseSynced) {
-    //     return;
-    // }
-
-    alert("All document synced")
-    modalClose();
-
 
 }
 
@@ -172,6 +102,49 @@ async function login() {
         alert(resp.message)
         return false
     }
+}
+
+export async function syncBasedOnActivity () {
+    const storeToBackup = ['basereportclock', 'basereportfile', 'basereportstock', 'cases', 'complains', 'document', 'fieldproblem', 'headspv', 'problem', 'supervisors', 'warehouses']
+
+    const endPoint = {
+        'basereportclock': 'base_clock', 
+        'basereportfile': 'base_file', 
+        'basereportstock': 'base_stock', 
+        'cases': 'case/case_import', 
+        'complains': 'complain/complain_import', 
+        'document': 'document', 
+        'fieldproblem': 'field_problem', 
+        'headspv': 'head_spv', 
+        'problem' : 'problem', 
+        'supervisors': 'supervisor', 
+        'warehouses' : 'warehouse'
+    }
+
+    const loginRecords = await func.findData({ store: 'login', criteria: { backup: false }})
+    
+    if(!loginRecords) {  
+        alert("All login is synced!");
+        return true 
+    }
+
+    for(let login of loginRecords) {
+        const loginActivities = await func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
+
+        if(loginActivities) {
+            for(let activity of loginActivities) {
+                if(storeToBackup.includes(activity.store)) {
+                    if(activity.type === 'create') {
+
+                    }
+                    else if(activity.type === 'update') {
+
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 

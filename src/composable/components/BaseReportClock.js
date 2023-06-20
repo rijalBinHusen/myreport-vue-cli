@@ -1,9 +1,9 @@
-import { append, deleteDocument, findData, update, getData } from "@/myfunction";
+import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { totalTime } from "../piece/totalTimeAsMinute";
 import { postData } from "../../utils/sendDataToServer"
 
 export let lists = [];
-let storeName = "BaseReportClock";
+let storeName = "basereportclock";
 
 export const startImportClock = async (sheets, baseId) => {
   // dapatkan ref
@@ -199,5 +199,51 @@ export async function syncClockToServer () {
 
     }
   }
+  return true
+}
+
+
+export async function syncClockRecordToServer (idRecord, mode) {
+
+  if(typeof idRecord !== 'string') {
+    alert("Id record base report clock must be a string");
+    return;
+  }
+
+  let record = await getDataByKey(storeName, idRecord);
+
+    let dataToSend = {
+      "id": idRecord,
+      "parent": record?.parent,
+      "shift": record?.shift || 1,
+      "no_do": record?.noDo || 1,
+      "reg": record?.reg || "00:00",
+      "start": record?.start || "00:00",
+      "finish": record?.finish || "00:00",
+      "rehat": record?.rehat || 0
+    }
+
+    try {
+
+      if(mode === 'create') {
+  
+        await postData('base_clock', dataToSend);
+  
+      } 
+    
+      else if(mode === 'update') {
+  
+          await putData('base_clock/'+ idRecord, dataToSend)
+  
+      }
+
+    } catch(err) {
+
+      const errorMessage = "Failed to send base report clock record to server with error message: " + err;
+        alert(errorMessage); 
+        console.log(errorMessage);
+        return false;
+
+    }
   return true
 }

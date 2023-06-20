@@ -1,4 +1,4 @@
-import { findData, update, append, deleteDocument, getData } from "../../myfunction"
+import { findData, update, append, deleteDocument, getData, getDataByKey } from "../../myfunction"
 import getDatesArray from "../piece/getDaysArray"
 import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateFormat'
 import { getHeadspvId } from './Headspv'
@@ -7,7 +7,7 @@ import { getWarehouseId, warehouseNameBySpv } from './Warehouses'
 import { postData } from "../../utils/sendDataToServer";
 
 let lists = []
-const storeName = "Document";
+const storeName = "document";
 
 // get all documents by periode
 export const getDocuments = async (periode1, periode2) => {
@@ -379,6 +379,77 @@ export async function syncDocumentToServer () {
   
   
       }
+    }
+    return true
+  }
+
+
+  export async function syncDocumentRecordToServer (idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record document must be a string");
+        return;
+    }
+
+    let record = await getDataByKey(storeName, idRecord);
+
+    // (v)approval, (v)baseReportFile, (v)collected, (v)finished, (v)generateReport
+    // (v)head, (v)id, (v)isfinished, itemVariance, (v)name, parent, parentDocument
+    // (v)periode, planOut, (v)shared, (v)shift, (v)status, (v)totalDo, totalItemKeluar
+    // totalItemMoving, (v)totalKendaraan, totalProductNotFIFO, totalQTYIn
+    // totalQTYOut, (v)totalWaktu, (v)warehouse
+  
+    let dataToSend = {
+        "id": idRecord,
+        "collected": record?.collected || 0,
+        "approval": record?.approval || 0,
+        "status": record?.status || 0,
+        "shared": record?.shared || 0,
+        "finished": record?.finished || 0,
+        "total_do": record?.totalDo || 0,
+        "total_kendaraan": record?.totalKendaraan || 0,
+        "total_waktu": record?.totalWaktu || 0,
+        "base_report_file": record?.baseReportFile || 0,
+        "is_finished": record?.isfinished || 0,
+        "supervisor_id": record?.name || 0,
+        "periode": record?.periode || 0,
+        "shift": record?.shift || 0,
+        "head_spv_id": record?.head || 0,
+        "warehouse_id": record?.warehouse || 0,
+        "is_generated_document": record?.generateReport || 0,
+        "item_variance": record?.itemVariance || 0,
+        "parent": record?.parent || 0,
+        "parent_document": record?.parentDocument || 0,
+        "plan_out": record?.planOut || 0,
+        "total_item_keluar": record?.totalItemKeluar || 0,
+        "total_item_moving": record?.totalItemMoving || 0,
+        "total_product_not_FIFO": record?.totalProductNotFIFO || 0,
+        "total_qty_in": record?.totalQTYIn || 0,
+        "total_qty_out": record?.totalQTYOut || 0,
+        }
+
+    try {
+
+        if(mode === 'create') {
+    
+          await postData('document', dataToSend);
+    
+        } 
+      
+        else if(mode === 'update') {
+    
+            await putData('document/'+ idRecord, dataToSend)
+    
+        }
+
+    } catch(err) {
+    
+    const errorMessage = 'Failed to send document record to server with error message: ' + err;
+    alert(errorMessage); 
+    console.log(errorMessage)
+    return false;
+
+
     }
     return true
   }

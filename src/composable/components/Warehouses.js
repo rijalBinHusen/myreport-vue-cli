@@ -1,8 +1,8 @@
-import { getData, append, update } from '../../myfunction'
+import { getData, append, update, getDataByKey } from '../../myfunction'
 import { getSupervisorId } from './Supervisors'
 
 export let lists = []
-const storeName = "Warehouses";
+const storeName = "warehouses";
 
 export const getWarehouses = async () => {
     lists = []
@@ -131,7 +131,7 @@ export const getSupervisorShift1ByWarehouse = async (idWarehouse) => {
 
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData } from "../../utils/sendDataToServer";
+import { postData, putData } from "../../utils/sendDataToServer";
 export async function syncWarehouseToServer () {
 
     let allData = await getData({ store: storeName, withKey: true })
@@ -156,6 +156,49 @@ export async function syncWarehouseToServer () {
         console.log(err)
         //   return false;
       }
+    }
+
+    return true;
+  }
+
+
+  export async function syncWarehouseRecordToServer (idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record must be string");
+        return;
+    }
+
+    let record = await getDataByKey(storeName, idRecord);
+    //group, id, isGrouped, name, supervisors
+  
+    let dataToSend = {
+        "id": record?.idRecord,
+        "warehouse_name": record?.name || 0,
+        "warehouse_group": record?.group || 0,
+        "warehouse_supervisors": record?.supervisors.toString()
+    }
+  
+    try {
+        if(mode === 'create') {
+
+            await postData('warehouse', dataToSend);
+
+        } 
+        
+        else if(mode === 'update') {
+
+            await putData('warehouse/'+ idRecord, dataToSend)
+
+        }
+
+    } catch(err) {
+      const errorMessage = `Failed to send warehouse record with message: ${err}`;
+
+      alert(errorMessage); 
+      console.error(errorMessage);
+
+      return false;
     }
 
     return true;

@@ -1,9 +1,9 @@
-import { getData, update, append } from '../../myfunction'
+import { getData, update, append, getDataByKey } from '../../myfunction'
 import { postData } from "../../utils/sendDataToServer"
 import { progressMessage2 } from "../../components/parts/Loader/state"
 
 export let lists = []
-const storeName = "Supervisors";
+const storeName = "supervisors";
 
 export const getSupervisors = async () => {
     lists = []
@@ -79,6 +79,50 @@ export async function syncSupervisorToServer () {
         // return false;
 
     }
+  }
+
+  return true;
+}
+
+export async function syncSupervisorRecordToServer (idRecord, mode) {
+
+  if(typeof idRecord !== 'string') {
+    alert('Id record supervisor must be string')
+    return;
+  }
+
+  let record = await getDataByKey(storeName, idRecord);
+  //disabled, id, name, phone, shift, warehouse, warehouseName
+
+  let dataToSend = {
+    "id": idRecord,
+    "supervisor_name": record?.name || 0,
+    "supervisor_phone": record?.phone || 0,
+    "supervisor_warehouse": record?.warehouse || 0,
+    "supervisor_shift": record?.shift || 0,
+    "is_disabled": record?.disabled || 0
+  }
+
+  try {
+      if(mode === 'create') {
+
+        await postData('supervisor', dataToSend);
+
+      } 
+    
+      else if(mode === 'update') {
+
+          await putData('supervisor/'+ idRecord, dataToSend)
+
+      }
+
+  } catch(err) {
+      
+      const errorMessage = "Failed to sync record to server with message: " + err;
+      alert(errorMessage); 
+      console.log(errorMessage);
+      return false;
+
   }
 
   return true;

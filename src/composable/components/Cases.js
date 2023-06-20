@@ -1,10 +1,10 @@
 import { getSupervisorId } from "@/composable/components/Supervisors";
 import { getHeadspvId } from "@/composable/components/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
-import { append, getData, update, deleteDocument } from "@/myfunction";
+import { append, getData, update, deleteDocument, getDataByKey } from "@/myfunction";
 
 let lists = [];
-const storeName = "Cases";
+const storeName = "cases";
 
 export async function addCase(
   periode,
@@ -194,6 +194,93 @@ export async function syncCasesToServer () {
         // return false;
 
     }
+  }
+  return true
+}
+
+
+export async function syncCaseRecordToServer (idRecord, mode) {
+
+  if(typeof idRecord !== 'string') {
+    alert("Id record case must be a string");
+    return;
+  }
+
+  let record = await getDataByKey(storeName, idRecord);
+
+  // awal, dateEnd, dateIn, dateOut, id, in, item, 
+  //out, parent, parentDocument, planOut
+  //  problem, real, shift
+
+  // case import
+  // bagian, divisi, fokus, id, import, inserted, kabag, karu
+  // keterangan1, keterangan2, periode, temuan
+  let dataToSend;
+  let endPoint;
+
+  if(record?.import) {
+
+    dataToSend = {
+      "id": idRecord,
+      "bagian": record?.bagian || 0,
+      "divisi": record?.divisi || 0,
+      "fokus": record?.fokus || 0,
+      "kabag": record?.kabag || 0,
+      "karu": record?.karu || 0,
+      "keterangan1": record?.keterangan1 || 0,
+      "keterangan2": record?.keterangan2 || 0,
+      "periode": record?.periode || 0,
+      "temuan": record?.temuan || 0
+    }
+
+    endPoint = "case_import/";
+
+  } 
+
+  // case
+  // dl || 0, head || 0, id || 0, insert || 0, masalah || 0, name || 0, parent || 0, periode || 0, pic
+  // solusi || 0, status || 0, sumberMasalah
+  else {
+
+    dataToSend = {
+      "id": idRecord,
+      "periode": record?.periode || 0,
+      "head_spv_id": record?.head || 0,
+      "dl": record?.dl || 0,
+      "masalah": record?.masalah || 0,
+      "supervisor_id": record?.name || 0,
+      "parent": record?.parent || 0,
+      "pic": record?.pic || 0,
+      "solusi": record?.solusi || 0,
+      "status": record?.status || 0,
+      "sumber_masalah": record?.sumberMasalah || 0
+    }
+
+    endPoint = "case/";
+
+  }
+
+  try {
+
+    if(mode === 'create') {
+
+      await postData(endPoint, dataToSend);
+
+    } 
+  
+    else if(mode === 'update') {
+
+        await putData(endPoint + idRecord, dataToSend)
+
+    }
+
+  } catch(err) {
+
+    const errorMessage = 'Failed to send case record to server with error message: ' + err;
+      alert(errorMessage);
+      console.log(errorMessage)
+      return false;
+
   }
   return true
 }

@@ -1,6 +1,6 @@
-import { update, append, getData, deleteDocument, updateWithoutAddActivity } from '@/myfunction'
+import { update, append, getData, deleteDocument, updateWithoutAddActivity, getDataByKey } from '@/myfunction'
 import { ymdTime } from '../piece/dateFormat'
-import { postData } from "../../utils/sendDataToServer";
+import { postData, putData } from "../../utils/sendDataToServer";
 
 export let lists = []
 
@@ -92,5 +92,45 @@ export async function syncItemToServer() {
         }
 
     }
+    return true;
+}
+
+
+export async function syncItemRecordToServer(idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record base item must be a string");
+        return
+    }
+
+    const record = await getDataByKey('baseitem', idRecord);
+
+    const dataToSend = {
+        "id": idRecord,
+        "item_kode": record.kode || 0,
+        "item_name": record.name || 0,
+        "last_used": record.lastUsed || 0
+    }
+
+    try {
+        
+        if(mode === 'create') {
+
+            await postData('base_item', dataToSend);
+
+        } else if(mode === 'update') {
+
+            await putData('base_item/'+idRecord, dataToSend)
+
+        }
+
+    } catch(err) {
+        const errorMessage = 'Failed to send base item record to server with error message: '+ err;
+        alert(errorMessage);
+        console.log(errorMessage);
+        return false
+
+    }
+
     return true;
 }

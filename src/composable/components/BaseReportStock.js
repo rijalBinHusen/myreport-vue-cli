@@ -1,11 +1,11 @@
-import { append, deleteDocument, findData, update, getData } from "@/myfunction";
+import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { findBaseReportFile } from "./BaseReportFile";
 import { masalah, problemActive } from "./Problem";
 import { getItemByKode } from './Baseitem'
 import { postData } from "../../utils/sendDataToServer";
 
 let lists = [];
-const storeName = "BaseReportStock";
+const storeName = "basereportstock";
 
 export const startImportStock = async (sheets, baseId) => {
   // dapatkan !ref
@@ -264,6 +264,59 @@ export async function syncBaseStockToServer () {
         // return false;
 
     }
+  }
+  return true;
+}
+
+export async function syncBaseStockRecordToServer (idRecord, mode) {
+
+  if(typeof idRecord !== 'string') {
+    alert("Id record base report stock must be a string");
+    return;
+  }
+
+  let record = await getDataByKey(storeName, idRecord);
+  // awal, dateEnd, dateIn, dateOut, id, in, item, 
+  //out, parent, parentDocument, planOut
+//  problem, real, shift
+
+  let dataToSend = {
+    "id": idRecord,
+    "parent": record?.parent || 0,
+    "shift": record?.shift || 0,
+    "item": record?.item || 0,
+    "awal": record?.awal || 0,
+    "in_stock": record?.in || 0,
+    "out_stock": record?.out || 0,
+    "date_in": record?.dateIn || 0,
+    "plan_out": record?.planOut || 0,
+    "date_out": record?.dateOut || 0,
+    "date_end": record?.dateEnd || 0,
+    "real_stock": record?.real || 0,
+    "problem": record?.problem.toString()  || 0
+  }
+
+  try {
+
+    if(mode === 'create') {
+
+      await postData('base_stock', dataToSend);
+
+    } 
+  
+    else if(mode === 'update') {
+
+        await putData('base_stock/'+ idRecord, dataToSend)
+
+    }
+
+  } catch(err) {
+
+    const errorMessage = 'Failed to send base stock record to server with error message: ' + err;
+    alert(errorMessage); 
+    console.log(errorMessage)
+    return false;
+
   }
   return true;
 }

@@ -1,4 +1,4 @@
-import { findData, update, append, deleteDocument, getData } from "@/myfunction";
+import { findData, update, append, deleteDocument, getData, getDataByKey } from "@/myfunction";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
@@ -6,7 +6,7 @@ import { getWarehouseId, lists as warehouseLists } from "./Warehouses";
 import { postData } from "../../utils/sendDataToServer";
 
 export const lists = ref([])
-const storeName = "BaseReportFile";
+const storeName = "basereportfile";
 
 export const getBaseReportFile = async (periode1, periode2) => {
     lists.value = []
@@ -162,6 +162,57 @@ export async function syncBaseFileToServer () {
         //   return false;
   
       }
+    }
+    return true;
+  }
+
+  
+export async function syncBaseFileRecordToServer (idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record base report file must be a string");
+        return;
+    }
+
+    let record = await getDataByKey(storeName, idRecord);
+
+    //   clock, fileName, id, imported, periode, stock, warehouse
+
+    const warehouseToSend = typeof record?.warehouse === 'object' 
+                                ? record?.warehouse.id
+                                : record?.warehouse;
+
+    let dataToSend = {
+    "id": idRecord,
+    "periode": record?.periode || 0,
+    "warehouse_id": warehouseToSend || 0,
+    "file_name": record?.fileName || 0,
+    "stock_sheet": record?.stock || 0,
+    "clock_sheet": record?.clock || 0,
+    "is_imported": record?.imported || 0
+    }
+
+    try {
+
+        if(mode === 'create') {
+    
+          await postData('base_file', dataToSend);
+    
+        } 
+      
+        else if(mode === 'update') {
+    
+            await putData('base_file/'+ idRecord, dataToSend)
+    
+        }
+
+    } catch(err) {
+
+        const errorMessage = 'Failed to send base file record with error message: ' + err;
+        alert(errorMessage); 
+        console.log(errorMessage)
+        return false;
+
     }
     return true;
   }

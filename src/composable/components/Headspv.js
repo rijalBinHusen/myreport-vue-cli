@@ -1,8 +1,8 @@
-import { getData, update, append } from '../../myfunction'
+import { getData, update, append, getDataByKey } from '../../myfunction'
 import { postData } from "../../utils/sendDataToServer"
 
 export let lists = []
-const storeName = "Headspv";
+const storeName = "headspv";
 
 export const getHeadspv = async () => {
     lists = []
@@ -83,6 +83,52 @@ export async function syncHeadSpvToServer () {
         //   return false;
   
       }
+    }
+
+    return true
+  }
+
+export async function syncHeadSpvRecordToServer (idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert('Id record head supervisor must be a string')
+        return;
+    }
+
+    let record = await getDataByKey(storeName, idRecord)
+    
+    //disabled, id, name, phone, shift
+  
+    let dataToSend = {
+        "id": idRecord,
+        "head_name": record?.name || 0,
+        "head_phone": record?.phone || 0,
+        "head_shift": record?.shift || 0,
+        "is_disabled": record?.disabled || 0
+        }
+
+    try {
+
+        if(mode === 'create') {
+    
+          await postData('head_spv', dataToSend);
+    
+        } 
+      
+        else if(mode === 'update') {
+    
+            await putData('head_spv/'+ idRecord, dataToSend)
+    
+        }
+        
+
+    } catch(err) {
+    
+    const errorMessage = 'Failed to send record head supervisor with error message: ' + err;
+    alert(errorMessage); 
+    console.log(errorMessage)
+    return false;
+
     }
 
     return true
