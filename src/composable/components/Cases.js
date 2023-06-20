@@ -141,7 +141,7 @@ export async function syncCasesToServer () {
     let dataToSend;
     let endPoint;
 
-    if(datum?.import) {
+    if(datum?.data?.import) {
 
       dataToSend = {
         "id": datum?.key || 0,
