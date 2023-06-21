@@ -208,6 +208,11 @@ export async function syncCaseRecordToServer (idRecord, mode) {
 
   let record = await getDataByKey(storeName, idRecord);
 
+  if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
+
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
   //out, parent, parentDocument, planOut
   //  problem, real, shift
@@ -282,7 +287,7 @@ export async function syncCaseRecordToServer (idRecord, mode) {
 
   } catch(err) {
 
-    const errorMessage = 'Failed to send case record to server with error message: ' + err;
+    const errorMessage = 'Failed to send case record id :' + idRecord +' to server with error message: ' + err;
     alert(errorMessage);
     console.log(errorMessage)
     return false;

@@ -94,6 +94,11 @@ export async function syncSupervisorRecordToServer (idRecord, mode) {
   let record = await getDataByKey(storeName, idRecord);
   //disabled, id, name, phone, shift, warehouse, warehouseName
 
+    if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
+
   let dataToSend = {
     "id": idRecord,
     "supervisor_name": record?.name || 0,
@@ -124,7 +129,7 @@ export async function syncSupervisorRecordToServer (idRecord, mode) {
 
   } catch(err) {
       
-      const errorMessage = "Failed to sync record to server with message: " + err;
+      const errorMessage = 'Failed to sync supervisor record id :' + idRecord +' to server with message: ' + err;
       alert(errorMessage); 
       console.log(errorMessage);
       return false;

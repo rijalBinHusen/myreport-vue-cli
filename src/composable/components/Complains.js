@@ -238,6 +238,11 @@ export async function syncComplainRecordToServer (idRecord, mode) {
 
   let record = await getDataByKey(storeName, idRecord);
 
+  if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
+
     // customer, do, gudang, id, import, inserted, item
     // kabag, nomorSJ, nopol, real, row, spv, tally, tanggalBongkar
     // tanggalInfo, tanggalKomplain, tanggalSuratJalan, type
@@ -319,7 +324,7 @@ export async function syncComplainRecordToServer (idRecord, mode) {
 
     } catch(err) {
       
-      const errorMessage = "Failed to send complain record to server with error message: "+ err;
+      const errorMessage = 'Failed to send complain record id :' + idRecord +' to server with error message: '+ err;
       alert(errorMessage); 
       console.log(errorMessage)
       return false;

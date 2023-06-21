@@ -170,6 +170,11 @@ export async function syncWarehouseToServer () {
     }
 
     let record = await getDataByKey(storeName, idRecord);
+
+    if(!record) {
+        // dont do anything if record doesn't exist;
+        return
+    }
     //group, id, isGrouped, name, supervisors
   
     let dataToSend = {
@@ -198,7 +203,7 @@ export async function syncWarehouseToServer () {
 
     } catch(err) {
         
-      const errorMessage = `Failed to send warehouse record with message: ${err}`;
+      const errorMessage = 'Failed to send warehouse record id :' + idRecord +' with message: ' +err;
       alert(errorMessage); 
       console.error(errorMessage);
 

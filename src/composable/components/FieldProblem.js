@@ -145,6 +145,11 @@ export async function syncFieldProblemToServer () {
     }
 
     let record = await getDataByKey(storeName, idRecord);
+
+    if(!record) {
+        // dont do anything if record doesn't exist;
+        return
+    }
     
     // dl, head, id, masalah, periode, pic, solusi, sumberMasalah
     //    supervisor
@@ -183,7 +188,7 @@ export async function syncFieldProblemToServer () {
 
     } catch(err) {
     
-        const errorMessage = 'Failed to send field problem record with error message: ' + err;
+        const errorMessage = 'Failed to send field problem record id :' + idRecord +' with error message: ' + err;
         alert(errorMessage); 
         console.log(errorMessage)
         return false;

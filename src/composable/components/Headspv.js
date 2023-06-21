@@ -96,6 +96,11 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
     }
 
     let record = await getDataByKey(storeName, idRecord)
+
+    if(!record) {
+        // dont do anything if record doesn't exist;
+        return
+    }
     
     //disabled, id, name, phone, shift
   
@@ -130,7 +135,7 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
 
     } catch(err) {
     
-        const errorMessage = 'Failed to send record head supervisor with error message: ' + err;
+        const errorMessage = 'Failed to send record head supervisor id :' + idRecord +' with error message: ' + err;
         alert(errorMessage); 
         console.log(errorMessage)
         return false;

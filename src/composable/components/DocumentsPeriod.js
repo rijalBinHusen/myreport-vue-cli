@@ -393,6 +393,11 @@ export async function syncDocumentToServer () {
 
     let record = await getDataByKey(storeName, idRecord);
 
+    if(!record) {
+        // dont do anything if record doesn't exist;
+        return
+    }
+
     // (v)approval, (v)baseReportFile, (v)collected, (v)finished, (v)generateReport
     // (v)head, (v)id, (v)isfinished, itemVariance, (v)name, parent, parentDocument
     // (v)periode, planOut, (v)shared, (v)shift, (v)status, (v)totalDo, totalItemKeluar
@@ -450,7 +455,7 @@ export async function syncDocumentToServer () {
 
     } catch(err) {
     
-        const errorMessage = 'Failed to send document record to server with error message: ' + err;
+        const errorMessage = 'Failed to send document record id :' + idRecord +' to server with error message: ' + err;
         alert(errorMessage); 
         console.log(errorMessage)
         return false;

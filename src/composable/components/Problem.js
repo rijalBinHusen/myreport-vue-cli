@@ -250,6 +250,11 @@ export async function syncProblemRecordToServer (idRecord, mode) {
   }
 
   let record = await getDataByKey(storeName, idRecord);
+
+  if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
   //dl dlPanjang, id, isFinished, item, masalah, nameHeadSpv, 
   // nameSpv, periode, pic, picPanjang, shiftMulai, shiftSelesai, 
   // solusi, solusiPanjang, sumberMasalah, tanggalSelesai, warehouse 
@@ -297,7 +302,7 @@ export async function syncProblemRecordToServer (idRecord, mode) {
 
   } catch(err) {
 
-    const errorMessage = 'Failed to sync problem record with error message: ' + err;
+    const errorMessage = 'Failed to sync problem record id :' + idRecord +' with error message: ' + err;
     alert(errorMessage); 
     console.log(errorMessage);
     return false;

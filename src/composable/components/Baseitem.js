@@ -105,6 +105,11 @@ export async function syncItemRecordToServer(idRecord, mode) {
 
     const record = await getDataByKey('baseitem', idRecord);
 
+    if(!record) {
+        // dont do anything if record doesn't exist;
+        return
+    }
+
     const dataToSend = {
         "id": idRecord,
         "item_kode": record.kode || 0,
@@ -132,7 +137,7 @@ export async function syncItemRecordToServer(idRecord, mode) {
 
     } catch(err) {
 
-        const errorMessage = 'Failed to send base item record to server with error message: '+ err;
+        const errorMessage = 'Failed to send base item record id :' + idRecord +' to server with error message: '+ err;
         alert(errorMessage);
         console.log(errorMessage);
         return false

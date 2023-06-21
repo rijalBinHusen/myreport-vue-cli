@@ -176,6 +176,11 @@ export async function syncBaseFileRecordToServer (idRecord, mode) {
 
     let record = await getDataByKey(storeName, idRecord);
 
+    if(!record) {
+        // dont do anything if record doesn't exist;
+        return
+    }
+
     //   clock, fileName, id, imported, periode, stock, warehouse
 
     const warehouseToSend = typeof record?.warehouse === 'object' 
@@ -214,7 +219,7 @@ export async function syncBaseFileRecordToServer (idRecord, mode) {
 
     } catch(err) {
 
-        const errorMessage = 'Failed to send base file record with error message: ' + err;
+        const errorMessage = 'Failed to send base file record id :' + idRecord +' with error message: ' + err;
         alert(errorMessage); 
         console.log(errorMessage)
         return false;

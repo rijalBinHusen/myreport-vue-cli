@@ -19,6 +19,7 @@ import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../composabl
 import { modalClose, loader} from "./piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../components/parts/Loader/state";
 import { loginToServer } from "../utils/loginToServer"
+import signOut from "../composable/UserSignOut";
 
 export const storeBackup = async (sendToCloud) => {
     // will store all document that we saved in idexeddb
@@ -126,6 +127,8 @@ export async function syncBasedOnActivity () {
         return true 
     }
 
+    let recordSynced = {};
+
     for(let [index, login] of loginRecords.entries()) {
         progressMessage.value = null;
 
@@ -135,47 +138,62 @@ export async function syncBasedOnActivity () {
 
         if(loginActivities) {
             for(let [index, activity] of loginActivities.entries()) {
+                
                 progressMessage.value = `Syncing activity ${index} dari ${loginActivities.length}`;
 
-                switch (activity.store) {
-                    case 'baseitem':
-                        await syncItemRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'basereportclock':
-                        await syncClockRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'basereportfile':
-                        await syncBaseFileRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'basereportstock':
-                        await syncBaseStockRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'cases':
-                        await syncCaseRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'complains':
-                        await syncComplainRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'document':
-                        await syncDocumentRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'fieldproblem':
-                        await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'headspv':
-                        await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'problem':
-                        await syncProblemRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'supervisors':
-                        await syncSupervisorRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'warehouses':
-                        await syncWarehouseRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    default:
-                        break;
+                if(recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)) {
+                    // dont do anything
+                    // console.warn(`Record ${activity.idRecord} exists, it should be doesn't send request to server`)
+                } 
+                
+                else {
+
+                    switch (activity.store) {
+                        case 'baseitem':
+                            await syncItemRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'basereportclock':
+                            await syncClockRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'basereportfile':
+                            await syncBaseFileRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'basereportstock':
+                            await syncBaseStockRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'cases':
+                            await syncCaseRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'complains':
+                            await syncComplainRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'document':
+                            await syncDocumentRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'fieldproblem':
+                            await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'headspv':
+                            await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'problem':
+                            await syncProblemRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'supervisors':
+                            await syncSupervisorRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'warehouses':
+                            await syncWarehouseRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // record that synced
+                    recordSynced.hasOwnProperty([activity.store])
+                        ? recordSynced[activity.store].push(activity.idRecord)
+                        : recordSynced[activity.store] = [activity.idRecord];
+
                 }
 
             }
@@ -183,6 +201,7 @@ export async function syncBasedOnActivity () {
         await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
     modalClose();
+    signOut();
 
 }
 

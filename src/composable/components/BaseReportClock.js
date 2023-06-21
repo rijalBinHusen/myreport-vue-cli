@@ -212,6 +212,11 @@ export async function syncClockRecordToServer (idRecord, mode) {
 
   let record = await getDataByKey(storeName, idRecord);
 
+  if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
+
     let dataToSend = {
       "id": idRecord,
       "parent": record?.parent,
@@ -245,7 +250,7 @@ export async function syncClockRecordToServer (idRecord, mode) {
 
     } catch(err) {
 
-      const errorMessage = "Failed to send base report clock record to server with error message: " + err;
+      const errorMessage = 'Failed to send base report clock record id :' + idRecord +' to server with error message: ' + err;
         alert(errorMessage); 
         console.log(errorMessage);
         return false;
