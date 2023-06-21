@@ -105,45 +105,84 @@ async function login() {
 }
 
 export async function syncBasedOnActivity () {
-    const storeToBackup = ['basereportclock', 'basereportfile', 'basereportstock', 'cases', 'complains', 'document', 'fieldproblem', 'headspv', 'problem', 'supervisors', 'warehouses']
+    const isTokenExists =  getJWTToken();
 
-    const endPoint = {
-        'basereportclock': 'base_clock', 
-        'basereportfile': 'base_file', 
-        'basereportstock': 'base_stock', 
-        'cases': 'case/case_import', 
-        'complains': 'complain/complain_import', 
-        'document': 'document', 
-        'fieldproblem': 'field_problem', 
-        'headspv': 'head_spv', 
-        'problem' : 'problem', 
-        'supervisors': 'supervisor', 
-        'warehouses' : 'warehouse'
+    if(isTokenExists == null) {
+        const tryLogin = await login();
+
+        if(tryLogin === false) {
+            alert('Email or password invalid');
+            return
+        }
     }
+    // const storeToBackup = ['baseitem', 'basereportclock', 'basereportfile', 'basereportstock', 'cases', 'complains', 'document', 'fieldproblem', 'headspv', 'problem', 'supervisors', 'warehouses']
+    loader();
 
     const loginRecords = await func.findData({ store: 'login', criteria: { backup: false }})
     
     if(!loginRecords) {  
         alert("All login is synced!");
+        modalClose();
         return true 
     }
 
-    for(let login of loginRecords) {
+    for(let [index, login] of loginRecords.entries()) {
+        progressMessage.value = null;
+
+        loaderMessage.value = `Syncing login ${index} dari ${loginRecords.length}`;
+
         const loginActivities = await func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
 
         if(loginActivities) {
-            for(let activity of loginActivities) {
-                if(storeToBackup.includes(activity.store)) {
-                    if(activity.type === 'create') {
+            for(let [index, activity] of loginActivities.entries()) {
+                progressMessage.value = `Syncing activity ${index} dari ${loginActivities.length}`;
 
-                    }
-                    else if(activity.type === 'update') {
-
-                    }
+                switch (activity.store) {
+                    case 'baseitem':
+                        await syncItemRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'basereportclock':
+                        await syncClockRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'basereportfile':
+                        await syncBaseFileRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'basereportstock':
+                        await syncBaseStockRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'cases':
+                        await syncCaseRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'complains':
+                        await syncComplainRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'document':
+                        await syncDocumentRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'fieldproblem':
+                        await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'headspv':
+                        await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'problem':
+                        await syncProblemRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'supervisors':
+                        await syncSupervisorRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    case 'warehouses':
+                        await syncWarehouseRecordToServer(activity.idRecord, activity.type);
+                        break;
+                    default:
+                        break;
                 }
+
             }
         }
+        await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
+    modalClose();
 
 }
 

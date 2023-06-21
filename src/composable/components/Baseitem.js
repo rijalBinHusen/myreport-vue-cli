@@ -1,6 +1,6 @@
 import { update, append, getData, deleteDocument, updateWithoutAddActivity, getDataByKey } from '@/myfunction'
 import { ymdTime } from '../piece/dateFormat'
-import { postData, putData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 
 export let lists = []
 
@@ -124,7 +124,14 @@ export async function syncItemRecordToServer(idRecord, mode) {
 
         }
 
+        else if (mode === 'delete') {
+
+            await deleteData('base_item/'+ idRecord)
+            
+        }
+
     } catch(err) {
+
         const errorMessage = 'Failed to send base item record to server with error message: '+ err;
         alert(errorMessage);
         console.log(errorMessage);

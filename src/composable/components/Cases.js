@@ -125,7 +125,7 @@ export const removeCase = async (id) => {
 };
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 export async function syncCasesToServer () {
 
   let allData = await getData({ store: storeName, withKey: true })
@@ -274,12 +274,18 @@ export async function syncCaseRecordToServer (idRecord, mode) {
 
     }
 
+    else if (mode === 'delete') {
+
+        await deleteData(endPoint + idRecord)
+        
+    }
+
   } catch(err) {
 
     const errorMessage = 'Failed to send case record to server with error message: ' + err;
-      alert(errorMessage);
-      console.log(errorMessage)
-      return false;
+    alert(errorMessage);
+    console.log(errorMessage)
+    return false;
 
   }
   return true

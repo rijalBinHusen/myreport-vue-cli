@@ -2,7 +2,7 @@ import { append, deleteDocument, findData, update, getData, getDataByKey } from 
 import { findBaseReportFile } from "./BaseReportFile";
 import { masalah, problemActive } from "./Problem";
 import { getItemByKode } from './Baseitem'
-import { postData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 
 let lists = [];
 const storeName = "basereportstock";
@@ -308,6 +308,12 @@ export async function syncBaseStockRecordToServer (idRecord, mode) {
 
         await putData('base_stock/'+ idRecord, dataToSend)
 
+    }
+
+    else if (mode === 'delete') {
+
+        await deleteData('base_stock/'+ idRecord)
+        
     }
 
   } catch(err) {

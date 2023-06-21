@@ -1,5 +1,5 @@
 import { getData, update, append, getDataByKey } from '../../myfunction'
-import { postData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 
 export let lists = []
 const storeName = "headspv";
@@ -120,14 +120,20 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
             await putData('head_spv/'+ idRecord, dataToSend)
     
         }
+
+        else if (mode === 'delete') {
+
+            await deleteData('head_spv/'+ idRecord)
+            
+        }
         
 
     } catch(err) {
     
-    const errorMessage = 'Failed to send record head supervisor with error message: ' + err;
-    alert(errorMessage); 
-    console.log(errorMessage)
-    return false;
+        const errorMessage = 'Failed to send record head supervisor with error message: ' + err;
+        alert(errorMessage); 
+        console.log(errorMessage)
+        return false;
 
     }
 

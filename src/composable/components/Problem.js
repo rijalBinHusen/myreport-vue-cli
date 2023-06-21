@@ -4,7 +4,7 @@ import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
 import getDaysArray from "../piece/getDaysArray";
 import { getItemByKode } from './Baseitem'
-import { postData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 
 let lists = [];
 const storeName = "problem";
@@ -287,6 +287,12 @@ export async function syncProblemRecordToServer (idRecord, mode) {
 
         await putData('problem/'+ idRecord, dataToSend)
 
+    }
+
+    else if (mode === 'delete') {
+
+        await deleteData('problem/'+ idRecord)
+        
     }
 
   } catch(err) {

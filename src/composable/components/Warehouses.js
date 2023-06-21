@@ -131,7 +131,7 @@ export const getSupervisorShift1ByWarehouse = async (idWarehouse) => {
 
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData, putData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 export async function syncWarehouseToServer () {
 
     let allData = await getData({ store: storeName, withKey: true })
@@ -192,9 +192,13 @@ export async function syncWarehouseToServer () {
 
         }
 
-    } catch(err) {
-      const errorMessage = `Failed to send warehouse record with message: ${err}`;
+        else if (mode === 'delete') {
+            await deleteData('warehouse/'+ idRecord)
+        }
 
+    } catch(err) {
+        
+      const errorMessage = `Failed to send warehouse record with message: ${err}`;
       alert(errorMessage); 
       console.error(errorMessage);
 

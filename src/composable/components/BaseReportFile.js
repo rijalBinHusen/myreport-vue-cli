@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { dateMonth, ymdTime } from "../piece/dateFormat";
 import getDaysArray from "../piece/getDaysArray";
 import { getWarehouseId, lists as warehouseLists } from "./Warehouses";
-import { postData } from "../../utils/sendDataToServer";
+import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 export const lists = ref([])
 const storeName = "basereportfile";
@@ -204,6 +204,12 @@ export async function syncBaseFileRecordToServer (idRecord, mode) {
     
             await putData('base_file/'+ idRecord, dataToSend)
     
+        }
+
+        else if (mode === 'delete') {
+
+            await deleteData('base_file/'+ idRecord)
+            
         }
 
     } catch(err) {

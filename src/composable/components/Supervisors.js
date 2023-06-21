@@ -1,5 +1,5 @@
 import { getData, update, append, getDataByKey } from '../../myfunction'
-import { postData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { progressMessage2 } from "../../components/parts/Loader/state"
 
 export let lists = []
@@ -114,6 +114,12 @@ export async function syncSupervisorRecordToServer (idRecord, mode) {
 
           await putData('supervisor/'+ idRecord, dataToSend)
 
+      }
+
+      else if (mode === 'delete') {
+
+          await deleteData('supervisor/'+ idRecord)
+          
       }
 
   } catch(err) {

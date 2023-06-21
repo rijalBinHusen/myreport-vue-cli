@@ -1,6 +1,6 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { totalTime } from "../piece/totalTimeAsMinute";
-import { postData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 
 export let lists = [];
 let storeName = "basereportclock";
@@ -235,6 +235,12 @@ export async function syncClockRecordToServer (idRecord, mode) {
   
           await putData('base_clock/'+ idRecord, dataToSend)
   
+      }
+
+      else if (mode === 'delete') {
+
+          await deleteData('base_clock/'+ idRecord)
+          
       }
 
     } catch(err) {

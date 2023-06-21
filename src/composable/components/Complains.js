@@ -2,7 +2,7 @@ import { getSupervisorId } from "@/composable/components/Supervisors";
 import { getHeadspvId } from "@/composable/components/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
 import { append, getData, update, deleteDocument, getDataByKey } from "@/myfunction";
-import { postData } from "../../utils/sendDataToServer";
+import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 let lists = [];
 const storeName = "complains";
@@ -309,6 +309,12 @@ export async function syncComplainRecordToServer (idRecord, mode) {
   
           await putData(endPoint + idRecord, dataToSend)
   
+      }
+
+      else if (mode === 'delete') {
+
+          await deleteData(endPoint + idRecord)
+          
       }
 
     } catch(err) {

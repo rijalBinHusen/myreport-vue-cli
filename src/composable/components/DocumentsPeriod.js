@@ -4,7 +4,7 @@ import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateForma
 import { getHeadspvId } from './Headspv'
 import { getSupervisorId } from './Supervisors'
 import { getWarehouseId, warehouseNameBySpv } from './Warehouses'
-import { postData } from "../../utils/sendDataToServer";
+import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 let lists = []
 const storeName = "document";
@@ -442,12 +442,18 @@ export async function syncDocumentToServer () {
     
         }
 
+        else if (mode === 'delete') {
+
+            await deleteData('document/'+ idRecord)
+            
+        }
+
     } catch(err) {
     
-    const errorMessage = 'Failed to send document record to server with error message: ' + err;
-    alert(errorMessage); 
-    console.log(errorMessage)
-    return false;
+        const errorMessage = 'Failed to send document record to server with error message: ' + err;
+        alert(errorMessage); 
+        console.log(errorMessage)
+        return false;
 
 
     }

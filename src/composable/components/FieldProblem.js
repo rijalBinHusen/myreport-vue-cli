@@ -2,7 +2,7 @@ import { append, getData, update, findData, deleteDocument, getDataByKey} from '
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorId } from '@/composable/components/Supervisors'
 import { getHeadspvId } from './Headspv'
-import { postData } from "../../utils/sendDataToServer"
+import { postData, deleteData as DeleteRecordOnServer, putData } from "../../utils/sendDataToServer"
 
 let lists = []
 const storeName = "fieldproblem";
@@ -175,12 +175,18 @@ export async function syncFieldProblemToServer () {
     
         }
 
+        else if (mode === 'delete') {
+
+            await DeleteRecordOnServer('field_problem/'+ idRecord)
+            
+        }
+
     } catch(err) {
     
-    const errorMessage = 'Failed to send field problem record with error message: ' + err;
-    alert(errorMessage); 
-    console.log(errorMessage)
-    return false;
+        const errorMessage = 'Failed to send field problem record with error message: ' + err;
+        alert(errorMessage); 
+        console.log(errorMessage)
+        return false;
 
 
     }
