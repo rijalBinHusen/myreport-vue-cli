@@ -137,13 +137,21 @@ export async function syncBasedOnActivity () {
         const loginActivities = await func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
 
         if(loginActivities) {
-            for(let [index, activity] of loginActivities.entries()) {
+            const sortActivities = loginActivities.sort((recA, recB) => recA.time - recB.time);
+            for(let [index, activity] of sortActivities.entries()) {
                 
                 progressMessage.value = `Syncing activity ${index} dari ${loginActivities.length}`;
 
-                if(recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)) {
+                // tidak di eksekusi
+                // id record berada dalam record synced
+                // id record berada dalam record synced tapi operation delete
+
+                const isNotForExecute = recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)
+
+                if(isNotForExecute) {
                     // dont do anything
                     // console.warn(`Record ${activity.idRecord} exists, it should be doesn't send request to server`)
+                    continue;
                 } 
                 
                 else {
@@ -201,7 +209,7 @@ export async function syncBasedOnActivity () {
         await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
     modalClose();
-    signOut();
+    // signOut();
 
 }
 
