@@ -130,6 +130,7 @@ export async function syncBasedOnActivity () {
     let recordSynced = {};
 
     for(let [index, login] of loginRecords.entries()) {
+        
         progressMessage.value = null;
 
         loaderMessage.value = `Syncing login ${index} dari ${loginRecords.length}`;
@@ -137,7 +138,9 @@ export async function syncBasedOnActivity () {
         const loginActivities = await func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
 
         if(loginActivities) {
+
             const sortActivities = loginActivities.sort((recA, recB) => recA.time - recB.time);
+
             for(let [index, activity] of sortActivities.entries()) {
                 
                 progressMessage.value = `Syncing activity ${index} dari ${loginActivities.length}`;
@@ -209,7 +212,7 @@ export async function syncBasedOnActivity () {
         await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
     modalClose();
-    // signOut();
+    signOut();
 
 }
 
