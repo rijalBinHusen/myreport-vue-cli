@@ -2,6 +2,16 @@ import { getJWTToken } from "./cookie";
 import { append } from "../myfunction"
 
 const hostURL =  "http://localhost/api-prod/myreport/";
+const timeOutRequest = 5000;
+
+async function errorSyncMessage (endpoint, operation, dataToSend, errorMessage) {
+
+  return append({
+    store: "errorsync",
+    obj: { endpoint, operation, dataToSend, errorMessage }
+  });
+
+}
 
 export function postData(endpoint, dataToSend) {
     
@@ -30,21 +40,23 @@ export function postData(endpoint, dataToSend) {
         if (res.success === true) {
           resolve(response);
         } else {
-          append({
-            store: "errorsync",
-            obj: { endpoint, operation: "POST", dataToSend, errorMessage: res?.message }
-          });
-          reject(new Error(`Request failed with status code ${response.status}`));
+          reject(new Error(`Request failed with message: ${res.message}`));
         }
       })
       .catch(error => {
+
+        errorSyncMessage(endpoint, "POST", dataToSend, error)
         reject(error);
+
       });
 
     setTimeout(() => {
+      
+      errorSyncMessage(endpoint, "POST", dataToSend, `Request timeout after ${timeOutRequest} second`);
       controller.abort();
-      reject(new Error(`Request timed out after ${2000}ms`));
-    }, 2000);
+      reject(new Error(`Request timed out after ${timeOutRequest}ms`));
+
+    }, timeOutRequest);
   });
 }
 
@@ -84,13 +96,19 @@ export function putData(endpoint, dataToSend) {
         }
       })
       .catch(error => {
+
+        errorSyncMessage(endpoint, "PUT", dataToSend, error)
         reject(error);
+
       });
 
     setTimeout(() => {
+
+      errorSyncMessage(endpoint, "PUT", dataToSend, `Request timeout after ${timeOutRequest} second`);
       controller.abort();
-      reject(new Error(`Request timed out after ${2000}ms`));
-    }, 2000);
+      reject(new Error(`Request timed out after ${timeOutRequest}ms`));
+
+    }, timeOutRequest);
   });
 }
 
@@ -127,12 +145,18 @@ export function deleteData(endpoint) {
         }
       })
       .catch(error => {
+
+        errorSyncMessage(endpoint, "POST", dataToSend, error)
         reject(error);
+        
       });
 
     setTimeout(() => {
+
+      errorSyncMessage(endpoint, "DELETE", dataToSend, `Request timeout after ${timeOutRequest} second`);
       controller.abort();
-      reject(new Error(`Request timed out after ${2000}ms`));
-    }, 2000);
+      reject(new Error(`Request timed out after ${timeOutRequest}ms`));
+
+    }, timeOutRequest);
   });
 }
