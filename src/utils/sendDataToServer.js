@@ -1,7 +1,7 @@
 import { getJWTToken } from "./cookie";
 import { append } from "../myfunction"
 
-const hostURL = "http://localhost/rest-php/myreport/";
+const hostURL =  "http://localhost/api-prod/myreport/";
 
 export function postData(endpoint, dataToSend) {
     

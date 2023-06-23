@@ -13,7 +13,7 @@ export function loginToServer(email, password) {
   const signal = controller.signal;
 
   return new Promise((resolve, reject) => {
-    fetch("http://localhost/rest-php/user/login", { 
+    fetch("http://localhost/api-prod/user/login", { 
         signal,
         method: "POST",
         body: bodyContent,

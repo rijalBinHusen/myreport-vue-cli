@@ -42,6 +42,7 @@
                 </div>
                 <div v-else>
     				<Button  
+                        v-if="!prop?.isRecordFinished"
                         value="Delete imported" 
                         type="button" 
                         :datanya="prop.id"

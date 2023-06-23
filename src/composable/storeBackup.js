@@ -81,10 +81,10 @@ export async function syncAllDataToServer() {
             return;
         }
 
-        alert("All document synced");
-        modalClose();
-
     }
+    
+    alert("All document synced");
+    modalClose();
 
 }
 
