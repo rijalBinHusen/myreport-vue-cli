@@ -5,10 +5,13 @@ const hostURL =  "http://localhost/api-prod/myreport/";
 const timeOutRequest = 5000;
 
 async function errorSyncMessage (endpoint, operation, dataToSend, errorMessage) {
+  const now = new Date();
+  const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
+  const utcPlus7 = new Date(now.getTime() + utcOffset);
 
   return append({
     store: "errorsync",
-    obj: { endpoint, operation, dataToSend, errorMessage }
+    obj: { time: utcPlus7.toISOString(), endpoint, operation, dataToSend, errorMessage }
   });
 
 }
