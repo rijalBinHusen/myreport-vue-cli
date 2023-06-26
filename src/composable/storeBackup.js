@@ -129,6 +129,8 @@ export async function syncBasedOnActivity () {
 
     let recordSynced = {};
 
+    let isSuccess = true;
+
     for(let [index, login] of loginRecords.entries()) {
         
         progressMessage.value = null;
@@ -159,46 +161,54 @@ export async function syncBasedOnActivity () {
                 
                 else {
 
-                    switch (activity.store) {
-                        case 'baseitem':
-                            await syncItemRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'basereportclock':
-                            await syncClockRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'basereportfile':
-                            await syncBaseFileRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'basereportstock':
-                            await syncBaseStockRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'cases':
-                            await syncCaseRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'complains':
-                            await syncComplainRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'document':
-                            await syncDocumentRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'fieldproblem':
-                            await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'headspv':
-                            await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'problem':
-                            await syncProblemRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'supervisors':
-                            await syncSupervisorRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        case 'warehouses':
-                            await syncWarehouseRecordToServer(activity.idRecord, activity.type);
-                            break;
-                        default:
-                            break;
+                    try {
+
+                        switch (activity.store) {
+                            case 'baseitem':
+                                await syncItemRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'basereportclock':
+                                await syncClockRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'basereportfile':
+                                await syncBaseFileRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'basereportstock':
+                                await syncBaseStockRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'cases':
+                                await syncCaseRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'complains':
+                                await syncComplainRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'document':
+                                await syncDocumentRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'fieldproblem':
+                                await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'headspv':
+                                await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'problem':
+                                await syncProblemRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'supervisors':
+                                await syncSupervisorRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            case 'warehouses':
+                                await syncWarehouseRecordToServer(activity.idRecord, activity.type);
+                                break;
+                            default:
+                                break;
+                        }
+
+                    } catch(err) {
+                        isSuccess = false;
+                        console.log(err);
                     }
+
 
                     // record that synced
                     recordSynced.hasOwnProperty([activity.store])
@@ -211,8 +221,14 @@ export async function syncBasedOnActivity () {
         }
         await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
+
     modalClose();
-    signOut();
+    
+    if(isSuccess) {
+
+        signOut();
+
+    }
 
 }
 

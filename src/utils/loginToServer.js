@@ -1,4 +1,5 @@
-import { setJWTToken } from "./cookie"
+
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "http://localhost/api-prod/";
 
 export function loginToServer(email, password) {
     
@@ -13,7 +14,7 @@ export function loginToServer(email, password) {
   const signal = controller.signal;
 
   return new Promise((resolve, reject) => {
-    fetch("http://localhost/api-prod/user/login", { 
+    fetch(`${hostURL}user/login`, { 
         signal,
         method: "POST",
         body: bodyContent,

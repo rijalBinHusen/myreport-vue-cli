@@ -1,7 +1,7 @@
 import { getJWTToken } from "./cookie";
 import { append } from "../myfunction"
 
-const hostURL =  "http://localhost/api-prod/myreport/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "http://localhost/api-prod/myreport/";
 const timeOutRequest = 5000;
 
 async function errorSyncMessage (endpoint, operation, dataToSend, errorMessage) {
