@@ -188,13 +188,14 @@ export async function syncBaseFileRecordToServer (idRecord, mode) {
                                 : record?.warehouse;
 
     let dataToSend = {
-    "id": idRecord,
-    "periode": record?.periode || 0,
-    "warehouse_id": warehouseToSend || 0,
-    "file_name": record?.fileName || 0,
-    "stock_sheet": record?.stock || 0,
-    "clock_sheet": record?.clock || 0,
-    "is_imported": record?.imported || 0
+        "id": idRecord,
+        "periode": record?.periode || 0,
+        "warehouse_id": warehouseToSend || 0,
+        "file_name": record?.fileName || 0,
+        "stock_sheet": record?.stock || 0,
+        "clock_sheet": record?.clock || 0,
+        "is_imported": record?.imported || 0,
+        "is_record_finished": record?.isRecordFinished || false
     }
 
     try {
