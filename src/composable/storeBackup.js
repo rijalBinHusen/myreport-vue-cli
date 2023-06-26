@@ -133,7 +133,7 @@ export async function syncBasedOnActivity () {
         
         progressMessage.value = null;
 
-        loaderMessage.value = `Syncing login ${index} dari ${loginRecords.length}`;
+        loaderMessage.value = `Syncing login ${index + 1} dari ${loginRecords.length}`;
 
         const loginActivities = await func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
 
@@ -143,7 +143,7 @@ export async function syncBasedOnActivity () {
 
             for(let [index, activity] of sortActivities.entries()) {
                 
-                progressMessage.value = `Syncing activity ${index} dari ${loginActivities.length}`;
+                progressMessage.value = `Syncing activity ${index + 1} dari ${loginActivities.length}`;
 
                 // tidak di eksekusi
                 // id record berada dalam record synced

@@ -113,6 +113,7 @@ import { getWarehouseId } from "@/composable/components/Warehouses"
 import { getSupervisorId } from "@/composable/components/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
 import AGDateEditorVue from "@/components/parts/AGDateEditor.vue"
+import { loaderMessage } from "../../components/parts/Loader/state";
 
 export default {
     components: {
@@ -256,7 +257,8 @@ export default {
         }
         const save = async (records) => {
             store.commit("Modal/active", {judul: "", form: "Loader"});
-            for(let record of records) {
+            for(let [index, record] of records.entries()) {
+                loaderMessage.value = `Menyimpan record ${index + 1} dari ${records.length}`;
                 if(isClockSheet.value) {
                     await updateBaseClock(record.id, record.changed)
                 } else {
