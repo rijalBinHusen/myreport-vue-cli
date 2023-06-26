@@ -193,6 +193,24 @@ export const append = async function (value) {
     .set(Object.assign({ id: id }, value.obj));
 };
 
+export const appendWoutAddActivity = async function (value) {
+  //{store: "namastore", obj: {obj: toInput } }
+  let id = value?.obj?.id
+    ? value?.obj?.id
+    : generateId(value.store.toLowerCase());
+  // let result = await
+  if (value?.store == "login") {
+    localStorage.setItem('loginya', id)
+    localStorage.setItem('loginActivity', 0)
+    localStorage.setItem('lastActivity', new Date().getTime() + 14400000)
+  }
+  
+  return db
+    .collection(value.store.toLowerCase())
+    .doc(id)
+    .set(Object.assign({ id: id }, value.obj));
+};
+
 export const reWrite = function (store, id, value) {
   //write data
   return db.collection(store).doc({ id: id }).set(value);
@@ -279,6 +297,11 @@ value: "c08"
   db.collection(value.store.toLowerCase())
     .doc({ [value.parameter]: value.value })
     .delete();
+};
+
+
+export const deleteDocumentByKey = async function (store, yourKey) {
+  return db.collection(store).doc(yourKey).delete();
 };
 
 export const tunggu = function (time) {

@@ -1,5 +1,5 @@
 import { getJWTToken } from "./cookie";
-import { append } from "../myfunction"
+import { appendWoutAddActivity } from "../myfunction"
 
 const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "http://localhost/api-prod/myreport/";
 const timeOutRequest = 5000;
@@ -9,7 +9,7 @@ async function errorSyncMessage (endpoint, operation, dataToSend, errorMessage) 
   const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
   const utcPlus7 = new Date(now.getTime() + utcOffset);
 
-  return append({
+  return appendWoutAddActivity({
     store: "errorsync",
     obj: { time: utcPlus7.toISOString(), endpoint, operation, dataToSend, errorMessage }
   });
@@ -91,10 +91,7 @@ export function putData(endpoint, dataToSend) {
         if (res.success === true) {
           resolve(response);
         } else {
-          append({
-            store: "errorsync",
-            obj: { endpoint, operation: 'PUT', dataToSend, errorMessage: res?.message }
-          });
+          
           reject(new Error(`Request failed with status code ${response.status}`));
         }
       })
@@ -140,10 +137,7 @@ export function deleteData(endpoint) {
         if (res.success === true) {
           resolve(response);
         } else {
-          append({
-            store: "errorsync",
-            obj: { endpoint, operation: 'DELETE', errorMessage: res?.message }
-          });
+          errorSyncMessage(endpoint, "POST", dataToSend, error)
           reject(new Error(`Request failed with status code ${response.status}`));
         }
       })

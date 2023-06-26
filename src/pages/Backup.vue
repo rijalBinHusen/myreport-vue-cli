@@ -21,12 +21,13 @@
         <ButtonVue primary value="Login" type="button" @trig="tryToLogin"/>
         <ButtonVue primary value="Sync data" type="button" @trig="syncAllDataToServer"/>
         <ButtonVue primary value="Sync activity" type="button" @trig="syncBasedOnActivity"/>
+        <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
     </div>
 </template>
 
 <script>
 import { useStore } from "vuex"
-import { storeBackup, seperateUsers, syncAllDataToServer, syncBasedOnActivity } from "@/composable/storeBackup"
+import { storeBackup, seperateUsers, syncAllDataToServer, syncBasedOnActivity, errorSyncResend } from "@/composable/storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
@@ -75,7 +76,7 @@ export default {
 
         }
 
-        return { handleBackup, options, checkedOption, tryToLogin, syncAllDataToServer, syncBasedOnActivity }
+        return { handleBackup, options, checkedOption, tryToLogin, syncAllDataToServer, syncBasedOnActivity, errorSyncResend }
     },
     name: "Backup",
     components: {

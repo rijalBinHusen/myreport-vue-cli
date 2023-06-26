@@ -1,6 +1,6 @@
 import Localbase from "localbase";
 let db = new Localbase("myreport");
-import func, { updateWithoutAddActivity } from "../myfunction"
+import func, { updateWithoutAddActivity, deleteDocumentByKey } from "../myfunction"
 import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
 import { getJWTToken, setJWTToken } from "../utils/cookie";
@@ -18,6 +18,7 @@ import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../composa
 import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../composable/components/Warehouses";
 import { modalClose, loader} from "./piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../components/parts/Loader/state";
+import { postData, deleteData, putData } from "../utils/sendDataToServer";
 import { loginToServer } from "../utils/loginToServer"
 import signOut from "../composable/UserSignOut";
 
@@ -52,6 +53,54 @@ export const storeBackup = async (sendToCloud) => {
 
 function getDocument (store) {
     return db.collection(store).get({ keys: true });
+}
+
+export async function errorSyncResend() {
+    const isTokenExists =  getJWTToken();
+
+    if(isTokenExists == null) {
+        const tryLogin = await login();
+
+        if(tryLogin === false) {
+            alert('Email or password invalid');
+            return
+        }
+    }
+
+    loader();
+    // get all record
+    const errorRecords = await db.collection('errorsync').get();
+    
+    // send data to the server
+    for(let [index, record] of errorRecords.entries()) {
+        progressMessage.value = `Mengirim ulang ${index + 1} dari ${errorRecords.length}`;
+        try {
+            let isSuccess = false
+
+            if(record.operation === 'POST') {
+                isSuccess = await postData(record?.endpoint, record?.dataToSend);
+            }
+            else if(record.operation === 'DELETE') {
+                isSuccess = await deleteData(record?.endpoint)
+            }
+            else if(record.operation === 'PUT') {
+                isSuccess = await putData(record?.endpoint, record?.dataToSend);
+            }
+
+            if(isSuccess) {
+                
+                await deleteDocumentByKey('errorsync', record?.id)
+
+            }
+
+        } catch(err) {
+
+            console.log(err);
+
+        }
+    }
+
+    modalClose()
 }
 
 export async function syncAllDataToServer() {
@@ -226,7 +275,7 @@ export async function syncBasedOnActivity () {
     
     if(isSuccess) {
 
-        signOut();
+        process.env.NODE_ENV === 'development' ? '' : signOut();
 
     }
 
