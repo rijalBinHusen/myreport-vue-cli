@@ -148,13 +148,12 @@ export function deleteData(endpoint) {
       if (res.success == true) {
         resolve(response);
       } else {
-        errorSyncMessage(endpoint, "POST", dataToSend, error)
         throw new Error(`Request failed with message: ${JSON.stringify(res.message)}`);
       }
     })
     .catch(error => {
 
-      errorSyncMessage(endpoint, "POST", dataToSend, error)
+      errorSyncMessage(endpoint, "DELETE", dataToSend, error)
       reject(error);
       
     })

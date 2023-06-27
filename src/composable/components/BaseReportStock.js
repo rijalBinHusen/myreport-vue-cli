@@ -3,6 +3,7 @@ import { findBaseReportFile } from "./BaseReportFile";
 import { masalah, problemActive } from "./Problem";
 import { getItemByKode } from './Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 
 let lists = [];
 const storeName = "basereportstock";
@@ -206,18 +207,24 @@ export async function markStockFinished(
   shift,
   parentDocument
 ) {
+  let markFinished = 0;
   // iterate the state
-  for (let list of lists) {
+  for (let [index, list] of lists.entries()) {
+    loaderMessage.value = `Memindai ${ index + 1 } dari ${lists.length}.`;
     // if state?.shift == payload.shift && payload?.parent
     if (list?.shift == shift && list?.parent == parentBaseReportFile) {
       // jika parentDocument kosong
       if (!lists?.parentDocument) {
+        progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
         // update recordnya
         await updateBaseStock(list.id, { parentDocument });
+        markFinished++
       }
       // jika sudah terisi
     }
   }
+  loaderMessage.value = '';
+  progressMessage2.value = '';
   return;
 }
 
@@ -227,7 +234,6 @@ export const removeStock = async (id) => {
   return true;
 };
 
-import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncBaseStockToServer () {
 
   let allData = await getData({ store: storeName, withKey: true })

@@ -265,6 +265,7 @@ export default {
                     await updateBaseStock(record.id, record.changed)
                 }
             }
+            loaderMessage.value = '';
             await renewLists()
             store.commit("Modal/active");
         }

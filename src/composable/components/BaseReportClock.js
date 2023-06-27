@@ -1,6 +1,7 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { totalTime } from "../piece/totalTimeAsMinute";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
+import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 
 export let lists = [];
 let storeName = "basereportclock";
@@ -147,18 +148,24 @@ export async function markClockFinished(
   shift,
   parentDocument
 ) {
+  let markFinished = 0;
   // iterate the state
-  for (let list of lists) {
+  for (let [index, list] of lists.entries()) {
+    loaderMessage.value = `Memindai ${ index + 1 } dari ${lists.length}.`;
     // if state?.shift == payload.shift && payload?.parent
     if (list?.shift == shift && list?.parent == parentBaseReportFile) {
       // jika parentDocument kosong
       if (!lists?.parentDocument) {
+        progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
         // update recordnya
         await updateBaseClock(list.id, { parentDocument });
+        markFinished++
       }
       // jika sudah terisi
     }
   }
+  loaderMessage.value = '';
+  progressMessage2.value = '';
   return;
 }
 
@@ -168,8 +175,6 @@ export const removeClock = async (id) => {
   return true;
 };
 
-
-import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncClockToServer () {
 
   let allData = await getData({ store: storeName, withKey: true })
