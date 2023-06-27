@@ -31,6 +31,13 @@ export function postData(endpoint, dataToSend) {
   const controller = new AbortController();
   const signal = controller.signal;
 
+  const timeout = setTimeout(() => {
+
+    controller.abort();
+    reject(new Error(`Request timed out after ${timeOutRequest}ms`));
+
+  }, timeOutRequest);
+
   return new Promise((resolve, reject) => {
     fetch(hostURL + endpoint, { 
         signal,
@@ -40,26 +47,21 @@ export function postData(endpoint, dataToSend) {
     })
     .then(async response => {
       const res = await response.json();
-        if (res.success === true) {
-          resolve(response);
-        } else {
-          reject(new Error(`Request failed with message: ${res.message}`));
-        }
-      })
-      .catch(error => {
+      if (res.success == true) {
+        resolve(response);
+      } else {
+        throw new Error(`Request failed with message: ${JSON.stringify(res.message)}`);
+      }
+    })
+    .catch(error => {
 
-        errorSyncMessage(endpoint, "POST", dataToSend, error)
-        reject(error);
+      errorSyncMessage(endpoint, "POST", dataToSend, error)
+      reject(error);
 
-      });
-
-    setTimeout(() => {
-      
-      errorSyncMessage(endpoint, "POST", dataToSend, `Request timeout after ${timeOutRequest} second`);
-      controller.abort();
-      reject(new Error(`Request timed out after ${timeOutRequest}ms`));
-
-    }, timeOutRequest);
+    })
+    .finally(() => {
+      clearTimeout(timeout);
+    })
   });
 }
 
@@ -79,6 +81,13 @@ export function putData(endpoint, dataToSend) {
   const controller = new AbortController();
   const signal = controller.signal;
 
+  const timeout = setTimeout(() => {
+      
+    controller.abort();
+    reject(new Error(`Request timed out after ${timeOutRequest}ms`));
+
+  }, timeOutRequest);
+
   return new Promise((resolve, reject) => {
     fetch(hostURL + endpoint, { 
         signal,
@@ -88,27 +97,22 @@ export function putData(endpoint, dataToSend) {
     })
     .then(async response => {
       const res = await response.json();
-        if (res.success === true) {
-          resolve(response);
-        } else {
-          
-          reject(new Error(`Request failed with status code ${response.status}`));
-        }
-      })
-      .catch(error => {
+      if (res.success == true) {
+        resolve(response);
+      } else {
+        
+        throw new Error(`Request failed with message: ${JSON.stringify(res.message)}`);
+      }
+    })
+    .catch(error => {
 
-        errorSyncMessage(endpoint, "PUT", dataToSend, error)
-        reject(error);
+      errorSyncMessage(endpoint, "PUT", dataToSend, error)
+      reject(error);
 
-      });
-
-    setTimeout(() => {
-
-      errorSyncMessage(endpoint, "PUT", dataToSend, `Request timeout after ${timeOutRequest} second`);
-      controller.abort();
-      reject(new Error(`Request timed out after ${timeOutRequest}ms`));
-
-    }, timeOutRequest);
+    })
+    .finally(() => {
+      clearTimeout(timeout);
+    });
   });
 }
 
@@ -126,6 +130,13 @@ export function deleteData(endpoint) {
   const controller = new AbortController();
   const signal = controller.signal;
 
+  const timeout = setTimeout(() => {
+
+    controller.abort();
+    reject(new Error(`Request timed out after ${timeOutRequest}ms`));
+
+  }, timeOutRequest);
+
   return new Promise((resolve, reject) => {
     fetch(hostURL + endpoint, { 
         signal,
@@ -134,26 +145,21 @@ export function deleteData(endpoint) {
     })
     .then(async response => {
       const res = await response.json();
-        if (res.success === true) {
-          resolve(response);
-        } else {
-          errorSyncMessage(endpoint, "POST", dataToSend, error)
-          reject(new Error(`Request failed with status code ${response.status}`));
-        }
-      })
-      .catch(error => {
-
+      if (res.success == true) {
+        resolve(response);
+      } else {
         errorSyncMessage(endpoint, "POST", dataToSend, error)
-        reject(error);
-        
-      });
+        throw new Error(`Request failed with message: ${JSON.stringify(res.message)}`);
+      }
+    })
+    .catch(error => {
 
-    setTimeout(() => {
-
-      errorSyncMessage(endpoint, "DELETE", dataToSend, `Request timeout after ${timeOutRequest} second`);
-      controller.abort();
-      reject(new Error(`Request timed out after ${timeOutRequest}ms`));
-
-    }, timeOutRequest);
+      errorSyncMessage(endpoint, "POST", dataToSend, error)
+      reject(error);
+      
+    })
+    .finally(() => {
+      clearTimeout(timeout);
+    });
   });
 }

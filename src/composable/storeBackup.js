@@ -76,15 +76,18 @@ export async function errorSyncResend() {
         progressMessage.value = `Mengirim ulang ${index + 1} dari ${errorRecords.length}`;
         try {
             let isSuccess = false
-
-            if(record.operation === 'POST') {
-                isSuccess = await postData(record?.endpoint, record?.dataToSend);
-            }
-            else if(record.operation === 'DELETE') {
-                isSuccess = await deleteData(record?.endpoint)
-            }
-            else if(record.operation === 'PUT') {
-                isSuccess = await putData(record?.endpoint, record?.dataToSend);
+            switch (record?.operation) {
+                case 'POST':
+                    isSuccess = await postData(record?.endpoint, record?.dataToSend);
+                    break;
+                case 'DELETE':
+                    isSuccess = await deleteData(record?.endpoint)
+                    break;
+                case 'PUT':
+                    isSuccess = await putData(record?.endpoint, record?.dataToSend);
+                    break;
+                default:
+                    break;
             }
 
             if(isSuccess) {
@@ -268,7 +271,7 @@ export async function syncBasedOnActivity () {
 
             }
         }
-        await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
+        process.env.NODE_ENV === 'development' ? '' : await updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
 
     modalClose();
