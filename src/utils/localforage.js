@@ -9,6 +9,7 @@ export const useIdb = (storeName) => {
   // create instance
   const store = localforage.createInstance({ name: 'myreport', storeName });
   const summaryDb = localforage.createInstance({ name: 'myreport',  storeName: 'summary'});
+  const logging = localforage.createInstance({ name: 'myreport',  storeName: 'activity'});
 
   async function getSummary () { 
     //check is summary exists on state
@@ -20,7 +21,7 @@ export const useIdb = (storeName) => {
         let lastId = null;
         let total = 0;
 
-        if(summaryItem) {
+        if(summaryItem && summaryItem?.lastId) {
             lastId = summaryItem?.lastId;
             total = summaryItem?.total;
         } else {
@@ -33,13 +34,13 @@ export const useIdb = (storeName) => {
     return stateSummary.value[storeName]
   }
 
-  async function updateSummary (yourLastId) {
+  function updateSummary (yourLastId) {
     clearTimeout(timer);
 
     let lastId = yourLastId;
-    let total = stateSummary.value[storeName]?.total + 1;
+    let total = Number(stateSummary.value[storeName]?.total) + 1;
 
-    stateSummary.value[storeName] = { lastId, total }
+    stateSummary.value[storeName] = { lastId, total };
 
     timer = setTimeout(() => {
         
@@ -48,21 +49,43 @@ export const useIdb = (storeName) => {
     }, 3000);
   }
 
+  async function addActivity (type, idRecord) {
+    const now = new Date();
+    const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
+    const utcPlus7 = new Date(now.getTime() + utcOffset);
+
+    const sum = await getSummary('activity');
+    const id = idRecord + sum?.total;
+    const recordToSet = {
+      id,
+      idRecord,
+      store: storeName,
+      time: utcPlus7.toISOString(),
+      type
+    }
+
+    await logging.setItem(idRecord + sum?.total, recordToSet)
+
+    updateSummary(idRecord + sum?.total)
+  }
+
   const createItem = async (value) => {
     // get summary
     const sum = await getSummary();
     // generateID
     const nextId = generateId(sum?.lastId);
-
+    // console.log(nextId)
     const incrementId = sum?.total + 1 + '';
     // record to set
     const record = { ...value, id: incrementId, uid: nextId, created: new Date().getTime() };
     try {
-        // setItem
-        await setItem(incrementId, record);
-        // update summary
-        updateSummary(nextId);
-        return record;
+      // setItem
+      await setItem(incrementId, record);
+      // update summary
+      updateSummary(nextId);
+      // add activity
+      addActivity('create', incrementId)
+      return record;
 
     } catch (err) {
 
@@ -100,7 +123,8 @@ export const useIdb = (storeName) => {
   };
 
   const removeItem = async (key) => {
-    addLog(storeName, 'remove', key, { id: key });
+    // add activity
+    addActivity('delete', incrementId)
     await store.removeItem(key);
     return;
   };
@@ -144,15 +168,12 @@ export const useIdb = (storeName) => {
       const item = await getItem(key);
       // new item
       const newItem = { ...item, ...keyValueToUpdate };
-      // record to log
-      const isNotDuplicate = await addLog(storeName, 'update', key, {
-        ...keyValueToUpdate,
-      });
       // then set item
-      if (isNotDuplicate) {
-        await setItem(key, newItem);
-      }
+      await setItem(key, newItem);
+      // add activity
+      addActivity('update', key)
       return true;
+      
     } catch (err) {
       console.error(err);
       return false;
