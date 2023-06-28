@@ -54,19 +54,17 @@ export const useIdb = (storeName) => {
     const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
     const utcPlus7 = new Date(now.getTime() + utcOffset);
 
-    const sum = await getSummary('activity');
-    const id = idRecord + sum?.total;
+    const idLogger = stateSummary.value[storeName]?.total + new Date().getTime() + '';
     const recordToSet = {
-      id,
+      id: idLogger,
       idRecord,
       store: storeName,
       time: utcPlus7.toISOString(),
       type
     }
 
-    await logging.setItem(idRecord + sum?.total, recordToSet)
+    await logging.setItem(idLogger, recordToSet)
 
-    updateSummary(idRecord + sum?.total)
   }
 
   const createItem = async (value) => {
@@ -74,17 +72,15 @@ export const useIdb = (storeName) => {
     const sum = await getSummary();
     // generateID
     const nextId = generateId(sum?.lastId);
-    // console.log(nextId)
-    const incrementId = sum?.total + 1 + '';
     // record to set
-    const record = { ...value, id: incrementId, uid: nextId, created: new Date().getTime() };
+    const record = { ...value, id: nextId };
     try {
       // setItem
-      await setItem(incrementId, record);
+      await setItem(nextId, record);
       // update summary
       updateSummary(nextId);
       // add activity
-      addActivity('create', incrementId)
+      addActivity('create', nextId)
       return record;
 
     } catch (err) {

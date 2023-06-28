@@ -45,7 +45,7 @@ export function generateIdCutomDate(yourDate, yourLastId) {
     }
     //0000
     let result = id + "0000".slice(increment.length) + increment;
-    console.log('before: ', yourLastId, 'next: ', result);
+    
     // kembalikan
     return result;
 }
