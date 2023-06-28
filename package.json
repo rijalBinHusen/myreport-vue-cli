@@ -5,11 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
-    "dist": "electron-builder --win=portable"
+    "test": "vitest"
   },
   "main": "background.js",
   "dependencies": {
@@ -18,6 +14,7 @@
     "core-js": "^3.8.3",
     "firebase": "^9.9.4",
     "localbase": "^0.7.5",
+    "localforage": "^1.10.0",
     "uid": "^2.0.0",
     "vue": "^3.2.13",
     "vue3-datepicker": "^0.3.2",
@@ -26,8 +23,11 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "fake-indexeddb": "^4.0.1",
+    "@faker-js/faker": "^8.0.2",
+    "vitest": "^0.32.2",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "^4.5.19"
   }
 }
