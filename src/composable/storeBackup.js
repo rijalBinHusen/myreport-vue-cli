@@ -7,7 +7,7 @@ import { getJWTToken, setJWTToken } from "../utils/cookie";
 import { syncClockToServer, syncClockRecordToServer } from "../composable/components/BaseReportClock";
 import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../composable/components/BaseReportFile";
 import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../composable/components/BaseReportStock";
-import { syncItemToServer, syncItemRecordToServer } from "../composable/components/Baseitem";
+import { syncItemToServer, syncItemRecordToServer } from "../pages/BaseItem/Baseitem";
 import { syncCasesToServer, syncCaseRecordToServer } from "../composable/components/Cases";
 import { syncComplainsToServer, syncComplainRecordToServer } from "../composable/components/Complains";
 import { syncDocumentToServer, syncDocumentRecordToServer } from "../composable/components/DocumentsPeriod";

@@ -110,4 +110,4 @@ export default {
         return { reportNow, reports, launch }
     },
 }
-</script>
+</script>@/pages/BaseItem/Baseitem

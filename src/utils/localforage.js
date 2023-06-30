@@ -67,13 +67,13 @@ export const useIdb = (storeName) => {
 
   }
 
-  const createItem = async (value) => {
+  const createItem = async (yourObject) => {
     // get summary
     const sum = await getSummary();
     // generateID
     const nextId = generateId(sum?.lastId);
     // record to set
-    const record = { ...value, id: nextId };
+    const record = { ...yourObject, id: nextId };
     try {
       // setItem
       await setItem(nextId, record);

@@ -1,71 +1,79 @@
 import { update, append, getData, deleteDocument, updateWithoutAddActivity, getDataByKey } from '@/myfunction'
-import { ymdTime } from '../piece/dateFormat'
+import { ymdTime } from '../../composable/piece/dateFormat'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+import { useIdb } from "../../utils/localforage";
 
 export let lists = []
 
 const store = 'baseitem'
 
-export const addItem = async (kode, name) => {
-    await append({
-        store,
-        obj: { kode, name }
-    }).then((res) => {
-        if(lists.length) {
-            lists.unshift(res.data)
-        }
-    })
-    return
-}
+export class BaseItem {
+    db = useIdb(store);
 
-export const updateItem = async (id, objToUpdate) => {
-    lists = lists.map((list) => {
-        if(list.id == id) {
-            return { id, ...objToUpdate}
-        }
-        return list
-    })
-    await update({ store: 'baseitem', criteria: { id }, obj: objToUpdate})
-}
+    async addItem(itemKode, itemName) {
+        const inserted = await this.db.createItem({ kode: itemKode, name: itemName });
 
-export const getItemById = (id) => {
-    return lists.find((list) => list.id == id)
-}
-
-export const getItemByKode = async (kode) => {
-    await getAllItems()
-    let res =  lists.find(list => list.kode == kode)
-    if(res) {
-        if(!res?.lastUsed || res?.lastUsed < ymdTime()) {
-            await updateWithoutAddActivity('baseitem', { id: res.id }, { lastUsed: ymdTime() })
-            lists = lists.map((rec) => rec?.id == res?.id ? { ...rec, lastUsed: ymdTime() } : rec)
+        if(inserted) {
+            lists.push(inserted);
         }
     }
-    return res
-}
 
-export const getAllItems = async () => {
-    if(lists.length < 21) {
-        await getData({ store, orderBy: 'id', desc: true }).then((res) => {
-            lists = res
+    async updateItem(id, itemKode, itemName, lastUsed) {
+        const getItem = await this.getItemById(id)
+
+        if(!getItem) return;
+
+        let objToUpdate = {}
+
+        if(itemKode !== getItem?.kode) {
+            objToUpdate['kode'] = itemKode
+        }
+
+        if(itemName !== getItem?.name) {
+            objToUpdate['name'] = itemName
+        }
+
+        if(lastUsed > getItem?.lastUsed) {
+            objToUpdate['lastUsed'] = lastUsed
+        }
+
+        lists = lists.map((rec) => {
+            if(rec?.id === id) {
+                return { ...rec, ...objToUpdate }
+            }
+            return rec
         })
-    }
-    return
-}
 
-export const removeItem = async (id) => {
-    lists = lists.filter((list) => list.id !== id)
-    await deleteDocument({ store, criteria: { id } })
-    return
-}
-
-export const get20Item = async () => {
-    if(!lists.length) {
-        await getData({ store, orderBy: 'id', desc: true, limit: 20 }).then((res) => {
-            lists = res
-        })
+        await this.db.updateItem(id, objToUpdate);
     }
-    return
+
+    async getItemById (itemId) {
+        let findItem = lists.find((rec) => rec?.id === itemId)
+
+        if(!findItem) {
+            findItem = await this.db.getItem(itemId);
+        }
+
+        return findItem || { itemId, kode: 'Not found', name: 'Not found' }
+    }
+
+    async getItemBykode (itemKode) {
+        let findItem = lists.find((rec) => rec?.kode === itemKode)
+
+        if(!findItem) {
+            findItem = await this.db.findOneItemByKeyValue('kode', itemKode);
+        }
+
+        this.updateItem(findItem?.id, false, false, ymdTime());
+
+        return findItem || { itemId, kode: 'Not found', name: 'Not found' }
+    }
+
+    async removeItem(itemId) {
+        lists = lists.filter((rec) => rec?.id !== itemId);
+
+        await this.db.removeItem(itemId);
+    }
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";

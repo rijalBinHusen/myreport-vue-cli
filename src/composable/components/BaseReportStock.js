@@ -1,7 +1,7 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { findBaseReportFile } from "./BaseReportFile";
 import { masalah, problemActive } from "./Problem";
-import { getItemByKode } from './Baseitem'
+import { getItemByKode } from '../../pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 

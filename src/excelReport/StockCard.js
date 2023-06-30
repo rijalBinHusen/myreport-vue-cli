@@ -1,6 +1,6 @@
 import { findData } from "@/myfunction";
 import getDaysArray from "@/composable/piece/getDaysArray";
-import { getItemByKode } from "@/composable/components/Baseitem";
+import { getItemByKode } from "@/pages/BaseItem/Baseitem";
 import { dateMonth, ddmmyyyy } from "@/composable/piece/dateFormat";
 import GetProblemByArrayId from "./GetProblemByArrayId";
 import exportToXls from "@/exportToXls";

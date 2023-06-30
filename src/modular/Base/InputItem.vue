@@ -48,4 +48,4 @@ export default {
         this.render = true
     },
 }
-</script>
+</script>@/pages/BaseItem/Baseitem

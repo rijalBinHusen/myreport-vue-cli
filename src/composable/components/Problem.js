@@ -3,7 +3,7 @@ import { ddmmyyyy, dateMonth } from "../piece/dateFormat";
 import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
 import getDaysArray from "../piece/getDaysArray";
-import { getItemByKode } from './Baseitem'
+import { getItemByKode } from '../../pages/BaseItem/Baseitem'
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 
 let lists = [];
