@@ -5,7 +5,7 @@ import { full } from "./piece/dateFormat";
 import { startExport } from "./piece/exportAsFile"
 import { getJWTToken, setJWTToken } from "../utils/cookie";
 import { syncClockToServer, syncClockRecordToServer } from "../composable/components/BaseReportClock";
-import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../composable/components/BaseReportFile";
+import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../pages/BaseReportFile/BaseReportFile";
 import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../composable/components/BaseReportStock";
 import { syncItemToServer, syncItemRecordToServer } from "../pages/BaseItem/Baseitem";
 import { syncCasesToServer, syncCaseRecordToServer } from "../composable/components/Cases";

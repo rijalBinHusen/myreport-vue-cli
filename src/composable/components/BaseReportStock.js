@@ -1,5 +1,5 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
-import { findBaseReportFile } from "./BaseReportFile";
+import { findBaseReportFile } from "../../pages/BaseReportFile/BaseReportFile";
 import { masalah, problemActive } from "./Problem";
 import { getItemByKode } from '../../pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";

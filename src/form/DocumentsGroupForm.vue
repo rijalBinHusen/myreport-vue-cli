@@ -132,4 +132,4 @@ export default {
         }
     },
 }
-</script>
+</script>@/pages/BaseReportFile/BaseReportFile

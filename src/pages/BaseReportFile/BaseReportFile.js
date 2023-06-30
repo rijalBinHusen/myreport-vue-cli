@@ -1,49 +1,72 @@
-import { findData, update, append, deleteDocument, getData, getDataByKey } from "@/myfunction";
+// import { findData, update, append, deleteDocument, getData, getDataByKey } from "@/myfunction";
+import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
-import { dateMonth, ymdTime } from "../piece/dateFormat";
-import getDaysArray from "../piece/getDaysArray";
-import { getWarehouseId, lists as warehouseLists } from "./Warehouses";
+import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
+import getDaysArray from "../../composable/piece/getDaysArray";
+import { getWarehouseId, lists as warehouseLists } from "../../composable/components/Warehouses";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 export const lists = ref([])
 const storeName = "basereportfile";
 
-export const getBaseReportFile = async (periode1, periode2) => {
-    lists.value = []
-    let datesArray = getDaysArray(periode1, periode2)
-    for(let date of datesArray) {
-        let records = await findData({
-            store: "BaseReportFile",
-            criteria: { periode: date }
-        })
-        if(records) {
-            lists.value = lists.value.concat(records)
+export class BaseReportFile {
+    db = useIdb(storeName);
+
+    async getBaseReportFile(periode1, periode2) {
+        const getData = await this.db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan('periode', periode1, periode2);
+
+        if(getData) {
+            for (let datum of getData) {
+                const mapIt = await this.recordMapper(datum);
+                lists.value.push(mapIt);
+            }
         }
     }
-    return true
+
+    async recordMapper(record) {
+        const getWarehouse = await getWarehouseId(record?.warehouse);
+        const periode2 = isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode);
+
+        return { ...record, warehouseName: getWarehouse?.name, periode2 }
+    }
 }
 
-export const listsAllBaseReportFile = async () => {
-    if(lists.value) {
-        return documentsMapper(lists.value)
-    }
-    return []
-}
+// export const getBaseReportFile = async (periode1, periode2) => {
+//     lists.value = []
+//     let datesArray = getDaysArray(periode1, periode2)
+//     for(let date of datesArray) {
+//         let records = await findData({
+//             store: "BaseReportFile",
+//             criteria: { periode: date }
+//         })
+//         if(records) {
+//             lists.value = lists.value.concat(records)
+//         }
+//     }
+//     return true
+// }
 
-const documentsMapper = async (docs) => {
-    let result = []
-    if(docs) {
-        for(let doc of docs) {
-            let warehouseName = await getWarehouseId(doc.warehouse).then((res) => res.name)
-            result.push({
-                ...doc,
-                warehouseName,
-                periode2: isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode),
-            })
-        }
-    }
-    return result
-}
+// export const listsAllBaseReportFile = async () => {
+//     if(lists.value) {
+//         return documentsMapper(lists.value)
+//     }
+//     return []
+// }
+
+// const documentsMapper = async (docs) => {
+//     let result = []
+//     if(docs) {
+//         for(let doc of docs) {
+//             let warehouseName = await getWarehouseId(doc.warehouse).then((res) => res.name)
+//             result.push({
+//                 ...doc,
+//                 warehouseName,
+//                 periode2: isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode),
+//             })
+//         }
+//     }
+//     return result
+// }
 
 export const dateBaseReportFileImported = () => {
     let isPushed = []
