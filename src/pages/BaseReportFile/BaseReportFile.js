@@ -2,7 +2,6 @@
 import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
-import getDaysArray from "../../composable/piece/getDaysArray";
 import { getWarehouseId, lists as warehouseLists } from "../../composable/components/Warehouses";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
@@ -29,127 +28,89 @@ export class BaseReportFile {
 
         return { ...record, warehouseName: getWarehouse?.name, periode2 }
     }
-}
 
-// export const getBaseReportFile = async (periode1, periode2) => {
-//     lists.value = []
-//     let datesArray = getDaysArray(periode1, periode2)
-//     for(let date of datesArray) {
-//         let records = await findData({
-//             store: "BaseReportFile",
-//             criteria: { periode: date }
-//         })
-//         if(records) {
-//             lists.value = lists.value.concat(records)
-//         }
-//     }
-//     return true
-// }
+    
+    dateBaseReportFileImported () {
+        let isPushed = []
+        let result = []
+        for(let doc of lists.value) {
+            // if periode not pushed
+            if(!isPushed.includes(doc?.periode) && doc?.imported) {
+                result.push({
+                    periode: doc?.periode,
+                    periode2: doc?.periode2
+                })
+                isPushed.push(doc?.periode)
+            }
+        }
+        return result
+    }
 
-// export const listsAllBaseReportFile = async () => {
-//     if(lists.value) {
-//         return documentsMapper(lists.value)
-//     }
-//     return []
-// }
-
-// const documentsMapper = async (docs) => {
-//     let result = []
-//     if(docs) {
-//         for(let doc of docs) {
-//             let warehouseName = await getWarehouseId(doc.warehouse).then((res) => res.name)
-//             result.push({
-//                 ...doc,
-//                 warehouseName,
-//                 periode2: isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode),
-//             })
-//         }
-//     }
-//     return result
-// }
-
-export const dateBaseReportFileImported = () => {
-    let isPushed = []
-    let result = []
-    for(let doc of lists.value) {
-        // if periode not pushed
-        if(!isPushed.includes(doc?.periode) && doc?.imported) {
+    async warehouseByDate (periode) {
+        let result = [];
+    
+        for(let val of lists.value) {
+          if (val.periode == periode && val.imported) {
             result.push({
-                periode: doc?.periode,
-                periode2: dateMonth(doc?.periode)
-            })
-            isPushed.push(doc?.periode)
+              warehouse: val?.warehouse,
+              warehouseName: val?.warehouseName,
+            });
+          }
+        };
+
+        return result;
+    }
+
+    findBaseReportFileById = (id) => {
+        return lists.value.find((val) => val.id == id)
+    }
+
+    async updateBaseReport (id, obj) { 
+        const findIndex = lists.value.findIndex((rec) => rec?.id === id);
+
+        if(findIndex > -1) {
+            const record = lists.value[findIndex];
+            lists.value[findIndex] = { ...record, ...obj }
+        }
+        
+        await this.db.updateItem(id, obj)
+    }
+
+    async addBaseReportFile  (periode, warehouse) {
+        let record = { periode, 
+                        warehouse,
+                        fileName: false,
+                        stock: false,
+                        clock: false,
+                        imported: false,
+                    }
+
+        const recordInserted = await this.db.createItem(record);
+
+        lists.value.push(recordInserted);
+    }
+
+    async someRecordFinished (idRecord) {
+        await this.db.updateItem(idRecord, { isRecordFinished: true })
+    }
+
+    isRecordExistsByPeriodeAndWarehouse (periode, idWarehouse) {
+        const findIndex = lists.value.findIndex((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
+
+        return findIndex > -1;
+    }
+
+    async addBaseReportFileManual (periode) {
+        for(let warehouse of warehouseLists) {
+            await this.addBaseReportFile( ymdTime(periode), warehouse?.id )
         }
     }
-    return result
-}
 
-export const warehouseByDate = async (periode) => {
-    let result = [];
-
-    for(let val of lists.value) {
-      if (val.periode == periode && val.imported) {
-
-        let getWarehouseName = await getWarehouseId(val.warehouse)
-        result.push({
-          warehouse: val?.warehouse,
-          warehouseName: getWarehouseName?.name,
-        });
-      }
-    };
-    return result;
-}
-
-export const findBaseReportFile = (id) => {
-    return lists.value.find((val) => val.id == id)
-}
-
-export const updateBaseReport = async (id, obj) => {
-    lists.value = lists.value.map((val) => {
-        if(val.id == id) {
-            return { ...val, ...obj}
-        }
-        return val
-    })
-    await update({ store: 'basereportfile', criteria: { id: id }, obj: obj })
-    return true
-}
-
-export const addBaseReportFile = async (periode, warehouse) => {
-    let record = { periode, 
-                    warehouse,
-                    fileName: false,
-                    stock: false,
-                    clock: false,
-                    imported: false,
-                }
-    await append({ store: "BaseReportFile", obj: record })
-            .then((val) => {
-                lists.value.unshift(val?.data)
-            })
-    return
-}
-
-export const someRecordFinished = async (idRecord) => {
-    await updateBaseReport(idRecord, { isRecordFinished: true })
-    return
-}
-
-export const isRecordExistsByPeriodeAndWarehouse = (periode, idWarehouse) => {
-    return lists.value.find((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
-}
-
-export const addBaseReportFileManual = async (periode) => {
-    for(let warehouse of warehouseLists) {
-        await addBaseReportFile(ymdTime(periode), warehouse?.id)
+    async removeBaseReport (idBaseReport) {
+        lists.value = lists.value.filter((rec) => rec.id !== idBaseReport);
+        await this.db.removeItem(idBaseReport);
     }
-    return
-}
 
-export const removeBaseReport = async (idBaseReport) => {
-    lists.value = lists.value.filter((rec) => rec.id !== idBaseReport)
-    await deleteDocument({ store: 'BaseReportFile', criteria: { id: idBaseReport }})
-    return
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
