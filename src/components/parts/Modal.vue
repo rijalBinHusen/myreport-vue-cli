@@ -29,7 +29,7 @@ import DocumentsGroupForm from "@/form/DocumentsGroupForm.vue"
 import DocumentCheckForm from "@/form/DocumentCheckForm.vue"
 import Loader from "./Loader/Loader.vue"
 import ImporterForm from "@/form/ImportDataForm.vue"
-import BaseReportFile from "@/form/BaseReportFileForm.vue"
+import BaseReportFile from "@/pages/BaseReportFile/BaseReportFileForm.vue"
 import BaseClockForm from "../../modular/Base/BaseClockForm.vue";
 import BaseProblemForm from "../../modular/Base/BaseProblemForm.vue";
 import BaseStockForm from "../../modular/Base/BaseStockForm.vue"

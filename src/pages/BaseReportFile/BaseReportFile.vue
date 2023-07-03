@@ -63,7 +63,7 @@ import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import readExcelFile from "@/composable/readExcel"
 import { ref, onMounted } from 'vue'
-import { getBaseReportFile, listsAllBaseReportFile, findBaseReportFile, updateBaseReport, addBaseReportFileManual, removeBaseReport } from "@/composable/components/BaseReportFile"
+import { BaseReportFile, lists as BaseReportFileLists } from "./BaseReportFile";
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
@@ -86,6 +86,8 @@ export default {
         const renderTable = ref(false)
         const importerBase = ref(null)
         const store = useStore()
+        const BaseReportFileClass = new BaseReportFile();
+        const { getBaseReportFile, findBaseReportFileById, updateBaseReport, addBaseReportFileManual, removeBaseReport } = BaseReportFileClass;
 
         const removeBase = async (idBaseReport) => {
             let res = await subscribeMutation('', 'Confirm', {pesan: 'Apakah anda yakin akan menghapus record?'}, 'Modal/tunnelMessage')
@@ -111,7 +113,7 @@ export default {
         }
 
         const renewLists = async () => {
-            lists.value = await listsAllBaseReportFile()
+            lists.value = BaseReportFileLists
             if(lists.value) {
                 renderTable.value = true
             }
@@ -166,7 +168,7 @@ export default {
         // read file and put to the state
         const readExcel = async (e) => {
             // info of record
-            let infobase = findBaseReportFile(importId.value)
+            let infobase = findBaseReportFileById(importId.value)
             // bring the loader up
             loader()
             let excel = await readExcelFile(e.target.files[0])

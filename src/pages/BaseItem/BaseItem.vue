@@ -76,136 +76,95 @@
     </Datatable>
 </template>
 
-<script>
-import Button from "../components/elements/Button.vue"
-import Select from "../components/elements/Select.vue"
-import Datatable from "../components/parts/Datatable.vue"
-import * as XLSX from "xlsx";
-import { addItem, updateItem, lists as stateItems, getItemById, removeItem, get20Item } from '@/composable/components/Baseitem'
+<script setup>
+  import Button from "@/components/elements/Button.vue"
+  import Select from "@/components/elements/Select.vue"
+  import Datatable from "@/components/parts/Datatable.vue"
+  import * as XLSX from "xlsx";
+  // import { addItem, updateItem, lists as stateItems, getItemById, removeItem, get20Item } from '@/composable/components/Baseitem'
+  import { BaseItem, lists as stateItems } from "./Baseitem"
+  import { onMounted, ref, watch } from "vue";
 
-export default {
-  components: {
-    Button,
-    Datatable,
-    Select
-  },
-  name: "Baseitem",
-  data() {
-    return {
-      kode: '',
-      name: '',
-      editId: "",
-      edited: {},
-      listItems: [],
-      renderTable: false,
-    }
-  },
-  methods: {
-    async send() {
-      if(!this.name && !this.kode) { return }
-    // jika update
-      if(this.editId) {
-        await updateItem(this.editId, this.edited )
-        // this.$store.dispatch("Baseitem/update",{ ...this.Baseitem, id: this.editId })
-      }
-      // jika tidak
-      else {
-        // this.$store.dispatch("append",{ obj: { ...this.Baseitem }, store: "Baseitem" })
-        await addItem(this.kode, this.name)
-      }
-      // reset the form
-      this.cancel()
-      // renewlist
-      this.renewLists()
-    },
-    edit(ev) {
-      this.editId = ev
-      const item = getItemById(ev)
-      this.kode = item.kode
-      this.name = item.name
-    },
-    cancel() {
-      this.editId = ""
-      this.name = ''
-      this.kode = ''
-    },
-    renewLists() {
-      this.renderTable = false
-      this.listItems = stateItems
-      setTimeout(() => {
-        this.renderTable = true
-      }, 100)
-    },
-    async remove(ev) {
-      let confirm = window.confirm(`Apakah anda yakin akan menghapus item tersebut?`)
-      if(!confirm) { return }
-      await removeItem(ev)
-      this.renewLists()
-      // this.$store.dispatch("delete", { store: "Baseitem", criteria: { id: ev } })
-      
-    },        
-    // to launch file picker
-    launch() {
-      this.$refs.importerBase.click();
-    },
-    readExcel(e) {
-    // bring the loader up
-    this.$store.commit("Modal/active", {judul: "", form: "Loader"});
-			const file = e.target.files[0]
-			let info = { fileName: file.name }
-			
-			const promise = new Promise ((resolve, reject) => {
-				const fileReader = new FileReader();
-				fileReader.readAsArrayBuffer(file);
-				
-				fileReader.onload = (e) => {
-					const bufferArray = e.target.result;
-					
-					// const wb = XLSX.read(bufferArray, {type: "buffer"});
-					const wb = XLSX.read(bufferArray);
-          let sheets = wb.SheetNames
-					info.sheet = wb.Sheets[sheets[0]]
-					
-					resolve(info)
-				};
-				
-				fileReader.onerror=((error) => { reject(error) })
-			})
-			
-			promise.then(async (d) => {
-        // insert to idb
-        let infoRow = d.sheet["!ref"].split(":")
-        let lengthRow = +infoRow[1].match(/\d+/)[0]
-        for(let i = 1; i <= lengthRow; i++) {
-          if(d.sheet["A"+i]) {
-            await addItem(d.sheet["A"+i].v, d.sheet["B"+i].v )
-            // await this.$store.dispatch("append", { 
-            //   store: "Baseitem",
-            //   obj: { kode: d.sheet["A"+i].v, name: d.sheet["B"+i].v }
-            //  })
-          }
-        }
-        // close the loader
-        this.$store.commit("Modal/active");
-			})
-		}
-  },
-  async mounted() {
-    this.cancel();
-    await get20Item()
-    this.renewLists()
-  },
-  watch: {
-    kode(newVal) {
-      if(this.editId) {
-        this.edited['kode'] = newVal
-      }
-    },
-    name(newVal) {
-      if(this.editId) {
-        this.edited['name'] = newVal
-      }
-    },
+  const BaseItemClass = new BaseItem();
+  const { addItem, updateItem, getItemById, removeItem } = BaseItemClass;
+
+  const kode = ref('');
+  const name = ref('');
+  const editId = ref('');
+  const edited = ref({});
+  const listItems = ref([]);
+  const renderTable = ref(false);
+
+  function cancel () {
+    editId.value = '';
+    kode.value = '';
+    name.value = '';
   }
-};
+
+  function renewList () {
+    renderTable.value = false
+    listItems = stateItems
+
+    setTimeout(() => {
+      renderTable.value = true
+    }, 100)
+  }
+
+  async function send() {
+    const isOkeToSend = name.value !== '' && kode.value !== '';
+
+    if(!isOkeToSend) { 
+      alert('Form tidak boleh kosong') 
+      return
+    };
+
+    if(editId.value) {
+      await updateItem(editId.value, kode.value, name.value);
+    } else {
+      await addItem(kode.value, name.value);
+    }
+
+    cancel();
+    renewList();
+
+  }
+
+  async function edit (idItem) {
+
+    editId.value = idItem;
+    const item = await getItemById(idItem);
+    kode.value = item?.kode;
+    name.value = item?.name;
+
+  }
+
+  async function remove(ev) {
+
+    let confirm = window.confirm(`Apakah anda yakin akan menghapus item tersebut?`)
+    if(!confirm) { return }
+    await removeItem(ev)
+    renewList()
+        
+  }; 
+
+  onMounted(() => {
+    cancel();
+    renewList()
+  })
+
+  watch(kode, name, (newValue, oldValue) => {
+    if(editId.value) {
+      // kode item
+      if(newValue[0] !== oldValue[0]) {
+        edited.value['kode'] = newValue[0]
+      }
+
+      // name item
+      if(newValue[1] !== oldValue[1]) {
+        edited.value['name'] = newValue[1]
+      }
+
+    }
+  })
+  
 </script>

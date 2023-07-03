@@ -74,6 +74,14 @@ export class BaseItem {
 
         await this.db.removeItem(itemId);
     }
+
+    async getAllItems() {
+        const getItems = await this.db.getItems();
+
+        if(getItems) {
+            lists = getItems;
+        }
+    }
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";

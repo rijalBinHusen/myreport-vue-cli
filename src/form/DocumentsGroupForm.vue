@@ -50,7 +50,7 @@ import { lists as listsWarehouse } from '@/composable/components/Warehouses'
 import { getLastDate, addData as addNewDocument } from '@/composable/components/DocumentsPeriod'
 import { useStore } from "vuex"
 import { ymdTime } from "@/composable/piece/dateFormat"
-import { addBaseReportFile } from '@/composable/components/BaseReportFile'
+import { BaseReportFile } from '@/pages/BaseReportFile/BaseReportFile'
 
 export default {
     components: {
@@ -66,6 +66,8 @@ export default {
         const lowerPeriode = ref('')
         const warehousesLists = ref([])
         const store = useStore()
+        const BaseReportFileClass = new BaseReportFile();
+        const { addBaseReportFile } = BaseReportFileClass;
 
         const changeShift = (store, idFL, shift) => {
             if(id.value == idFL) {

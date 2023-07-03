@@ -1,7 +1,7 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
-import { findBaseReportFile } from "../../pages/BaseReportFile/BaseReportFile";
+import { BaseReportFile } from "@/pages/BaseReportFile/BaseReportFile";
 import { masalah, problemActive } from "./Problem";
-import { getItemByKode } from '../../pages/BaseItem/Baseitem'
+import { BaseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 
@@ -90,7 +90,8 @@ export const appendData = async (
   riil
 ) => {
   // because we need warehouse id
-  let parentDetails = findBaseReportFile(parent);
+  const { findBaseReportFileById } = new BaseReportFile();
+  let parentDetails = findBaseReportFileById(parent);
   let getProblem = problemActive(parentDetails?.warehouse, item);
   await append({
     store: "BaseReportStock",
@@ -137,10 +138,11 @@ export const baseReportStockLists = async (parent, shift) => {
   let result = [];
   for (let rec of lists ) {
     if (rec.parent == parent && rec.shift == shift) {
-      const itemName = await getItemByKode(rec.item).then((res) => res ? res.name : 'Not found')
+      const { getItemBykode } = new BaseItem();
+      const getItem = await getItemBykode(rec.item);
       result.push({
         ...rec,
-        itemName,
+        itemName: getItem?.name,
         problem2: masalah(rec.problem),
         selisih:
           Number(rec.real) -

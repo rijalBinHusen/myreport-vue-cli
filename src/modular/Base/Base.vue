@@ -107,7 +107,7 @@ import { ref, computed } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/composable/components/DocumentsPeriod'
-import { someRecordFinished } from '@/composable/components/BaseReportFile'
+import { BaseReportFile } from '@/pages/BaseReportFile/BaseReportFile'
 import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from '@/composable/components/BaseReportPanel'
 import { getWarehouseId } from "@/composable/components/Warehouses"
 import { getSupervisorId } from "@/composable/components/Supervisors"
@@ -128,6 +128,7 @@ export default {
     },
     setup() {
         const store = useStore()
+        const { someRecordFinished } = new BaseReportFile()
         const mode = ref('Main')
         const baseId = ref(null)
         const isMainMode = computed(() => mode.value == 'Main')
@@ -350,4 +351,4 @@ export default {
         }
     }
 }
-</script>@/pages/BaseReportFile/BaseReportFile
+</script>

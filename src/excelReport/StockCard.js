@@ -1,6 +1,6 @@
 import { findData } from "@/myfunction";
 import getDaysArray from "@/composable/piece/getDaysArray";
-import { getItemByKode } from "@/pages/BaseItem/Baseitem";
+import { BaseItem } from "@/pages/BaseItem/Baseitem";
 import { dateMonth, ddmmyyyy } from "@/composable/piece/dateFormat";
 import GetProblemByArrayId from "./GetProblemByArrayId";
 import exportToXls from "@/exportToXls";
@@ -36,8 +36,10 @@ export const getStockCard = async (date1, date2, warehouse, kode) => {
     let resultPromise = await Promise.all(stockCard)
 
     let result = []
+
+    const { getItemBykode } = new BaseItem();
     
-    let item = await getItemByKode(kode)
+    let item = await getItemBykode(kode)
 
     for (let res of resultPromise.flat()) {
         if(res) {

@@ -33,7 +33,6 @@ import { useStore } from "vuex"
 import { onMounted, ref } from "vue"
 import { getStockCard } from '@/excelReport/StockCard'
 import exportProblem from "@/excelReport/ProblemReport"
-import { getAllItems } from "@/composable/components/Baseitem"
 
 export default {
     components: { Table, Button },
@@ -102,10 +101,6 @@ export default {
             //close the loader
             store.commit("Modal/active")
         }
-
-        onMounted(() => {
-            getAllItems()
-        })
 
         return { reportNow, reports, launch }
     },

@@ -3,7 +3,7 @@ import { ddmmyyyy, dateMonth } from "../piece/dateFormat";
 import { getSupervisorId } from "./Supervisors";
 import { getWarehouseId } from "./Warehouses";
 import getDaysArray from "../piece/getDaysArray";
-import { getItemByKode } from '../../pages/BaseItem/Baseitem'
+import { BaseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 
 let lists = [];
@@ -46,11 +46,13 @@ export const listsProblem = async () => {
   }
   let result = [];
 
+  const { getItemBykode } = new BaseItem();
+
   for (let list of lists) {
     let getInfo = [
       getWarehouseId(list.warehouse).then((res) => res.name),
       getSupervisorId(list.nameSpv).then((res) => res.name),
-      getItemByKode(list.item).then((res) => res ? res.name : 'Not found'),
+      getItemBykode(list.item).then((res) => res ? res.name : 'Not found'),
     ];
 
     await Promise.all(getInfo).then((val) => {

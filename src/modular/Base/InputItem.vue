@@ -9,7 +9,8 @@
 </template>
 
 <script>
-import { getAllItems, lists as stateItems } from '@/composable/components/Baseitem'
+// import { getAllItems, lists as stateItems } from '@/composable/components/Baseitem'
+import { lists as stateItems, BaseItem } from "@/pages/BaseItem/Baseitem"
 import { dateMonth } from '@/composable/piece/dateFormat'
 
 export default {
@@ -44,7 +45,8 @@ export default {
     },
     name: "InputItem",
     async mounted() {
-        await getAllItems()
+        const item = new BaseItem();
+        await item.getAllItems();
         this.render = true
     },
 }

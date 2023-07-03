@@ -35,11 +35,12 @@ import { useStore } from "vuex"
 import { ref, onMounted } from "vue"
 import { startImportClock } from '@/composable/components/BaseReportClock'
 import { startImportStock } from '@/composable/components/BaseReportStock'
-import { updateBaseReport } from '@/composable/components/BaseReportFile'
+import { BaseReportFile } from './BaseReportFile'
 
 export default {
     components: { Select, Button, },
     setup() {
+        const { updateBaseReport } = new BaseReportFile();
         const clock = ref(null)
         const stock = ref(null)
         const infoBaseReport = ref(null)

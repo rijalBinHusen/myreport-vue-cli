@@ -76,18 +76,12 @@
 <script>
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
-import { 
-    getBaseReportFile,
-    dateBaseReportFileImported,
-    warehouseByDate,
-    isRecordExistsByPeriodeAndWarehouse
-} from '@/composable/components/BaseReportFile';
+import { BaseReportFile } from "@/pages/BaseReportFile/BaseReportFile";
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
 import { selectedPeriode, selectedWarehouse, shift, sheet } from '@/composable/components/BaseReportPanel'
-import { useStore } from 'vuex';
 import { dateMonth } from '@/composable/piece/dateFormat';
 import { getWarehouseId } from '@/composable/components/Warehouses';
 import { getProblemFromDB } from '@/composable/components/Problem'
@@ -101,7 +95,8 @@ export default {
     },
     emits: ['baseReportChanged', 'mode'],
     setup(props, { emit }) {
-        const store = useStore()
+        const baseReportFileClass = new BaseReportFile();
+        const { getBaseReportFile, dateBaseReportFileImported, warehouseByDate, isRecordExistsByPeriodeAndWarehouse } = baseReportFileClass;
         const warehouses = ref([])
         const pickPeriode = async () => {
             let res = await subscribeMutation(
