@@ -351,4 +351,4 @@ export default {
         }
     }
 }
-</script>@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses
+</script>@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses../../pages/Followup/followUp

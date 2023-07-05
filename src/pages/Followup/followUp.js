@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from "vue"
 import func from "../../myfunction"
-import { ymdTime, dateMonth } from "../piece/dateFormat"
+import { ymdTime, dateMonth } from "../../composable/piece/dateFormat"
 
 let lists = reactive([])
 
