@@ -3,13 +3,28 @@ import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage"
 
-export let lists = [];
+interface BaseClock {
+  id: string;
+  parent: string;
+  shift: number;
+  noDo: number;
+  reg: string;
+  start: string;
+  finish: string;
+  rehat: number
+}
+
+interface unknownObject {
+  [key: string|number]: string
+}
+
+export let lists = <BaseClock[]>[];
 let storeName = "basereportclock";
 
 export function baseClock() {
   const db = useIdb(storeName);
 
-  const appendData = async ( parent, shift, noDo, reg, start, finish, rehat) => {
+  const appendData = async ( parent: string, shift: number, noDo: number, reg: string, start: string, finish: string, rehat: number) => {
 
     const objToInsert = {
       parent,
@@ -21,22 +36,27 @@ export function baseClock() {
       rehat,
     }
 
-    const insertedData = await db.createItem(objToInsert);
+    const insertedId = await db.createItem(objToInsert);
 
-    if(!insertedData) {
+    if(typeof insertedId !== 'undefined') {
+
+      lists.push({ id : insertedId, ...objToInsert })
+
+    } else {
+      
       alert("Gagal memasukkan report clock");
-      return;
+
     }
     
-    lists.push(insertedData)
   };
   
 
-  const startImportClock = async (sheets, baseId) => {
+  const startImportClock = async (sheets: unknownObject, parentId: string) => {
     // dapatkan ref
     let infoRowColClock = sheets["!ref"].split(":");
+    if(infoRowColClock[1] === null) return;
     // dapatkan length data clock
-    let lengthRowClock = +infoRowColClock[1].match(/\d+/)[0];
+    let lengthRowClock = + infoRowColClock[1].match(/\d+/)[0];
   
     for (let i = 1; i <= lengthRowClock; i++) {
       /* 
@@ -55,7 +75,7 @@ export function baseClock() {
   
       if (i > 5 && clockStatus) {
         await appendData(
-          baseId,
+          parentId,
           sheets["B" + i] ? sheets["B" + i].v : 3,
           sheets["D" + i] ? sheets["D" + i].v : 0,
           sheets["F" + i] ? sheets["F" + i].w : 0,

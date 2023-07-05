@@ -5,11 +5,19 @@ import { ref } from "vue"
 interface SummaryRecord { total: number, lastId: string }
 
 interface Summary {
-  storeName: SummaryRecord
+  [key: string]: SummaryRecord
+}
+
+interface unknownObject {
+  [key: string|number]: string|number
+}
+
+interface unknownObjectNumber {
+  [key: string|number]: number
 }
 
 const stateSummary = ref(<Summary>{});
-let timer = null;
+let timer:number = 0;
 
 export const useIdb = (storeName: string) => {
   // create instance
@@ -73,7 +81,7 @@ export const useIdb = (storeName: string) => {
 
   }
 
-  const createItem = async <T>(yourObject: T): Promise<T> => {
+  const createItem = async <T>(yourObject: T): Promise<string|undefined> => {
     // get summary
     const sum = await getSummary();
     // generateID
@@ -87,13 +95,12 @@ export const useIdb = (storeName: string) => {
       updateSummary(nextId);
       // add activity
       addActivity('create', nextId)
-      return record;
+      return nextId;
 
     } catch (err) {
 
         alert('Terjadi kesalahan ketika memasukkan data');
         console.log(err);
-      
     }
   };
 
@@ -106,9 +113,9 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsLimit = async (limit: number) => {
-    const result = [];
+    const result:unknownObject[] = [];
     return store
-      .iterate(function (value, key, iterationNumber) {
+      .iterate(function (value: unknownObject, key, iterationNumber) {
         if (iterationNumber < limit && value && key) {
           result.push(value);
         }
@@ -133,7 +140,7 @@ export const useIdb = (storeName: string) => {
 
   const findOneItemByKeyValue = (keySearch: string, valueSearch: string) => {
     // let result = {};
-    return store.iterate(function (value) {
+    return store.iterate(function (value: unknownObject) {
       // Resulting key/value pair -- this callback
       // will be executed for every item in the
       // database.
@@ -145,8 +152,8 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItems = async () => {
-    const result = [];
-    await store.iterate(function (value, key) {
+    const result:unknownObject[] = [];
+    await store.iterate(function (value:unknownObject, key) {
         if (value && key) {
           result.push(value);
         }
@@ -183,9 +190,9 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsByKeyValue = async (keySearch: string, valueSearch: string) => {
-    let result = [];
+    let result:unknownObject[] = [];
     return store
-      .iterate(function (value, key, iterationNumber) {
+      .iterate(function (value:unknownObject) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -206,9 +213,9 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsByKeyGreaterThan = async (keySearch: string, greaterThanValue: string) => {
-    let result = [];
+    let result:unknownObject[] = [];
     return store
-      .iterate(function (value) {
+      .iterate(function (value:unknownObject) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -234,9 +241,9 @@ export const useIdb = (storeName: string) => {
     key2Search: string|number,
     value2Search: string|number
   ) => {
-    let result = [];
+    let result:unknownObject[] = [];
     return store
-      .iterate(function (value) {
+      .iterate(function (value:unknownObject) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -264,9 +271,9 @@ export const useIdb = (storeName: string) => {
     greaterOrEqualThanValue: string|number,
     LowerOrEqualThanValue: string|number
   ) => {
-    let result = [];
+    let result:unknownObject[] = [];
     return store
-      .iterate(function (value, key, iterationNumber) {
+      .iterate(function (value:unknownObject) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -290,9 +297,9 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsThatValueIncludes = async (yourString: string) => {
-    const result = [];
+    const result:unknownObject[] = [];
     return store
-      .iterate(function (value, key, iterationNumber) {
+      .iterate(function (value:unknownObject, key, iterationNumber) {
         if (Object.values(value).includes(yourString)) {
           result.push(value);
         }
@@ -309,9 +316,9 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsGreatEqualLowEqual = async (key1: string|number, greaterValue1: number, key2: string|number, lowerValue2: number) => {
-    let result = [];
+    let result:unknownObject[] = [];
     return store
-      .iterate(function (value) {
+      .iterate(function (value:unknownObjectNumber) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
