@@ -1,7 +1,7 @@
 import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
-import { getWarehouseId, lists as warehouseLists } from "../../composable/components/Warehouses";
+import { getWarehouseId, lists as warehouseLists } from "../Warehouses/Warehouses";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 export const lists = ref([])

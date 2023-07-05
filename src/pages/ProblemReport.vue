@@ -173,3 +173,4 @@ export default {
     name: "ProblemReport",
 }
 </script>
+@/pages/Warehouses/Warehouses

@@ -101,4 +101,4 @@
 		},
 	}
 </script>
-./BaseReport/BaseReportFile.vue
+./BaseReport/BaseReportFile.vue@/pages/Warehouses/Warehouses

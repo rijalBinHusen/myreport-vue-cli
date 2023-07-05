@@ -1,5 +1,5 @@
 import { getData, append, update, getDataByKey } from '../../myfunction'
-import { getSupervisorId } from './Supervisors'
+import { getSupervisorId } from '../../composable/components/Supervisors'
 
 export let lists = []
 const storeName = "warehouses";

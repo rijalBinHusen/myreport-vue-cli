@@ -171,4 +171,4 @@ export default {
         }
     },
 }
-</script>@/pages/BaseReportFile/BaseReportFile@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportPanel
+</script>@/pages/BaseReportFile/BaseReportFile@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportPanel@/pages/Warehouses/Warehouses

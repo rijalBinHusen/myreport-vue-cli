@@ -1,10 +1,10 @@
 <template>
 	<div>
 		<Input type="text" label="Gudang" placeholder="Kosong" :value="info?.name" disabled/>
-		<div class="w3-col s4 w3-large w3-margin-top" v-for="list in listsHeadSpv" :key="list.id">
+		<div class="w3-col s4 w3-large w3-margin-top" v-for="list in listsSupervisors" :key="list.id">
 			<input 
 				type="checkbox" 
-				v-model="pickedHead"
+				v-model="pickedSupervisors"
 				:value="list.id" 
 				:id="list.id" 
 				class="w3-margin-right"
@@ -25,39 +25,39 @@
 <script>
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import { updateHeadspv, warehouseId } from '@/composable/components/Warehouses'
-import { lists } from '@/composable/components/Headspv'
+import { updateSupervisors, warehouseId } from '@/composable/components/Warehouses'
+import { lists } from '@/composable/components/Supervisors'
 import { ref, onBeforeMount } from "vue"
 import { useStore } from "vuex"
 
 export default {
 	setup() {
 		const info = ref('')
-		const listsHeadSpv = ref([])
-		const pickedHead = ref("")
+		const listsSupervisors = ref([])
+		const pickedSupervisors = ref([])
 		const store = useStore()
 		
 		const update = async () => {
-			// console.log(info.value.id, pickedHead.value)
-			await updateHeadspv(info.value.id, pickedHead.value)
+			// console.log(info.value.id, pickedSupervisors.value)
+			await updateSupervisors(info.value.id, [ ...pickedSupervisors.value])
 			store.commit('Modal/tunnelMessage', true)
 			store.commit("Modal/active");
 		}
 
 		onBeforeMount(() => {
 			info.value = warehouseId(store.getters['Modal/obj']?.obj?.id)
-			listsHeadSpv.value = lists
-			pickedHead.value = info.value?.head
+			listsSupervisors.value = lists
+			pickedSupervisors.value = info.value.supervisors
 		})
 
 		return {
 			info,
-			listsHeadSpv,
-			pickedHead,
+			listsSupervisors,
+			pickedSupervisors,
 			update,
 		}
 
 	},
 	components: { Input, Button },
 }
-</script>
+</script>@/pages/Warehouses/Warehouses

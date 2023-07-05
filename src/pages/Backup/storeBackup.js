@@ -15,7 +15,7 @@ import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../Fie
 import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../../composable/components/Headspv";
 import { syncProblemToServer, syncProblemRecordToServer } from "../../composable/components/Problem";
 import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../../composable/components/Supervisors";
-import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../../composable/components/Warehouses";
+import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../Warehouses/Warehouses";
 import { modalClose, loader} from "../../composable/piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";

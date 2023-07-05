@@ -204,4 +204,4 @@ export default {
         }
     },
 }
-</script>@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod
+</script>@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses
