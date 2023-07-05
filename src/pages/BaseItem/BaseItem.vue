@@ -30,23 +30,6 @@
       type="button" 
       @trig="cancel" 
     />
-
-    <Button 
-      v-if="!editId"
-      primary
-      class="w3-left w3-large" 
-      value="Import" 
-      type="button" 
-      @trig="launch" 
-    />
-
-    <input
-      class="w3-hide"
-      @change.prevent="readExcel($event)"
-      type="file"
-      ref="importerBase"
-      accept=".xls, .ods"
-    />
     </form>
   </div>
     <Datatable
@@ -78,15 +61,13 @@
 
 <script setup>
   import Button from "@/components/elements/Button.vue"
-  import Select from "@/components/elements/Select.vue"
   import Datatable from "@/components/parts/Datatable.vue"
-  import * as XLSX from "xlsx";
   // import { addItem, updateItem, lists as stateItems, getItemById, removeItem, get20Item } from '@/composable/components/Baseitem'
-  import { BaseItem, lists as stateItems } from "./Baseitem"
-  import { onMounted, ref, watch } from "vue";
+  import { baseItem, lists as stateItems } from "./Baseitem"
+  import { onMounted, ref, watchEffect } from "vue";
 
-  const BaseItemClass = new BaseItem();
-  const { addItem, updateItem, getItemById, removeItem } = BaseItemClass;
+  const BaseItemClass = baseItem();
+  const { addItem, updateItem, getItemById, removeItem, getAllItems } = BaseItemClass;
 
   const kode = ref('');
   const name = ref('');
@@ -103,7 +84,7 @@
 
   function renewList () {
     renderTable.value = false
-    listItems = stateItems
+    listItems.value = stateItems
 
     setTimeout(() => {
       renderTable.value = true
@@ -147,12 +128,13 @@
         
   }; 
 
-  onMounted(() => {
+  onMounted(async () => {
+    await getAllItems();
     cancel();
-    renewList()
+    renewList();
   })
 
-  watch(kode, name, (newValue, oldValue) => {
+  watchEffect(kode, name, (newValue, oldValue) => {
     if(editId.value) {
       // kode item
       if(newValue[0] !== oldValue[0]) {

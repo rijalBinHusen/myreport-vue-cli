@@ -1,5 +1,5 @@
-import { update, append, getData, deleteDocument, updateWithoutAddActivity, getDataByKey } from '@/myfunction'
-import { ymdTime } from '../../composable/piece/dateFormat'
+import { getDataByKey } from '@/myfunction';
+import { ymdTime } from '../../composable/piece/dateFormat';
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { useIdb } from "../../utils/localforage";
 
@@ -7,18 +7,19 @@ export let lists = []
 
 const store = 'baseitem'
 
-export class BaseItem {
-    db = useIdb(store);
+export function baseItem () {
 
-    async addItem(itemKode, itemName) {
-        const inserted = await this.db.createItem({ kode: itemKode, name: itemName });
+    const db = useIdb(store);
+
+    async function addItem(itemKode, itemName) {
+        const inserted = await db.createItem({ kode: itemKode, name: itemName });
 
         if(inserted) {
-            lists.push(inserted);
+            lists.unshift(inserted);
         }
     }
 
-    async updateItem(id, itemKode, itemName, lastUsed) {
+    async function updateItem(id, itemKode, itemName, lastUsed) {
         const getItem = await this.getItemById(id)
 
         if(!getItem) return;
@@ -44,24 +45,24 @@ export class BaseItem {
             return rec
         })
 
-        await this.db.updateItem(id, objToUpdate);
+        await db.updateItem(id, objToUpdate);
     }
 
-    async getItemById (itemId) {
+    async function getItemById (itemId) {
         let findItem = lists.find((rec) => rec?.id === itemId)
 
         if(!findItem) {
-            findItem = await this.db.getItem(itemId);
+            findItem = await db.getItem(itemId);
         }
 
         return findItem || { itemId, kode: 'Not found', name: 'Not found' }
     }
 
-    async getItemBykode (itemKode) {
+    async function getItemBykode (itemKode) {
         let findItem = lists.find((rec) => rec?.kode === itemKode)
 
         if(!findItem) {
-            findItem = await this.db.findOneItemByKeyValue('kode', itemKode);
+            findItem = await db.findOneItemByKeyValue('kode', itemKode);
         }
 
         this.updateItem(findItem?.id, false, false, ymdTime());
@@ -69,18 +70,23 @@ export class BaseItem {
         return findItem || { itemId, kode: 'Not found', name: 'Not found' }
     }
 
-    async removeItem(itemId) {
+    async function removeItem(itemId) {
         lists = lists.filter((rec) => rec?.id !== itemId);
 
-        await this.db.removeItem(itemId);
+        await db.removeItem(itemId);
     }
 
-    async getAllItems() {
-        const getItems = await this.db.getItems();
+    async function getAllItems() {
+        
+        const getItems = await db.getItems();
 
         if(getItems) {
             lists = getItems;
         }
+    }
+
+    return {
+        addItem, updateItem, getItemById, getItemBykode, removeItem, getAllItems
     }
 }
 
