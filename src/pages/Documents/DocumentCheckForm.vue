@@ -137,4 +137,4 @@ export default {
         SelectWarehouse
     },
 }
-</script>
+</script>@/pages/Documents/DocumentsPeriod

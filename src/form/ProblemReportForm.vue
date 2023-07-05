@@ -360,4 +360,4 @@ export default {
     props: ["id"],
     name: "ProblemReportForm"
 }
-</script>
+</script>@/pages/Documents/DocumentsPeriod

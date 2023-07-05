@@ -1,26 +1,26 @@
 import Localbase from "localbase";
 let db = new Localbase("myreport");
-import func, { updateWithoutAddActivity, deleteDocumentByKey } from "../myfunction"
-import { full } from "./piece/dateFormat";
-import { startExport } from "./piece/exportAsFile"
-import { getJWTToken, setJWTToken } from "../utils/cookie";
-import { syncClockToServer, syncClockRecordToServer } from "../pages/BaseReport/BaseReportClock";
-import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../pages/BaseReport/BaseReportFile";
-import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../pages/BaseReport/BaseReportStock";
-import { syncItemToServer, syncItemRecordToServer } from "../pages/BaseItem/Baseitem";
-import { syncCasesToServer, syncCaseRecordToServer } from "../pages/Cases/Cases";
-import { syncComplainsToServer, syncComplainRecordToServer } from "../composable/components/Complains";
-import { syncDocumentToServer, syncDocumentRecordToServer } from "../composable/components/DocumentsPeriod";
-import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../composable/components/FieldProblem";
-import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../composable/components/Headspv";
-import { syncProblemToServer, syncProblemRecordToServer } from "../composable/components/Problem";
-import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../composable/components/Supervisors";
-import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../composable/components/Warehouses";
-import { modalClose, loader} from "./piece/vuexModalLauncher";
-import { loaderMessage, progressMessage } from "../components/parts/Loader/state";
-import { postData, deleteData, putData } from "../utils/sendDataToServer";
-import { loginToServer } from "../utils/loginToServer"
-import signOut from "../composable/UserSignOut";
+import func, { updateWithoutAddActivity, deleteDocumentByKey } from "../../myfunction"
+import { full } from "../../composable/piece/dateFormat";
+import { startExport } from "../../composable/piece/exportAsFile"
+import { getJWTToken, setJWTToken } from "../../utils/cookie";
+import { syncClockToServer, syncClockRecordToServer } from "../BaseReport/BaseReportClock";
+import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../BaseReport/BaseReportFile";
+import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../BaseReport/BaseReportStock";
+import { syncItemToServer, syncItemRecordToServer } from "../BaseItem/Baseitem";
+import { syncCasesToServer, syncCaseRecordToServer } from "../Cases/Cases";
+import { syncComplainsToServer, syncComplainRecordToServer } from "../../composable/components/Complains";
+import { syncDocumentToServer, syncDocumentRecordToServer } from "../Documents/DocumentsPeriod";
+import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../../composable/components/FieldProblem";
+import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../../composable/components/Headspv";
+import { syncProblemToServer, syncProblemRecordToServer } from "../../composable/components/Problem";
+import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../../composable/components/Supervisors";
+import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../../composable/components/Warehouses";
+import { modalClose, loader} from "../../composable/piece/vuexModalLauncher";
+import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";
+import { postData, deleteData, putData } from "../../utils/sendDataToServer";
+import { loginToServer } from "../../utils/loginToServer"
+import signOut from "../../composable/UserSignOut";
 
 export const storeBackup = async (sendToCloud) => {
     // will store all document that we saved in idexeddb

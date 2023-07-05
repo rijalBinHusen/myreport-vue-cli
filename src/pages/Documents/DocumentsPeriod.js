@@ -1,9 +1,9 @@
 import { findData, update, append, deleteDocument, getData, getDataByKey } from "../../myfunction"
-import getDatesArray from "../piece/getDaysArray"
-import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../piece/dateFormat'
-import { getHeadspvId } from './Headspv'
-import { getSupervisorId } from './Supervisors'
-import { getWarehouseId, warehouseNameBySpv } from './Warehouses'
+import getDatesArray from "../../composable/piece/getDaysArray"
+import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../../composable/piece/dateFormat'
+import { getHeadspvId } from '../../composable/components/Headspv'
+import { getSupervisorId } from '../../composable/components/Supervisors'
+import { getWarehouseId, warehouseNameBySpv } from '../../composable/components/Warehouses'
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 let lists = []

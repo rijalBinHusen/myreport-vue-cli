@@ -96,4 +96,4 @@ export default {
         Datatable,
     },
 }
-</script>
+</script>@/pages/Documents/DocumentsPeriod
