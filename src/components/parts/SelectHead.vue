@@ -39,4 +39,4 @@ export default {
         SelectVue,
     }
 }
-</script>
+</script>@/pages/Headspv/Headspv

@@ -12,7 +12,7 @@ import { syncCasesToServer, syncCaseRecordToServer } from "../Cases/Cases";
 import { syncComplainsToServer, syncComplainRecordToServer } from "../Complains/Complains";
 import { syncDocumentToServer, syncDocumentRecordToServer } from "../Documents/DocumentsPeriod";
 import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../FieldProblems/FieldProblem";
-import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../../composable/components/Headspv";
+import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../Headspv/Headspv";
 import { syncProblemToServer, syncProblemRecordToServer } from "../../composable/components/Problem";
 import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../../composable/components/Supervisors";
 import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../Warehouses/Warehouses";
