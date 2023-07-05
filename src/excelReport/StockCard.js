@@ -3,7 +3,7 @@ import getDaysArray from "@/composable/piece/getDaysArray";
 import { BaseItem } from "@/pages/BaseItem/Baseitem";
 import { dateMonth, ddmmyyyy } from "@/composable/piece/dateFormat";
 import GetProblemByArrayId from "./GetProblemByArrayId";
-import exportToXls from "@/exportToXls";
+import exportToXls from "@/utils/exportToXls";
 
 export const getStockCard = async (date1, date2, warehouse, kode) => {
     let dates;

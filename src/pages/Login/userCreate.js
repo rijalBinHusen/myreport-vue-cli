@@ -1,5 +1,5 @@
 import { ref } from "vue"
-import func from "../myfunction"
+import func from "../../myfunction"
 
 const error = ref(null)
 
