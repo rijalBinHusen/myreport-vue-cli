@@ -9,7 +9,7 @@ import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../BaseReport/
 import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../BaseReport/BaseReportStock";
 import { syncItemToServer, syncItemRecordToServer } from "../BaseItem/Baseitem";
 import { syncCasesToServer, syncCaseRecordToServer } from "../Cases/Cases";
-import { syncComplainsToServer, syncComplainRecordToServer } from "../../composable/components/Complains";
+import { syncComplainsToServer, syncComplainRecordToServer } from "../Complains/Complains";
 import { syncDocumentToServer, syncDocumentRecordToServer } from "../Documents/DocumentsPeriod";
 import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../../composable/components/FieldProblem";
 import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../../composable/components/Headspv";

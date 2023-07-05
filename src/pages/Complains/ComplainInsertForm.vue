@@ -205,4 +205,4 @@ export default {
         
     },
 }
-</script>
+</script>@/pages/Complains/Complains

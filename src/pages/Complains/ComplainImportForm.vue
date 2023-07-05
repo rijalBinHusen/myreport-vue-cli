@@ -73,4 +73,4 @@ export default {
         this.importTemp = this.$store.getters["Modal/obj"]?.obj
     }
 }
-</script>
+</script>@/pages/Complains/Complains
