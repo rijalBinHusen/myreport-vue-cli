@@ -2,10 +2,16 @@ import localforage from 'localforage';
 import { generateId } from './generatorId';
 import { ref } from "vue"
 
-const stateSummary = ref({});
+interface SummaryRecord { total: number, lastId: string }
+
+interface Summary {
+  storeName: SummaryRecord
+}
+
+const stateSummary = ref(<Summary>{});
 let timer = null;
 
-export const useIdb = (storeName) => {
+export const useIdb = (storeName: string) => {
   // create instance
   const store = localforage.createInstance({ name: 'myreport', storeName });
   const summaryDb = localforage.createInstance({ name: 'myreport',  storeName: 'summary'});
@@ -17,7 +23,7 @@ export const useIdb = (storeName) => {
     // if exists
     if(!isExists) {
 
-        const summaryItem = await summaryDb.getItem(storeName)
+        const summaryItem = await summaryDb.getItem(storeName) as SummaryRecord;
         let lastId = null;
         let total = 0;
 
@@ -34,7 +40,7 @@ export const useIdb = (storeName) => {
     return stateSummary.value[storeName]
   }
 
-  function updateSummary (yourLastId) {
+  function updateSummary (yourLastId: string) {
     clearTimeout(timer);
 
     let lastId = yourLastId;
@@ -49,7 +55,7 @@ export const useIdb = (storeName) => {
     }, 3000);
   }
 
-  async function addActivity (type, idRecord) {
+  async function addActivity (type: string, idRecord: string) {
     const now = new Date();
     const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
     const utcPlus7 = new Date(now.getTime() + utcOffset);
@@ -67,7 +73,7 @@ export const useIdb = (storeName) => {
 
   }
 
-  const createItem = async (yourObject) => {
+  const createItem = async <T>(yourObject: T): Promise<T> => {
     // get summary
     const sum = await getSummary();
     // generateID
@@ -87,19 +93,19 @@ export const useIdb = (storeName) => {
 
         alert('Terjadi kesalahan ketika memasukkan data');
         console.log(err);
-        return false;
+      
     }
   };
 
-  const setItem = async (key, value) => {
+  const setItem = async (key: string, value: any) => {
     return store.setItem(key, value);
   };
 
-  const getItem = (key) => {
+  const getItem = (key: string): Promise<any|undefined> => {
     return store.getItem(key);
   };
 
-  const getItemsLimit = async (limit) => {
+  const getItemsLimit = async (limit: number) => {
     const result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -118,16 +124,16 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const removeItem = async (key) => {
+  const removeItem = async (key: string) => {
     // add activity
-    addActivity('delete', incrementId)
+    addActivity('delete', key);
     await store.removeItem(key);
     return;
   };
 
-  const findOneItemByKeyValue = (keySearch, valueSearch) => {
+  const findOneItemByKeyValue = (keySearch: string, valueSearch: string) => {
     // let result = {};
-    return store.iterate(function (value, key, iterationNumber) {
+    return store.iterate(function (value) {
       // Resulting key/value pair -- this callback
       // will be executed for every item in the
       // database.
@@ -157,7 +163,7 @@ export const useIdb = (storeName) => {
     return result;
   };
 
-  const updateItem = async (key, keyValueToUpdate) => {
+  const updateItem = async (key: string, keyValueToUpdate: any): Promise<boolean> => {
     // onsole.log('local forage update item', key)
     try {
       // get item first
@@ -176,7 +182,7 @@ export const useIdb = (storeName) => {
     }
   };
 
-  const getItemsByKeyValue = async (keySearch, valueSearch) => {
+  const getItemsByKeyValue = async (keySearch: string, valueSearch: string) => {
     let result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -199,10 +205,10 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const getItemsByKeyGreaterThan = async (keySearch, greaterThanValue) => {
+  const getItemsByKeyGreaterThan = async (keySearch: string, greaterThanValue: string) => {
     let result = [];
     return store
-      .iterate(function (value, key, iterationNumber) {
+      .iterate(function (value) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -223,14 +229,14 @@ export const useIdb = (storeName) => {
   };
 
   const getItemByTwoKeyValue = async (
-    key1Search,
-    value1Search,
-    key2Search,
-    value2Search
+    key1Search: string|number,
+    value1Search: string|number,
+    key2Search: string|number,
+    value2Search: string|number
   ) => {
     let result = [];
     return store
-      .iterate(function (value, key, iterationNumber) {
+      .iterate(function (value) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -254,9 +260,9 @@ export const useIdb = (storeName) => {
   };
 
   const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async (
-    keySearch,
-    greaterOrEqualThanValue,
-    LowerOrEqualThanValue
+    keySearch: string|number,
+    greaterOrEqualThanValue: string|number,
+    LowerOrEqualThanValue: string|number
   ) => {
     let result = [];
     return store
@@ -283,7 +289,7 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const getItemsThatValueIncludes = async (yourString) => {
+  const getItemsThatValueIncludes = async (yourString: string) => {
     const result = [];
     return store
       .iterate(function (value, key, iterationNumber) {
@@ -302,7 +308,7 @@ export const useIdb = (storeName) => {
       });
   };
 
-  const getItemsGreatEqualLowEqual = async (key1, greaterValue1, key2, lowerValue2) => {
+  const getItemsGreatEqualLowEqual = async (key1: string|number, greaterValue1: number, key2: string|number, lowerValue2: number) => {
     let result = [];
     return store
       .iterate(function (value) {
