@@ -8,7 +8,7 @@ import { syncClockToServer, syncClockRecordToServer } from "../pages/BaseReport/
 import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../pages/BaseReport/BaseReportFile";
 import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../pages/BaseReport/BaseReportStock";
 import { syncItemToServer, syncItemRecordToServer } from "../pages/BaseItem/Baseitem";
-import { syncCasesToServer, syncCaseRecordToServer } from "../composable/components/Cases";
+import { syncCasesToServer, syncCaseRecordToServer } from "../pages/Cases/Cases";
 import { syncComplainsToServer, syncComplainRecordToServer } from "../composable/components/Complains";
 import { syncDocumentToServer, syncDocumentRecordToServer } from "../composable/components/DocumentsPeriod";
 import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../composable/components/FieldProblem";

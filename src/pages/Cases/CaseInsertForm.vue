@@ -151,4 +151,4 @@ export default {
         
     },
 }
-</script>
+</script>@/pages/Cases/Cases
