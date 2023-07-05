@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test": "vitest"
+    "test:unit": "vue-cli-service test:unit",
+    "test": "vue-cli-service test:unit"
   },
   "main": "background.js",
   "dependencies": {
@@ -25,9 +26,10 @@
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",
     "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-unit-jest": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.8",
-    "fake-indexeddb": "^4.0.1",
-    "vitest": "^0.32.2"
+    "@vue/test-utils": "^2.0.0-0",
+    "fake-indexeddb": "^4.0.1"
   }
 }
