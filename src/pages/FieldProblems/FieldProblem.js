@@ -1,6 +1,6 @@
 import { append, getData, update, findData, deleteDocument, getDataByKey} from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
-import { getSupervisorId } from '@/composable/components/Supervisors'
+import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { getHeadspvId } from '../Headspv/Headspv'
 import { postData, deleteData as DeleteRecordOnServer, putData } from "../../utils/sendDataToServer"
 

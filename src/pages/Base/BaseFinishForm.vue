@@ -204,4 +204,4 @@ export default {
         }
     },
 }
-</script>@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses@/pages/Headspv/Headspv
+</script>@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses@/pages/Headspv/Headspv@/pages/Supervisors/Supervisors@/pages/Problems/Problem

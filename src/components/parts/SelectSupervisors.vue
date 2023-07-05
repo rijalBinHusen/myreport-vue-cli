@@ -42,4 +42,4 @@ export default {
         SelectVue,
     }
 }
-</script>
+</script>@/pages/Supervisors/Supervisors

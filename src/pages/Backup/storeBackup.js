@@ -13,8 +13,8 @@ import { syncComplainsToServer, syncComplainRecordToServer } from "../Complains/
 import { syncDocumentToServer, syncDocumentRecordToServer } from "../Documents/DocumentsPeriod";
 import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../FieldProblems/FieldProblem";
 import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../Headspv/Headspv";
-import { syncProblemToServer, syncProblemRecordToServer } from "../../composable/components/Problem";
-import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../../composable/components/Supervisors";
+import { syncProblemToServer, syncProblemRecordToServer } from "../Problems/Problem";
+import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../Supervisors/Supervisors";
 import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../Warehouses/Warehouses";
 import { modalClose, loader} from "../../composable/piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";

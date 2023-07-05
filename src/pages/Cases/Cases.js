@@ -1,4 +1,4 @@
-import { getSupervisorId } from "@/composable/components/Supervisors";
+import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
 import { getHeadspvId } from "@/pages/Headspv/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
 import { append, getData, update, deleteDocument, getDataByKey } from "@/myfunction";

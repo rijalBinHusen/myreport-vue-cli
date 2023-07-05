@@ -101,4 +101,4 @@
 		},
 	}
 </script>
-./BaseReport/BaseReportFile.vue@/pages/Warehouses/Warehouses@/pages/Headspv/Headspv
+./BaseReport/BaseReportFile.vue@/pages/Warehouses/Warehouses@/pages/Headspv/Headspv@/pages/Supervisors/Supervisors

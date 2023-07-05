@@ -1,8 +1,8 @@
 import { findData, append, update, getData, getDataByKey } from "@/myfunction";
-import { ddmmyyyy, dateMonth } from "../piece/dateFormat";
-import { getSupervisorId } from "./Supervisors";
-import { getWarehouseId } from "../../pages/Warehouses/Warehouses";
-import getDaysArray from "../piece/getDaysArray";
+import { ddmmyyyy, dateMonth } from "../../composable/piece/dateFormat";
+import { getSupervisorId } from "../Supervisors/Supervisors";
+import { getWarehouseId } from "../Warehouses/Warehouses";
+import getDaysArray from "../../composable/piece/getDaysArray";
 import { BaseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 

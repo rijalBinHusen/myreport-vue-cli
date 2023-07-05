@@ -1,5 +1,5 @@
 import exportToXls from "@/exportToXls";
-import { getProblemBetweenPeriode, listsProblem } from "@/composable/components/Problem"
+import { getProblemBetweenPeriode, listsProblem } from "@/pages/Problems/Problem"
 import { ddmmyyyy } from "@/composable/piece/dateFormat"
 export default async function (periode1, periode2) {
     await getProblemBetweenPeriode(periode1, periode2);
