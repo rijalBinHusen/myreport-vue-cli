@@ -1,7 +1,7 @@
 import { append, getData, update, findData, deleteDocument, getDataByKey} from '@/myfunction'
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorId } from '@/composable/components/Supervisors'
-import { getHeadspvId } from './Headspv'
+import { getHeadspvId } from '../../composable/components/Headspv'
 import { postData, deleteData as DeleteRecordOnServer, putData } from "../../utils/sendDataToServer"
 
 let lists = []
