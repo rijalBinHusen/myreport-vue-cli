@@ -1,60 +1,17 @@
-import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { totalTime } from "../../composable/piece/totalTimeAsMinute";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
+import { useIdb } from "../../utils/localforage"
 
 export let lists = [];
 let storeName = "basereportclock";
 
-export const startImportClock = async (sheets, baseId) => {
-  // dapatkan ref
-  let infoRowColClock = sheets["!ref"].split(":");
-  // dapatkan length data clock
-  let lengthRowClock = +infoRowColClock[1].match(/\d+/)[0];
+export function baseClock() {
+  const db = useIdb(storeName);
 
-  for (let i = 1; i <= lengthRowClock; i++) {
-    /* 
-            #CLOCK jika B5.v > 0 dan D5.v !== D4.v
-            maka masukkan ke idb 
-        */
-    //    CLOCK CHECKER
-    // nomor do
-    let clockNo = sheets["D" + i] ? sheets["D" + i].v : 0;
-    // nomor do sebelumnya (atasnya)
-    let clockNoBefore = sheets["D" + (i - 1)] ? sheets["D" + (i - 1)].v : false;
-    // shift
-    let shift = sheets["B" + i]?.v > 0
-    // status untuk diimport true or false
-    let clockStatus = shift && clockNo > 0 && (clockNoBefore !== clockNo)
+  const appendData = async ( parent, shift, noDo, reg, start, finish, rehat) => {
 
-    if (i > 5 && clockStatus) {
-      await appendData(
-        baseId,
-        sheets["B" + i] ? sheets["B" + i].v : 3,
-        sheets["D" + i] ? sheets["D" + i].v : 0,
-        sheets["F" + i] ? sheets["F" + i].w : 0,
-        sheets["G" + i] ? sheets["G" + i].w : 0,
-        sheets["H" + i] ? sheets["H" + i].w : 0,
-        0
-      );
-    }
-  }
-  return true;
-};
-
-export const appendData = async (
-  parent,
-  shift,
-  noDo,
-  reg,
-  start,
-  finish,
-  rehat
-) => {
-  1;
-  await append({
-    store: "BaseReportClock",
-    obj: {
+    const objToInsert = {
       parent,
       shift: shift < 3 ? shift : 3,
       noDo,
@@ -62,45 +19,84 @@ export const appendData = async (
       start,
       finish,
       rehat,
-    },
-  }).then((val) => {
-    if (lists) {
-      lists.push(val?.data);
     }
-  });
-};
 
-export const removeClockByParent = async (parent) => {
-  lists = lists.filter((rec) => rec.parent !== parent);
-  await deleteDocument({ store: "basereportclock", criteria: { parent } });
-  return;
-};
+    const insertedData = await db.createItem(objToInsert);
 
-export const getBaseClockByParentByShift = async (parent, shift) => {
-  let findRecFirst = lists.find(
-    (rec) => rec.parent == parent && rec.shift == shift
-  );
-  if (!findRecFirst) {
-    await findData({
-      store: "BaseReportClock",
-      criteria: { parent, shift },
-    }).then((res) => (lists = lists.concat(res)));
-  }
-  return;
-};
-
-export const baseReportClockLists = (parent, shift) => {
-  let result = [];
-  lists.forEach((rec) => {
-    if (rec.parent == parent && rec.shift == shift) {
-      result.push({
-        ...rec,
-        totalTime: totalTime(rec?.start, rec?.finish) - rec.rehat * 60,
-      });
+    if(!insertedData) {
+      alert("Gagal memasukkan report clock");
+      return;
     }
-  });
-  return result;
-};
+    
+    lists.push(insertedData)
+  };
+  
+
+  const startImportClock = async (sheets, baseId) => {
+    // dapatkan ref
+    let infoRowColClock = sheets["!ref"].split(":");
+    // dapatkan length data clock
+    let lengthRowClock = +infoRowColClock[1].match(/\d+/)[0];
+  
+    for (let i = 1; i <= lengthRowClock; i++) {
+      /* 
+              #CLOCK jika B5.v > 0 dan D5.v !== D4.v
+              maka masukkan ke idb 
+          */
+      //    CLOCK CHECKER
+      // nomor do
+      let clockNo = sheets["D" + i] ? sheets["D" + i].v : 0;
+      // nomor do sebelumnya (atasnya)
+      let clockNoBefore = sheets["D" + (i - 1)] ? sheets["D" + (i - 1)].v : false;
+      // shift
+      let shift = sheets["B" + i]?.v > 0
+      // status untuk diimport true or false
+      let clockStatus = shift && clockNo > 0 && (clockNoBefore !== clockNo)
+  
+      if (i > 5 && clockStatus) {
+        await appendData(
+          baseId,
+          sheets["B" + i] ? sheets["B" + i].v : 3,
+          sheets["D" + i] ? sheets["D" + i].v : 0,
+          sheets["F" + i] ? sheets["F" + i].w : 0,
+          sheets["G" + i] ? sheets["G" + i].w : 0,
+          sheets["H" + i] ? sheets["H" + i].w : 0,
+          0
+        );
+      }
+    }
+    return true;
+  };
+
+  const removeClockByParent = async (parent) => {
+    lists = lists.filter((rec) => {
+      if(rec.parent !== parent) {
+        
+        return rec
+
+      } else {
+
+        db.removeItem(rec.id)
+
+      }
+    });
+  };
+
+  const getBaseClockByParentByShift = async (parent, shift) => {
+    let findRecFirst = lists.findIndex(
+      (rec) => rec.parent == parent && rec.shift == shift
+    );
+
+    if (findRecFirst < 0) {
+      const getData = await db.getItemByTwoKeyValue('parent', parent, 'shift', shift);
+
+      lists = lists.concat(getData);
+    }
+  };
+
+  
+
+}
 
 export const updateBaseClock = async (id, objtToUpdate) => {
   lists = lists.map((val) => {
