@@ -134,4 +134,4 @@ export default {
         }
     },
 }
-</script>@/pages/BaseReportFile/BaseReportFile
+</script>@/pages/BaseReportFile/BaseReportFile@/pages/BaseReport/BaseReportFile

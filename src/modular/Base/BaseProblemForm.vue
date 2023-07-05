@@ -56,4 +56,4 @@ import { problemByItem } from '@/composable/components/Problem'
 		},
 		name: "BaseProblemForm"
 	}
-</script>
+</script>@/pages/BaseReport/BaseReportStock

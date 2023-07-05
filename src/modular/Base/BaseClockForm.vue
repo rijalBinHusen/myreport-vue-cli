@@ -60,4 +60,4 @@ export default {
         Button,
     },
 }
-</script>
+</script>@/pages/BaseReport/BaseReportClock

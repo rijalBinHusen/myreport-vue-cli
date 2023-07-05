@@ -1,4 +1,3 @@
-import { getDataByKey } from '@/myfunction';
 import { ymdTime } from '../../composable/piece/dateFormat';
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { useIdb } from "../../utils/localforage";
@@ -124,8 +123,8 @@ export async function syncItemRecordToServer(idRecord, mode) {
         alert("Id record base item must be a string");
         return
     }
-
-    const record = await getDataByKey('baseitem', idRecord);
+    const dbItem = useIdb(store);
+    const record = await dbItem.getItem(idRecord);
 
     if(!record) {
         // dont do anything if record doesn't exist;

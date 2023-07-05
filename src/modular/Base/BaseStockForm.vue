@@ -74,4 +74,4 @@ export default {
         InputItem,
     },
 }
-</script>
+</script>@/pages/BaseReport/BaseReportStock

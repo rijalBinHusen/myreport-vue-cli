@@ -1,6 +1,6 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
-import { BaseReportFile } from "@/pages/BaseReportFile/BaseReportFile";
-import { masalah, problemActive } from "./Problem";
+import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
+import { masalah, problemActive } from "../../composable/components/Problem";
 import { BaseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";

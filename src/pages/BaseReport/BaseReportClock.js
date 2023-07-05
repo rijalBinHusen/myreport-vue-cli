@@ -1,5 +1,5 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
-import { totalTime } from "../piece/totalTimeAsMinute";
+import { totalTime } from "../../composable/piece/totalTimeAsMinute";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 

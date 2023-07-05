@@ -1,4 +1,3 @@
-// import { findData, update, append, deleteDocument, getData, getDataByKey } from "@/myfunction";
 import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";

@@ -351,4 +351,4 @@ export default {
         }
     }
 }
-</script>
+</script>@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel
