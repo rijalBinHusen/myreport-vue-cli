@@ -2,6 +2,7 @@ import { totalTime } from "../../composable/piece/totalTimeAsMinute";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage"
+import { type resultExcelRead } from "../../utils/readExcel"
 
 interface BaseClock {
   id: string;
@@ -54,9 +55,10 @@ export function baseClock() {
   const startImportClock = async (sheets: unknownObject, parentId: string) => {
     // dapatkan ref
     let infoRowColClock = sheets["!ref"].split(":");
-    if(infoRowColClock[1] === null) return;
+    const isRowClockNotOke = infoRowColClock === null || infoRowColClock.length === 0;
+    if(isRowClockNotOke) return;
     // dapatkan length data clock
-    let lengthRowClock = + infoRowColClock[1].match(/\d+/)[0];
+    let lengthRowClock = +infoRowColClock[1].match(/\d+/)[0] || 10;
   
     for (let i = 1; i <= lengthRowClock; i++) {
       /* 
