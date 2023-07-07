@@ -241,7 +241,7 @@ export const useIdb = (storeName: string) => {
     key2Search: string|number,
     value2Search: string|number
   ) => {
-    let result:unknownObject[] = [];
+    let result:any[] = [];
     return store
       .iterate(function (value:unknownObject) {
         // Resulting key/value pair -- this callback

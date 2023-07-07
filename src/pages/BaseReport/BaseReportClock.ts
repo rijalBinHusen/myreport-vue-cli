@@ -2,7 +2,7 @@ import { totalTime } from "../../composable/piece/totalTimeAsMinute";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage"
-import { type resultExcelRead } from "../../utils/readExcel"
+import { type Sheet } from "../../utils/xlsx.type"
 
 interface BaseClock {
   id: string;
@@ -13,6 +13,16 @@ interface BaseClock {
   start: string;
   finish: string;
   rehat: number
+}
+
+interface BaseClockForUpdate {
+  parent?: string;
+  shift?: number;
+  noDo?: number;
+  reg?: string;
+  start?: string;
+  finish?: string;
+  rehat?: number
 }
 
 interface unknownObject {
@@ -51,15 +61,20 @@ export function baseClock() {
     
   };
   
-
-  const startImportClock = async (sheets: unknownObject, parentId: string) => {
+  const startImportClock = async (sheets: Sheet, parentId: string) => {
     // dapatkan ref
+    if(sheets["!ref"] == undefined) return;
     let infoRowColClock = sheets["!ref"].split(":");
-    const isRowClockNotOke = infoRowColClock === null || infoRowColClock.length === 0;
+    
+    const isRowClockNotOke = infoRowColClock[1] == null || infoRowColClock[0] == null;
     if(isRowClockNotOke) return;
+
+    let lengthRow = infoRowColClock[1].match(/\d+/);
+    if(!lengthRow || lengthRow.length == 0 || lengthRow[0] == null ) return;
+
     // dapatkan length data clock
-    let lengthRowClock = +infoRowColClock[1].match(/\d+/)[0] || 10;
-  
+    let lengthRowClock = +lengthRow[0];
+    
     for (let i = 1; i <= lengthRowClock; i++) {
       /* 
               #CLOCK jika B5.v > 0 dan D5.v !== D4.v
@@ -90,7 +105,7 @@ export function baseClock() {
     return true;
   };
 
-  const removeClockByParent = async (parent) => {
+  const removeClockByParent = async (parent: string) => {
     lists = lists.filter((rec) => {
       if(rec.parent !== parent) {
         
@@ -104,37 +119,35 @@ export function baseClock() {
     });
   };
 
-  const getBaseClockByParentByShift = async (parent, shift) => {
-    let findRecFirst = lists.findIndex(
-      (rec) => rec.parent == parent && rec.shift == shift
-    );
+  const getBaseClockByParentByShift = async (parent: string, shift: number) => {
+    let findRecFirst = lists.findIndex((rec) => rec.parent == parent && rec.shift == shift);
 
     if (findRecFirst < 0) {
-      const getData = await db.getItemByTwoKeyValue('parent', parent, 'shift', shift);
+      const getData= await db.getItemByTwoKeyValue('parent', parent, 'shift', shift);
+
+      if(getData == undefined) {
+        await appendData(parent, shift, 0, '12:00', '12:00', '01:00', 0);
+        return;
+      };
 
       lists = lists.concat(getData);
     }
   };
 
-  
+  const updateBaseClock = async (id: string, objtToUpdate: BaseClockForUpdate) => {
+    lists = lists.map((val) => {
+      if (val.id == id) {
+        return { ...val, ...objtToUpdate };
+      }
+      return val;
+    });
+
+    await db.updateItem(id, objtToUpdate);
+    
+    return true;
+  };   
 
 }
-
-export const updateBaseClock = async (id, objtToUpdate) => {
-  lists = lists.map((val) => {
-    if (val.id == id) {
-      return { ...val, ...objtToUpdate };
-    }
-    return val;
-  });
-  await update({
-    store: "BaseReportClock",
-    criteria: { id: id },
-    obj: objtToUpdate,
-  });
-  return true;
-};
-
 export const clockDetails = (parent, shift) => {
   let totalDo = 0;
   let totalKendaraan = 0;
