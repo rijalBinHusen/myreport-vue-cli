@@ -4,33 +4,59 @@ import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
 import { getWarehouseId, lists as warehouseLists } from "../Warehouses/Warehouses";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
-export const lists = ref([])
+interface BaseReportFileInterface {
+    clock: string
+    fileName: string
+    id: string
+    imported: boolean
+    isRecordFinished: boolean
+    periode: number
+    stock: string
+    warehouse: string
+    warehouseName?: string
+    periode2?: string
+}
+
+export const lists = ref<BaseReportFileInterface[]>([])
 const storeName = "basereportfile";
 
-export class BaseReportFile {
-    db = useIdb(storeName);
+export function BaseReportFile () {
+    const db = useIdb(storeName);
 
-    async getBaseReportFile(periode1, periode2) {
-        const getData = await this.db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan('periode', periode1, periode2);
+    async function getBaseReportFile(periode1: number, periode2: number) {
+        const getData = await db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan('periode', periode1, periode2);
 
         if(getData) {
             for (let datum of getData) {
-                const mapIt = await this.recordMapper(datum);
+
+                let dataToMap:BaseReportFileInterface = {
+                    id: typeof datum?.id === 'string' ? datum?.id : 'yourId',
+                    periode:  typeof datum?.periode === 'number' ? datum?.periode : 0,
+                    fileName:  typeof datum?.fileName === 'string' ? datum?.fileName : 'yourId',
+                    clock:  typeof datum?.clock === 'string' ? datum?.clock : 'yourId',
+                    imported:  typeof datum?.imported === 'boolean' ? datum?.imported : false,
+                    isRecordFinished:  typeof datum?.isRecordFinished === 'boolean' ? datum?.isRecordFinished : false,
+                    stock:  typeof datum?.stock === 'string' ? datum?.stock : 'yourId',
+                    warehouse:  typeof datum?.warehouse === 'string' ? datum?.warehouse : 'yourId',
+                }
+
+                const mapIt = await recordMapper(dataToMap);
                 lists.value.push(mapIt);
             }
         }
     }
 
-    async recordMapper(record) {
+    async function recordMapper(record: BaseReportFileInterface) {
+
         const getWarehouse = await getWarehouseId(record?.warehouse);
-        const periode2 = isNaN(doc.periode) ? doc.periode : dateMonth(doc.periode);
+        const periode2: string = typeof record.periode === 'string' ? record.periode : dateMonth(record.periode);
 
         return { ...record, warehouseName: getWarehouse?.name, periode2 }
     }
 
     
-    dateBaseReportFileImported () {
-        let isPushed = []
+    function dateBaseReportFileImported () {
+        let isPushed: number[] = []
         let result = []
         for(let doc of lists.value) {
             // if periode not pushed
