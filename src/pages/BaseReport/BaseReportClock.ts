@@ -106,6 +106,7 @@ export function baseClock() {
   };
 
   const removeClockByParent = async (parent: string) => {
+    let recordToRemove:string[] = [];
     lists = lists.filter((rec) => {
       if(rec.parent !== parent) {
         
@@ -113,10 +114,16 @@ export function baseClock() {
 
       } else {
 
-        db.removeItem(rec.id)
+        recordToRemove.push(rec.id)
 
       }
     });
+
+    for(let [index, record] of recordToRemove.entries()) {
+      loaderMessage.value = `Mengahapus ${index} dari ${recordToRemove.length} record`;
+      await db.removeItem(record)
+    }
+
   };
 
   const getBaseClockByParentByShift = async (parent: string, shift: number) => {
@@ -147,80 +154,84 @@ export function baseClock() {
     return true;
   };   
 
-}
-export const clockDetails = (parent, shift) => {
-  let totalDo = 0;
-  let totalKendaraan = 0;
-  let totalWaktu = 0;
-  lists.forEach((val) => {
-    if (
-      val.shift == shift &&
-      val.parent == parent &&
-      val?.start &&
-      val?.finish &&
-      val.start.length == 5 &&
-      val.finish.length == 5
-    ) {
-      totalDo += 1;
-      totalKendaraan += 1;
-      // jaddikan menit, masukan total waktu - rehat
-      totalWaktu += totalTime(val?.start, val?.finish) - val.rehat * 60;
-    }
-  });
-  return {
-    totalDo: totalDo,
-    totalKendaraan: totalKendaraan,
-    totalWaktu: totalWaktu,
-  };
-};
+  const clockDetails = (parent: string, shift: number) => {
+    let totalDo = 0;
+    let totalKendaraan = 0;
+    let totalWaktu = 0;
 
-export async function markClockFinished(
-  parentBaseReportFile,
-  shift,
-  parentDocument
-) {
-  let markFinished = 0;
-  // iterate the state
-  for (let [index, list] of lists.entries()) {
-    loaderMessage.value = `Memindai ${ index + 1 } dari ${lists.length}.`;
-    // if state?.shift == payload.shift && payload?.parent
-    if (list?.shift == shift && list?.parent == parentBaseReportFile) {
-      // jika parentDocument kosong
-      if (!lists?.parentDocument) {
-        progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
-        // update recordnya
-        await updateBaseClock(list.id, { parentDocument });
-        markFinished++
+    lists.forEach((val) => {
+      if (
+        val.shift == shift &&
+        val.parent == parent &&
+        val?.start &&
+        val?.finish &&
+        val.start.length == 5 &&
+        val.finish.length == 5
+      ) {
+        totalDo += 1;
+        totalKendaraan += 1;
+        // jaddikan menit, masukan total waktu - rehat
+        totalWaktu += totalTime(val?.start, val?.finish) - val.rehat * 60;
       }
-      // jika sudah terisi
-    }
-  }
-  loaderMessage.value = '';
-  progressMessage2.value = '';
-  return;
-}
+    });
 
-export const removeClock = async (id) => {
-  lists = lists.filter((rec) => rec.id !== id);
-  deleteDocument({ store: "basereportclock", criteria: { id } });
-  return true;
-};
+    return {
+      totalDo: totalDo,
+      totalKendaraan: totalKendaraan,
+      totalWaktu: totalWaktu,
+    };
+  };
+  
+  async function markClockFinished(parentBaseReportFile: string, shift: number, parentDocument: string) {
+    let markFinished = 0;
+    // iterate the state
+    for (let [index, list] of lists.entries()) {
+      loaderMessage.value = `Memindai jam muat, ${ index + 1 } dari ${lists.length}.`;
+      // if state?.shift == payload.shift && payload?.parent
+      if (list?.shift == shift && list?.parent == parentBaseReportFile) {
+        // jika parentDocument kosong
+        if (!list?.parent) {
+          progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
+          // update recordnya
+          await updateBaseClock(list.id, { parent: parentDocument });
+          markFinished++
+        }
+        // jika sudah terisi
+      }
+    }
+    loaderMessage.value = '';
+    progressMessage2.value = '';
+    return;
+  }
+  
+  const removeClock = async (id: string) => {
+    lists = lists.filter((rec) => rec.id !== id);
+    await db.removeItem(id);
+    return true;
+  };
+  
+  return {
+    appendData, startImportClock, removeClockByParent, getBaseClockByParentByShift, updateBaseClock, clockDetails, markClockFinished, removeClock
+  }
+  
+}
 
 export async function syncClockToServer () {
+  let db = useIdb(storeName);
 
-  let allData = await getData({ store: storeName, withKey: true })
+  let allData = await db.getItems();
 
   for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
       "id": datum?.key,
-      "parent": datum?.data?.parent,
-      "shift": datum?.data?.shift || 1,
-      "no_do": datum?.data?.noDo || 1,
-      "reg": datum?.data?.reg || "00:00",
-      "start": datum?.data?.start || "00:00",
-      "finish": datum?.data?.finish || "00:00",
-      "rehat": datum?.data?.rehat || 0
+      "parent": datum?.parent,
+      "shift": datum?.shift || 1,
+      "no_do": datum?.noDo || 1,
+      "reg": datum?.reg || "00:00",
+      "start": datum?.start || "00:00",
+      "finish": datum?.finish || "00:00",
+      "rehat": datum?.rehat || 0
     }
 
     try {
@@ -239,14 +250,16 @@ export async function syncClockToServer () {
 }
 
 
-export async function syncClockRecordToServer (idRecord, mode) {
+export async function syncClockRecordToServer (idRecord: string, mode: string) {
+
+  let db = useIdb(storeName);
 
   if(typeof idRecord !== 'string') {
     alert("Id record base report clock must be a string");
     return;
   }
 
-  let record = await getDataByKey(storeName, idRecord);
+  let record = await db.getItem(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;
