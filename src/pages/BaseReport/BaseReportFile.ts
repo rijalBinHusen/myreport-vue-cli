@@ -17,6 +17,16 @@ interface BaseReportFileInterface {
     periode2?: string
 }
 
+interface BaseReportFileInterfaceForUpdate {
+    clock?: string
+    fileName?: string
+    imported?: boolean
+    isRecordFinished?: boolean
+    periode?: number
+    stock?: string
+    warehouse?: string
+}
+
 export const lists = ref<BaseReportFileInterface[]>([])
 const storeName = "basereportfile";
 
@@ -71,7 +81,7 @@ export function BaseReportFile () {
         return result
     }
 
-    async warehouseByDate (periode) {
+    async function warehouseByDate (periode: number) {
         let result = [];
     
         for(let val of lists.value) {
@@ -86,54 +96,69 @@ export function BaseReportFile () {
         return result;
     }
 
-    findBaseReportFileById = (id) => {
-        return lists.value.find((val) => val.id == id)
+    async function findBaseReportFileById (id: string) {
+        const findIndex = lists.value.findIndex((val) => val.id == id)
+        
+        if(findIndex > -1) {
+            return lists.value[findIndex];
+        }
+
+        const getRecord = await db.getItem(id);
+        const mapRecord = await recordMapper(getRecord);
+
+        lists.value.push(mapRecord);
+        return mapRecord
     }
 
-    async updateBaseReport (id, obj) { 
+    async function updateBaseReport (id: string, obj: BaseReportFileInterfaceForUpdate) { 
         const findIndex = lists.value.findIndex((rec) => rec?.id === id);
 
         if(findIndex > -1) {
             const record = lists.value[findIndex];
-            lists.value[findIndex] = { ...record, ...obj }
+            const updateRecord = { ...record, ...obj };
+            const mapUpdateRecord = await recordMapper(updateRecord)
+            lists.value[findIndex] = mapUpdateRecord;
         }
         
-        await this.db.updateItem(id, obj)
+        await db.updateItem(id, obj);
     }
 
-    async addBaseReportFile  (periode, warehouse) {
+    async function addBaseReportFile  (periode: number, warehouse: string) {
         let record = { periode, 
                         warehouse,
-                        fileName: false,
-                        stock: false,
-                        clock: false,
+                        fileName: "",
+                        stock: "",
+                        clock: "",
                         imported: false,
+                        isRecordFinished: false,
                     }
 
-        const recordInserted = await this.db.createItem(record);
+        const IdInserted = await db.createItem(record);
+        if(typeof IdInserted === 'undefined') return;
+        const mappedRecord = await recordMapper({ id: IdInserted, ...record})
 
-        lists.value.push(recordInserted);
+        lists.value.push(mappedRecord);
     }
 
-    async someRecordFinished (idRecord) {
-        await this.db.updateItem(idRecord, { isRecordFinished: true })
+    async function someRecordFinished (idRecord: string) {
+        await updateBaseReport(idRecord, { isRecordFinished: true });
     }
 
-    isRecordExistsByPeriodeAndWarehouse (periode, idWarehouse) {
+    function isRecordExistsByPeriodeAndWarehouse (periode: number, idWarehouse: string) {
         const findIndex = lists.value.findIndex((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
 
         return findIndex > -1;
     }
 
-    async addBaseReportFileManual (periode) {
+    async function addBaseReportFileManual (periode: number) {
         for(let warehouse of warehouseLists) {
-            await this.addBaseReportFile( ymdTime(periode), warehouse?.id )
+            await addBaseReportFile( ymdTime(periode), warehouse?.id )
         }
     }
 
-    async removeBaseReport (idBaseReport) {
+    async function removeBaseReport (idBaseReport: string) {
         lists.value = lists.value.filter((rec) => rec.id !== idBaseReport);
-        await this.db.removeItem(idBaseReport);
+        await db.removeItem(idBaseReport);
     }
 
 }
@@ -141,23 +166,24 @@ export function BaseReportFile () {
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncBaseFileToServer () {
 
-    let allData = await getData({ store: storeName, withKey: true })
+    const db = useIdb(storeName);
+    let allData = await db.getItems();
   
     for(let [index, datum] of allData.entries()) {
     //   clock, fileName, id, imported, periode, stock, warehouse
 
-    const warehouseToSend = typeof datum?.data?.warehouse === 'object' 
-                                ? datum?.data?.warehouse.id
-                                : datum?.data?.warehouse;
+    const warehouseToSend = typeof datum?.warehouse === 'object' 
+                                ? datum?.warehouse?.id
+                                : datum?.warehouse;
 
       let dataToSend = {
         "id": datum?.key,
-        "periode": datum?.data?.periode || 0,
+        "periode": datum?.periode || 0,
         "warehouse_id": warehouseToSend || 0,
-        "file_name": datum?.data?.fileName || 0,
-        "stock_sheet": datum?.data?.stock || 0,
-        "clock_sheet": datum?.data?.clock || 0,
-        "is_imported": datum?.data?.imported || 0
+        "file_name": datum?.fileName || 0,
+        "stock_sheet": datum?.stock || 0,
+        "clock_sheet": datum?.clock || 0,
+        "is_imported": datum?.imported || 0
       }
   
       try {
@@ -176,14 +202,16 @@ export async function syncBaseFileToServer () {
   }
 
   
-export async function syncBaseFileRecordToServer (idRecord, mode) {
+export async function syncBaseFileRecordToServer (idRecord: string, mode: string) {
+
+    const db = useIdb(storeName);
 
     if(typeof idRecord !== 'string') {
         alert("Id record base report file must be a string");
         return;
     }
 
-    let record = await getDataByKey(storeName, idRecord);
+    let record = await db.getItem(idRecord);
 
     if(!record) {
         // dont do anything if record doesn't exist;

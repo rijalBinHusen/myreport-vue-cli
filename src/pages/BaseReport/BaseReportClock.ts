@@ -106,22 +106,14 @@ export function baseClock() {
   };
 
   const removeClockByParent = async (parent: string) => {
-    let recordToRemove:string[] = [];
-    lists = lists.filter((rec) => {
-      if(rec.parent !== parent) {
+
+    for(let [index, record] of lists.entries()) {
+      loaderMessage.value = `Memindai dan mengahapus ${index} dari ${lists.length} record`;
+      if(record.parent === parent) {
+
+        await db.removeItem(record.id)
         
-        return rec
-
-      } else {
-
-        recordToRemove.push(rec.id)
-
       }
-    });
-
-    for(let [index, record] of recordToRemove.entries()) {
-      loaderMessage.value = `Mengahapus ${index} dari ${recordToRemove.length} record`;
-      await db.removeItem(record)
     }
 
   };
