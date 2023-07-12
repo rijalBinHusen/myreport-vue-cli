@@ -4,123 +4,164 @@ import { masalah, problemActive } from "../Problems/Problem";
 import { BaseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
+import { useIdb } from "../../utils/localforage";
+import { type Sheet } from "../../utils/xlsx.type"
 
-let lists = [];
+interface BaseStock {
+  awal: number;
+  dateEnd: string;
+  dateIn: string;
+  dateOut: string;
+  id: string;
+  in: number;
+  item: string;
+  out: number;
+  parent: string;
+  parentDocument: string;
+  planOut: number;
+  problem: string[];
+  real: number;
+  shift: number;
+}
+
+let lists = <BaseStock[]>[];
+
 const storeName = "basereportstock";
 
-export const startImportStock = async (sheets, baseId) => {
-  // dapatkan !ref
-  let infoRowColStock = sheets["!ref"].split(":");
-  // dapatkan length data stock
-  let lengthRowStock = +infoRowColStock[1].match(/\d+/)[0];
+export function baseReportStock () {
+  const db = useIdb(storeName);
 
-  for (let i = 1; i <= lengthRowStock; i++) {
-    /* 
-            #STOCK 
-            shift 1 jika E5.v > 0 atau F5.v > 0 , A+i !== false
-            masukkan ke idb
-        */
-    //    Checker stock shift 1
-    let in1st = sheets["E" + i] ? sheets["E" + i].v : 0;
-    let out1st = sheets["F" + i] ? sheets["F" + i].v : 0;
-    if (in1st > 0 || out1st > 0) {
-      await appendData(
-        baseId,
-        1,
-        sheets["A" + i] ? sheets["A" + i].v : "No item",
-        sheets["D" + i] ? sheets["D" + i].v : 0,
-        in1st,
-        out1st,
-        sheets["G" + i] ? sheets["G" + i].v : 0
-      );
-    }
-    /*
-            shift 2 jika H5.v > 0 atau I5.v > 0 , A+i !== false
-            masukkan ke idb
-        */
-    //    Checker stock shift 2
-    let in2nd = sheets["H" + i] ? sheets["H" + i].v : 0;
-    let out2nd = sheets["I" + i] ? sheets["I" + i].v : 0;
-    if (in2nd > 0 || out2nd > 0) {
-      await appendData(
-        baseId,
-        2,
-        sheets["A" + i] ? sheets["A" + i].v : "No item",
-        sheets["G" + i] ? sheets["G" + i].v : 0,
-        in2nd,
-        out2nd,
-        sheets["J" + i] ? sheets["J" + i].v : 0
-      );
-    }
+  const appendData = async ( parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
+    // because we need warehouse id
+    const { findBaseReportFileById } = BaseReportFile();
 
-    /*
-            shift 3 jika K5.v > 0 atau L5.v > 0  atau M5.v > 0  atau O5.v > 0 
-            A+i !== false
-            masukkan ke idb 
-        */
-    // number checker
-    let in1 = sheets["K" + i] ? +sheets["K" + i].v : 0;
-    let in2 = sheets["O" + i] ? +sheets["O" + i].v : 0;
-    let totalIn = in1 == in2 ? in1 : in1 + in2;
-    let out1 = sheets["L" + i] ? +sheets["L" + i].v : 0;
-    let out2 = sheets["M" + i] ? +sheets["M" + i].v : 0;
-    let totalOut = out1 + out2;
+    let parentDetails = await findBaseReportFileById(parent);
+    let getProblem = problemActive(parentDetails?.warehouse, item);
 
-    if ((in1 || out1 || out2 || in2) && i > 3 && sheets["A" + i]) {
-      await appendData(
-        baseId,
-        3,
-        sheets["A" + i] ? sheets["A" + i].v : "No item",
-        sheets["J" + i] ? sheets["J" + i].v : 0,
-        totalIn,
-        totalOut,
-        sheets["P" + i] ? sheets["P" + i].v : 0
-      );
-    }
-  }
-};
-
-export const appendData = async (
-  parent,
-  shift,
-  item,
-  awal,
-  masuk,
-  keluar,
-  riil
-) => {
-  // because we need warehouse id
-  const { findBaseReportFileById } = new BaseReportFile();
-  let parentDetails = findBaseReportFileById(parent);
-  let getProblem = problemActive(parentDetails?.warehouse, item);
-  await append({
-    store: "BaseReportStock",
-    obj: {
-      parent,
-      shift,
-      item,
+    const recordToSet = {
       awal,
-      in: masuk,
-      out: keluar,
+      dateEnd: "",
       dateIn: "",
       dateOut: "",
-      dateEnd: "",
-      real: riil,
+      in: masuk,
+      item,
+      out: keluar,
+      parent,
+      parentDocument: '',
+      planOut: 0,
       problem: getProblem,
-    },
-  }).then((val) => {
-    if (lists) {
-      lists.push(val?.data);
+      real: riil,
+      shift,
     }
-  });
-  return;
-};
 
-export const removeStockByParent = async (parent) => {
-  lists = lists.filter((rec) => rec.parent !== parent);
-  await deleteDocument({ store: "basereportstock", criteria: { parent } });
-  return;
-};
+    const insertedId = await db.createItem(recordToSet)
+
+    if(insertedId) {
+      lists.push({ id: insertedId, ...recordToSet })
+    }
+    
+  };
+  
+  const startImportStock = async (sheets: Sheet, baseId: string) => {
+    // dapatkan !ref
+    if(sheets["!ref"] == undefined) return;
+    let infoRowColStock = sheets["!ref"].split(":");
+    
+    const isRowClockNotOke = infoRowColStock[1] == null || infoRowColStock[0] == null;
+    if(isRowClockNotOke) return;
+
+    let lengthRow = infoRowColStock[1].match(/\d+/);
+    if(!lengthRow || lengthRow.length == 0 || lengthRow[0] == null ) return;
+
+    // dapatkan length data clock
+    let lengthRowStock = +lengthRow[0];
+  
+    for (let i = 1; i <= lengthRowStock; i++) {
+      /* 
+              #STOCK 
+              shift 1 jika E5.v > 0 atau F5.v > 0 , A+i !== false
+              masukkan ke idb
+          */
+      //    Checker stock shift 1
+      let in1st = sheets["E" + i] ? sheets["E" + i].v : 0;
+      let out1st = sheets["F" + i] ? sheets["F" + i].v : 0;
+      if (in1st > 0 || out1st > 0) {
+        await appendData(
+          baseId,
+          1,
+          sheets["A" + i] ? sheets["A" + i].v : "No item",
+          sheets["D" + i] ? sheets["D" + i].v : 0,
+          in1st,
+          out1st,
+          sheets["G" + i] ? sheets["G" + i].v : 0
+        );
+      }
+      /*
+              shift 2 jika H5.v > 0 atau I5.v > 0 , A+i !== false
+              masukkan ke idb
+          */
+      //    Checker stock shift 2
+      let in2nd = sheets["H" + i] ? sheets["H" + i].v : 0;
+      let out2nd = sheets["I" + i] ? sheets["I" + i].v : 0;
+      if (in2nd > 0 || out2nd > 0) {
+        await appendData(
+          baseId,
+          2,
+          sheets["A" + i] ? sheets["A" + i].v : "No item",
+          sheets["G" + i] ? sheets["G" + i].v : 0,
+          in2nd,
+          out2nd,
+          sheets["J" + i] ? sheets["J" + i].v : 0
+        );
+      }
+  
+      /*
+              shift 3 jika K5.v > 0 atau L5.v > 0  atau M5.v > 0  atau O5.v > 0 
+              A+i !== false
+              masukkan ke idb 
+          */
+      // number checker
+      let in1 = sheets["K" + i] ? +sheets["K" + i].v : 0;
+      let in2 = sheets["O" + i] ? +sheets["O" + i].v : 0;
+      let totalIn = in1 == in2 ? in1 : in1 + in2;
+      let out1 = sheets["L" + i] ? +sheets["L" + i].v : 0;
+      let out2 = sheets["M" + i] ? +sheets["M" + i].v : 0;
+      let totalOut = out1 + out2;
+  
+      if ((in1 || out1 || out2 || in2) && i > 3 && sheets["A" + i]) {
+        await appendData(
+          baseId,
+          3,
+          sheets["A" + i] ? sheets["A" + i].v : "No item",
+          sheets["J" + i] ? sheets["J" + i].v : 0,
+          totalIn,
+          totalOut,
+          sheets["P" + i] ? sheets["P" + i].v : 0
+        );
+      }
+    }
+  };
+  
+  const removeStock = async (id: string) => {
+    lists = lists.filter((rec) => rec.id !== id);
+    await db.removeItem(id);
+  };
+
+  const removeStockByParent = async (parent: string) => {
+    for(let [index, record] of lists.entries()) {
+
+      loaderMessage.value = `Memindai dan menghapus ${index} dari ${lists.length}`;
+
+      if(record.parent == parent) {
+        await removeStock(record.id);
+      }
+
+    }
+    
+  };
+  
+  
+}
 
 export const getBaseStockByParentByShift = async (parent, shift) => {
   let findRecFirst = lists.find(
@@ -229,12 +270,6 @@ export async function markStockFinished(
   progressMessage2.value = '';
   return;
 }
-
-export const removeStock = async (id) => {
-  lists = lists.filter((rec) => rec.id !== id);
-  deleteDocument({ store: "basereportstock", criteria: { id } });
-  return true;
-};
 
 export async function syncBaseStockToServer () {
 

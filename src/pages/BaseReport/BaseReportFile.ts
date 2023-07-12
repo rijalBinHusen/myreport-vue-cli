@@ -161,6 +161,19 @@ export function BaseReportFile () {
         await db.removeItem(idBaseReport);
     }
 
+    return {
+        getBaseReportFile,
+        dateBaseReportFileImported,
+        warehouseByDate,
+        findBaseReportFileById,
+        updateBaseReport,
+        addBaseReportFile,
+        someRecordFinished,
+        isRecordExistsByPeriodeAndWarehouse,
+        addBaseReportFileManual,
+        removeBaseReport
+    }
+
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
