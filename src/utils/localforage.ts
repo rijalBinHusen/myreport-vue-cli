@@ -235,7 +235,7 @@ export const useIdb = (storeName: string) => {
       });
   };
 
-  const getItemByTwoKeyValue = async (
+  const getItemsByTwoKeyValue = async (
     key1Search: string|number,
     value1Search: string|number,
     key2Search: string|number,
@@ -349,7 +349,7 @@ export const useIdb = (storeName: string) => {
     updateItem,
     getItemsByKeyValue,
     getItemsByKeyGreaterThan,
-    getItemByTwoKeyValue,
+    getItemsByTwoKeyValue,
     getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan,
     getItemsThatValueIncludes,
     createItem,

@@ -1,7 +1,7 @@
 import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
-import { masalah, problemActive } from "../Problems/Problem";
-import { BaseItem } from '@/pages/BaseItem/Baseitem'
+import { masalah, masalah, problemActive } from "../Problems/Problem";
+import { baseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage";
@@ -24,12 +24,39 @@ interface BaseStock {
   shift: number;
 }
 
-let lists = <BaseStock[]>[];
+interface BaseStockMapped extends BaseStock {
+  
+  itemName?: string,
+  problem2?: string,
+  selisih?: number
+
+}
+
+
+interface BaseStockUpdate {
+  awal?: number;
+  dateEnd?: string;
+  dateIn?: string;
+  dateOut?: string;
+  id?: string;
+  in?: number;
+  item?: string;
+  out?: number;
+  parent?: string;
+  parentDocument?: string;
+  planOut?: number;
+  problem?: string[];
+  real?: number;
+  shift?: number;
+}
+
+let lists = <BaseStockMapped[]>[];
 
 const storeName = "basereportstock";
 
 export function baseReportStock () {
   const db = useIdb(storeName);
+  const { getItemBykode } = baseItem();
 
   const appendData = async ( parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
     // because we need warehouse id
@@ -57,7 +84,8 @@ export function baseReportStock () {
     const insertedId = await db.createItem(recordToSet)
 
     if(insertedId) {
-      lists.push({ id: insertedId, ...recordToSet })
+      const interpretIt = await interpretRecord({ id: insertedId, ...recordToSet });
+      lists.push(interpretIt);
     }
     
   };
@@ -159,41 +187,73 @@ export function baseReportStock () {
     }
     
   };
+
+  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStock|undefined> => {
+    
+    let findRec = lists.find(
+      (rec) => rec.parent == parent && rec.shift == shift
+    );
+
+    if (typeof findRec === 'undefined') {
+      const getRecord = await db.getItemsByTwoKeyValue('parent', parent, 'shift', shift);
+      
+      if(getRecord && getRecord.length) {
+        findRec = {
+          awal: getRecord[0]?.awal,
+          dateEnd: getRecord[0]?.dateEnd,
+          dateIn: getRecord[0]?.dateIn,
+          dateOut: getRecord[0]?.dateOut,
+          id: getRecord[0]?.id,
+          in: getRecord[0]?.in,
+          item: getRecord[0]?.item,
+          out: getRecord[0]?.outd,
+          parent: getRecord[0]?.parent,
+          parentDocument: getRecord[0]?.parentDocument,
+          planOut: getRecord[0]?.planOut,
+          problem: getRecord[0]?.problem,
+          real: getRecord[0]?.real,
+          shift: getRecord[0]?.shift,
+        }
+      }
+    }
+
+    return findRec;
+  };
+
+  async function interpretRecord (record: BaseStock): Promise<BaseStockMapped> {
+    const itemName = await getItemBykode(record.item);
+    const problem2 = await masalah(record.problem);
+    const selisih = Number(record.real) - (Number(record.awal) + Number(record.in) - Number(record.out));
+    const planOut = record?.planOut || 0 
+
+    return { ...record, itemName, problem2, selisih, planOut }
+
+  }
   
+  const baseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[]|undefined> => {
+
+    let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
+    
+    if(!result.length) {
+      const retrieveFromDb = await db.getItemsByTwoKeyValue('parent', parent, 'shift', shift);
+
+      if(typeof retrieveFromDb === 'undefined') return;
+      
+      for (let record of retrieveFromDb) {
+        const interpretIt = await interpretRecord(record);
+
+        lists.push(interpretIt);
+        result.push(interpretIt);
+        
+      }
+
+    }
+
+    return result;
+  };
+    
   
 }
-
-export const getBaseStockByParentByShift = async (parent, shift) => {
-  let findRecFirst = lists.find(
-    (rec) => rec.parent == parent && rec.shift == shift
-  );
-  if (!findRecFirst) {
-    await findData({
-      store: "BaseReportStock",
-      criteria: { parent, shift },
-    }).then((res) => (lists = lists.concat(res)));
-  }
-};
-
-export const baseReportStockLists = async (parent, shift) => {
-  let result = [];
-  for (let rec of lists ) {
-    if (rec.parent == parent && rec.shift == shift) {
-      const { getItemBykode } = new BaseItem();
-      const getItem = await getItemBykode(rec.item);
-      result.push({
-        ...rec,
-        itemName: getItem?.name,
-        problem2: masalah(rec.problem),
-        selisih:
-          Number(rec.real) -
-          (Number(rec.awal) + Number(rec.in) - Number(rec.out)),
-        planOut: rec?.planOut || 0,
-      });
-    }
-  };
-  return result;
-};
 
 export const stockDetails = (parent, shift) => {
   /*

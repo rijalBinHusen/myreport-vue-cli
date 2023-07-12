@@ -111,10 +111,17 @@ export function BaseReportFile () {
     }
 
     async function updateBaseReport (id: string, obj: BaseReportFileInterfaceForUpdate) { 
+        const isNoValueToUpdate = Object.values(obj).length > 0;
+
+        if(isNoValueToUpdate) return;
+
         const findIndex = lists.value.findIndex((rec) => rec?.id === id);
 
         if(findIndex > -1) {
             const record = lists.value[findIndex];
+            delete record.warehouseName;
+            delete record.periode2;
+            
             const updateRecord = { ...record, ...obj };
             const mapUpdateRecord = await recordMapper(updateRecord)
             lists.value[findIndex] = mapUpdateRecord;
