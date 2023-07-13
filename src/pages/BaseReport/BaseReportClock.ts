@@ -122,7 +122,7 @@ export function baseClock() {
     let findRecFirst = lists.findIndex((rec) => rec.parent == parent && rec.shift == shift);
 
     if (findRecFirst < 0) {
-      const getData= await db.getItemByTwoKeyValue('parent', parent, 'shift', shift);
+      const getData= await db.getItemsByTwoKeyValue('parent', parent, 'shift', shift);
 
       if(getData == undefined) {
         await appendData(parent, shift, 0, '12:00', '12:00', '01:00', 0);

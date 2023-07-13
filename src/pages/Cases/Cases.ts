@@ -1,105 +1,187 @@
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
 import { getHeadspvId } from "@/pages/Headspv/Headspv";
-import { dateMonth } from "@/composable/piece/dateFormat";
-import { append, getData, update, deleteDocument, getDataByKey } from "@/myfunction";
+import { dateMonth } from "../../composable/piece/dateFormat";
+// import { append, getData, update, deleteDocument, getDataByKey } from "@/myfunction";
+import { useIdb } from "../../utils/localforage";
 
-let lists = [];
+interface Case {
+  id: string,
+  dl: number,
+  head: string,
+  insert: boolean,
+  masalah: string,
+  name: string,
+  parent: string,
+  periode: number,
+  pic: string,
+  solusi: string,
+  status: boolean,
+  sumberMasalah: string
+}
+
+interface CaseImport {
+  id:string
+  bagian:string
+  divisi:string
+  fokus:string
+  import:boolean
+  inserted:boolean
+  kabag:string
+  karu:string
+  keterangan1:string
+  keterangan2:string
+  periode:string
+  temuan:string
+}
+
+let lists = <Case[]>[];
+let listsCaseImport = <CaseImport[]>[]
 const storeName = "cases";
 
-export async function addCase(
-  periode,
-  head,
-  dl,
-  insert,
-  masalah,
-  name,
-  parent,
-  pic,
-  solusi,
-  status,
-  sumberMasalah
-) {
-  let rec = {
-    periode,
-    head,
-    dl,
-    insert,
-    masalah,
-    name,
-    parent,
-    pic,
-    solusi,
-    status,
-    sumberMasalah,
-  };
-  await append({ store: "Cases", obj: rec }).then((res) => {
-      lists.unshift(res.data);
-  });
-  return;
-}
+export function Cases() {
+  const db = useIdb(storeName);
 
-export async function addCaseImport(
-  bagian,
-  divisi,
-  fokus,
-  kabag,
-  karu,
-  keterangan1,
-  keterangan2,
-  periode,
-  temuan
-) {
-  let rec = {
-    bagian,
-    divisi,
-    fokus,
-    kabag,
-    karu,
-    keterangan1,
-    keterangan2,
-    periode,
-    temuan,
-    import: true,
-    inserted: false,
-  };
-  await append({ store: "Cases", obj: rec }).then((res) => {
-      lists.unshift(res.data);
-  });
-  return;
-}
+  async function addCase(
+    periode: number,
+    head: string,
+    dl: number,
+    insert: boolean,
+    masalah: string,
+    name: string,
+    parent: string,
+    pic: string,
+    solusi: string,
+    status: boolean,
+    sumberMasalah: string
+  ) {
+    let rec = {
+      periode,
+      head,
+      dl,
+      insert,
+      masalah,
+      name,
+      parent,
+      pic,
+      solusi,
+      status,
+      sumberMasalah,
+    };
+  
+    const insertedId = await db.createItem(rec);
 
-export async function getCases() {
-  await getData({
-    store: "cases",
-    limit: 200,
-    orderBy: "id",
-    desc: true,
-  }).then((result) => {
-    if (result) {
-      lists = result;
+    if(insertedId) {
+      lists.unshift({ id: insertedId, ...rec})
     }
-  });
-}
+    
+  }
+  
+  async function addCaseImport(
+    bagian: string,
+    divisi: string,
+    fokus: string,
+    kabag: string,
+    karu: string,
+    keterangan1: string,
+    keterangan2: string,
+    periode: string,
+    temuan: string
+  ) {
+    let rec = {
+      bagian,
+      divisi,
+      fokus,
+      kabag,
+      karu,
+      keterangan1,
+      keterangan2,
+      periode,
+      temuan,
+      import: true,
+      inserted: false,
+    };
 
-export async function listsCase(isInsert) {
-  let result = [];
-  let category = isInsert ? "insert" : "import";
-  for (let list of lists) {
-    if (list[category]) {
-      result.push({
-        ...list,
-        periode2: dateMonth(list.periode),
-        spvName: await getSupervisorId(list?.name).then((res) => res?.name),
-        headName: await getHeadspvId(list?.head).then((res) => res?.name),
-        insert2: dateMonth(list?.insert),
-      });
+    const insertedId = await db.createItem(rec);
+    
+    if(insertedId) {
+      listsCaseImport.unshift({ id: insertedId, ...rec });
     }
   }
-  return result;
-}
+  
+  async function getCases() {
 
-export function getCaseId(idCase) {
-  return lists.find((rec) => rec.id == idCase);
+    const getData = await db.getItemsLimitDesc(200);
+
+    if(getData) {
+
+      for(let datum of getData) {
+
+        if(datum?.import) {
+
+          listsCaseImport.push({
+            bagian: datum?.bagian.toString(),
+            divisi: datum?.divisi.toString(),
+            fokus: datum?.fokus.toString(),
+            id: datum?.id.toString(),
+            import: Boolean(datum?.import),
+            inserted: Boolean(datum?.inserted),
+            kabag: datum?.kabag.toString(),
+            karu: datum?.karu.toString(),
+            keterangan1: datum?.keterangan1.toString(),
+            keterangan2: datum?.keterangan2.toString(),
+            periode: datum?.periode.toString(),
+            temuan: datum?.temuan.toString(),
+          });
+
+        } else {
+          
+          const interpretIt = await interpretCaseRecord({
+            dl: Number(datum?.dl),
+            head: datum?.head.toString(),
+            id: datum?.id.toString(),
+            insert: Boolean(datum?.insert),
+            masalah: datum?.masalah.toString(),
+            name: datum?.name.toString(),
+            parent: datum?.parent.toString(),
+            periode: Number(datum?.periode),
+            pic: datum?.pic.toString(),
+            solusi: datum?.solusi.toString(),
+            status: Boolean(datum?.status),
+            sumberMasalah: datum?.sumberMasalah.toString()
+          });
+
+          lists.push(interpretIt);
+
+        }
+
+      }
+    }
+
+  }
+
+  async function interpretCaseRecord(obj: Case) {
+    const spvName = await getSupervisorId(obj.name);
+    const headName = await getHeadspvId(obj.head);
+
+    return {
+      ...obj,
+      periode2: dateMonth(obj.periode),
+      spvName,
+      headName,
+      insert2: dateMonth(obj?.insert),
+    };
+
+  }
+  
+  async function getCaseNyId(idCase: string) {
+    const findIndex = lists.findIndex((rec) => rec.id == idCase);
+
+    if(findIndex < 0) {
+      findIndex = await db.getItem(idCase);
+    }
+  } 
+  
+
 }
 
 export async function updateCase(idCase, objToUpdate) {

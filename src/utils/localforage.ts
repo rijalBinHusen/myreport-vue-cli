@@ -339,6 +339,47 @@ export const useIdb = (storeName: string) => {
       });
   }
 
+  function sortItem (items: unknownObject[], keyToSort: string, isAsc:boolean) {
+
+    items.sort(function (a, b) {
+      let x = a[keyToSort];
+      let y = b[keyToSort];
+
+      if (typeof a[keyToSort] === 'string') {
+        x = a[keyToSort].toString().toLowerCase();
+        y = b[keyToSort].toString().toLowerCase();
+      }
+
+      if (isAsc) {
+        if (x < y) {
+          return -1;
+        }
+        if (x > y) {
+          return 1;
+        }
+      } else {
+        if (x > y) {
+          return -1;
+        }
+        if (x < y) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+
+    return items;
+  }  
+
+  const getItemsLimitDesc = async (limit: number) => {
+    const result:unknownObject[] = [];
+    const getAll = await getItems();
+    
+    const sortItems = sortItem(getAll, 'id', false);
+
+    return sortItems.slice(0, limit)
+  };
+
   return {
     setItem,
     getItem,
@@ -346,6 +387,7 @@ export const useIdb = (storeName: string) => {
     removeItem,
     findOneItemByKeyValue,
     getItemsLimit,
+    getItemsLimitDesc,
     updateItem,
     getItemsByKeyValue,
     getItemsByKeyGreaterThan,
