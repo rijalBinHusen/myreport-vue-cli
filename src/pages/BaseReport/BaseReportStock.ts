@@ -1,6 +1,6 @@
-import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
+// import { append, deleteDocument, findData, update, getData, getDataByKey } from "@/myfunction";
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
-import { masalah, masalah, problemActive } from "../Problems/Problem";
+import { masalah, problemActive } from "../Problems/Problem";
 import { baseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
@@ -252,88 +252,101 @@ export function baseReportStock () {
     return result;
   };
     
+  const stockDetails = (parent: string, shift: number) => {
+    /*
+       expected result = {
+          totalIn: Number, 
+          totalItemMoving: Number, 
+          totalQtyOut: Number, 
+          totalProductNotFifo: Number 
+      }
+      */
+    let result = {
+      totalItemMoving: 0,
+      totalQTYIn: 0,
+      totalQTYOut: 0,
+      totalProductNotFIFO: 0,
+      planOut: 0,
+      totalItemKeluar: 0,
+      itemVariance: 0,
+    };
+    lists.forEach((val) => {
+      if (val.shift == shift && val.parent == parent) {
+        if (Number(val.out)) {
+          result["totalItemKeluar"]++;
+        }
+        result["totalItemMoving"]++;
+        result["totalQTYIn"] = result["totalQTYIn"] + Number(val.in);
+        result["totalQTYOut"] = result["totalQTYOut"] + Number(val.out);
+        result["planOut"] = result["planOut"] += val?.planOut
+          ? Number(val?.planOut)
+          : 0;
+      }
+    });
   
-}
-
-export const stockDetails = (parent, shift) => {
-  /*
-     expected result = {
-        totalIn: Number, 
-        totalItemMoving: Number, 
-        totalQtyOut: Number, 
-        totalProductNotFifo: Number 
-    }
-    */
-  let result = {
-    totalItemMoving: 0,
-    totalQTYIn: 0,
-    totalQTYOut: 0,
-    totalProductNotFIFO: 0,
-    planOut: 0,
-    totalItemKeluar: 0,
-    itemVariance: 0,
+    return result;
   };
-  lists.forEach((val) => {
-    if (val.shift == shift && val.parent == parent) {
-      if (Number(val.out)) {
-        result["totalItemKeluar"]++;
-      }
-      result["totalItemMoving"]++;
-      result["totalQTYIn"] = result["totalQTYIn"] + Number(val.in);
-      result["totalQTYOut"] = result["totalQTYOut"] + Number(val.out);
-      result["planOut"] = result["planOut"] += val?.planOut
-        ? Number(val?.planOut)
-        : 0;
-    }
-  });
 
-  return result;
-};
+  const updateBaseStock = async (id: string, objtToUpdate: BaseStockUpdate) => {
+    const isNoValueToUpdate = Object.values(objtToUpdate).length > 0;
 
-export const updateBaseStock = async (id, objtToUpdate) => {
-  lists = lists.map((val) => {
-    if (val.id == id) {
-      return { ...val, ...objtToUpdate };
-    }
-    return val;
-  });
-  await update({
-    store: "BaseReportStock",
-    criteria: { id: id },
-    obj: objtToUpdate,
-  });
-  return true;
-};
+    if(isNoValueToUpdate) return;
 
-export async function markStockFinished(
-  parentBaseReportFile,
-  shift,
-  parentDocument
-) {
-  let markFinished = 0;
-  // iterate the state
-  for (let [index, list] of lists.entries()) {
-    loaderMessage.value = `Memindai ${ index + 1 } dari ${lists.length}.`;
-    // if state?.shift == payload.shift && payload?.parent
-    if (list?.shift == shift && list?.parent == parentBaseReportFile) {
-      // jika parentDocument kosong
-      if (!lists?.parentDocument) {
-        progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
-        // update recordnya
-        await updateBaseStock(list.id, { parentDocument });
-        markFinished++
-      }
-      // jika sudah terisi
+    const findIndex = lists.findIndex((rec) => rec?.id === id);
+
+    if(findIndex > -1) {
+        const record = lists[findIndex];
+        delete record.itemName;
+        delete record.problem2;
+        delete record.selisih;
+        
+        const updateRecord = { ...record, ...objtToUpdate };
+        const mapUpdateRecord = await interpretRecord(updateRecord)
+        lists[findIndex] = mapUpdateRecord;
     }
+    
+    await db.updateItem(id, objtToUpdate);
   }
-  loaderMessage.value = '';
-  progressMessage2.value = '';
-  return;
+
+  async function markStockFinished(BaseFile: string, shift: number, documentId: string) {
+    let markFinished = 0;
+    // iterate the state
+    for (let [index, list] of lists.entries()) {
+      loaderMessage.value = `Memindai ${ index + 1 } dari ${lists.length}.`;
+      // if state?.shift == payload.shift && payload?.parent
+      if (list?.shift == shift && list?.parent == BaseFile) {
+        // jika documentId kosong
+        if (!list.parentDocument) {
+          progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
+          // update recordnya
+          await updateBaseStock(list.id, { parentDocument: documentId });
+          markFinished++
+        }
+      }
+    }
+    loaderMessage.value = '';
+    progressMessage2.value = '';
+  }
+
+  return {
+    appendData,
+    startImportStock,
+    removeStock,
+    removeStockByParent,
+    getBaseStockByParentByShift,
+    baseReportStockLists,
+    stockDetails,
+    updateBaseStock,
+    markStockFinished,
+  }
+  
 }
 
 export async function syncBaseStockToServer () {
 
-  let allData = await getData({ store: storeName, withKey: true })
+  const db = useIdb(storeName)
+
+  let allData = await db.getItems();
 
   for(let [index, datum] of allData.entries()) {
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
@@ -342,18 +355,18 @@ export async function syncBaseStockToServer () {
 
     let dataToSend = {
       "id": datum?.key,
-      "parent": datum?.data?.parent || 0,
-      "shift": datum?.data?.shift || 0,
-      "item": datum?.data?.item || 0,
-      "awal": datum?.data?.awal || 0,
-      "in_stock": datum?.data?.in || 0,
-      "out_stock": datum?.data?.out || 0,
-      "date_in": datum?.data?.dateIn || 0,
-      "plan_out": datum?.data?.planOut || 0,
-      "date_out": datum?.data?.dateOut || 0,
-      "date_end": datum?.data?.dateEnd || 0,
-      "real_stock": datum?.data?.real || 0,
-      "problem": datum?.data?.problem.toString()  || 0
+      "parent": datum.parent || 0,
+      "shift": datum.shift || 0,
+      "item": datum.item || 0,
+      "awal": datum.awal || 0,
+      "in_stock": datum.in || 0,
+      "out_stock": datum.out || 0,
+      "date_in": datum.dateIn || 0,
+      "plan_out": datum.planOut || 0,
+      "date_out": datum.dateOut || 0,
+      "date_end": datum.dateEnd || 0,
+      "real_stock": datum.real || 0,
+      "problem": datum.problem.toString()  || 0
     }
 
     try {
@@ -371,14 +384,16 @@ export async function syncBaseStockToServer () {
   return true;
 }
 
-export async function syncBaseStockRecordToServer (idRecord, mode) {
+export async function syncBaseStockRecordToServer (idRecord: string, mode: string) {
 
   if(typeof idRecord !== 'string') {
     alert("Id record base report stock must be a string");
     return;
   }
 
-  let record = await getDataByKey(storeName, idRecord);
+  const db = useIdb(storeName);
+
+  let record = await db.getItem(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;
