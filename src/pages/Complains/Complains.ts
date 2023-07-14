@@ -1,90 +1,179 @@
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
 import { getHeadspvId } from "@/pages/Headspv/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
-import { append, getData, update, deleteDocument, getDataByKey } from "@/myfunction";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
-let lists = [];
-const storeName = "complains";
-
-export async function addComplain(
-  periode,
-  head,
-  dl,
-  insert,
-  masalah,
-  name,
-  parent,
-  pic,
-  solusi,
-  status,
-  sumberMasalah,
-  type,
-  isCount,
-) {
-  let rec = {
-    periode,
-    head,
-    dl,
-    insert,
-    masalah,
-    name,
-    parent,
-    pic,
-    solusi,
-    status,
-    sumberMasalah,
-    type,
-    isCount,
-  };
-  await append({ store: "Complains", obj: rec }).then((res) => {
-      lists.unshift(res.data);
-  });
-  return;
+interface Complain {
+  dl: number
+  head: string
+  id: string
+  insert: number
+  isCount: boolean
+  masalah: string
+  name: string
+  parent: string
+  periode: number
+  pic: string
+  solusi: string
+  status: boolean
+  sumberMasalah: string
+  type: string
+  periode2?: string
+  spvName?: string
+  headName?: string
+  insert2?: string
 }
 
-export async function addComplainImport(
-  customer,
-  Do,
-  gudang,
-  item,
-  kabag,
-  nomorSJ,
-  nopol,
-  real,
-  row,
-  spv,
-  tally,
-  tanggalBongkar,
-  tanggalInfo,
-  tanggalKomplain,
-  tanggalSuratJalan,
-  type,
-) {
-  let rec = {
-    customer,
-    do: Do,
-    gudang,
-    item,
-    kabag,
-    nomorSJ,
-    nopol,
-    real,
-    row,
-    spv,
-    tally,
-    tanggalBongkar,
-    tanggalInfo,
-    tanggalKomplain,
-    tanggalSuratJalan,
-    type,
-    import: true,
-    inserted: false,
-  };
-  await append({ store: "Complains", obj: rec }).then((res) => {
-      lists.unshift(res.data);
-  });
-  return;
+interface ComplainImport {
+  customer: string
+  do: number
+  gudang: string
+  id: string
+  import: boolean
+  inserted: boolean
+  item: string
+  kabag: string
+  nomorSJ: string
+  nopol: string
+  real: number
+  row: string
+  spv: string
+  tally: string
+  tanggalBongkar: string
+  tanggalInfo: string
+  tanggalKomplain: string
+  tanggalSuratJalan: string
+  type: string
+  selisih?: number
+}
+
+
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+
+type ComplainUpdate = Partial<Complain>;
+type ComplainImportUpdate = Partial<ComplainImport>;
+
+let lists = <Complain[]>[];
+let listsComplainImport = <ComplainImport[]>[];
+
+const storeName = "complains";
+
+export function Complains () {
+  const db = useIdb(storeName);
+
+  async function addComplain(
+    periode: number,
+    head: string,
+    dl: number,
+    insert: number,
+    masalah: string,
+    name: string,
+    parent: string,
+    pic: string,
+    solusi: string,
+    status: boolean,
+    sumberMasalah: string,
+    type: string,
+    isCount: boolean,
+  ) {
+
+    let rec = {
+      periode,
+      head,
+      dl,
+      insert,
+      masalah,
+      name,
+      parent,
+      pic,
+      solusi,
+      status,
+      sumberMasalah,
+      type,
+      isCount,
+    };
+
+    const insertedId = await db.createItem(rec);
+
+    if(typeof insertedId === 'undefined') return;
+
+    const interpretIt = await interpretComplain({ id: insertedId, ...rec})
+    lists.unshift(interpretIt)
+  }
+
+  async function addComplainImport(
+    customer: string,
+    Do: number,
+    gudang: string,
+    item: string,
+    kabag: string,
+    nomorSJ: string,
+    nopol: string,
+    real: number,
+    row: string,
+    spv: string,
+    tally: string,
+    tanggalBongkar: string,
+    tanggalInfo: string,
+    tanggalKomplain: string,
+    tanggalSuratJalan: string,
+    type: string,
+  ) {
+    let rec = {
+      customer,
+      do: Do,
+      gudang,
+      item,
+      kabag,
+      nomorSJ,
+      nopol,
+      real,
+      row,
+      spv,
+      tally,
+      tanggalBongkar,
+      tanggalInfo,
+      tanggalKomplain,
+      tanggalSuratJalan,
+      type,
+      import: true,
+      inserted: false,
+    };
+    
+    const insertedId = await db.createItem(rec);
+
+    if(typeof insertedId === 'undefined') return;
+
+    const interpretIt = interpretComplainImport({ id: insertedId, ...rec})
+    listsComplainImport.unshift(interpretIt)
+
+  }
+  
+  async function interpretComplain (obj: Complain): Promise<Complain> {
+
+    let periode2 = dateMonth(obj.periode);
+    let spvName = await getSupervisorId(obj?.name).then((res) => res?.name);
+    let headName = await getHeadspvId(obj?.head).then((res) => res?.name);
+    let insert2 = dateMonth(obj?.insert);
+    
+    return { ...obj, periode2, spvName, headName, insert2};
+
+  }
+
+  function interpretComplainImport (obj: ComplainImport): ComplainImport {
+
+    let selisih = (Number(obj?.real) || 1) - (Number(obj?.do) || 1);
+    
+    return { ...obj, selisih};
+
+  }
+
+  async function getComplains() {
+    const getData = await db.getItemsLimitDesc(200);
+  }
+  
 }
 
 export async function getComplains() {
@@ -101,24 +190,6 @@ export async function getComplains() {
       lists = result;
     }
   });
-}
-
-export async function listsComplain(isInsert) {
-  let result = [];
-  let category = isInsert ? "insert" : "import";
-  for (let list of lists) {
-    if (list[category]) {
-      result.push({
-        ...list,
-        periode2: dateMonth(list.periode),
-        spvName: await getSupervisorId(list?.name).then((res) => res?.name),
-        headName: await getHeadspvId(list?.head).then((res) => res?.name),
-        insert2: dateMonth(list?.insert),
-        selisih: (Number(list?.real) || 1) - (Number(list?.do) || 1)
-      });
-    }
-  }
-  return result;
 }
 
 export function getComplainId(idComplain) {
@@ -148,6 +219,7 @@ export const removeComplain = async (idComplain) => {
 
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
+import { useIdb } from "@/utils/localforage";
 export async function syncComplainsToServer () {
 
   let allData = await getData({ store: storeName, withKey: true })
