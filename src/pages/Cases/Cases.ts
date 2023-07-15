@@ -183,11 +183,28 @@ export function Cases() {
 
   }
   
-  async function getCaseById(idCase: string): Promise<Case|CaseImport> {
+  async function getCaseById(idCase: string): Promise<Case> {
     const findIndex = lists.findIndex((rec) => rec.id == idCase);
 
     if(findIndex > -1) {
       return lists[findIndex];
+    }
+
+    let getRecord = await db.getItem(idCase);
+
+    if(getRecord?.insert) {
+      getRecord = await interpretCaseRecord(getRecord);
+    }
+
+    lists.push(getRecord);
+    return getRecord;
+  } 
+  
+  async function getCaseImportById(idCase: string): Promise<CaseImport> {
+    const findIndex = listsCaseImport.findIndex((rec) => rec.id == idCase);
+
+    if(findIndex > -1) {
+      return listsCaseImport[findIndex];
     }
 
     let getRecord = await db.getItem(idCase);
@@ -243,8 +260,18 @@ export function Cases() {
     lists = lists.filter((rec) => rec.id !== id);
     await db.removeItem(id);
   };
-    
 
+  return {
+    addCase,
+    addCaseImport,
+    getCases,
+    getCaseById,
+    getCaseImportById,
+    updateCase,
+    updateCaseImport,
+    removeCase
+  }
+    
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
@@ -270,7 +297,7 @@ export async function syncCasesToServer () {
     if(datum?.import) {
 
       dataToSend = {
-        "id": datum?.key || 0,
+        "id": datum?.id || 0,
         "bagian": datum?.bagian || 0,
         "divisi": datum?.divisi || 0,
         "fokus": datum?.fokus || 0,
@@ -292,7 +319,7 @@ export async function syncCasesToServer () {
     else {
 
       dataToSend = {
-        "id": datum?.key,
+        "id": datum?.id,
         "periode": datum?.periode || 0,
         "head_spv_id": datum?.head || 0,
         "dl": datum?.dl || 0,

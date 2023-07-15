@@ -18,6 +18,9 @@ interface Complain {
   status: boolean
   sumberMasalah: string
   type: string
+}
+
+interface ComplainMapped extends Complain {
   periode2?: string
   spvName?: string
   headName?: string
@@ -44,6 +47,9 @@ interface ComplainImport {
   tanggalKomplain: string
   tanggalSuratJalan: string
   type: string
+}
+
+interface ComplainImportMapped extends ComplainImport {
   selisih?: number
 }
 
@@ -55,8 +61,8 @@ type Partial<T> = {
 type ComplainUpdate = Partial<Complain>;
 type ComplainImportUpdate = Partial<ComplainImport>;
 
-let lists = <Complain[]>[];
-let listsComplainImport = <ComplainImport[]>[];
+let lists = <ComplainMapped[]>[];
+let listsComplainImport = <ComplainImportMapped[]>[];
 
 const storeName = "complains";
 
@@ -151,7 +157,7 @@ export function Complains () {
 
   }
   
-  async function interpretComplain (obj: Complain): Promise<Complain> {
+  async function interpretComplain (obj: Complain): Promise<ComplainMapped> {
 
     let periode2 = dateMonth(obj.periode);
     let spvName = await getSupervisorId(obj?.name).then((res) => res?.name);
@@ -162,7 +168,7 @@ export function Complains () {
 
   }
 
-  function interpretComplainImport (obj: ComplainImport): ComplainImport {
+  function interpretComplainImport (obj: ComplainImport): ComplainImportMapped {
 
     let selisih = (Number(obj?.real) || 1) - (Number(obj?.do) || 1);
     
@@ -172,57 +178,160 @@ export function Complains () {
 
   async function getComplains() {
     const getData = await db.getItemsLimitDesc(200);
+
+    if(typeof getData !== 'undefined') {
+      for(let datum of getData) {
+
+        if(datum?.insert) {
+          let record = {
+            id: datum?.id.toString(),
+            dl: Number(datum?.dl),
+            head: datum?.head.toString(),
+            insert: Number(datum?.insert),
+            isCount: Boolean(datum?.isCount),
+            masalah: datum?.masalah.toString(),
+            name: datum?.name.toString(),
+            parent: datum?.parent.toString(),
+            periode: Number(datum?.periode),
+            pic: datum?.pic.toString(),
+            solusi: datum?.solusi.toString(),
+            status: Boolean(datum?.status),
+            sumberMasalah: datum?.sumberMasalah.toString(),
+            type: datum?.type.toString(),
+          }
+          let interpretRecord = await interpretComplain(record);
+          lists.push(interpretRecord);
+        }
+        
+        else if(datum?.import) {
+          let record = {
+            customer: datum?.customer.toString(),
+            do: Number(datum?.do),
+            gudang: datum?.gudang .toString(),
+            id: datum?.id .toString(),
+            import: Boolean(datum?.import),
+            inserted: Boolean(datum?.inserted),
+            item: datum?.item.toString(),
+            kabag: datum?.kabag.toString(),
+            nomorSJ: datum?.nomorSJ.toString(),
+            nopol: datum?.nopol.toString(),
+            real: Number(datum?.real),
+            row: datum?.row .toString(),
+            spv: datum?.spv .toString(),
+            tally: datum?.tally .toString(),
+            tanggalBongkar: datum?.tanggalBongkar .toString(),
+            tanggalInfo: datum?.tanggalInfo .toString(),
+            tanggalKomplain: datum?.tanggalKomplain .toString(),
+            tanggalSuratJalan: datum?.tanggalSuratJalan .toString(),
+            type: datum?.type.toString(),
+          }
+          let interpretRecord = interpretComplainImport(record);
+
+          listsComplainImport.push(interpretRecord);
+        }
+      }
+    }
   }
   
-}
+  async function getComplainById(id: string): Promise<Complain> {
+    const findIndex = lists.findIndex((rec) => rec.id == id);
 
-export async function getComplains() {
-  if (lists.length) {
-    return;
+    if(findIndex > -1) {
+      return lists[findIndex];
+    }
+
+    let getRecord = await db.getItem(id);
+
+    if(getRecord?.insert) {
+      getRecord = await interpretComplain(getRecord);
+    }
+
+    lists.push(getRecord);
+    return getRecord;
   }
-  await getData({
-    store: "Complains",
-    limit: 200,
-    orderBy: "id",
-    desc: true,
-  }).then((result) => {
-    if (result) {
-      lists = result;
+  
+  async function getComplainImportById(id: string): Promise<ComplainImport> {
+    const findIndex = listsComplainImport.findIndex((rec) => rec.id == id);
+
+    if(findIndex > -1) {
+      return listsComplainImport[findIndex];
     }
-  });
-}
 
-export function getComplainId(idComplain) {
-  return lists.find((rec) => rec.id == idComplain);
-}
+    let getRecord = await db.getItem(id);
 
-export async function updateComplain(idComplain, objToUpdate) {
-  lists = lists.map((val) => {
-    if (val.id == idComplain) {
-      return { ...val, ...objToUpdate };
+    if(getRecord?.insert) {
+      getRecord = interpretComplainImport(getRecord);
     }
-    return val;
-  });
-  await update({
-    store: "Complains",
-    criteria: { id: idComplain },
-    obj: objToUpdate,
-  });
-  return;
+
+    lists.push(getRecord);
+    return getRecord;
+  }
+  
+  async function updateComplain(idCase: string, obj: ComplainUpdate) {
+    const isNoValueToUpdate = Object.values(obj).length > 0;
+
+        if(isNoValueToUpdate) return;
+
+        const findIndex = lists.findIndex((rec) => rec?.id === idCase);
+
+        if(findIndex > -1) {
+            const record = lists[findIndex];
+            delete record.periode2;
+            delete record.spvName;
+            delete record.headName;
+            delete record.insert2;
+            
+            const updateRecord = { ...record, ...obj };
+            const mapUpdateRecord = await interpretComplain(updateRecord)
+            lists[findIndex] = mapUpdateRecord;
+        }
+        
+        await db.updateItem(idCase, obj);
+  }
+  
+  async function updateComplainImport(id: string, obj: ComplainImportUpdate): Promise<void|undefined> {
+    const isNoValueToUpdate = Object.values(obj).length > 0;
+
+        if(isNoValueToUpdate) return;
+
+        const findIndex = listsComplainImport.findIndex((rec) => rec?.id === id);
+
+        if(findIndex > -1) {
+            const record = listsComplainImport[findIndex];
+            delete record.selisih;
+            
+            const updateRecord = { ...record, ...obj };
+            listsComplainImport[findIndex] = updateRecord;
+        }
+        
+        await db.updateItem(id, obj);
+  }
+  
+  const removeComplain = async (id: string) => {
+    lists = lists.filter((rec) => rec.id !== id);
+    await db.removeItem(id);
+  };
+    
+  return {
+    addComplain,
+    addComplainImport,
+    getComplains,
+    getComplainById,
+    getComplainImportById,
+    updateComplain,
+    updateComplainImport,
+    removeComplain,
+  }
+  
+  
 }
-
-export const removeComplain = async (idComplain) => {
-  lists = lists.filter((rec) => rec.id !== idComplain);
-  await deleteDocument({ store: "Complains", criteria: { id: idComplain } });
-  return;
-};
-
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "@/utils/localforage";
 export async function syncComplainsToServer () {
+  const db = useIdb(storeName);
 
-  let allData = await getData({ store: storeName, withKey: true })
+  const allData = await db.getItems();
 
   for(let [index, datum] of allData.entries()) {
 
@@ -233,26 +342,26 @@ export async function syncComplainsToServer () {
     let dataToSend;
     let endPoint;
 
-    if(datum?.data?.import) {
+    if(datum?.import) {
 
       dataToSend = {
-        "id": datum?.key,
-        "customer": datum?.data?.customer || 0,
-        "do_": datum?.data?.do || 0,
-        "gudang": datum?.data?.gudang || 0,
-        "item": datum?.data?.item || 0,
-        "kabag": datum?.data?.kabag || 0,
-        "nomor_SJ": datum?.data?.nomorSJ || 0,
-        "nopol": datum?.data?.nopol || 0,
-        "real_": datum?.data?.real || 0,
-        "row_": datum?.data?.row || 0,
-        "spv": datum?.data?.spv || 0,
-        "tally": datum?.data?.tally || 0,
-        "tanggal_bongkar": datum?.data?.tanggalBongkar || 0,
-        "tanggal_info": datum?.data?.tanggalInfo || 0,
-        "tanggal_komplain": datum?.data?.tanggalKomplain || 0,
-        "tanggal_SJ": datum?.data?.tanggalSuratJalan || 0,
-        "type_": datum?.data?.type || 0
+        "id": datum?.id,
+        "customer": datum?.customer || 0,
+        "do_": datum?.do || 0,
+        "gudang": datum?.gudang || 0,
+        "item": datum?.item || 0,
+        "kabag": datum?.kabag || 0,
+        "nomor_SJ": datum?.nomorSJ || 0,
+        "nopol": datum?.nopol || 0,
+        "real_": datum?.real || 0,
+        "row_": datum?.row || 0,
+        "spv": datum?.spv || 0,
+        "tally": datum?.tally || 0,
+        "tanggal_bongkar": datum?.tanggalBongkar || 0,
+        "tanggal_info": datum?.tanggalInfo || 0,
+        "tanggal_komplain": datum?.tanggalKomplain || 0,
+        "tanggal_SJ": datum?.tanggalSuratJalan || 0,
+        "type_": datum?.type || 0
       }
 
       endPoint = "complain_import";
@@ -265,20 +374,20 @@ export async function syncComplainsToServer () {
     else {
 
       dataToSend = {
-        "id": datum?.key || 0,
-        "periode": datum?.data?.periode || 0,
-        "head_spv_id": datum?.data?.head || 0,
-        "dl": datum?.data?.dl || 0,
-        "inserted": datum?.data?.insert || 0,
-        "masalah": datum?.data?.masalah || 0,
-        "supervisor_id": datum?.data?.name || 0,
-        "parent": datum?.data?.parent || 0,
-        "pic": datum?.data?.pic || 0,
-        "solusi": datum?.data?.solusi || 0,
-        "is_status_done": datum?.data?.status || 0,
-        "sumber_masalah": datum?.data?.sumberMasalah || 0,
-        "type": datum?.data?.type || 0,
-        "is_count": datum?.data?.isCount || 0
+        "id": datum?.id || 0,
+        "periode": datum?.periode || 0,
+        "head_spv_id": datum?.head || 0,
+        "dl": datum?.dl || 0,
+        "inserted": datum?.insert || 0,
+        "masalah": datum?.masalah || 0,
+        "supervisor_id": datum?.name || 0,
+        "parent": datum?.parent || 0,
+        "pic": datum?.pic || 0,
+        "solusi": datum?.solusi || 0,
+        "is_status_done": datum?.status || 0,
+        "sumber_masalah": datum?.sumberMasalah || 0,
+        "type": datum?.type || 0,
+        "is_count": datum?.isCount || 0
       }
 
       endPoint = "complain";
@@ -301,14 +410,16 @@ export async function syncComplainsToServer () {
   return true
 }
 
-export async function syncComplainRecordToServer (idRecord, mode) {
+export async function syncComplainRecordToServer (idRecord: string, mode: string) {
 
   if(typeof idRecord !== 'string') {
     alert("Id record complain must be a string");
     return;
   }
 
-  let record = await getDataByKey(storeName, idRecord);
+  const db = useIdb(storeName);
+
+  const record = await db.getItem(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;
