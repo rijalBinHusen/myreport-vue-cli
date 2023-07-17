@@ -33,8 +33,8 @@ import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { useStore } from "vuex"
 import { ref, onMounted } from "vue"
-import { startImportClock } from '@/composable/components/BaseReportClock'
-import { startImportStock } from '@/composable/components/BaseReportStock'
+import { startImportClock } from './BaseReportClock'
+import { startImportStock } from './BaseReportStock'
 import { BaseReportFile } from './BaseReportFile'
 
 export default {

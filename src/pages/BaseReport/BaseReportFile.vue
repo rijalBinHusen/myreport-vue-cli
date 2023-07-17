@@ -61,17 +61,17 @@
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
-import readExcelFile from "@/composable/readExcel"
+import readExcelFile from "@/utils/readExcel"
 import { ref, onMounted } from 'vue'
 import { BaseReportFile, lists as BaseReportFileLists } from "./BaseReportFile";
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { getWarehouseId } from "@/composable/components/Warehouses"
+import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
 import { useStore } from "vuex"
-import { removeClockByParent } from '@/composable/components/BaseReportClock' 
-import { removeStockByParent } from '@/composable/components/BaseReportStock'
-import { getProblemFromDB } from '@/composable/components/Problem'
+import { removeClockByParent } from '@/pages/BaseReport/BaseReportClock' 
+import { removeStockByParent } from '@/pages/BaseReport/BaseReportStock'
+import { getProblemFromDB } from '@/pages/Problems/Problem'
 
 export default {
     name: "Collect",

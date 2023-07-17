@@ -61,7 +61,7 @@ import SelectShift from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 import { onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
-import { findDocument, updateDocument, collectDocument } from "@/composable/components/DocumentsPeriod"
+import { findDocument, updateDocument, collectDocument } from "./DocumentsPeriod"
 import { dateMonth  } from "@/composable/piece/dateFormat"
 
 export default {

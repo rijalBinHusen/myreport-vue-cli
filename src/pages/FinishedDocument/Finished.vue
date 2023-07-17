@@ -77,12 +77,12 @@ import exportWeeklyReportToExcel from "@/excelReport/WeeklyReport"
 import exportWeeklyKabag from "@/excelReport/WeeklyKabag"
 import WeeklyWarehouses from "@/excelReport/WeeklyReportWarehouses"
 import Dropdown from "@/components/elements/Dropdown.vue"
-import { finishedDocument, getDocuments, unFinishedDocument } from '@/composable/components/DocumentsPeriod'
-import { getSupervisorId } from '@/composable/components/Supervisors'
+import { finishedDocument, getDocuments, unFinishedDocument } from '@/pages/Documents/DocumentsPeriod'
+import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { ref, onMounted, watch } from "vue"
 import { useStore } from "vuex"
-import { warehouseId } from "@/composable/components/Warehouses"
+import { warehouseId } from "@/pages/Warehouses/Warehouses"
 
 export default {
     components: {

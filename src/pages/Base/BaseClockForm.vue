@@ -20,7 +20,7 @@
 <script>
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import { appendData } from '@/composable/components/BaseReportClock'
+import { appendData } from '@/pages/BaseReport/BaseReportClock'
 import { ref, onMounted } from "vue"
 import { useStore } from "vuex"
 export default {

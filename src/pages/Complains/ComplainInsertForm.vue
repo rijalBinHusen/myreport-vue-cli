@@ -73,7 +73,7 @@ import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
-import { addComplain, updateComplain, getComplainId } from '@/composable/components/Complains'
+import { addComplain, updateComplain, getComplainId } from './Complains'
 
 export default {
     components: {

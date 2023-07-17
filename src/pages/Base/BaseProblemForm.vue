@@ -24,8 +24,8 @@
 <script>
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
-import { updateBaseStock } from '@/composable/components/BaseReportStock'
-import { problemByItem } from '@/composable/components/Problem'
+import { updateBaseStock } from '@/pages/BaseReport/BaseReportStock'
+import { problemByItem } from '@/pages/Problems/Problem'
 
 	export default {
 		data() {

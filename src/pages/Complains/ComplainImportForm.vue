@@ -17,7 +17,7 @@
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { modalClose, loader, tunnelMessageTrue } from "@/composable/piece/vuexModalLauncher"
-import { addComplainImport } from '@/composable/components/Complains'
+import { addComplainImport } from './Complains'
 
 export default {
     components: {

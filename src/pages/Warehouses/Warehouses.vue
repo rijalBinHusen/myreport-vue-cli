@@ -91,7 +91,7 @@ import Button from "@/components/elements/Button.vue"
 import Table from "@/components/elements/Table.vue"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import { ref, onMounted } from "vue";
-import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId, updateWarehouseVariable } from '@/composable/components/Warehouses'
+import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId, updateWarehouseVariable } from '@/pages/Warehouses/Warehouses'
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue";
 
 export default {

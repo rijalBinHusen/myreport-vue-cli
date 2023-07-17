@@ -10,7 +10,7 @@
 
 <script>
 import SelectWarehouseVue from "./SelectWarehouse.vue"
-import InputItemVue from "@/modular/Base/InputItem.vue"
+import InputItemVue from "@/pages/Base/InputItem.vue"
 import Button from "../elements/Button.vue"
 
 export default {

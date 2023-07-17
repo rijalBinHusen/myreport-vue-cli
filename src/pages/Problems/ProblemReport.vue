@@ -34,13 +34,13 @@
 <script>
 import Datatable from "@/components/parts/Datatable.vue"
 import Button from "@/components/elements/Button.vue"
-import ProblemReportForm from "@/form/ProblemReportForm.vue"
+import ProblemReportForm from "./ProblemReportForm.vue"
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
 import { onMounted, ref, watch } from "vue"
-import { getProblemFromDB, listsProblem, getProblemBetweenPeriode, duplicate } from '@/composable/components/Problem'
+import { getProblemFromDB, listsProblem, getProblemBetweenPeriode, duplicate } from './Problem'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
-import { getSupervisorShift1ByWarehouse, warehouseId } from '@/composable/components/Warehouses'
+import { getSupervisorShift1ByWarehouse, warehouseId } from '@/pages/Warehouses/Warehouses'
 
 export default {
     setup() {

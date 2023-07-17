@@ -27,12 +27,12 @@
 
 <script>
 import { useStore } from "vuex"
-import { storeBackup, seperateUsers, syncAllDataToServer, syncBasedOnActivity, errorSyncResend } from "@/composable/storeBackup"
+import { storeBackup, seperateUsers, syncAllDataToServer, syncBasedOnActivity, errorSyncResend } from "./storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
-import { loginToServer } from "../utils/loginToServer";
-import { setJWTToken } from "../utils/cookie";
+import { loginToServer } from "@/utils/loginToServer";
+import { setJWTToken } from "@/utils/cookie";
 
 export default {
     setup() {

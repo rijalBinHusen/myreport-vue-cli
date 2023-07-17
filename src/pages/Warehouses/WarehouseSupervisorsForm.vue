@@ -25,8 +25,8 @@
 <script>
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import { updateSupervisors, warehouseId } from '@/composable/components/Warehouses'
-import { lists } from '@/composable/components/Supervisors'
+import { updateSupervisors, warehouseId } from '@/pages/Warehouses/Warehouses'
+import { lists } from '@/pages/Supervisors/Supervisors'
 import { ref, onBeforeMount } from "vue"
 import { useStore } from "vuex"
 

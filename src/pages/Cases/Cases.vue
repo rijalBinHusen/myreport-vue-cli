@@ -39,8 +39,8 @@
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
-import readExcel from "@/composable/readExcel"
-import { getCases, listsCase, addCaseImport, removeCase } from '@/composable/components/Cases'
+import readExcel from "@/utils/readExcel"
+import { getCases, listsCase, addCaseImport, removeCase } from './Cases'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 
 export default {

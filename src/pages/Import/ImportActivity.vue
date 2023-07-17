@@ -26,7 +26,7 @@
 import { ref } from '@vue/reactivity'
 import { useStore } from "vuex"
 import Button from "@/components/elements/Button.vue"
-import { startImport } from '@/composable/components/ImportActivity'
+import { startImport } from './ImportActivity'
 
 export default {
     components: { Button },

@@ -35,7 +35,7 @@
 <script>
 import Button from '@/components/elements/Button.vue'
 import Datatable from "@/components/parts/Datatable.vue"
-import { unFinished, deleteData } from "@/composable/components/followUp"
+import { unFinished, deleteData } from "./followUp"
 import { onMounted, ref } from '@vue/runtime-core'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'

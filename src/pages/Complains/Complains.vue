@@ -51,9 +51,9 @@
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
-import readExcel from "@/composable/readExcel"
+import readExcel from "@/utils/readExcel"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { removeComplain, listsComplain, getComplains } from '@/composable/components/Complains'
+import { removeComplain, listsComplain, getComplains } from './Complains'
 import { loader } from "@/composable/piece/vuexModalLauncher"
 
 export default {

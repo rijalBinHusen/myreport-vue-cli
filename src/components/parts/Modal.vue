@@ -25,26 +25,26 @@
 
 <script>
 
-import DocumentsGroupForm from "@/form/DocumentsGroupForm.vue"
-import DocumentCheckForm from "@/form/DocumentCheckForm.vue"
+import DocumentsGroupForm from "@/pages/Documents/DocumentsGroupForm.vue"
+import DocumentCheckForm from "@/pages/Documents/DocumentCheckForm.vue"
 import Loader from "./Loader/Loader.vue"
-import ImporterForm from "@/form/ImportDataForm.vue"
-import BaseReportFile from "@/pages/BaseReportFile/BaseReportFileForm.vue"
-import BaseClockForm from "../../modular/Base/BaseClockForm.vue";
-import BaseProblemForm from "../../modular/Base/BaseProblemForm.vue";
-import BaseStockForm from "../../modular/Base/BaseStockForm.vue"
+import ImporterForm from "@/pages/Import/ImportDataForm.vue"
+import BaseReportFile from "@/pages/BaseReport/BaseReportFileForm.vue"
+import BaseClockForm from "@/pages/Base/BaseClockForm.vue";
+import BaseProblemForm from "@/pages/Base/BaseProblemForm.vue";
+import BaseStockForm from "@/pages/Base/BaseStockForm.vue"
 import PeriodePicker from "../parts/PeriodePicker.vue"
-import WarehouseSupervisorsForm from "@/form/WarehouseSupervisorsForm.vue"
-import FinishedForm from "@/form/FinishedForm.vue"
-import CaseInsertForm from "@/form/CaseInsertForm.vue"
-import ComplainImportForm from "@/form/ComplainImportForm.vue"
-import ComplainInsertForm from "@/form/ComplainInsertForm.vue"
+import WarehouseSupervisorsForm from "@/pages/Warehouses/WarehouseSupervisorsForm.vue"
+import FinishedForm from "@/pages/Base/BaseFinishForm.vue"
+import CaseInsertForm from "@/pages/Cases/CaseInsertForm.vue"
+import ComplainImportForm from "@/pages/Complains/ComplainImportForm.vue"
+import ComplainInsertForm from "@/pages/Complains/ComplainInsertForm.vue"
 import Confirm from "./Confirm.vue"
-import FollowUpFinished from "@/form/FollowUpFinishedForm.vue"
-import FieldProblemForm from "@/form/FieldProblemForm.vue"
-import DocumentSingleForm from "@/form/DocumentSingleForm.vue"
+import FollowUpFinished from "@/pages/Followup/FollowUpFinishedForm.vue"
+import FieldProblemForm from "@/pages/FieldProblems/FieldProblemForm.vue"
+import DocumentSingleForm from "@/pages/Documents/DocumentSingleForm.vue"
 import WarehouseAndItem from "./WarehouseAndItem.vue"
-import WarehouseHeadForm from "@/form/WarehouseHeadForm.vue"
+import WarehouseHeadForm from "@/pages/Warehouses/WarehouseHeadForm.vue"
 
 export default {
   name: "Modal",

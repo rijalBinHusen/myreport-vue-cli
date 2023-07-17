@@ -17,7 +17,7 @@
 import { onMounted, ref } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 import Button from '@/components/elements/Button.vue'
-import { markAsFinished } from "@/composable/components/followUp"
+import { markAsFinished } from "./followUp"
 
 export default {
     components: { Button },

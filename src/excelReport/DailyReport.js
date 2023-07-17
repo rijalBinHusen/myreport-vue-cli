@@ -1,9 +1,13 @@
-import func from "../myfunction";
+// import func from "../myfunction";
+import { waitFor } from "@/utils/piece/waiting"
 import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
 import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
+import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile"
+import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
 
 export default async function (baseReport) {
+  const { getBaseStockByParentByShift } = baseReportStock();
   // console.log(baseReport)
   const { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2, headName } = baseReport
   const details = { totalDo, totalKendaraan, totalWaktu, totalProductNotFIFO, shift, spvName, warehouseName, periode2, headName }
@@ -11,21 +15,15 @@ export default async function (baseReport) {
   let fieldProblem = await GetFieldProblemByPeriodeBySpv(baseReport?.periode, baseReport?.name)
 
   let fileName = `${baseReport?.periode2} ${baseReport?.warehouseName} Shift ${baseReport.shift} ${baseReport.spvName} `;
-  // tunggu
-  let tunggu = [];
+  // waitingLists
+  let waitingLists = [];
   let result = [];
   //   lists base report stock
-  let reportData = await func.findData({
-    store: "BaseReportStock",
-    criteria: {
-      parent: baseReport.baseReportFile,
-      shift: Number(baseReport.shift),
-    },
-  });
+  let reportData = await getBaseStockByParentByShift(baseReport?.baseReportFile, baseReport?.shift);
 
   for (let i = 0; i < reportData.length; i++) {
     //  add new promise
-    tunggu.push(func.tunggu(1000));
+    waitingLists.push(waitFor(1000));
     //   item name
     let item = await func.findData({
       store: "Baseitem",
@@ -52,7 +50,7 @@ export default async function (baseReport) {
     );
   }
 
-  await Promise.all(tunggu);
+  await Promise.all(waitingLists);
   exportToXlsSeperateSheet(
     {
       result: [{ id: "Bismillah" }],

@@ -19,7 +19,7 @@
 
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import { updateDocument } from '@/composable/components/DocumentsPeriod'
+import { updateDocument } from '@/pages/Documents/DocumentsPeriod'
 
 export default {
     methods: {

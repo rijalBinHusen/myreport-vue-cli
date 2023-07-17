@@ -76,15 +76,15 @@
 <script>
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
-import { BaseReportFile } from "@/pages/BaseReportFile/BaseReportFile";
+import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
-import { selectedPeriode, selectedWarehouse, shift, sheet } from '@/composable/components/BaseReportPanel'
+import { selectedPeriode, selectedWarehouse, shift, sheet } from './BaseReportPanel'
 import { dateMonth } from '@/composable/piece/dateFormat';
-import { getWarehouseId } from '@/composable/components/Warehouses';
-import { getProblemFromDB } from '@/composable/components/Problem'
+import { getWarehouseId } from '@/pages/Warehouses/Warehouses';
+import { getProblemFromDB } from '@/pages/Problems/Problem'
 
 
 export default {

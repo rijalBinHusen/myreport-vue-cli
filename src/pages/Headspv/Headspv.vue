@@ -66,7 +66,7 @@ import { ref, onMounted } from "vue";
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import Table from "@/components/elements/Table.vue"
-import { updateHeadspv, addHeadspv, getHeadspvId, lists } from '@/composable/components/Headspv'
+import { updateHeadspv, addHeadspv, getHeadspvId, lists } from './Headspv'
 
 export default {
   components: {

@@ -10,35 +10,35 @@
 </template>
 
 <script>
-	import Documents from "./Documents.vue";
 	import Navbar from "@/components/parts/Navbar.vue";
-	import ImportData from "@/pages/ImportData.vue"
-	import ReportExport from "@/pages/ReportExport.vue"
 	import Modal from "@/components/parts/Modal.vue"
-	import Supervisors from "@/pages/Supervisors.vue"
-	import Backup from "@/pages/Backup.vue"
-	import BaseReportFile from "./BaseReportFile/BaseReportFile.vue"
-	import Base from "@/modular/Base/Base.vue"
-	import Warehouses from "@/pages/Warehouses.vue"
-	import AGGrid from "@/components/parts/AGGrid.vue"
-	import Headspv from "@/pages/Headspv.vue"
+	import Documents from "./Documents/Documents.vue";
+	import ImportData from "@/pages/Import/ImportData.vue"
+	import ReportExport from "@/pages/ReportExport.vue"
+	import Supervisors from "./Supervisors/Supervisors.vue"
+	import Backup from "@/pages/Backup/Backup.vue"
+	import BaseReportFile from "./BaseReport/BaseReportFile.vue"
+	import Base from "@/pages/Base/Base.vue"
+	import Warehouses from "@/pages/Warehouses/Warehouses.vue"
+	import AGGrid from "./Base/AGGrid.vue"
+	import Headspv from "@/pages/Headspv/Headspv.vue"
 	import BaseItem from "@/pages/BaseItem/BaseItem.vue"
-	import ProblemReport from "./ProblemReport.vue"
-	import Finished from "./Finished.vue"
+	import ProblemReport from "./Problems/ProblemReport.vue"
+	import Finished from "./FinishedDocument/Finished.vue"
 	import EditDocument from "./EditDocument.vue"
-	import Cases from "./Cases.vue"
-	import Complains from "./Complains.vue"
-	import FollowUp from "./FollowUp.vue"
-	import Login from "./Login.vue"
-	import Listsbackup from './Listsbackup.vue'
+	import Cases from "./Cases/Cases.vue"
+	import Complains from "./Complains/Complains.vue"
+	import FollowUp from "./Followup/FollowUp.vue"
+	import Login from "./Login/Login.vue"
+	import Listsbackup from './Backup/Listsbackup.vue'
 	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
-	import userSignOut from "@/composable/UserSignOut"
-	import FieldProblemVue from '@/pages/FieldProblem.vue';
-	import { getWarehouses } from "@/composable/components/Warehouses";
-	import { getSupervisors } from "@/composable/components/Supervisors";
-	import { getHeadspv } from "@/composable/components/Headspv";
-	import ImportActivityUser from './ImportActivity.vue'
+	import userSignOut from "./Login/UserSignOut"
+	import FieldProblemVue from '@/pages/FieldProblems/FieldProblem.vue';
+	import { getWarehouses } from "./Warehouses/Warehouses";
+	import { getSupervisors } from "./Supervisors/Supervisors";
+	import { getHeadspv } from "./Headspv/Headspv";
+	import ImportActivityUser from './Import/ImportActivity.vue'
 	
 
 	export default {

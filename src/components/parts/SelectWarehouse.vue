@@ -17,7 +17,7 @@
 <script>
 import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
-import { lists } from '@/composable/components/Warehouses';
+import { lists } from '@/pages/Warehouses/Warehouses';
 
 export default {
     emit: ['selectedWarehouse'],

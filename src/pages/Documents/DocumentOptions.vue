@@ -12,7 +12,7 @@
 
 <script>
     import { computed } from "vue";
-import Dropdown from "../elements/Dropdown.vue";
+    import Dropdown from "@/components/elements/Dropdown.vue";
     export default {
         components: { Dropdown },
         emits: ['clicked'],

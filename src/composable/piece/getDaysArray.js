@@ -1,4 +1,4 @@
-import func from "../../myfunction"
+import { ymdTime } from "./dateFormat"
 
 const getDaysArray = (start, end) => {
     let arr = [];
@@ -7,7 +7,7 @@ const getDaysArray = (start, end) => {
       dt <= new Date(end);
       dt.setDate(dt.getDate() + 1)
     ) {
-      arr.push(func.dateFormat(["ymdTime", dt]));
+      arr.push(ymdTime(dt));
     }
     return arr;
 }

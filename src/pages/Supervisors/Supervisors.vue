@@ -74,8 +74,8 @@
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import DatatableVue from "@/components/parts/Datatable.vue";
-import { warehouseNameBySpv } from '@/composable/components/Warehouses';
-import { updateSupervisor, addSupervisor, getSupervisorId, lists } from '@/composable/components/Supervisors'
+import { warehouseNameBySpv } from '@/pages/Warehouses/Warehouses';
+import { updateSupervisor, addSupervisor, getSupervisorId, lists } from './Supervisors'
 import { ref, onMounted } from 'vue';
 
 export default {

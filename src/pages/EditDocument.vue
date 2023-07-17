@@ -41,7 +41,7 @@
 <script>
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
-import { getDocuments, listsOfDocuments, removeDocument } from '@/composable/components/DocumentsPeriod'
+import { getDocuments, listsOfDocuments, removeDocument } from './Documents/DocumentsPeriod'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'

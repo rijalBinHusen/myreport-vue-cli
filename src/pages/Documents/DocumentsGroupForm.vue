@@ -44,13 +44,13 @@ import Button from "@/components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
 import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
-import { updateSupervisor, supervisorsEnabled } from "@/composable/components/Supervisors"
-import { updateHeadspv, headspvEnabled, headspvByShift } from "@/composable/components/Headspv"
-import { lists as listsWarehouse } from '@/composable/components/Warehouses'
-import { getLastDate, addData as addNewDocument } from '@/composable/components/DocumentsPeriod'
+import { updateSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
+import { updateHeadspv, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
+import { lists as listsWarehouse } from '@/pages/Warehouses/Warehouses'
+import { getLastDate, addData as addNewDocument } from '@/pages/Documents/DocumentsPeriod'
 import { useStore } from "vuex"
 import { ymdTime } from "@/composable/piece/dateFormat"
-import { BaseReportFile } from '@/pages/BaseReportFile/BaseReportFile'
+import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
 
 export default {
     components: {

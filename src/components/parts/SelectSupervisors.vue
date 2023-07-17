@@ -17,7 +17,7 @@
 <script>
 import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
-import { supervisorsEnabled, lists as supervisorLists } from '@/composable/components/Supervisors'
+import { supervisorsEnabled, lists as supervisorLists } from '@/pages/Supervisors/Supervisors'
 export default {
     emit: ['selectedSpv'],
     props: ['inSelectSpv', 'disabled', 'spvEnabled'],

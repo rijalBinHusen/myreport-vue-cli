@@ -1,11 +1,11 @@
-import func from "@/myfunction";
+import { time } from "./dateFormat"
 
 export const totalTime = (start, finish) => {
     if(!start || !finish || start?.length < 5 || finish?.length < 5) { return 0 }
     // start
-    let startTime = func.dateFormat(['time', seperateAsClock(start)])
+    let startTime = time(seperateAsClock(start))
     //finish
-    let finishTime = func.dateFormat(['time', seperateAsClock(finish)])
+    let finishTime = time(seperateAsClock(finish))
     // total time
     let total = finishTime < startTime ? finishTime + 86400000 - startTime : finishTime - startTime;
     // jaddikan menit, masukan total waktu

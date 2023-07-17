@@ -96,23 +96,23 @@ import Button from "../../components/elements/Button.vue"
 import Datatable from "../../components/parts/Datatable.vue"
 import PeriodePicker from "../../components/parts/PeriodePicker.vue"
 import Select from "../../components/elements/Select.vue"
-import AGGrid from "../../components/parts/AGGrid.vue"
+import AGGrid from "./AGGrid.vue"
 import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
-import { addData } from "../../composable/components/followUp"
+import { addData } from "@/pages/Followup/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, removeClock, appendData as appendClockRecord } from '@/composable/components/BaseReportClock'
-import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock, removeStock } from '@/composable/components/BaseReportStock'
+import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, removeClock, appendData as appendClockRecord } from '@/pages/BaseReport/BaseReportClock'
+import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock, removeStock } from '@/pages/BaseReport/BaseReportStock'
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/composable/components/DocumentsPeriod'
-import { BaseReportFile } from '@/pages/BaseReportFile/BaseReportFile'
-import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from '@/composable/components/BaseReportPanel'
-import { getWarehouseId } from "@/composable/components/Warehouses"
-import { getSupervisorId } from "@/composable/components/Supervisors"
+import { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/pages/Documents/DocumentsPeriod'
+import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
+import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from './BaseReportPanel'
+import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
+import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import AGDateEditorVue from "@/components/parts/AGDateEditor.vue"
+import AGDateEditorVue from "./AGDateEditor.vue"
 import { loaderMessage } from "../../components/parts/Loader/state";
 
 export default {

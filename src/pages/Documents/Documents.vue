@@ -162,7 +162,7 @@ import Datatable from "@/components/parts/Datatable.vue"
 import Dropdown from "@/components/elements/Dropdown.vue"
 import { ref, onBeforeMount, watch, computed } from "vue"
 import { useStore } from "vuex"
-import { lists as listsHeadSPV } from '@/composable/components/Headspv'
+import { lists as listsHeadSPV } from '@/pages//Headspv/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { 
     getUncollectedDocuments, 
@@ -181,10 +181,10 @@ import {
     getDocuments,
     shareDocument,
     findDocument
-} from "@/composable/components/DocumentsPeriod"
+} from "./DocumentsPeriod"
 
-import { lists as listsSupervisor } from '@/composable/components/Supervisors'
-import DocumentOptions from "@/components/parts/DocumentOptions.vue"
+import { lists as listsSupervisor } from '@/pages/Supervisors/Supervisors'
+import DocumentOptions from "./DocumentOptions.vue"
 import { dateMonth, dayPlusOrMinus, full } from "@/composable/piece/dateFormat"
 import DailyReport from "@/excelReport/DailyReport"
 import DailyReportGroup from "@/excelReport/DailyReportGroup"

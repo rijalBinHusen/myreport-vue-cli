@@ -17,7 +17,7 @@
 <script>
 import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
-import { lists } from '@/composable/components/Headspv';
+import { lists } from '@/pages/Headspv/Headspv';
 
 export default {
     emit: ['selectedHead'],

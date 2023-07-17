@@ -32,7 +32,6 @@
 import Checkbox from "@/components/elements/Checkbox.vue"
 import Button from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
-import { deleteCollection, reWriteStoreWithKey, write, tunggu } from '@/myfunction'
 import { onBeforeMount } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
@@ -60,50 +59,50 @@ export default {
             }
         }
 
-        const impor = async () => {
-            // Bring up the loader
-            store.commit("Modal/active", {judul: "", form: "Loader"});
+        // const impor = async () => {
+        //     // Bring up the loader
+        //     store.commit("Modal/active", {judul: "", form: "Loader"});
 
-            for(let store of importListsPicked.value) {
-                //delete the exists store
-                await deleteCollection(store)
-                // wait for 3 second to make sure that the proces finished
-                await tunggu(600)
+        //     for(let store of importListsPicked.value) {
+        //         //delete the exists store
+        //         await deleteCollection(store)
+        //         // wait for 3 second to make sure that the proces finished
+        //         await tunggu(600)
 
-                let doc = []
+        //         let doc = []
 
-                for( let datumToImport of dataToImport.value[store]) {
+        //         for( let datumToImport of dataToImport.value[store]) {
                     
-                    if(mode.value === 'write') {
-                        doc.push(JSON.parse(JSON.stringify({ ...datumToImport.data, _key: datumToImport.key })))
-                        //if the end of record
-                        if( doc.length === dataToImport.value[store].length) {
-                            //push to localbase
-                            await reWriteStoreWithKey(store, doc)
-                        }
-                    } 
+        //             if(mode.value === 'write') {
+        //                 doc.push(JSON.parse(JSON.stringify({ ...datumToImport.data, _key: datumToImport.key })))
+        //                 //if the end of record
+        //                 if( doc.length === dataToImport.value[store].length) {
+        //                     //push to localbase
+        //                     await reWriteStoreWithKey(store, doc)
+        //                 }
+        //             } 
                     
-                    else {
-                        let singleData = JSON.parse(JSON.stringify(datumToImport))
-                        await write(store, singleData.key, singleData.data)
-                    }   
+        //             else {
+        //                 let singleData = JSON.parse(JSON.stringify(datumToImport))
+        //                 await write(store, singleData.key, singleData.data)
+        //             }   
                     
-                }
-                //if the end of the importLists, close the loader
-                if(store == importListsPicked.value.slice(-1).toString()) {
-                    let res = await subscribeMutation(
-                                    '', 
-                                    'Confirm', 
-                                    { pesan: 'Proses import sudah selesai mohon pastikan tidak ada error di console'}, 
-                                    'Modal/tunnelMessage'
-                                )
-                    if(res) {
-                        // await tunggu(1500)
-                        window.location.reload()
-                    }
-                }
-            }
-        }
+        //         }
+        //         //if the end of the importLists, close the loader
+        //         if(store == importListsPicked.value.slice(-1).toString()) {
+        //             let res = await subscribeMutation(
+        //                             '', 
+        //                             'Confirm', 
+        //                             { pesan: 'Proses import sudah selesai mohon pastikan tidak ada error di console'}, 
+        //                             'Modal/tunnelMessage'
+        //                         )
+        //             if(res) {
+        //                 // await tunggu(1500)
+        //                 window.location.reload()
+        //             }
+        //         }
+        //     }
+        // }
             
         onBeforeMount(() => {
             dataToImport.value = JSON.parse(JSON.stringify(store.getters['Modal/obj']?.obj))

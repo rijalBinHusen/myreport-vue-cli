@@ -42,7 +42,7 @@
 import ButtonVue from '@/components/elements/Button.vue'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
-import { listsFieldProblem, deleteData } from '@/composable/components/FieldProblem'
+import { listsFieldProblem, deleteData } from './FieldProblem'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'

@@ -57,17 +57,17 @@
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
-import { isGenerateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb as getDocument } from '@/composable/components/DocumentsPeriod'
-import { selectedPeriode, selectedWarehouse, shift } from "@/composable/components/BaseReportPanel"
+import { isGenerateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb as getDocument } from '@/pages/Documents/DocumentsPeriod'
+import { selectedPeriode, selectedWarehouse, shift } from "./BaseReportPanel"
 import { onMounted, onUnmounted, ref, watch } from "vue"
-import { getHeadspvId } from "@/composable/components/Headspv"
-import { getSupervisorId } from "@/composable/components/Supervisors"
+import { getHeadspvId } from "@/pages/Headspv/Headspv"
+import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { getWarehouseId } from "@/composable/components/Warehouses"
-import { clockDetails } from '@/composable/components/BaseReportClock'
-import { stockDetails } from '@/composable/components/BaseReportStock'
+import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
+import { clockDetails } from '@/pages/BaseReport/BaseReportClock'
+import { stockDetails } from '@/pages/BaseReport/BaseReportStock'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { problemActiveBySpvAndPeriode, updateProblem } from '@/composable/components/Problem'
+import { problemActiveBySpvAndPeriode, updateProblem } from '@/pages/Problems/Problem'
 
 
 

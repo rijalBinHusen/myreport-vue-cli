@@ -141,17 +141,17 @@
 <script>
 import Input from "@/components/elements/Input.vue"
 import Datepicker from "vue3-datepicker"
-import InputItem from "@/modular/Base/InputItem.vue"
+import InputItem from "@/pages/Base/InputItem.vue"
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import SelectSupervisorsVue from "@/components/parts/SelectSupervisors.vue"
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import SelectShiftVue from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
-import { addProblem, problemId, updateProblem } from '@/composable/components/Problem'
-import { getSupervisorId } from '@/composable/components/Supervisors'
+import { addProblem, problemId, updateProblem } from '@/pages/Problems/Problem'
+import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { ymdTime } from '@/composable/piece/dateFormat'
-import { updateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/composable/components/DocumentsPeriod'
+import { updateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/pages/Documents/DocumentsPeriod'
 
 export default {
     data() {

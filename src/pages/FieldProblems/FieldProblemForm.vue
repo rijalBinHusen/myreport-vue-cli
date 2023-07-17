@@ -96,12 +96,12 @@ import SelectSupervisorsVue from '@/components/parts/SelectSupervisors.vue'
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import InputVue from "@/components/elements/Input.vue"
 import { ref } from '@vue/reactivity'
-import { addData, updateData } from '@/composable/components/FieldProblem'
+import { addData, updateData } from './FieldProblem'
 import { onMounted, watchEffect } from '@vue/runtime-core'
-import { getSupervisorId } from '@/composable/components/Supervisors'
+import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher'
 import { useStore } from 'vuex'
-import { getFieldProblemById } from '@/composable/components/FieldProblem'
+import { getFieldProblemById } from './FieldProblem'
 
 export default {
     setup() {

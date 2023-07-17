@@ -62,7 +62,7 @@ import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
-import Button from "../elements/Button.vue";
+import Button from "@/components/elements/Button.vue";
 
 export default {
   name: "App",
