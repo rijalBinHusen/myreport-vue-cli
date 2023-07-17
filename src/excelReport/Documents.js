@@ -1,5 +1,5 @@
 import getDaysArray from "@/composable/piece/getDaysArray"
-import func from "../myfunction"
+// import func from "../myfunction"
 import exportToXls from "@/utils/exportToXls"
 
 // cari array date

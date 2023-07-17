@@ -1,46 +1,191 @@
-import { findData, update, append, deleteDocument, getData, getDataByKey } from "../../myfunction"
-import getDatesArray from "../../composable/piece/getDaysArray"
-import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '../../composable/piece/dateFormat'
-import { getHeadspvId } from '../Headspv/Headspv'
-import { getSupervisorId } from '../Supervisors/Supervisors'
-import { getWarehouseId, warehouseNameBySpv } from '../Warehouses/Warehouses'
-import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
-let lists = []
+
+
+import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '@/composable/piece/dateFormat'
+import { getHeadspvId } from '@/pages/Headspv/Headspv'
+import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
+import { getWarehouseId, warehouseNameBySpv } from '@/pages/Warehouses/Warehouses'
+import { postData, deleteData, putData } from "@/utils/sendDataToServer";
+import { useIdb } from "@/utils/localforage"
+
+interface Document {
+    id: string
+    baseReportFile: string
+    generateReport: boolean
+    head: string
+    isfinished:boolean
+    name: string
+    parent: string
+    parentDocument: string
+    shift: number
+    warehouse: string
+    approval: number
+    collected: number
+    finished: number
+    itemVariance: number
+    periode: number
+    planOut: number
+    shared: number
+    status: number
+    totalDo: number
+    totalItemKeluar: number
+    totalItemMoving: number
+    totalKendaraan: number
+    totalProductNotFIFO: number
+    totalQTYIn: number
+    totalQTYOut: number
+    totalWaktu: number
+}
+
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+
+type DocumentUpdate = Partial<Document>;
+interface DocumentsMapped extends Document {
+    spvName?: string
+    headName?: string
+    warehouseName?: string
+    periode2?: string
+    collected2?: string
+    approval2?: string
+    finished2?: string
+}
+
+let lists = <DocumentsMapped[]>[]
 const storeName = "document";
 
-// get all documents by periode
-export const getDocuments = async (periode1, periode2) => {
-    lists = []
-    let datesArray = getDatesArray(periode1, periode2)
-    let bunchOfPromise = datesArray
-                            .map((date) => findData({ store: "Document", criteria: { periode: date } }) )
-    let result = await Promise.all(bunchOfPromise)
-    // result.filter((res) => res).fla
-    lists = result.filter((val) => val).flat()
-    return true
-}
 
-export const listsOfDocuments = () => {
-    // await getDocuments()
-    if(!lists.length) { return [] }
-    return documentsMapper(lists)
-}
+export function Documents () {
+    const db = useIdb(storeName);
 
-// update document
-export const updateDocument = async (idDocument, objToUpdate) => {
+    const addData = async (name: string, periode: number, shift: number, head: string, warehouse: string) => {
+        let newRecord = {
+            collected: 0,
+            approval: 0,
+            status: 0,
+            shared: 0,
+            finished: 0,
+            totalDo: 0,
+            totalKendaraan: 0,
+            totalWaktu: 0,
+            baseReportFile: "",
+            isfinished: false,
+            name,
+            periode,
+            shift,
+            head,
+            warehouse,
+            generateReport: false,
+            itemVariance: 0,
+            parent: "",
+            parentDocument: "",
+            planOut: 0,
+            totalItemKeluar: 0,
+            totalItemMoving: 0,
+            totalProductNotFIFO: 0,
+            totalQTYIn: 0,
+            totalQTYOut: 0,
+        }
+        // add data
+        const insertedId = await db.createItem(newRecord);
+
+        if(typeof insertedId !== 'undefined') {
+            const mapIt = await documentsMapper({ id: insertedId, ...newRecord })
+            lists.push(mapIt);
+        }
+        
+    }
+
+    const documentsMapper = async (doc: Document): Promise<DocumentsMapped> => {
+        const spvName = await getSupervisorId(doc.name);
+        const headName = await getHeadspvId(doc.head);
+        const warehouseName = await getWarehouseId(doc.warehouse);
+        const periode2 = dateMonth(doc.periode);
+        const collected2 = dateMonth(doc.collected);
+        const approval2 = dateMonth(doc.approval);
+        const finished2 = dateMonth(doc.finished);
+        
+        return { 
+            ...doc, spvName, 
+            headName, 
+            warehouseName,
+            periode2,
+            collected2,
+            approval2,
+            finished2,
+        }
+    }
+
+    const getDocuments = async (periode1: number, periode2: number) => {
+        lists.length = 0;
+        const getDocs = await db.getItemsGreatEqualLowEqual('periode', periode1, 'periode', periode2);
+
+        if(typeof getDocs !== 'undefined') {
+            for(let doc of getDocs) {
+
+                const mapIt = await documentsMapper({
+                    baseReportFile: doc?.baseReportFile.toString(),
+                    head: doc?.head.toString(),
+                    id: doc?.id.toString(),
+                    name: doc?.name.toString(),
+                    parent: doc?.parent.toString(),
+                    parentDocument: doc?.parentDocument.toString(),
+                    approval: Number(doc?.approval),
+                    collected: Number(doc?.collected),
+                    finished: Number(doc?.finished),
+                    itemVariance: Number(doc?.itemVariance),
+                    periode: Number(doc?.periode),
+                    planOut: Number(doc?.planOut),
+                    shared: Number(doc?.shared),
+                    shift: Number(doc?.shift),
+                    status: Number(doc?.status),
+                    totalDo: Number(doc?.totalDo),
+                    totalItemKeluar: Number(doc?.totalItemKeluar),
+                    totalItemMoving: Number(doc?.totalItemMoving),
+                    totalKendaraan: Number(doc?.totalKendaraan),
+                    totalProductNotFIFO: Number(doc?.totalProductNotFIFO),
+                    totalQTYIn: Number(doc?.totalQTYIn),
+                    totalQTYOut: Number(doc?.totalQTYOut),
+                    totalWaktu: Number(doc?.totalWaktu),
+                    generateReport: Boolean(doc?.generateReport),
+                    isfinished: Boolean(doc?.isfinished),
+                    warehouse: doc?.warehouse.toString(),
+                });
+
+                lists.push(mapIt)
+            }
+        }
+    }
+
+    const updateDocument = async (idDocument: string, objToUpdate: DocumentUpdate) => {
+
+        const isNoValueToUpdate = Object.values(objToUpdate).length > 0;
     
-    lists = lists.map((val) => {
-        return val?.id === idDocument
-            ? { ...val, ...objToUpdate }
-            : val
-    })
+        if(isNoValueToUpdate) return;
+
+        const findIndex = lists.findIndex((rec) => rec?.id == idDocument);
+
+        if(findIndex > -1) {
+            const record = lists[findIndex];
+            delete record.spvName;
+            delete record.headName;
+            delete record.warehouseName;
+            delete record?.periode2;
+            delete record?.collected2;
+            delete record?.approval2;
+            delete record.finished2;
+
+            const updateRecord = { ...record, ...objToUpdate };
+            const mapUpdateRecord = await documentsMapper(updateRecord);
+            lists[findIndex] = mapUpdateRecord
+
+        }
+        
+        await db.updateItem(idDocument, objToUpdate);
+    }
     
-    await update({ 
-        store: 'Document', 
-        criteria: { id: idDocument }, 
-        obj: objToUpdate 
-    })
+    
 }
 // finished document
 export const finishedDocument = async () => {
@@ -57,61 +202,7 @@ export const unFinishedDocument = async () => {
     }
 }
 
-const documentsMapper = async (docs) => {
-    let result = []
-    if(docs) {
-        for (let rec of docs) {
-            let getName = [
-                // find name supervisor
-                getSupervisorId(rec.name),
-                // find name head
-                getHeadspvId(rec.head),
-                // find name warehouse
-                getWarehouseId(rec.warehouse)
-            ]
-            await Promise.all(getName).then((res) => {
-                result.push({ 
-                    ...rec, 
-                    spvName: res[0]?.name, 
-                    headName: res[1]?.name, 
-                    warehouseName: res[2]?.name,
-                    periode2: isNaN(rec.periode) ? rec.periode : dateMonth(rec.periode),
-                    collected2: isNaN(rec.collected) ? rec.collected : dateMonth(rec.collected),
-                    approval2: isNaN(rec.approval) ? rec.approval : dateMonth(rec.approval),
-                    finished2: isNaN(rec.finished) ? rec.finished : dateMonth(rec.finished),
-                })
-            })
-        }
-    }
-    return result
-}
 // append document
-export const addData = async (name, periode, shift, head, warehouse) => {
-    let newRecord = {
-        collected: false,
-        approval: false,
-        status: 0,
-        shared: false,
-        finished: false,
-        totalDo: false,
-        totalKendaraan: false,
-        totalWaktu: false,
-        baseReportFile: false,
-        isfinished: false,
-        name,
-        periode,
-        shift,
-        head,
-        warehouse,
-    }
-    // add data
-    await append({ store: "Document", obj: newRecord })
-        .then((val) => {
-            lists.unshift(val?.data)
-        })
-    return
-}
-
 export const isGenerateDocument = (idDocument, val) => {
     update({
         store: 'Document',

@@ -1,49 +1,59 @@
 // import func from "../myfunction";
 import { waitFor } from "@/utils/piece/waiting"
-import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
+import exportToXlsSeperateSheet from "@/utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
 import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
-import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile"
 import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
+import { baseItem } from "@/pages/BaseItem/Baseitem"
 
 export default async function (baseReport) {
   const { getBaseStockByParentByShift } = baseReportStock();
+  const { getItemBykode } = baseItem();
   // console.log(baseReport)
   const { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2, headName } = baseReport
   const details = { totalDo, totalKendaraan, totalWaktu, totalProductNotFIFO, shift, spvName, warehouseName, periode2, headName }
 
   let fieldProblem = await GetFieldProblemByPeriodeBySpv(baseReport?.periode, baseReport?.name)
 
-  let fileName = `${baseReport?.periode2} ${baseReport?.warehouseName} Shift ${baseReport.shift} ${baseReport.spvName} `;
+  let fileName = `${periode2} ${warehouseName} Shift ${shift} ${spvName} `;
   // waitingLists
   let waitingLists = [];
   let result = [];
   //   lists base report stock
-  let reportData = await getBaseStockByParentByShift(baseReport?.baseReportFile, baseReport?.shift);
+  let stocks = await getBaseStockByParentByShift(baseReport?.baseReportFile, shift);
+  // func.findData({
+  //   store: "BaseReportStock",
+  //   criteria: {
+  //     parent: baseReport.baseReportFile,
+  //     shift: Number(baseReport.shift),
+  //   },
+  // });
 
-  for (let i = 0; i < reportData.length; i++) {
+  for (let stock of stocks) {
     //  add new promise
     waitingLists.push(waitFor(1000));
     //   item name
-    let item = await func.findData({
-      store: "Baseitem",
-      criteria: { kode: reportData[i].item },
-    });
+    let item = await getItemBykode(stock.item);
+
+    // await func.findData({
+    //   store: "Baseitem",
+    //   criteria: { kode: reportData[i].item },
+    // });
     //   problem info
-    let problem = await getProblem(reportData[i].problem);
+    let problem = await getProblem(stock.problem);
     result.push(
       Object.assign(
         {
           row: i + 1,
-          "Nama item": item?.length ? item[0]?.name : "Item tidak ditemukan",
-          "Stock awal": +reportData[i].awal,
-          "Produk masuk": +reportData[i].in,
-          "Tanggal produk masuk": reportData[i].dateIn || "-",
-          "Coret DO": reportData[i].planOut || 0,
-          "Produk keluar": +reportData[i].out,
-          "Tanggal produk keluar": reportData[i].dateOut || "-",
-          "Real stock": +reportData[i].real,
-          "Tanggal produk akhir": reportData[i].dateEnd || "-",
+          "Nama item": item?.name,
+          "Stock awal": +stock.awal,
+          "Produk masuk": +stock.in,
+          "Tanggal produk masuk": stock.dateIn || "-",
+          "Coret DO": stock.planOut || 0,
+          "Produk keluar": +stock.out,
+          "Tanggal produk keluar": stock.dateOut || "-",
+          "Real stock": +stock.real,
+          "Tanggal produk akhir": stock.dateEnd || "-",
         },
         problem
       )
