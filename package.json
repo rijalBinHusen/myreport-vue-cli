@@ -13,7 +13,6 @@
     "ag-grid-vue3": "^27.1.0",
     "core-js": "^3.8.3",
     "firebase": "^9.9.4",
-    "localbase": "^0.7.5",
     "localforage": "^1.10.0",
     "uid": "^2.0.0",
     "vue": "^3.2.13",

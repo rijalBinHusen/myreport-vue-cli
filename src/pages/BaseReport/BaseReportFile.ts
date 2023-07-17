@@ -193,7 +193,7 @@ export async function syncBaseFileToServer () {
     //   clock, fileName, id, imported, periode, stock, warehouse
 
     const warehouseToSend = typeof datum?.warehouse === 'object' 
-                                ? datum?.warehouse?.id
+                                ? "false"
                                 : datum?.warehouse;
 
       let dataToSend = {
