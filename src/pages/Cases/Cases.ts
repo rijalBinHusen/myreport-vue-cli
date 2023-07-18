@@ -120,7 +120,7 @@ export function Cases() {
   
   async function getCases() {
 
-    const getData = await db.getItemsLimitDesc(200);
+    const getData = await db.getItemsLimitDesc<Case&CaseImport>(200);
 
     if(getData) {
 
@@ -129,35 +129,35 @@ export function Cases() {
         if(datum?.import) {
 
           listsCaseImport.push({
-            bagian: datum?.bagian.toString(),
-            divisi: datum?.divisi.toString(),
-            fokus: datum?.fokus.toString(),
-            id: datum?.id.toString(),
-            import: Boolean(datum?.import),
-            inserted: Boolean(datum?.inserted),
-            kabag: datum?.kabag.toString(),
-            karu: datum?.karu.toString(),
-            keterangan1: datum?.keterangan1.toString(),
-            keterangan2: datum?.keterangan2.toString(),
-            periode: datum?.periode.toString(),
-            temuan: datum?.temuan.toString(),
+            bagian: datum?.bagian,
+            divisi: datum?.divisi,
+            fokus: datum?.fokus,
+            id: datum?.id,
+            import: datum?.import,
+            inserted: datum?.inserted,
+            kabag: datum?.kabag,
+            karu: datum?.karu,
+            keterangan1: datum?.keterangan1,
+            keterangan2: datum?.keterangan2,
+            periode: datum?.periode,
+            temuan: datum?.temuan,
           });
 
         } else {
           
           const interpretIt = await interpretCaseRecord({
             dl: Number(datum?.dl),
-            head: datum?.head.toString(),
-            id: datum?.id.toString(),
+            head: datum?.head,
+            id: datum?.id,
             insert: Boolean(datum?.insert),
-            masalah: datum?.masalah.toString(),
-            name: datum?.name.toString(),
-            parent: datum?.parent.toString(),
+            masalah: datum?.masalah,
+            name: datum?.name,
+            parent: datum?.parent,
             periode: Number(datum?.periode),
-            pic: datum?.pic.toString(),
-            solusi: datum?.solusi.toString(),
+            pic: datum?.pic,
+            solusi: datum?.solusi,
             status: Boolean(datum?.status),
-            sumberMasalah: datum?.sumberMasalah.toString()
+            sumberMasalah: datum?.sumberMasalah
           });
 
           lists.push(interpretIt);
@@ -183,14 +183,16 @@ export function Cases() {
 
   }
   
-  async function getCaseById(idCase: string): Promise<Case> {
+  async function getCaseById(idCase: string): Promise<Case|undefined> {
     const findIndex = lists.findIndex((rec) => rec.id == idCase);
 
     if(findIndex > -1) {
       return lists[findIndex];
     }
 
-    let getRecord = await db.getItem(idCase);
+    let getRecord = await db.getItem<Case>(idCase);
+
+    if(getRecord === null) return;
 
     if(getRecord?.insert) {
       getRecord = await interpretCaseRecord(getRecord);
@@ -200,21 +202,24 @@ export function Cases() {
     return getRecord;
   } 
   
-  async function getCaseImportById(idCase: string): Promise<CaseImport> {
+  async function getCaseImportById(idCase: string): Promise<CaseImport|undefined> {
     const findIndex = listsCaseImport.findIndex((rec) => rec.id == idCase);
 
     if(findIndex > -1) {
       return listsCaseImport[findIndex];
     }
 
-    let getRecord = await db.getItem(idCase);
+    let getRecord = await db.getItem<CaseImport>(idCase);
 
-    if(getRecord?.insert) {
-      getRecord = await interpretCaseRecord(getRecord);
+    if(getRecord === null) return;
+
+    if(getRecord.import) {
+
+      listsCaseImport.push(getRecord);
+      return getRecord;
+      
     }
 
-    lists.push(getRecord);
-    return getRecord;
   } 
   
   async function updateCase(idCase: string, obj: CaseUpdate) {
@@ -276,11 +281,12 @@ export function Cases() {
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+
 export async function syncCasesToServer () {
 
   const db = useIdb(storeName);
 
-  let allData = await db.getItems();
+  let allData = await db.getItems<Case&CaseImport>();
   // getData({ store: storeName, withKey: true })
 
   for(let [index, datum] of allData.entries()) {
@@ -361,7 +367,7 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 
   const db = useIdb(storeName);
 
-  let record = await db.getItem(idRecord);
+  let record = await db.getItem<Case&CaseImport>(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;

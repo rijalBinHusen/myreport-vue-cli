@@ -386,8 +386,6 @@ export const useIdb = (storeName: string) => {
     return sortItems.slice(0, limit)
   };
 
-  
-
   const getItemsByThreeKeyValue = async <T>(
     key1Search: string|number,
     value1Search: string|number,
