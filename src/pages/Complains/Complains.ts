@@ -177,7 +177,7 @@ export function Complains () {
   }
 
   async function getComplains() {
-    const getData = await db.getItemsLimitDesc(200);
+    const getData = await db.getItemsLimitDesc<Complain&ComplainImport>(200);
 
     if(typeof getData !== 'undefined') {
       for(let datum of getData) {
@@ -233,38 +233,29 @@ export function Complains () {
     }
   }
   
-  async function getComplainById(id: string): Promise<Complain> {
+  async function getComplainById(id: string): Promise<Complain|undefined|ComplainImport> {
     const findIndex = lists.findIndex((rec) => rec.id == id);
 
     if(findIndex > -1) {
       return lists[findIndex];
     }
 
-    let getRecord = await db.getItem(id);
+    let getRecord = await db.getItem<Complain&ComplainImport>(id);
+
+    if(getRecord ===null) return;
 
     if(getRecord?.insert) {
-      getRecord = await interpretComplain(getRecord);
+      const rec = await interpretComplain(getRecord);
+      lists.push(rec);
+      return rec
+    } 
+    
+    else if(getRecord?.import) {
+      const rec = interpretComplainImport(getRecord);
+      listsComplainImport.push(rec);
+      return rec
     }
 
-    lists.push(getRecord);
-    return getRecord;
-  }
-  
-  async function getComplainImportById(id: string): Promise<ComplainImport> {
-    const findIndex = listsComplainImport.findIndex((rec) => rec.id == id);
-
-    if(findIndex > -1) {
-      return listsComplainImport[findIndex];
-    }
-
-    let getRecord = await db.getItem(id);
-
-    if(getRecord?.insert) {
-      getRecord = interpretComplainImport(getRecord);
-    }
-
-    lists.push(getRecord);
-    return getRecord;
   }
   
   async function updateComplain(idCase: string, obj: ComplainUpdate) {
@@ -317,7 +308,6 @@ export function Complains () {
     addComplainImport,
     getComplains,
     getComplainById,
-    getComplainImportById,
     updateComplain,
     updateComplainImport,
     removeComplain,
@@ -331,7 +321,7 @@ import { useIdb } from "@/utils/localforage";
 export async function syncComplainsToServer () {
   const db = useIdb(storeName);
 
-  const allData = await db.getItems();
+  const allData = await db.getItems<Complain&ComplainImport>();
 
   for(let [index, datum] of allData.entries()) {
 
@@ -419,7 +409,7 @@ export async function syncComplainRecordToServer (idRecord: string, mode: string
 
   const db = useIdb(storeName);
 
-  const record = await db.getItem(idRecord);
+  const record = await db.getItem<Complain&ComplainImport>(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;
