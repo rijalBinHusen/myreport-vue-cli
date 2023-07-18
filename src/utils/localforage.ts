@@ -81,7 +81,7 @@ export const useIdb = (storeName: string) => {
 
   }
 
-  const createItem = async <T>(yourObject: T): Promise<string|undefined> => {
+  const createItem = async <T>(yourObject: T, isDontRecordActivity?: boolean): Promise<string|undefined> => {
     // get summary
     const sum = await getSummary();
     // generateID
@@ -94,7 +94,9 @@ export const useIdb = (storeName: string) => {
       // update summary
       updateSummary(nextId);
       // add activity
-      addActivity('create', nextId)
+      if(!isDontRecordActivity) {
+        addActivity('create', nextId)
+      }
       return nextId;
 
     } catch (err) {

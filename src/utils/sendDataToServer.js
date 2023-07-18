@@ -1,5 +1,5 @@
 import { getJWTToken } from "./cookie";
-import { appendWoutAddActivity } from "../myfunction"
+import { useIdb } from "./localforage";
 
 const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "http://localhost/api-prod/myreport/";
 const timeOutRequest = 5000;
@@ -9,10 +9,8 @@ async function errorSyncMessage (endpoint, operation, dataToSend, errorMessage) 
   const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
   const utcPlus7 = new Date(now.getTime() + utcOffset);
 
-  return appendWoutAddActivity({
-    store: "errorsync",
-    obj: { time: utcPlus7.toISOString(), endpoint, operation, dataToSend, errorMessage }
-  });
+  const db = useIdb("errorsync");
+  db.createItem({ time: utcPlus7.toISOString(), endpoint, operation, dataToSend, errorMessage }, true)
 
 }
 
