@@ -122,7 +122,7 @@ export function baseClock() {
     let findRecFirst = lists.findIndex((rec) => rec.parent == parent && rec.shift == shift);
 
     if (findRecFirst < 0) {
-      const getData= await db.getItemsByTwoKeyValue('parent', parent, 'shift', shift);
+      const getData= await db.getItemsByTwoKeyValue<BaseClock>('parent', parent, 'shift', shift);
 
       if(getData == undefined) {
         await appendData(parent, shift, 0, '12:00', '12:00', '01:00', 0);
@@ -211,12 +211,12 @@ export function baseClock() {
 export async function syncClockToServer () {
   let db = useIdb(storeName);
 
-  let allData = await db.getItems();
+  let allData = await db.getItems<BaseClock>();
 
   for(let [index, datum] of allData.entries()) {
 
     let dataToSend = {
-      "id": datum?.key,
+      "id": datum?.id,
       "parent": datum?.parent,
       "shift": datum?.shift || 1,
       "no_do": datum?.noDo || 1,
@@ -251,7 +251,7 @@ export async function syncClockRecordToServer (idRecord: string, mode: string) {
     return;
   }
 
-  let record = await db.getItem(idRecord);
+  let record = await db.getItem<BaseClock>(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;

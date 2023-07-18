@@ -103,7 +103,8 @@ export function BaseReportFile () {
             return lists.value[findIndex];
         }
 
-        const getRecord = await db.getItem(id);
+        const getRecord = await db.getItem<BaseReportFileInterface>(id);
+        if(getRecord === null) return;
         const mapRecord = await recordMapper(getRecord);
 
         lists.value.push(mapRecord);
@@ -187,7 +188,7 @@ import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncBaseFileToServer () {
 
     const db = useIdb(storeName);
-    let allData = await db.getItems();
+    let allData = await db.getItems<BaseReportFileInterface>();
   
     for(let [index, datum] of allData.entries()) {
     //   clock, fileName, id, imported, periode, stock, warehouse
@@ -197,7 +198,7 @@ export async function syncBaseFileToServer () {
                                 : datum?.warehouse;
 
       let dataToSend = {
-        "id": datum?.key,
+        "id": datum?.id,
         "periode": datum?.periode || 0,
         "warehouse_id": warehouseToSend || 0,
         "file_name": datum?.fileName || 0,
@@ -231,7 +232,7 @@ export async function syncBaseFileRecordToServer (idRecord: string, mode: string
         return;
     }
 
-    let record = await db.getItem(idRecord);
+    let record = await db.getItem<BaseReportFileInterface>(idRecord);
 
     if(!record) {
         // dont do anything if record doesn't exist;
@@ -241,7 +242,7 @@ export async function syncBaseFileRecordToServer (idRecord: string, mode: string
     //   clock, fileName, id, imported, periode, stock, warehouse
 
     const warehouseToSend = typeof record?.warehouse === 'object' 
-                                ? record?.warehouse.id
+                                ? "false"
                                 : record?.warehouse;
 
     let dataToSend = {

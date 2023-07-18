@@ -195,7 +195,7 @@ export function baseReportStock () {
     );
 
     if (typeof findRec === 'undefined') {
-      const getRecord = await db.getItemsByTwoKeyValue('parent', parent, 'shift', shift);
+      const getRecord = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
       
       if(getRecord && getRecord.length) {
         findRec = {
@@ -206,7 +206,7 @@ export function baseReportStock () {
           id: getRecord[0]?.id,
           in: getRecord[0]?.in,
           item: getRecord[0]?.item,
-          out: getRecord[0]?.outd,
+          out: getRecord[0]?.out,
           parent: getRecord[0]?.parent,
           parentDocument: getRecord[0]?.parentDocument,
           planOut: getRecord[0]?.planOut,
@@ -235,7 +235,7 @@ export function baseReportStock () {
     let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
     
     if(!result.length) {
-      const retrieveFromDb = await db.getItemsByTwoKeyValue('parent', parent, 'shift', shift);
+      const retrieveFromDb = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
 
       if(typeof retrieveFromDb === 'undefined') return;
       
@@ -346,7 +346,7 @@ export async function syncBaseStockToServer () {
 
   const db = useIdb(storeName)
 
-  let allData = await db.getItems();
+  let allData = await db.getItems<BaseStock>();
 
   for(let [index, datum] of allData.entries()) {
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
@@ -354,7 +354,7 @@ export async function syncBaseStockToServer () {
 //  problem, real, shift
 
     let dataToSend = {
-      "id": datum?.key,
+      "id": datum?.id,
       "parent": datum.parent || 0,
       "shift": datum.shift || 0,
       "item": datum.item || 0,
@@ -393,7 +393,7 @@ export async function syncBaseStockRecordToServer (idRecord: string, mode: strin
 
   const db = useIdb(storeName);
 
-  let record = await db.getItem(idRecord);
+  let record = await db.getItem<BaseStock>(idRecord);
 
   if(!record) {
       // dont do anything if record doesn't exist;
