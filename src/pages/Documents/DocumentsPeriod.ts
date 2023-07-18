@@ -96,7 +96,7 @@ export function Documents () {
     }
 
     const documentsMapper = async (doc: Document): Promise<DocumentsMapped> => {
-        const spvName = await getSupervisorId(doc.name);
+        const spv = await getSupervisorId(doc.name);
         const headName = await getHeadspvId(doc.head);
         const warehouseName = await getWarehouseById(doc.warehouse);
         const periode2 = dateMonth(doc.periode);
@@ -105,7 +105,8 @@ export function Documents () {
         const collected2 = typeof doc.collected === 'number' ? dateMonth(doc.collected) : doc.collected;
         
         return { 
-            ...doc, spvName, 
+            ...doc, 
+            spvName: spv.name, 
             headName, 
             warehouseName: warehouseName.name,
             periode2,

@@ -191,7 +191,7 @@ export const useIdb = (storeName: string) => {
     }
   };
 
-  const getItemsByKeyValue = async <T>(keySearch: string, valueSearch: string|number):Promise<T[]> => {
+  const getItemsByKeyValue = async <T>(keySearch: string, valueSearch: string|number|boolean):Promise<T[]> => {
     let result:T[] = [];
     await store
       .iterate(function (value:any) {
@@ -272,14 +272,14 @@ export const useIdb = (storeName: string) => {
     return result;
   };
 
-  const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async (
+  const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async <T>(
     keySearch: string|number,
     greaterOrEqualThanValue: string|number,
     LowerOrEqualThanValue: string|number
-  ) => {
-    let result:unknownObject[] = [];
-    return store
-      .iterate(function (value:unknownObject) {
+  ):Promise<T[]> => {
+    let result:T[] = [];
+    await store
+      .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -300,6 +300,8 @@ export const useIdb = (storeName: string) => {
         // This code runs if there were any errors
         console.log(err);
       });
+
+      return result;
   };
 
   const getItemsThatValueIncludes = async (yourString: string) => {
