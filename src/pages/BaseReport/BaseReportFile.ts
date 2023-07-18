@@ -1,7 +1,7 @@
 import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
-import { getWarehouseId, lists as warehouseLists } from "../Warehouses/Warehouses";
+import { getWarehouseById, lists as warehouseLists } from "../Warehouses/Warehouses";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 
 interface BaseReportFileInterface {
@@ -58,7 +58,7 @@ export function BaseReportFile () {
 
     async function recordMapper(record: BaseReportFileInterface) {
 
-        const getWarehouse = await getWarehouseId(record?.warehouse);
+        const getWarehouse = await getWarehouseById(record?.warehouse);
         const periode2: string = typeof record.periode === 'string' ? record.periode : dateMonth(record.periode);
 
         return { ...record, warehouseName: getWarehouse?.name, periode2 }
@@ -159,7 +159,7 @@ export function BaseReportFile () {
     }
 
     async function addBaseReportFileManual (periode: number) {
-        for(let warehouse of warehouseLists) {
+        for(let warehouse of warehouseLists.value) {
             await addBaseReportFile( ymdTime(periode), warehouse?.id )
         }
     }

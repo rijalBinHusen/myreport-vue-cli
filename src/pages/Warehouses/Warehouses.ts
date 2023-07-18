@@ -91,7 +91,7 @@ export const getSupervisorShift1ByWarehouse = async (idWarehouse: string) => {
 
     for(let spv of warehouse.supervisors) {
         const getSpv = await getSupervisorId(spv);
-        if(!getSpv.disabled && getSpv.shift == 1) {
+        if(getSpv && !getSpv.disabled && getSpv.shift == 1) {
             return getSpv;
         }
     }

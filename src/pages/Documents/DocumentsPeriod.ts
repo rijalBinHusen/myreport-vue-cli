@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '@/composable/piece/dateFormat'
 import { getHeadspvId } from '@/pages/Headspv/Headspv'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
-import { getWarehouseId, warehouseNameBySpv } from '@/pages/Warehouses/Warehouses'
+import { getWarehouseById, warehouseNameBySpv } from '@/pages/Warehouses/Warehouses'
 import { postData, deleteData, putData } from "@/utils/sendDataToServer";
 import { useIdb } from "@/utils/localforage"
 
@@ -98,7 +98,7 @@ export function Documents () {
     const documentsMapper = async (doc: Document): Promise<DocumentsMapped> => {
         const spvName = await getSupervisorId(doc.name);
         const headName = await getHeadspvId(doc.head);
-        const warehouseName = await getWarehouseId(doc.warehouse);
+        const warehouseName = await getWarehouseById(doc.warehouse);
         const periode2 = dateMonth(doc.periode);
         const finished2 = dateMonth(doc.finished);
         const approval2 = typeof doc.approval === 'number' ? dateMonth(doc.approval) : doc.approval; 
@@ -107,7 +107,7 @@ export function Documents () {
         return { 
             ...doc, spvName, 
             headName, 
-            warehouseName,
+            warehouseName: warehouseName.name,
             periode2,
             collected2,
             approval2,

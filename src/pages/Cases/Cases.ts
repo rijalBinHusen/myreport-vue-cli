@@ -16,6 +16,9 @@ interface Case {
   solusi: string,
   status: boolean,
   sumberMasalah: string,
+}
+
+interface CaseMapped extends Case {
   periode2?: string,
   spvName?: string,
   headName?: string,
@@ -44,7 +47,7 @@ type Partial<T> = {
 type CaseImportUpdate = Partial<CaseImport>;
 type CaseUpdate = Partial<Case>
 
-let lists = <Case[]>[];
+let lists = <CaseMapped[]>[];
 let listsCaseImport = <CaseImport[]>[]
 const storeName = "cases";
 
@@ -169,14 +172,14 @@ export function Cases() {
 
   }
 
-  async function interpretCaseRecord(obj: Case) {
-    const spvName = await getSupervisorId(obj.name);
+  async function interpretCaseRecord(obj: Case): Promise<CaseMapped> {
+    const spv = await getSupervisorId(obj.name);
     const headName = await getHeadspvId(obj.head);
 
     return {
       ...obj,
       periode2: dateMonth(obj.periode),
-      spvName,
+      spvName: spv.name,
       headName,
       insert2: dateMonth(obj?.insert),
     };
