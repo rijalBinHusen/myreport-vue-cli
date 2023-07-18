@@ -1,6 +1,4 @@
-
-
-
+import { ref } from 'vue'
 import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '@/composable/piece/dateFormat'
 import { getHeadspvId } from '@/pages/Headspv/Headspv'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
@@ -19,8 +17,8 @@ interface Document {
     parentDocument: string
     shift: number
     warehouse: string
-    approval: number
-    collected: number
+    approval: number|string
+    collected: number|string
     finished: number
     itemVariance: number
     periode: number
@@ -52,7 +50,7 @@ interface DocumentsMapped extends Document {
     finished2?: string
 }
 
-let lists = <DocumentsMapped[]>[]
+let lists = ref(<DocumentsMapped[]>[])
 const storeName = "document";
 
 
@@ -92,7 +90,7 @@ export function Documents () {
 
         if(typeof insertedId !== 'undefined') {
             const mapIt = await documentsMapper({ id: insertedId, ...newRecord })
-            lists.push(mapIt);
+            lists.value.push(mapIt);
         }
         
     }
@@ -102,9 +100,9 @@ export function Documents () {
         const headName = await getHeadspvId(doc.head);
         const warehouseName = await getWarehouseId(doc.warehouse);
         const periode2 = dateMonth(doc.periode);
-        const collected2 = dateMonth(doc.collected);
-        const approval2 = dateMonth(doc.approval);
         const finished2 = dateMonth(doc.finished);
+        const approval2 = typeof doc.approval === 'number' ? dateMonth(doc.approval) : doc.approval; 
+        const collected2 = typeof doc.collected === 'number' ? dateMonth(doc.collected) : doc.collected;
         
         return { 
             ...doc, spvName, 
@@ -118,42 +116,15 @@ export function Documents () {
     }
 
     const getDocuments = async (periode1: number, periode2: number) => {
-        lists.length = 0;
-        const getDocs = await db.getItemsGreatEqualLowEqual('periode', periode1, 'periode', periode2);
+        lists.value.length = 0;
+        const getDocs = await db.getItemsGreatEqualLowEqual<Document>('periode', periode1, 'periode', periode2);
 
         if(typeof getDocs !== 'undefined') {
             for(let doc of getDocs) {
 
-                const mapIt = await documentsMapper({
-                    baseReportFile: doc?.baseReportFile.toString(),
-                    head: doc?.head.toString(),
-                    id: doc?.id.toString(),
-                    name: doc?.name.toString(),
-                    parent: doc?.parent.toString(),
-                    parentDocument: doc?.parentDocument.toString(),
-                    approval: Number(doc?.approval),
-                    collected: Number(doc?.collected),
-                    finished: Number(doc?.finished),
-                    itemVariance: Number(doc?.itemVariance),
-                    periode: Number(doc?.periode),
-                    planOut: Number(doc?.planOut),
-                    shared: Number(doc?.shared),
-                    shift: Number(doc?.shift),
-                    status: Number(doc?.status),
-                    totalDo: Number(doc?.totalDo),
-                    totalItemKeluar: Number(doc?.totalItemKeluar),
-                    totalItemMoving: Number(doc?.totalItemMoving),
-                    totalKendaraan: Number(doc?.totalKendaraan),
-                    totalProductNotFIFO: Number(doc?.totalProductNotFIFO),
-                    totalQTYIn: Number(doc?.totalQTYIn),
-                    totalQTYOut: Number(doc?.totalQTYOut),
-                    totalWaktu: Number(doc?.totalWaktu),
-                    generateReport: Boolean(doc?.generateReport),
-                    isfinished: Boolean(doc?.isfinished),
-                    warehouse: doc?.warehouse.toString(),
-                });
+                const mapIt = await documentsMapper(doc);
 
-                lists.push(mapIt)
+                lists.value.push(mapIt)
             }
         }
     }
@@ -164,262 +135,305 @@ export function Documents () {
     
         if(isNoValueToUpdate) return;
 
-        const findIndex = lists.findIndex((rec) => rec?.id == idDocument);
+        const findIndex = lists.value.findIndex((rec) => rec?.id == idDocument);
 
         if(findIndex > -1) {
-            const record = lists[findIndex];
+            const record = lists.value[findIndex];
             delete record.spvName;
             delete record.headName;
             delete record.warehouseName;
-            delete record?.periode2;
-            delete record?.collected2;
-            delete record?.approval2;
+            delete record.periode2;
+            delete record.collected2;
+            delete record.approval2;
             delete record.finished2;
 
             const updateRecord = { ...record, ...objToUpdate };
             const mapUpdateRecord = await documentsMapper(updateRecord);
-            lists[findIndex] = mapUpdateRecord
+            lists.value[findIndex] = mapUpdateRecord
 
         }
         
         await db.updateItem(idDocument, objToUpdate);
     }
-    
-    
-}
-// finished document
-export const finishedDocument = async () => {
-    if(lists.length) {
-        let filtered = lists.filter((rec) => rec?.isfinished)
-        return documentsMapper(filtered)
+
+    const isGenerateDocument = async (idDocument: string, generateReport: boolean) => {
+        await updateDocument(idDocument, { generateReport })
     }
-}
-// unfinished document
-export const unFinishedDocument = async () => {
-    if(lists.length) {
-        let filtered = lists.filter((rec) => !rec?.isfinished)
-        return documentsMapper(filtered)
-    }
-}
 
-// append document
-export const isGenerateDocument = (idDocument, val) => {
-    update({
-        store: 'Document',
-        criteria: {id: idDocument},
-        obj: { isGenerate: val }
-    })
-}
+    const removeDocument = async (idDocument: string) => {
+        const findIndex = lists.value.findIndex((rec) => rec?.id === idDocument);
 
-export const removeDocument = async (idDocument) => {
-    removeFromState(idDocument)
-    await deleteDocument({ store: 'document', criteria: { id: idDocument }})
-    return
-}
-
-export const findDocument = (idDocument) => {
-    return lists.find((rec) => rec.id == idDocument)
-}
-
-export const getUncollectedDocuments = async () => {
-    lists = await findData({ store: "Document", criteria: { status: 0 }})
-    return true
-}
-
-export const getCollectedDocuments = async () => {
-    lists = await findData({ store: "Document", criteria: { status: 1 }})
-    return true
-}
-
-export const getApprovedDocuments = async () => {
-    lists = await findData({ store: "Document", criteria: { status: 2, shared: false }})
-    return true
-}
-export const getLastDate = () => {
-    let res = lists.reduce(function(prev, current) {
-        return (prev.periode > current.periode) ? prev.periode : current.periode
-    })
-    return dayPlus1(res)
-}
-
-export const documentsBySupervisor = async () => {
-    /*expected result [
-        {
-        spvId: '',
-        warehouseName: '', 
-        spvName: '', 
-        documents: [ id: '', title: 'warehousename 12-Sept' ],
+        if(findIndex > -1) {
+            lists.value.splice(findIndex, 1);
         }
-    ] */
-    let result = []
-    for(let list of lists) {
-        // find index first, it may pushed before
-        let findRes = result.findIndex((res) => res.spvId == list.name)
-        // date in date month format
-        let periode2 = dateMonth(list.periode)
-        // get warehouse name by spv
-        let warehouseNameSpv = warehouseNameBySpv(list.name)
-        // get warehouse name
-        let warehouseName = await getWarehouseId(list.warehouse).then((res) => res.name.replace('Gudang jadi ', ''))
-        // get supervisor name
-        let spv = await getSupervisorId(list.name)
-        // if the spv id exists in result
-        if(findRes > -1) {
-            result[findRes].documents.push({ id: list.id, periode: list.periode, periode2: periode2, warehouseName, shift: list.shift })
-        } 
-        // if not
-        else {
-            result.push({
-                spvId: list.name,
-                spvName: spv?.name,
-                warehouseName: warehouseNameSpv,
-                phone: spv?.phone,
-                documents: [{ id: list.id, periode: list.periode, periode2: periode2, warehouseName, shift: list.shift }]
+        
+        await db.removeItem(idDocument);
+    }
+
+    const findDocument = async (idDocument: string): Promise<DocumentsMapped|undefined> => {
+        const findIndex = lists.value.findIndex((rec) => rec.id == idDocument)
+
+        if(findIndex > -1) {
+            return lists.value[findIndex];
+        }
+
+        const getData = await db.getItem<Document>(idDocument);
+
+        if(getData === null) return;
+
+        const mapIt = await documentsMapper(getData);
+        return mapIt
+
+    }
+    
+    const getUncollectedDocuments = async () => {
+        // empty state
+        lists.value.length = 0;
+
+        const getData = await db.getItemsByKeyValue<Document>('status', 0);
+
+        if(getData.length === 0) return;
+
+        for(let datum of getData) {
+            const mapIt = await documentsMapper(datum);
+            lists.value.push(mapIt)
+        }
+    }
+    
+    const getCollectedDocuments = async () => {
+        // empty state
+        lists.value.length = 0;
+
+        const getData = await db.getItemsByKeyValue<Document>('status', 1);
+
+        if(getData.length === 0) return;
+
+        for(let datum of getData) {
+            const mapIt = await documentsMapper(datum);
+            lists.value.push(mapIt)
+        }
+    }
+    
+    const getApprovedDocuments = async () => {
+        // empty state
+        lists.value.length = 0;
+
+        const getData = await db.getItemsByTwoKeyValue<Document>('status', 2, 'shared', 0);
+
+        if(getData.length === 0) return;
+
+        for(let datum of getData) {
+            const mapIt = await documentsMapper(datum);
+            lists.value.push(mapIt)
+        }
+    }
+
+    const getLastDate = () => {
+        let res = lists.value.reduce((n = 0, { periode }) =>  n > periode ? n : periode, 0)
+        return dayPlus1(res)
+    }
+
+    const documentsBySupervisor = async () => {
+        /*expected result [
+            {
+            spvId: '',
+            warehouseName: '', 
+            spvName: '', 
+            documents: [ id: '', title: 'warehousename 12-Sept' ],
+            }
+        ] */
+        let result = []
+
+        for(let list of lists.value) {
+            // find index first, it may pushed before
+            let findRes = result.findIndex((res) => res.spvId == list.name)
+            
+            let spv = await getSupervisorId(list.name)
+            // if the spv id exists in result
+            if(findRes > -1) {
+                result[findRes].documents.push({ 
+                    id: list.id, 
+                    periode: list.periode, 
+                    periode2: list.periode2,
+                    warehouseName: list.warehouseName, 
+                    shift: list.shift 
+                })
+            } 
+            // if not
+            else {
+                result.push({
+                    spvId: list.name,
+                    spvName: list.spvName,
+                    warehouseName: list.warehouseName,
+                    phone: spv?.phone,
+                    documents: [{ 
+                        id: list.id, 
+                        periode: list.periode, 
+                        periode2: list.periode2, 
+                        warehouseName: list.warehouseName, 
+                        shift: list.shift 
+                    }]
+                })
+            }
+        }
+        return result.sort((a, b) => {
+            let fa = a.spvId.toLowerCase(),
+            fb = b.spvId.toLowerCase();
+    
+            if (fa < fb) {
+                return -1;
+            }
+            if (fa > fb) {
+                return 1;
+            }
+            return 0;
+        })
+    }
+
+    const documentMore2DaysBySpv = async (spvId: string) => {
+        let docsBySupervisor = await documentsBySupervisor()
+        let result = ""
+        docsBySupervisor.forEach((val) => {
+            if(val.documents && val.spvId == spvId) {
+            // daftar laporan yang melebihi H+2 dari sekarang
+            let sekarang = new Date().getTime()
+            let listLaporan: string[] = []
+            val.documents.forEach((val2) => {
+                if(sekarang - val2.periode >= 172800000 ) {
+                    listLaporan.push(`${val2.periode2} Shift ${val2.shift} | Gudang ${val2?.warehouseName}%0a`)
+                }
             })
-        }
-    }
-    return result.sort((a, b) => {
-        let fa = a.spvId.toLowerCase(),
-        fb = b.spvId.toLowerCase();
-
-        if (fa < fb) {
-            return -1;
-        }
-        if (fa > fb) {
-            return 1;
-        }
-        return 0;
-    })
-}
-
-export const documentMore2DaysBySpv = async (spvId) => {
-    let docsBySupervisor = await documentsBySupervisor()
-    let result = ""
-    docsBySupervisor.forEach((val) => {
-        if(val.documents && val.spvId == spvId) {
-        // daftar laporan yang melebihi H+2 dari sekarang
-        let sekarang = new Date().getTime()
-        let listLaporan = []
-        val.documents.forEach((val2) => {
-            if(sekarang - val2.periode >= 172800000 ) {
-                listLaporan.push(`${val2.periode2} Shift ${val2.shift} | Gudang ${val2?.warehouseName}%0a`)
+            if(listLaporan.length > 0)
+                result += `*${val.spvName} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
             }
         })
-        if(listLaporan.length > 0)
-            result += `*${val.spvName} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
-        }
-    })
-  return result;
-}
+      return result;
+    }
 
-export const allDocumentMore2Days = async () => {
-    let docsBySupervisor = await documentsBySupervisor()
-    let result = ""
-    docsBySupervisor.forEach((val) => {
-        if(val.documents) {
-        // daftar laporan yang melebihi H+2 dari sekarang
-        let sekarang = new Date().getTime()
-        let listLaporan = []
-        val.documents.forEach((val2) => {
-            if(sekarang - val2.periode >= 172800000 ) {
-                listLaporan.push(`${val2.periode2} Shift ${val2.shift} | Gudang ${val2?.warehouseName}%0a`)
+    const allDocumentMore2Days = async () => {
+        let docsBySupervisor = await documentsBySupervisor()
+        let result = ""
+        docsBySupervisor.forEach((val) => {
+            if(val.documents) {
+            // daftar laporan yang melebihi H+2 dari sekarang
+            let sekarang = new Date().getTime()
+            let listLaporan: string[] = []
+            val.documents.forEach((val2) => {
+                if(sekarang - val2.periode >= 172800000 ) {
+                    listLaporan.push(`${val2.periode2} Shift ${val2.shift} | Gudang ${val2?.warehouseName}%0a`)
+                }
+            })
+            if(listLaporan.length > 0)
+                result += `*${val.spvName} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
             }
         })
-        if(listLaporan.length > 0)
-            result += `*${val.spvName} (${listLaporan.length} Dokumen)* :%0a${ listLaporan.join("") }%0a`
+        return result
+    }
+
+    const removeFromState = (idDocument: string) => {
+        lists.value = lists.value.filter((list) => list.id != idDocument)
+    }    
+
+    const collectDocument = async (idDocument: string, day: number) => {
+        let time;
+        if(day < 0) {
+            time = ymdTime(dayPlusOrMinus('', day))
+        } else {
+            time = ymdTime()
         }
-    })
-    return result
-}
 
-const removeFromState = (idDocument) => {
-    lists = lists.filter((list) => list.id != idDocument)
-}
+        removeFromState(idDocument);
 
-export const collectDocument = async (idDocument, day) => {
-    let time;
-    if(day < 0) {
-        time = ymdTime(dayPlusOrMinus('', day))
-    } else {
-        time = ymdTime()
+        await updateDocument(idDocument, { collected: time, status: 1 })
     }
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { collected: time, status: 1 })
-    return
-}
 
-export const approveDocument = async (idDocument, day) => {
-    let time;
-    if(day < 0) {
-        time = dayPlusOrMinus('', day)
-    } else {
-        time = ymdTime()
+    const approveDocument = async (idDocument: string, day: number) => {
+        let time;
+        if(day < 0) {
+            time = dayPlusOrMinus('', day)
+        } else {
+            time = ymdTime()
+        }
+
+        removeFromState(idDocument)
+
+        await updateDocument(idDocument, { approval: time, status: 2 })
     }
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { approval: time, status: 2 })
-    return
-}
 
-export const unCollectDocument = async (idDocument) => {
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { collected: false, status: 0 })
-    return
-}
+    const unCollectDocument = async (idDocument: string) => {
 
-export const ijinDocument = async (idDocument) => {
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { 
-        collected: 'Tidak masuk', 
-        status: 2,
-        shared: false,
-        approval: 'Tidak masuk'
-    })
-    return
-}
-
-export const kosongDocument = async (idDocument) => {
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { 
-        collected: 'Laporan tidak ada', 
-        status: 2,
-        approval: 'Laporan tidak ada',
-        shared: false,
-    })
-    return
-}
-
-export const shareDocument = async (idDocument) => {
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { shared: ymdTime() })
-    return
-}
-
-export const unApproveDocument = async (idDocument) => {
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { approval: false, status: 1 })
-    return
-}
-
-export const markDocumentFinished = async (idDocument, day, details) => {
-    let time;
-    if(day < 0) {
-        time = dayPlusOrMinus('', day)
-    } else {
-        time = ymdTime()
+        removeFromState(idDocument)
+        await updateDocument(idDocument, { collected: 0, status: 0 })
+        
     }
-    removeFromState(idDocument)
-    await updateDocument(idDocument, { ...details, finished: time, isfinished: true })
-    return
-}
 
-export const getDocumentByPeriodeByWarehouseByShiftFromDb = (periode, warehouse, shift) => {
-    return findData({ store: "Document", criteria: { periode, warehouse, shift} }).then((res) => res[0])
+    const ijinDocument = async (idDocument: string) => {
+        
+        removeFromState(idDocument)
+        
+        await updateDocument(idDocument, { 
+            collected: 'Tidak masuk', 
+            status: 2,
+            shared: 0,
+            approval: 'Tidak masuk'
+        })
+    }
+
+    const kosongDocument = async (idDocument: string) => {
+        removeFromState(idDocument)
+
+        await updateDocument(idDocument, { 
+            collected: 'Laporan tidak ada', 
+            status: 2,
+            approval: 'Laporan tidak ada',
+            shared: 0,
+        })
+    }
+
+    const shareDocument = async (idDocument: string) => {
+
+        removeFromState(idDocument)
+        await updateDocument(idDocument, { shared: ymdTime() })
+
+    }
+
+    const unApproveDocument = async (idDocument: string) => {
+
+        removeFromState(idDocument)
+        await updateDocument(idDocument, { approval: 0, status: 1 })
+
+    }
+
+    const markDocumentFinished = async (idDocument: string, day: number, details: DocumentUpdate) => {
+        let time;
+        
+        if(day < 0) {
+            time = dayPlusOrMinus('', day)
+        } else {
+            time = ymdTime()
+        }
+
+        removeFromState(idDocument)
+
+        await updateDocument(idDocument, { ...details, finished: time, isfinished: true })
+        return
+    }
+
+    const getDocumentByPeriodeByWarehouseByShiftFromDb = async (periode: number, warehouse: string, shift: 1|2|3): Promise<DocumentsMapped|undefined> => {
+        const getData = await db.getItemsByThreeKeyValue<Document>('periode', periode, 'warehouse', warehouse, 'shift', shift);
+        if(getData.length === 0) return;
+        const mapIt = await documentsMapper(getData[0]);
+        return mapIt;
+    }
+    
+          
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncDocumentToServer () {
+    const db = useIdb(storeName);
 
-    let allData = await getData({ store: storeName, withKey: true })
+    let allData = await db.getItems<Document>();
 
     // (v)approval, (v)baseReportFile, (v)collected, (v)finished, (v)generateReport
     // (v)head, (v)id, (v)isfinished, itemVariance, (v)name, parent, parentDocument
@@ -430,32 +444,32 @@ export async function syncDocumentToServer () {
     for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
-            "id": datum?.key,
-            "collected": datum?.data?.collected || 0,
-            "approval": datum?.data?.approval || 0,
-            "status": datum?.data?.status || 0,
-            "shared": datum?.data?.shared || 0,
-            "finished": datum?.data?.finished || 0,
-            "total_do": datum?.data?.totalDo || 0,
-            "total_kendaraan": datum?.data?.totalKendaraan || 0,
-            "total_waktu": datum?.data?.totalWaktu || 0,
-            "base_report_file": datum?.data?.baseReportFile || 0,
-            "is_finished": datum?.data?.isfinished || 0,
-            "supervisor_id": datum?.data?.name || 0,
-            "periode": datum?.data?.periode || 0,
-            "shift": datum?.data?.shift || 0,
-            "head_spv_id": datum?.data?.head || 0,
-            "warehouse_id": datum?.data?.warehouse || 0,
-            "is_generated_document": datum?.data?.generateReport || 0,
-            "item_variance": datum?.data?.itemVariance || 0,
-            "parent": datum?.data?.parent || 0,
-            "parent_document": datum?.data?.parentDocument || 0,
-            "plan_out": datum?.data?.planOut || 0,
-            "total_item_keluar": datum?.data?.totalItemKeluar || 0,
-            "total_item_moving": datum?.data?.totalItemMoving || 0,
-            "total_product_not_FIFO": datum?.data?.totalProductNotFIFO || 0,
-            "total_qty_in": datum?.data?.totalQTYIn || 0,
-            "total_qty_out": datum?.data?.totalQTYOut || 0,
+            "id": datum?.id,
+            "collected": datum?.collected || 0,
+            "approval": datum?.approval || 0,
+            "status": datum?.status || 0,
+            "shared": datum?.shared || 0,
+            "finished": datum?.finished || 0,
+            "total_do": datum?.totalDo || 0,
+            "total_kendaraan": datum?.totalKendaraan || 0,
+            "total_waktu": datum?.totalWaktu || 0,
+            "base_report_file": datum?.baseReportFile || 0,
+            "is_finished": datum?.isfinished || 0,
+            "supervisor_id": datum?.name || 0,
+            "periode": datum?.periode || 0,
+            "shift": datum?.shift || 0,
+            "head_spv_id": datum?.head || 0,
+            "warehouse_id": datum?.warehouse || 0,
+            "is_generated_document": datum?.generateReport || 0,
+            "item_variance": datum?.itemVariance || 0,
+            "parent": datum?.parent || 0,
+            "parent_document": datum?.parentDocument || 0,
+            "plan_out": datum?.planOut || 0,
+            "total_item_keluar": datum?.totalItemKeluar || 0,
+            "total_item_moving": datum?.totalItemMoving || 0,
+            "total_product_not_FIFO": datum?.totalProductNotFIFO || 0,
+            "total_qty_in": datum?.totalQTYIn || 0,
+            "total_qty_out": datum?.totalQTYOut || 0,
           }
   
       try {
@@ -475,16 +489,19 @@ export async function syncDocumentToServer () {
   }
 
 
-  export async function syncDocumentRecordToServer (idRecord, mode) {
+  export async function syncDocumentRecordToServer (idRecord: string, mode: string) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record document must be a string");
         return;
     }
 
-    let record = await getDataByKey(storeName, idRecord);
+    const db = useIdb(storeName);
 
-    if(!record) {
+    let record = await db.getItem<Document>(idRecord);
+    // getDataByKey(storeName, idRecord);
+
+    if(record === null) {
         // dont do anything if record doesn't exist;
         return
     }
