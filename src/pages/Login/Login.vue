@@ -1,8 +1,7 @@
 <script>
 	import { ref } from "@vue/reactivity"
 	import { onMounted } from '@vue/runtime-core';
-	import userSignIn from "./userSignIn"
-	import userCreate from "./userCreate";
+	import { userSignin, userCreate } from "./users"
 
 	export default {
 		setup() {
@@ -11,7 +10,7 @@
 		const password = ref('');
 		const enableForm = ref(true)
 
-		const { error, signIn } = userSignIn()
+		const { error, signIn } = userSignin()
 		const { createUser } = userCreate()
 
 		onMounted(() => {
@@ -60,4 +59,4 @@
 	</div>
 </div>
 
-</template>
+</template>./users

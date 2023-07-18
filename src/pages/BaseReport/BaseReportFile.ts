@@ -34,7 +34,7 @@ export function BaseReportFile () {
     const db = useIdb(storeName);
 
     async function getBaseReportFile(periode1: number, periode2: number) {
-        const getData = await db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan('periode', periode1, periode2);
+        const getData = await db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan<BaseReportFileInterface>('periode', periode1, periode2);
 
         if(getData) {
             for (let datum of getData) {
@@ -104,7 +104,19 @@ export function BaseReportFile () {
         }
 
         const getRecord = await db.getItem<BaseReportFileInterface>(id);
-        if(getRecord === null) return;
+        if(getRecord === null) {
+            return {
+                id: '',
+                clock: '',
+                fileName: '',
+                imported: false,
+                isRecordFinished: false,
+                periode: 0,
+                stock: '',
+                warehouse: '',
+                periode2: ''
+            }
+        };
         const mapRecord = await recordMapper(getRecord);
 
         lists.value.push(mapRecord);

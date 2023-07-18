@@ -1,6 +1,3 @@
-import Localbase from "localbase";
-let db = new Localbase("myreport");
-import func, { updateWithoutAddActivity, deleteDocumentByKey } from "../../myfunction"
 import { full } from "../../composable/piece/dateFormat";
 import { startExport } from "../../composable/piece/exportAsFile"
 import { getJWTToken, setJWTToken } from "../../utils/cookie";
@@ -20,13 +17,39 @@ import { modalClose, loader} from "../../composable/piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
 import { loginToServer } from "../../utils/loginToServer"
-import signOut from "../../composable/UserSignOut";
+import { signOut } from "@/pages/Login/users";
+import { useIdb } from "@/utils/localforage"
 
-export const storeBackup = async (sendToCloud) => {
+interface Backup {
+    [key: string]: {[key: string]: string|number|boolean}[]
+}
+
+interface Summary {
+    lastId: string
+    total: number
+}
+
+export const storeBackup = async (sendToCloud: boolean) => {
     // will store all document that we saved in idexeddb
-    let allDocuments = {}
+    let allDocuments:Backup = {}
     // initiate documents, because activity store, not recorded in summary store
+    const dbSummary = useIdb('summary');
+    const summaryKeys = await dbSummary.getKeys();
+    allDocuments['summary'] = [];
+
     let documents = ['activity']
+
+    for(let store of summaryKeys) {
+        const db = useIdb(store);
+
+        const getItems = await db.getItems<{[key: string]: string|number|boolean }>();
+        const getSummary = await dbSummary.getItem<any>(store);
+
+        allDocuments[store] = getItems;
+        if(getSummary !== null) {
+            allDocuments['summary'].push(getSummary);
+        }
+    }
     // get summary store
     await getDocument('summary').then((val) => {
         // push summary store to the allDocuments

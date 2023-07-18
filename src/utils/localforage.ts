@@ -425,6 +425,12 @@ export const useIdb = (storeName: string) => {
     return result;
   };
 
+  async function getKeys(): Promise<string[]> {
+    let result: string[] = await store.keys()
+
+    return result;
+  }
+
   return {
     setItem,
     getItem,
@@ -441,6 +447,7 @@ export const useIdb = (storeName: string) => {
     getItemsThatValueIncludes,
     createItem,
     getItemsGreatEqualLowEqual,
-    getItemsByThreeKeyValue
+    getItemsByThreeKeyValue,
+    getKeys,
   };
 };

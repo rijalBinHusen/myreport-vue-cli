@@ -1,6 +1,8 @@
-import { write, tunggu } from '@/myfunction'
+// import { write, tunggu } from '@/myfunction'
+import { useIdb } from "@/utils/localforage"
 
 export const startImport = async (ObjectDocumentFromBackupFile) => {
+    
     let record = ObjectDocumentFromBackupFile?.record
     for (let activity of ObjectDocumentFromBackupFile?.activities) {
         let recordUser = record[activity?.store][activity?.idRecord]
