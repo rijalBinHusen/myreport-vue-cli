@@ -1,14 +1,15 @@
-import { computed, reactive, ref } from "vue"
-import func from "../../myfunction"
-import { ymdTime, dateMonth } from "../../composable/piece/dateFormat"
+import { ref } from "vue";
+import { ymdTime, dateMonth } from "../../composable/piece/dateFormat";
+import { useIdb } from "../../utils/localforage"
 
-let lists = reactive([])
+let lists = ref([])
+const storeName = 'followup';
+const db = useIdb(storeName)
 
 const getFollowUp = async () => {
     if(!lists?.value) {
         // get all data from indexeddb
-        await func.getData({store: 'followup', limit: 100, desc: true, orderBy: 'id'})
-        .then((val) => lists.value = val)
+        lists.value = await db.getItemsLimitDesc(100);
     }
     // delete data
 }
@@ -21,12 +22,13 @@ export const markAsFinished = (idRecord, answer) => {
         }
         return val
     })
-    func.update({ store: 'followup', criteria: { id: idRecord }, obj: { finished: ymdTime(), answer: answer }})
+    db.updateItem(idRecord, { finished: ymdTime(), answer: answer })
+    // func.update({ store: 'followup', criteria: { id: idRecord }, obj: { finished: ymdTime(), answer: answer }})
 }
 
 export const unFinished = async () => {
     await getFollowUp()
-    let unfinish = [ ...lists.value].filter((val) => {
+    let unfinish = lists.value.filter((val) => {
         if(!val?.finished) {
             return Object.assign(val, {periode2: dateMonth(val?.periode)})
         }
@@ -34,26 +36,19 @@ export const unFinished = async () => {
     return unfinish
 }
 
-export const addData = (payload) => {
+export const addData = async (payload) => {
     // add data
     let record = { ...payload, periode: ymdTime() };
-    func.append({
-          store: "FollowUp",
-          obj: record,
-        }
-      ).then((val) => {
-        if(lists.value) {
-            lists.value.unshift(val?.data)
-        }
-      })
+    let insertedId = await db.createItem(record);
+
+    if(insertedId === undefined) return;
+
+    lists.value.push({ id: insertedId, ...record })
 }
 
-export const deleteData = (idRecord) => {
+export const deleteData = async (idRecord) => {
     
     lists.value = lists.value.filter((rec) => rec.id !== idRecord)
     
-    return func.deleteDocument({
-        store: 'followup',
-        criteria: { id: idRecord}
-    })
+    await db.removeItem(idRecord)
 }

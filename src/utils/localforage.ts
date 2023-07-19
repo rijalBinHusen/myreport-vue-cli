@@ -4,51 +4,60 @@ import { ref } from "vue"
 
 interface SummaryRecord { total: number, lastId: string }
 
-interface Summary {
+export interface Summary {
   [key: string]: SummaryRecord
 }
 
 interface unknownObject {
-  [key: string|number]: string|number
+  [key: string | number]: string | number
 }
 
 interface unknownObjectNumber {
-  [key: string|number]: number
+  [key: string | number]: number
+}
+
+export interface Activity {
+  id: string
+  idRecord: string
+  time: number
+  time2: string
+  type: string
+  store: string
 }
 
 const stateSummary = ref(<Summary>{});
-let timer:ReturnType<typeof setTimeout>;
+let timer: ReturnType<typeof setTimeout>;
 
 export const useIdb = (storeName: string) => {
   // create instance
   const store = localforage.createInstance({ name: 'myreport', storeName });
-  const summaryDb = localforage.createInstance({ name: 'myreport',  storeName: 'summary'});
-  const logging = localforage.createInstance({ name: 'myreport',  storeName: 'activity'});
+  const summaryDb = localforage.createInstance({ name: 'myreport', storeName: 'summary' });
+  const logging = localforage.createInstance({ name: 'myreport', storeName: 'activity' });
 
-  async function getSummary () { 
+  async function getSummary() {
     //check is summary exists on state
     const isExists = stateSummary.value.hasOwnProperty(storeName);
     // if exists
-    if(!isExists) {
+    if (!isExists) {
 
-        const summaryItem = await summaryDb.getItem(storeName) as SummaryRecord;
-        let lastId = null;
-        let total = 0;
+      const summaryItem = await summaryDb.getItem(storeName) as SummaryRecord;
+      let lastId = null;
+      let total = 0;
 
-        if(summaryItem && summaryItem?.lastId) {
-            lastId = summaryItem?.lastId;
-            total = summaryItem?.total;
-        } else {
-            lastId = storeName + '_23040000';
-        }
+      if (summaryItem && summaryItem?.lastId) {
+        lastId = summaryItem?.lastId;
+        total = summaryItem?.total;
+      } else {
+        lastId = storeName + '_23040000';
+      }
 
-        stateSummary.value[storeName] = { lastId, total }
+      stateSummary.value[storeName] = { lastId, total }
     }
 
     return stateSummary.value[storeName]
   }
 
-  function updateSummary (yourLastId: string) {
+  function updateSummary(yourLastId: string) {
     clearTimeout(timer);
 
     let lastId = yourLastId;
@@ -57,23 +66,24 @@ export const useIdb = (storeName: string) => {
     stateSummary.value[storeName] = { lastId, total };
 
     timer = setTimeout(() => {
-        
-        summaryDb.setItem(storeName, { lastId, total });
-        
+
+      summaryDb.setItem(storeName, { lastId, total });
+
     }, 3000);
   }
 
-  async function addActivity (type: string, idRecord: string) {
+  async function addActivity(type: string, idRecord: string) {
     const now = new Date();
     const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
     const utcPlus7 = new Date(now.getTime() + utcOffset);
 
     const idLogger = stateSummary.value[storeName]?.total + new Date().getTime() + '';
-    const recordToSet = {
+    const recordToSet = <Activity>{
       id: idLogger,
       idRecord,
       store: storeName,
-      time: utcPlus7.toISOString(),
+      time2: utcPlus7.toISOString(),
+      time: utcPlus7.getTime(),
       type
     }
 
@@ -81,7 +91,7 @@ export const useIdb = (storeName: string) => {
 
   }
 
-  const createItem = async <T>(yourObject: T, isDontRecordActivity?: boolean): Promise<string|undefined> => {
+  const createItem = async <T>(yourObject: T, isDontRecordActivity?: boolean): Promise<string | undefined> => {
     // get summary
     const sum = await getSummary();
     // generateID
@@ -94,15 +104,15 @@ export const useIdb = (storeName: string) => {
       // update summary
       updateSummary(nextId);
       // add activity
-      if(!isDontRecordActivity) {
+      if (!isDontRecordActivity) {
         addActivity('create', nextId)
       }
       return nextId;
 
     } catch (err) {
 
-        alert('Terjadi kesalahan ketika memasukkan data');
-        console.log(err);
+      alert('Terjadi kesalahan ketika memasukkan data');
+      console.log(err);
     }
   };
 
@@ -110,12 +120,12 @@ export const useIdb = (storeName: string) => {
     return store.setItem(key, value);
   };
 
-  const getItem = <T>(key: string): Promise<T|null> => {
+  const getItem = <T>(key: string): Promise<T | null> => {
     return store.getItem(key);
   };
 
   const getItemsLimit = async (limit: number) => {
-    const result:unknownObject[] = [];
+    const result: unknownObject[] = [];
     return store
       .iterate(function (value: unknownObject, key, iterationNumber) {
         if (iterationNumber < limit && value && key) {
@@ -154,13 +164,13 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItems = async <T>(): Promise<T[]> => {
-    const result:T[] = [];
-    await store.iterate(function (value:any, key) {
-        if (value && key) {
-          result.push(value);
-        }
-        // return result;
-      })
+    const result: T[] = [];
+    await store.iterate(function (value: any, key) {
+      if (value && key) {
+        result.push(value);
+      }
+      // return result;
+    })
       .then(function () {
         // onsole.log("Iteration has completed, last iterated pair:");
         return result;
@@ -184,17 +194,17 @@ export const useIdb = (storeName: string) => {
       // add activity
       addActivity('update', key)
       return true;
-      
+
     } catch (err) {
       console.error(err);
       return false;
     }
   };
 
-  const getItemsByKeyValue = async <T>(keySearch: string, valueSearch: string|number|boolean):Promise<T[]> => {
-    let result:T[] = [];
+  const getItemsByKeyValue = async <T>(keySearch: string, valueSearch: string | number | boolean): Promise<T[]> => {
+    let result: T[] = [];
     await store
-      .iterate(function (value:any) {
+      .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -213,13 +223,13 @@ export const useIdb = (storeName: string) => {
         console.log(err);
       });
 
-      return result;
+    return result;
   };
 
   const getItemsByKeyGreaterThan = async (keySearch: string, greaterThanValue: string) => {
-    let result:unknownObject[] = [];
+    let result: unknownObject[] = [];
     return store
-      .iterate(function (value:unknownObject) {
+      .iterate(function (value: unknownObject) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -240,14 +250,14 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsByTwoKeyValue = async <T>(
-    key1Search: string|number,
-    value1Search: string|number,
-    key2Search: string|number,
-    value2Search: string|number
-  ):Promise<T[]> => {
-    let result:T[] = [];
+    key1Search: string | number,
+    value1Search: string | number,
+    key2Search: string | number,
+    value2Search: string | number
+  ): Promise<T[]> => {
+    let result: T[] = [];
     await store
-      .iterate(function (value:any) {
+      .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -273,11 +283,11 @@ export const useIdb = (storeName: string) => {
   };
 
   const getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan = async <T>(
-    keySearch: string|number,
-    greaterOrEqualThanValue: string|number,
-    LowerOrEqualThanValue: string|number
-  ):Promise<T[]> => {
-    let result:T[] = [];
+    keySearch: string | number,
+    greaterOrEqualThanValue: string | number,
+    LowerOrEqualThanValue: string | number
+  ): Promise<T[]> => {
+    let result: T[] = [];
     await store
       .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
@@ -301,13 +311,13 @@ export const useIdb = (storeName: string) => {
         console.log(err);
       });
 
-      return result;
+    return result;
   };
 
   const getItemsThatValueIncludes = async (yourString: string) => {
-    const result:unknownObject[] = [];
+    const result: unknownObject[] = [];
     return store
-      .iterate(function (value:unknownObject, key, iterationNumber) {
+      .iterate(function (value: unknownObject, key, iterationNumber) {
         if (Object.values(value).includes(yourString)) {
           result.push(value);
         }
@@ -323,8 +333,8 @@ export const useIdb = (storeName: string) => {
       });
   };
 
-  const getItemsGreatEqualLowEqual = async <T>(key1: string|number, greaterValue1: number, key2: string|number, lowerValue2: number): Promise<T[]|undefined> => {
-    let result:T[] = [];
+  const getItemsGreatEqualLowEqual = async <T>(key1: string | number, greaterValue1: number, key2: string | number, lowerValue2: number): Promise<T[] | undefined> => {
+    let result: T[] = [];
     await store
       .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
@@ -346,10 +356,10 @@ export const useIdb = (storeName: string) => {
         console.log(err);
       });
 
-      return result;
+    return result;
   }
 
-  function sortItem (items: any[], keyToSort: string, isAsc:boolean) {
+  function sortItem(items: any[], keyToSort: string, isAsc: boolean) {
 
     items.sort(function (a, b) {
       let x = a[keyToSort];
@@ -379,34 +389,34 @@ export const useIdb = (storeName: string) => {
     });
 
     return items;
-  }  
+  }
 
-  const getItemsLimitDesc = async <T>(limit: number):Promise<T[]> => {
-    const result:T[] = [];
+  const getItemsLimitDesc = async <T>(limit: number): Promise<T[]> => {
+    const result: T[] = [];
     const getAll = await getItems<T>();
-    
+
     const sortItems = sortItem(getAll, 'id', false);
 
     return sortItems.slice(0, limit)
   };
 
   const getItemsByThreeKeyValue = async <T>(
-    key1Search: string|number,
-    value1Search: string|number,
-    key2Search: string|number,
-    value2Search: string|number,
-    key3Search: string|number,
-    value3Search: string|number
-  ):Promise<T[]> => {
-    let result:T[] = [];
+    key1Search: string | number,
+    value1Search: string | number,
+    key2Search: string | number,
+    value2Search: string | number,
+    key3Search: string | number,
+    value3Search: string | number
+  ): Promise<T[]> => {
+    let result: T[] = [];
     await store
-      .iterate(function (value:any) {
+      .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
-        const condition = value[key1Search] == value1Search 
-                          && value[key2Search] == value2Search
-                          && value[key3Search] == value3Search
+        const condition = value[key1Search] == value1Search
+          && value[key2Search] == value2Search
+          && value[key3Search] == value3Search
 
         if (condition) {
           // save to result

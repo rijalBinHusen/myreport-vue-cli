@@ -9,7 +9,7 @@ interface User {
     username: string
 }
 
-interface Login {
+export interface Login {
     backup: boolean
     id: string
     time: number
@@ -26,25 +26,25 @@ const signIn = async (username: string, password: string) => {
         const user = await db.getItemsByKeyValue<User>('username', btoa(username));
         // func.findData({ store: , criteria: { username: btoa(username) }})
         // jika username tidak ada kembalikan error
-        if(!user) {
+        if (!user) {
             throw new Error("Username tidak ditemukan")
         }
         // jika user name ada, cocokkan password
         let isMatch = user[0]?.password === btoa(password)
         // jika password tidak cocok, kembalikan error
-        if(!isMatch) {
+        if (!isMatch) {
             throw new Error("Username atau password salah")
         }
         // kembalikan success
-        await dbLogin.createItem({ 
-            username: user[0]?.username, 
-            time: new Date().getTime(), 
+        await dbLogin.createItem({
+            username: user[0]?.username,
+            time: new Date().getTime(),
             totalActivity: 0,
             backup: false,
         })
-        
+
         return true
-    } catch(err: any) {
+    } catch (err: any) {
         error.value = err
         return false
     }
@@ -59,17 +59,17 @@ const createUser = async (username: string, password: string) => {
     // if the username form or password form empty
     try {
         const db = useIdb('user');
-        if(!username || !password) {
+        if (!username || !password) {
             throw Error("Username or password can not be empty")
         }
         const user = await db.getItemsByKeyValue<User>('username', btoa(username));
-        if(user.length > 0) {
+        if (user.length > 0) {
             throw Error("Username exists");
         }
         await db.createItem({ username: btoa(username), password: btoa(password) })
         return true
-        
-    } catch(err: any) {
+
+    } catch (err: any) {
         error.value = err
         return false
     }

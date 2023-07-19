@@ -1,5 +1,4 @@
-import myfunction from "@/myfunction";
-import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
+import exportToXlsSeperateSheet from "../utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 import getCases from "./GetCasesByPeriodeBySpv";
 import GetComplains from "./GetComplainByPeriodeBySpv";

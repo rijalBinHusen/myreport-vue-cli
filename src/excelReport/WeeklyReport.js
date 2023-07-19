@@ -1,5 +1,5 @@
-import myfunction from "@/myfunction";
-import exportToXlsSeperateSheet from "../exportToXlsSeperateSheet";
+import { waitFor } from "../utils/piece/waiting"
+import exportToXlsSeperateSheet from "../utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 import getCases from "./GetCasesByPeriodeBySpv";
 import GetComplains from "./GetComplainByPeriodeBySpv";
@@ -105,7 +105,7 @@ export default function (arrayOfArrayOfDocuments) {
             + " Shift " +
             result?.base[1]?.shift
         );
-        await myfunction.tunggu(500)
+        await waitFor(500)
     }
     resolve();
     // newArrayOfArrayOfdocuments.forEach((val) => {

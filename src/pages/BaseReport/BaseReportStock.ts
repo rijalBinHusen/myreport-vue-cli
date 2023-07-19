@@ -7,7 +7,7 @@ import { progressMessage2, loaderMessage } from "../../components/parts/Loader/s
 import { useIdb } from "../../utils/localforage";
 import { type Sheet } from "../../utils/xlsx.type"
 
-interface BaseStock {
+export interface BaseStock {
   awal: number;
   dateEnd: string;
   dateIn: string;
@@ -25,7 +25,7 @@ interface BaseStock {
 }
 
 interface BaseStockMapped extends BaseStock {
-  
+
   itemName?: string,
   problem2?: string,
   selisih?: number
@@ -54,11 +54,11 @@ let lists = <BaseStockMapped[]>[];
 
 const storeName = "basereportstock";
 
-export function baseReportStock () {
+export function baseReportStock() {
   const db = useIdb(storeName);
   const { getItemBykode } = baseItem();
 
-  const appendData = async ( parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
+  const appendData = async (parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
     // because we need warehouse id
     const { findBaseReportFileById } = BaseReportFile();
 
@@ -83,27 +83,27 @@ export function baseReportStock () {
 
     const insertedId = await db.createItem(recordToSet)
 
-    if(insertedId) {
+    if (insertedId) {
       const interpretIt = await interpretRecord({ id: insertedId, ...recordToSet });
       lists.push(interpretIt);
     }
-    
+
   };
-  
+
   const startImportStock = async (sheets: Sheet, baseId: string) => {
     // dapatkan !ref
-    if(sheets["!ref"] == undefined) return;
+    if (sheets["!ref"] == undefined) return;
     let infoRowColStock = sheets["!ref"].split(":");
-    
+
     const isRowClockNotOke = infoRowColStock[1] == null || infoRowColStock[0] == null;
-    if(isRowClockNotOke) return;
+    if (isRowClockNotOke) return;
 
     let lengthRow = infoRowColStock[1].match(/\d+/);
-    if(!lengthRow || lengthRow.length == 0 || lengthRow[0] == null ) return;
+    if (!lengthRow || lengthRow.length == 0 || lengthRow[0] == null) return;
 
     // dapatkan length data clock
     let lengthRowStock = +lengthRow[0];
-  
+
     for (let i = 1; i <= lengthRowStock; i++) {
       /* 
               #STOCK 
@@ -142,7 +142,7 @@ export function baseReportStock () {
           sheets["J" + i] ? sheets["J" + i].v : 0
         );
       }
-  
+
       /*
               shift 3 jika K5.v > 0 atau L5.v > 0  atau M5.v > 0  atau O5.v > 0 
               A+i !== false
@@ -155,7 +155,7 @@ export function baseReportStock () {
       let out1 = sheets["L" + i] ? +sheets["L" + i].v : 0;
       let out2 = sheets["M" + i] ? +sheets["M" + i].v : 0;
       let totalOut = out1 + out2;
-  
+
       if ((in1 || out1 || out2 || in2) && i > 3 && sheets["A" + i]) {
         await appendData(
           baseId,
@@ -169,35 +169,35 @@ export function baseReportStock () {
       }
     }
   };
-  
+
   const removeStock = async (id: string) => {
     lists = lists.filter((rec) => rec.id !== id);
     await db.removeItem(id);
   };
 
   const removeStockByParent = async (parent: string) => {
-    for(let [index, record] of lists.entries()) {
+    for (let [index, record] of lists.entries()) {
 
       loaderMessage.value = `Memindai dan menghapus ${index} dari ${lists.length}`;
 
-      if(record.parent == parent) {
+      if (record.parent == parent) {
         await removeStock(record.id);
       }
 
     }
-    
+
   };
 
-  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStock|undefined> => {
-    
+  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStock | undefined> => {
+
     let findRec = lists.find(
       (rec) => rec.parent == parent && rec.shift == shift
     );
 
     if (typeof findRec === 'undefined') {
       const getRecord = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
-      
-      if(getRecord && getRecord.length) {
+
+      if (getRecord && getRecord.length) {
         findRec = {
           awal: getRecord[0]?.awal,
           dateEnd: getRecord[0]?.dateEnd,
@@ -220,38 +220,38 @@ export function baseReportStock () {
     return findRec;
   };
 
-  async function interpretRecord (record: BaseStock): Promise<BaseStockMapped> {
+  async function interpretRecord(record: BaseStock): Promise<BaseStockMapped> {
     const itemName = await getItemBykode(record.item);
     const problem2 = await masalah(record.problem);
     const selisih = Number(record.real) - (Number(record.awal) + Number(record.in) - Number(record.out));
-    const planOut = record?.planOut || 0 
+    const planOut = record?.planOut || 0
 
     return { ...record, itemName, problem2, selisih, planOut }
 
   }
-  
-  const baseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[]|undefined> => {
+
+  const baseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[] | undefined> => {
 
     let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
-    
-    if(!result.length) {
+
+    if (!result.length) {
       const retrieveFromDb = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
 
-      if(typeof retrieveFromDb === 'undefined') return;
-      
+      if (typeof retrieveFromDb === 'undefined') return;
+
       for (let record of retrieveFromDb) {
         const interpretIt = await interpretRecord(record);
 
         lists.push(interpretIt);
         result.push(interpretIt);
-        
+
       }
 
     }
 
     return result;
   };
-    
+
   const stockDetails = (parent: string, shift: number) => {
     /*
        expected result = {
@@ -283,28 +283,28 @@ export function baseReportStock () {
           : 0;
       }
     });
-  
+
     return result;
   };
 
   const updateBaseStock = async (id: string, objtToUpdate: BaseStockUpdate) => {
     const isNoValueToUpdate = Object.values(objtToUpdate).length > 0;
 
-    if(isNoValueToUpdate) return;
+    if (isNoValueToUpdate) return;
 
     const findIndex = lists.findIndex((rec) => rec?.id === id);
 
-    if(findIndex > -1) {
-        const record = lists[findIndex];
-        delete record.itemName;
-        delete record.problem2;
-        delete record.selisih;
-        
-        const updateRecord = { ...record, ...objtToUpdate };
-        const mapUpdateRecord = await interpretRecord(updateRecord)
-        lists[findIndex] = mapUpdateRecord;
+    if (findIndex > -1) {
+      const record = lists[findIndex];
+      delete record.itemName;
+      delete record.problem2;
+      delete record.selisih;
+
+      const updateRecord = { ...record, ...objtToUpdate };
+      const mapUpdateRecord = await interpretRecord(updateRecord)
+      lists[findIndex] = mapUpdateRecord;
     }
-    
+
     await db.updateItem(id, objtToUpdate);
   }
 
@@ -312,7 +312,7 @@ export function baseReportStock () {
     let markFinished = 0;
     // iterate the state
     for (let [index, list] of lists.entries()) {
-      loaderMessage.value = `Memindai ${ index + 1 } dari ${lists.length}.`;
+      loaderMessage.value = `Memindai ${index + 1} dari ${lists.length}.`;
       // if state?.shift == payload.shift && payload?.parent
       if (list?.shift == shift && list?.parent == BaseFile) {
         // jika documentId kosong
@@ -339,19 +339,19 @@ export function baseReportStock () {
     updateBaseStock,
     markStockFinished,
   }
-  
+
 }
 
-export async function syncBaseStockToServer () {
+export async function syncBaseStockToServer() {
 
   const db = useIdb(storeName)
 
   let allData = await db.getItems<BaseStock>();
 
-  for(let [index, datum] of allData.entries()) {
-  // awal, dateEnd, dateIn, dateOut, id, in, item, 
-  //out, parent, parentDocument, planOut
-//  problem, real, shift
+  for (let [index, datum] of allData.entries()) {
+    // awal, dateEnd, dateIn, dateOut, id, in, item, 
+    //out, parent, parentDocument, planOut
+    //  problem, real, shift
 
     let dataToSend = {
       "id": datum?.id,
@@ -366,27 +366,27 @@ export async function syncBaseStockToServer () {
       "date_out": datum.dateOut || 0,
       "date_end": datum.dateEnd || 0,
       "real_stock": datum.real || 0,
-      "problem": datum.problem.toString()  || 0
+      "problem": datum.problem.toString() || 0
     }
 
     try {
       progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
       await postData('base_stock', dataToSend);
 
-    } catch(err) {
+    } catch (err) {
 
-        // alert(err); 
-        console.log(err)
-        // return false;
+      // alert(err); 
+      console.log(err)
+      // return false;
 
     }
   }
   return true;
 }
 
-export async function syncBaseStockRecordToServer (idRecord: string, mode: string) {
+export async function syncBaseStockRecordToServer(idRecord: string, mode: string) {
 
-  if(typeof idRecord !== 'string') {
+  if (typeof idRecord !== 'string') {
     alert("Id record base report stock must be a string");
     return;
   }
@@ -395,13 +395,13 @@ export async function syncBaseStockRecordToServer (idRecord: string, mode: strin
 
   let record = await db.getItem<BaseStock>(idRecord);
 
-  if(!record) {
-      // dont do anything if record doesn't exist;
-      return
+  if (!record) {
+    // dont do anything if record doesn't exist;
+    return
   }
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
   //out, parent, parentDocument, planOut
-//  problem, real, shift
+  //  problem, real, shift
 
   let dataToSend = {
     "id": idRecord,
@@ -416,33 +416,33 @@ export async function syncBaseStockRecordToServer (idRecord: string, mode: strin
     "date_out": record?.dateOut || 0,
     "date_end": record?.dateEnd || 0,
     "real_stock": record?.real || 0,
-    "problem": record?.problem.toString()  || 0
+    "problem": record?.problem.toString() || 0
   }
 
   try {
 
-    if(mode === 'create') {
+    if (mode === 'create') {
 
       await postData('base_stock', dataToSend);
 
-    } 
-  
-    else if(mode === 'update') {
+    }
 
-        await putData('base_stock/'+ idRecord, dataToSend)
+    else if (mode === 'update') {
+
+      await putData('base_stock/' + idRecord, dataToSend)
 
     }
 
     else if (mode === 'delete') {
 
-        await deleteData('base_stock/'+ idRecord)
-        
+      await deleteData('base_stock/' + idRecord)
+
     }
 
-  } catch(err) {
+  } catch (err) {
 
-    const errorMessage = 'Failed to send base stock record id :' + idRecord +' to server with error message: ' + err;
-    alert(errorMessage); 
+    const errorMessage = 'Failed to send base stock record id :' + idRecord + ' to server with error message: ' + err;
+    alert(errorMessage);
     console.log(errorMessage)
     return false;
 

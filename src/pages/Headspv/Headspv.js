@@ -1,42 +1,47 @@
-import { getData, update, append, getDataByKey } from '../../myfunction'
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
+import { useIdb } from '@/utils/localforage';
+import { progressMessage2 } from "../../components/parts/Loader/state";
 
 export let lists = []
 const storeName = "headspv";
+const db = useIdb(storeName)
 
 export const getHeadspv = async () => {
     lists = []
-    lists = await getData({ store: 'Headspv', orderBy: 'id', desc: true })
-    return true
+    lists = await db.getItems();
+    // getData({ store: 'Headspv', orderBy: 'id', desc: true })
 }
 
 export const getHeadspvId = async (headId) => {
     if(!lists.length) {
         await getHeadspv()
     }
-    return lists.find((rec) => rec?.id === headId)
+    const findIndex = lists.findIndex((rec) => rec?.id === headId)
+
+    if(findIndex > -1) return lists[findIndex];
+
+    return { name: 'Not found', phone: 'Not found' }
 }
 
 export const updateHeadspv = async (idHeadspv, objectToUpdate) =>{
   //idb
-  await update({ store: "Headspv", criteria: { id: idHeadspv}, obj : objectToUpdate })
+  await db.updateItem(idHeadspv, objectToUpdate)
+//   await update({ store: "Headspv", criteria: { id: idHeadspv}, obj : objectToUpdate })
   lists = lists.map((val) => {
     if(val.id == idHeadspv) {
         return { ...val, ...objectToUpdate }
     }
     return val
   })
-  return true
 }
 
 export const addHeadspv = async (name, phone) => {
-    await append({ store: 'Headspv', obj: { name, phone, disabled: true, shift: 1 }})
-            .then((val) => {
-                if(lists.length) {
-                    lists = lists.concat(val.data)
-                }
-            })
-    return;
+    let record = { name, phone, disabled: true, shift: 1 };
+    const insertedId  = await db.createItem(record);
+
+    if(insertedId !== null);
+
+    lists.unshift({id: insertedId, ...record})
 }
 
 export const headspvEnabled = () => {
@@ -54,10 +59,10 @@ let rec = lists.find((val) => val.shift == shift);
 }
   
 
-import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncHeadSpvToServer () {
 
-    let allData = await getData({ store: storeName, withKey: true })
+    let allData = await db.getItems();
+    // await getData({ store: storeName, withKey: true })
     
     //disabled, id, name, phone, shift
     
@@ -65,11 +70,11 @@ export async function syncHeadSpvToServer () {
     for(let [index, datum] of allData.entries()) {
   
         let dataToSend = {
-            "id": datum?.key,
-            "head_name": datum?.data?.name || 0,
-            "head_phone": datum?.data?.phone || 0,
-            "head_shift": datum?.data?.shift || 0,
-            "is_disabled": datum?.data?.disabled || 0
+            "id": datum?.id,
+            "head_name": datum?.name || 0,
+            "head_phone": datum?.phone || 0,
+            "head_shift": datum?.shift || 0,
+            "is_disabled": datum?.disabled || 0
           }
   
       try {
@@ -95,7 +100,8 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
         return;
     }
 
-    let record = await getDataByKey(storeName, idRecord)
+    let record = await db.getItem(idRecord);
+    // getDataByKey(storeName, idRecord)
 
     if(!record) {
         // dont do anything if record doesn't exist;
