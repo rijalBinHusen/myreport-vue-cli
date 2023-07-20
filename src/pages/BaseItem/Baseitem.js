@@ -10,16 +10,17 @@ export function baseItem () {
 
     const db = useIdb(store);
 
-    async function addItem(itemKode, itemName) {
-        const inserted = await db.createItem({ kode: itemKode, name: itemName });
+    async function addItem(kode, name) {
+        let record = { kode, name }
+        const insertedId = await db.createItem(record);
 
-        if(inserted) {
-            lists.unshift(inserted);
+        if(insertedId !== undefined) {
+            lists.unshift({id: insertedId, ...record });
         }
     }
 
     async function updateItem(id, itemKode, itemName, lastUsed) {
-        const getItem = await this.getItemById(id)
+        const getItem = await getItemById(id)
 
         if(!getItem) return;
 

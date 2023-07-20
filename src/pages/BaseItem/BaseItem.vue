@@ -93,16 +93,20 @@
 
   async function send() {
     const isOkeToSend = name.value !== '' && kode.value !== '';
-
+    
     if(!isOkeToSend) { 
       alert('Form tidak boleh kosong') 
       return
     };
 
     if(editId.value) {
+
       await updateItem(editId.value, kode.value, name.value);
+
     } else {
+
       await addItem(kode.value, name.value);
+
     }
 
     cancel();
