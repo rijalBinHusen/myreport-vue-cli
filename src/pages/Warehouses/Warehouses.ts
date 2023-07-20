@@ -70,7 +70,8 @@ export const updateWarehouse = async (idWarehouse: string, objToUpdate: Warehous
     await db.updateItem(idWarehouse, objToUpdate)
 }
 
-export const warehouseNameBySpv = (spvId: string) => {
+export const warehouseNameBySpv = async (spvId: string) => {
+   await getWarehouses()
     let result:string[] = []
     lists.value.forEach((val) => {
         if(val.supervisors.includes(spvId)) {

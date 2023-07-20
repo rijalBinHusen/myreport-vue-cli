@@ -90,7 +90,8 @@ import { ref, onBeforeMount } from 'vue';
     
     const disableName = async (ev, disabled) => {
       // cek dulu apakah dia sudah di pick di suatu gudang
-      let warehouseName = warehouseNameBySpv(ev)
+      let warehouseName = await warehouseNameBySpv(ev)
+      console.log(warehouseName)
       // kalau belum dipick
       if(!warehouseName) { 
         alert("Supervisor belum ditugaskan digudang")
