@@ -165,7 +165,6 @@ import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/pages//Headspv/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { lists as listsOfDocuments, Documents } from "./DocumentsPeriod"
-
 import { lists as listsSupervisor } from '@/pages/Supervisors/Supervisors'
 import DocumentOptions from "./DocumentOptions.vue"
 import { dateMonth, dayPlusOrMinus, full } from "@/composable/piece/dateFormat"
@@ -544,7 +543,7 @@ export default {
                 }
                 // if view by periode
                 if(viewByPeriode.value) {
-                    lists.value = await listsOfDocuments()
+                    lists.value = listsOfDocuments.value
                 } 
                 // if view by supervisor
                 else {

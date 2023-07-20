@@ -97,7 +97,7 @@ export function Documents () {
 
     const documentsMapper = async (doc: Document): Promise<DocumentsMapped> => {
         const spv = await getSupervisorId(doc.name);
-        const headName = await getHeadspvId(doc.head);
+        const head = await getHeadspvId(doc.head);
         const warehouseName = await getWarehouseById(doc.warehouse);
         const periode2 = dateMonth(doc.periode);
         const finished2 = dateMonth(doc.finished);
@@ -107,7 +107,7 @@ export function Documents () {
         return { 
             ...doc, 
             spvName: spv.name, 
-            headName, 
+            headName: head.name, 
             warehouseName: warehouseName.name,
             periode2,
             collected2,
