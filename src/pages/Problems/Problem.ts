@@ -2,12 +2,11 @@
 import { ddmmyyyy, dateMonth } from "../../composable/piece/dateFormat";
 import { getSupervisorId } from "../Supervisors/Supervisors";
 import { getWarehouseById } from "../Warehouses/Warehouses";
-import getDaysArray from "../../composable/piece/getDaysArray";
 import { baseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { useIdb } from "@/utils/localforage";
 
-interface Problem {
+export interface Problem {
   dl:number
   dlPanjang:number
   periode:number
@@ -41,7 +40,7 @@ type Partial<T> = {
 
 type ProblemUpdate = Partial<Problem>;
 
-const lists = ref(<ProblemMapped[]>[]);
+export const lists = ref(<ProblemMapped[]>[]);
 const storeName = "problem";
 const db = useIdb(storeName);
 

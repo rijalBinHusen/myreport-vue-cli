@@ -33,7 +33,7 @@
 	import Listsbackup from './Backup/Listsbackup.vue'
 	import { computed, onBeforeMount, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
-	import userSignOut from "./Login/UserSignOut"
+	import { signOut } from "./Login/users"
 	import FieldProblemVue from '@/pages/FieldProblems/FieldProblem.vue';
 	import { getWarehouses } from "./Warehouses/Warehouses";
 	import { getSupervisors } from "./Supervisors/Supervisors";
@@ -66,7 +66,7 @@
 					const nowTime = new Date().getTime() 
 					// if now > last activity return false
 					if( isSignIn.value && nowTime > lastActivity) {
-						userSignOut()
+						signOut()
 					}
 				})
 			})

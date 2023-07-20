@@ -1,22 +1,26 @@
-import myfunction from "../myfunction";
+import { dateMonth } from "@/composable/piece/dateFormat";
+import { useIdb } from "@/utils/localforage";
 
-export default function (criteria) {
-  return myfunction
-    .findData({
-      store: "Complains",
-      criteria: criteria,
+export default async function (periode, spvId) {
+
+  let result = [];
+  const dbComplain = useIdb('complains');
+
+  const complains = dbComplain.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+
+  if(complains.length === 0) return;
+
+  for(let complain of complains) {
+    result.push({
+      periode: dateMonth(complain?.periode),
+      masalah: complain?.masalah,
+      sumberMasalah: complain?.sumberMasalah,
+      solusi: complain?.solusi,
+      pic: complain?.pic,
+      dl: dateMonth(complain?.dl),
+      periode2: complain?.isCount ? +dateMonth(complain?.periode).match(/\d+/)[0] : '',
     })
-    .then((data) => {
-      if (data && data.length) {
-        return data.map((val) => ({
-          periode: myfunction.dateFormat(["dateMonth", val?.periode]),
-          masalah: val?.masalah,
-          sumberMasalah: val?.sumberMasalah,
-          solusi: val?.solusi,
-          pic: val?.pic,
-          dl: myfunction.dateFormat(["dateMonth", val?.dl]),
-          periode2: val?.isCount ? +myfunction.dateFormat(["dateMonth", val?.periode]).match(/\d+/)[0] : '',
-        }));
-      }
-    });
+  }
+
+  return result
 }

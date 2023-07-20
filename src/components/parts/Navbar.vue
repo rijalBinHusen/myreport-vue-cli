@@ -42,7 +42,7 @@
 <script>
 	import Button from "../elements/Button.vue";
 	import { mapGetters } from "vuex"
-	import signOut from "@/pages/Login/UserSignOut"
+	import { signOut } from "@/pages/Login/users"
 	
 	export default {
 		setup() {

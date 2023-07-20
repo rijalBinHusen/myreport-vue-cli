@@ -1,24 +1,36 @@
-import myfunction from "../myfunction";
+// import myfunction from "../myfunction";
+import { dateMonth } from "@/composable/piece/dateFormat";
+import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
+import { useIdb } from "@/utils/localforage";
 
-export default function (periode, supervisor, head) {
-  let criteria = supervisor ? { periode, supervisor } : { periode, head }
-  return myfunction
-    .findData({ store: "fieldProblem", criteria: criteria })
-    .then((data) => {
-      if (data && data?.length) {
-        const result = data.map(async (val) => {
-          let getSupervisor = await myfunction.findData({ store: "supervisors", criteria: { id: val?.supervisor } });
-          return {
-            periode: myfunction.dateFormat(["dateMonth", val.periode]),
-            masalah: `[Kendala] ${val.masalah} Karu ${getSupervisor[0]?.name}`,
-            sumberMasalah: val.sumberMasalah,
-            solusi: val.solusi,
-            pic: val.pic,
-            dl: myfunction.dateFormat(["dateMonth", val.dl]),
-          };
-        })
-        return Promise.all(result)
-    }
-  })
-  .then((result) => result);
+export default async function (periode, supervisor, head) {
+  const dbFieldProblem = useIdb('fieldproblem');
+
+  let result = []
+  let problems;
+
+  if(supervisor) {
+    problems = await dbFieldProblem.getItemsByTwoKeyValue('periode', periode, 'supervisor', supervisor);
+  }
+
+  else if (head) {
+    problems = await dbFieldProblem.getItemsByTwoKeyValue('periode', periode, 'head', head);
+  }
+
+  if(typeof problems === 'undefined') return;
+
+  for (let problem of problems) {
+    const supervisor = getSupervisorId(problem.supervisor);
+
+    result.push({
+      periode: dateMonth(problem.periode),
+      masalah: `[Kendala] ${problem.masalah} Karu ${supervisor.name}`,
+      sumberMasalah: problem.sumberMasalah,
+      solusi: problem.solusi,
+      pic: problem.pic,
+      dl: dateMonth(problem.dl)
+    })
+  }
+
+  return result;
 }

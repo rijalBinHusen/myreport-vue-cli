@@ -1,21 +1,27 @@
-import myfunction from "../myfunction";
+// import myfunction from "../myfunction";
 
-export default function (criteria) {
-  return myfunction
-    .findData({
-      store: "Cases",
-      criteria: criteria,
+import { dateMonth } from "@/composable/piece/dateFormat";
+import { useIdb } from "@/utils/localforage";
+
+export default async function (periode, spvId) {
+
+  let result = [];
+  const dbCase = useIdb('cases');
+
+  const cases = await dbCase.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+
+  if(cases.length === 0) return;
+
+  for(let caseSpv of cases) {
+    result.push({
+      masalah: "[Kasus] " + caseSpv?.masalah,
+      sumberMasalah: caseSpv?.sumberMasalah,
+      solusi: caseSpv?.solusi,
+      pic: caseSpv?.pic,
+      periode: dateMonth(caseSpv?.periode),
+      dl: dateMonth(caseSpv?.dl),
     })
-    .then((data) => {
-      if (data && data.length) {
-        return data.map((val) => ({
-          masalah: "[Kasus] " + val?.masalah,
-          sumberMasalah: val?.sumberMasalah,
-          solusi: val?.solusi,
-          pic: val?.pic,
-          periode: myfunction.dateFormat(["dateMonth", val?.periode]),
-          dl: myfunction.dateFormat(["dateMonth", val?.dl]),
-        }));
-      }
-    });
+  }
+
+  return result;
 }

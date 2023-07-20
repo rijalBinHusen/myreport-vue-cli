@@ -1,11 +1,11 @@
 import exportToXls from "@/utils/exportToXls";
-import { getProblemBetweenPeriode, listsProblem } from "@/pages/Problems/Problem"
+import { getProblemBetweenPeriode, lists  } from "@/pages/Problems/Problem"
 import { ddmmyyyy } from "@/composable/piece/dateFormat"
+
 export default async function (periode1, periode2) {
     await getProblemBetweenPeriode(periode1, periode2);
-    const results = await listsProblem()
 
-    const mapResult = results.map(res => ({
+    const mapResult = lists.map(res => ({
         periode: res?.periode,
         namaGudang: res?.namaGudang,
         namaItem: res?.namaItem,
