@@ -17,7 +17,7 @@ export const getHeadspvId = async (headId) => {
     await getHeadspv()
     const findIndex = lists.value.findIndex((rec) => rec?.id === headId)
 
-    if(findIndex > -1) return lists[findIndex];
+    if(findIndex > -1) return lists.value[findIndex];
 
     return { name: 'Not found', phone: 'Not found' }
 }

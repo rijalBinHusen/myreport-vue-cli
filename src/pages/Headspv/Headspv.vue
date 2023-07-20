@@ -120,6 +120,7 @@ export default {
     const edit = async (ev) => {
       idHeadspv.value = ev
       let getHead = await getHeadspvId(ev)
+      console.log(ev, getHead)
       head.value = getHead.name
       phone.value = getHead.phone
     }

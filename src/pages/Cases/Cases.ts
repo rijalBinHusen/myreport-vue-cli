@@ -174,13 +174,13 @@ export function Cases() {
 
   async function interpretCaseRecord(obj: Case): Promise<CaseMapped> {
     const spv = await getSupervisorId(obj.name);
-    const headName = await getHeadspvId(obj.head);
+    const head = await getHeadspvId(obj.head);
 
     return {
       ...obj,
       periode2: dateMonth(obj.periode),
       spvName: spv.name,
-      headName,
+      headName: head.name,
       insert2: dateMonth(obj?.insert),
     };
 
