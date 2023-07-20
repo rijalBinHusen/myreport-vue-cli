@@ -162,7 +162,7 @@ import Datatable from "@/components/parts/Datatable.vue"
 import Dropdown from "@/components/elements/Dropdown.vue"
 import { ref, onBeforeMount, watch, computed } from "vue"
 import { useStore } from "vuex"
-import { lists as listsHeadSPV } from '@/pages//Headspv/Headspv'
+import { lists as headSPVLists } from '@/pages//Headspv/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { lists as listsOfDocuments, Documents } from "./DocumentsPeriod"
 import { lists as listsSupervisor } from '@/pages/Supervisors/Supervisors'
@@ -182,7 +182,6 @@ export default {
         const store = useStore()
         const viewByPeriode = ref(true)
         const lists = ref([])
-        const headSPVLists = ref([])
         const mode = ref('Uncollected')
         const renderTable = ref(true)
         const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
@@ -457,7 +456,6 @@ export default {
         }
 
         onBeforeMount( async () => {
-            headSPVLists.value = listsHeadSPV
             renewLists(true)
         })
 
