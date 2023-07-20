@@ -23,7 +23,7 @@ const storeName = "supervisors";
 const db = useIdb(storeName);
 
 export const getSupervisors = async () => {
-    lists.value.length = 0
+    if(lists.value.length) return;
     lists.value = await db.getItems<Supervisor>();
 }
 
@@ -54,7 +54,7 @@ export const updateSupervisor = async (idSupervisor: string, obj: SupervisorUpda
   // objectToUpdate = { name : "", phone : "" }
   //idb
   
-  const isNoValueToUpdate = Object.values(obj).length > 0;
+  const isNoValueToUpdate = Object.values(obj).length === 0;
 
   if(isNoValueToUpdate) return;
 

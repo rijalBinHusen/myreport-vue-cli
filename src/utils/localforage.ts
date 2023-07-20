@@ -73,11 +73,13 @@ export const useIdb = (storeName: string) => {
   }
 
   async function addActivity(type: string, idRecord: string) {
+
     const now = new Date();
     const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
     const utcPlus7 = new Date(now.getTime() + utcOffset);
-
+    
     const idLogger = stateSummary.value[storeName]?.total + new Date().getTime() + '';
+    
     const recordToSet = <Activity>{
       id: idLogger,
       idRecord,
@@ -87,7 +89,19 @@ export const useIdb = (storeName: string) => {
       type
     }
 
-    await logging.setItem(idLogger, recordToSet)
+    const isDevelopmentMode = process.env.NODE_ENV === 'development';
+
+    if(isDevelopmentMode) {
+
+      console.log(recordToSet)
+
+    } 
+    
+    else {
+
+      await logging.setItem(idLogger, recordToSet)
+
+    }
 
   }
 
@@ -144,6 +158,7 @@ export const useIdb = (storeName: string) => {
   };
 
   const removeItem = async (key: string) => {
+    await getSummary()
     // add activity
     addActivity('delete', key);
     await store.removeItem(key);
@@ -183,6 +198,7 @@ export const useIdb = (storeName: string) => {
   };
 
   const updateItem = async (key: string, keyValueToUpdate: any): Promise<boolean> => {
+    await getSummary()
     // onsole.log('local forage update item', key)
     try {
       // get item first

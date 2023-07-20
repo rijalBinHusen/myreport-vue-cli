@@ -23,12 +23,13 @@
   </div>
     <br />
     <br />
-    <DatatableVue 
-      v-if="renderTable"
-      :datanya="listSupervisors" 
+    <DatatableVue
+      v-if="lists.length"
+      :datanya="lists" 
       :heads="['Nama']" 
       :keys="['name']"
       option
+      id="data-table-supervisors"
     >
       <template #th>
           <th>Shift</th>
@@ -70,36 +71,21 @@
     </DatatableVue>
 </template>
 
-<script>
+<script setup>
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import DatatableVue from "@/components/parts/Datatable.vue";
 import { warehouseNameBySpv } from '@/pages/Warehouses/Warehouses';
-import { updateSupervisor, addSupervisor, getSupervisorId, lists } from './Supervisors'
-import { ref, onMounted } from 'vue';
+import { updateSupervisor, addSupervisor, getSupervisorId, lists, getSupervisors } from './Supervisors'
+import { ref, onBeforeMount } from 'vue';
 
-export default {
-  components: {
-    Button,
-    DatatableVue,
-    Select
-  },
-  setup() {
-    const renderTable = ref(false)
     const supervisor = ref('')
     const phone = ref('')
     const idSupervisor = ref('')
-    const listSupervisors = ref([])
-    let timeout = ''
+    let timeout = '';
 
-    const renewLists = () => {
-      renderTable.value = false
-      listSupervisors.value = lists
-      renderTable.value = true
-    }
-
-    onMounted(() => {
-      renewLists()
+    onBeforeMount(async () => {
+      await getSupervisors()
     })
     
     const disableName = async (ev, disabled) => {
@@ -111,17 +97,22 @@ export default {
         return 
       }
       await updateSupervisor(ev, { disabled: !disabled })
-      renewLists()
+      
     }
 
     const changeShift = async (id, shift) => {
+
+      if(shift === null) return;
       
       if(idSupervisor.value == id) { clearTimeout(timeout) }
+
       idSupervisor.value = id
+
       timeout = setTimeout(() => {
-        updateSupervisor(id, { shift: shift })
+        updateSupervisor(id, { shift })
         cancel()
       }, 1000)
+
     }
 
     const send = async () => {
@@ -133,7 +124,7 @@ export default {
       else {
         await addSupervisor(supervisor.value, phone.value)
       }
-      renewLists()
+      
       cancel()
     }
 
@@ -150,20 +141,4 @@ export default {
       phone.value = getSupervisor?.phone
     }
 
-    return { 
-      disableName,
-      supervisor,
-      phone,
-      idSupervisor,
-      listSupervisors,
-      edit,
-      changeShift,
-      send,
-      cancel,
-      renderTable
-     }
-
-  },
-};
 </script>
-@/pages/Warehouses/Warehouses
