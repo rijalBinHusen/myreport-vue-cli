@@ -67,11 +67,14 @@ import { BaseReportFile, lists as BaseReportFileLists } from "./BaseReportFile";
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
+import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 import { useStore } from "vuex"
-import { removeClockByParent } from '@/pages/BaseReport/BaseReportClock' 
-import { removeStockByParent } from '@/pages/BaseReport/BaseReportStock'
+import { baseClock } from '@/pages/BaseReport/BaseReportClock' 
+import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { getProblemFromDB } from '@/pages/Problems/Problem'
+
+const { removeClockByParent } = baseClock();
+const { removeStockByParent } = baseReportStock();
 
 export default {
     name: "Collect",
@@ -172,7 +175,7 @@ export default {
             // bring the loader up
             loader()
             let excel = await readExcelFile(e.target.files[0])
-            let warehouseName = await getWarehouseId(infobase?.warehouse)
+            let warehouseName = await getWarehouseById(infobase?.warehouse)
             let periode2 = dateMonth(infobase?.periode )
 
             let res = await subscribeMutation(

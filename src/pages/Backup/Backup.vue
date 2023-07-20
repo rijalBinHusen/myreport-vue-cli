@@ -27,7 +27,7 @@
 
 <script>
 import { useStore } from "vuex"
-import { storeBackup, seperateUsers, syncAllDataToServer, syncBasedOnActivity, errorSyncResend } from "./storeBackup"
+import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend } from "./storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
@@ -45,9 +45,9 @@ export default {
                 await storeBackup(checkedOption.value.includes(2))
             }
             // waiting for backup user activity
-            if(checkedOption.value.includes(4)) {
-                await seperateUsers(checkedOption.value.includes(2))
-            }
+            // if(checkedOption.value.includes(4)) {
+            //     await seperateUsers(checkedOption.value.includes(2))
+            // }
             // // close the spinner
             store.commit("Modal/active");
             // empty the option

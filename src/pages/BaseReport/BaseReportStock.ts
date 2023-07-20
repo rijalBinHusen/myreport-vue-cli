@@ -50,7 +50,7 @@ interface BaseStockUpdate {
   shift?: number;
 }
 
-let lists = <BaseStockMapped[]>[];
+export let lists = <BaseStockMapped[]>[];
 
 const storeName = "basereportstock";
 

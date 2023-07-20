@@ -101,19 +101,21 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "@/pages/Followup/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { getBaseClockByParentByShift, baseReportClockLists, updateBaseClock, removeClock, appendData as appendClockRecord } from '@/pages/BaseReport/BaseReportClock'
-import { getBaseStockByParentByShift, baseReportStockLists, markStockFinished, updateBaseStock, removeStock } from '@/pages/BaseReport/BaseReportStock'
+import { lists as baseReportClockLists, baseClock } from '@/pages/BaseReport/BaseReportClock'
+import { lists as baseReportStockLists, baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/pages/Documents/DocumentsPeriod'
+import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
 import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from './BaseReportPanel'
-import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
+import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
 import AGDateEditorVue from "./AGDateEditor.vue"
 import { loaderMessage } from "../../components/parts/Loader/state";
+
+const { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } = Documents();
 
 export default {
     components: {
@@ -139,6 +141,8 @@ export default {
         const lists = ref([])
         const renderTable = ref(false)
         const excelLabel = ref(null)
+        const { getBaseClockByParentByShift, updateBaseClock, removeClock, appendData: appendClockRecord } = baseClock();
+        const { getBaseStockByParentByShift, markStockFinished, updateBaseStock, removeStock } = baseReportStock();
         
         const message = async (ev, obj) => {
             // ev = jenis pesan, obj=lengtka
@@ -164,7 +168,7 @@ export default {
             // dapatkan nomor telfon dulu
             let theDocument = await getDocumentByPeriodeByWarehouseByShiftFromDb(Number(+selectedPeriode.value), selectedWarehouse.value, nowShift.value)
             let spvInfo = await getSupervisorId(theDocument.name)
-            let warehouseName = await getWarehouseId(selectedWarehouse.value).then((res) => res.name)
+            let warehouseName = await getWarehouseById(selectedWarehouse.value).then((res) => res.name)
             let pesan;
             let salam = `Assalamu alaikum pak ${spvInfo.name}%0a%0a`
             let pembuka = `Mohon maaf menggangu,%0aDi laporan pak ${spvInfo.name} periode *${dateMonth(+selectedPeriode.value) }*, shift ${nowShift.value} ${warehouseName}, untuk item ${obj.itemName}`

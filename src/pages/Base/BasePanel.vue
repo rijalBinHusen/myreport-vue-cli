@@ -83,7 +83,7 @@ import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
 import { selectedPeriode, selectedWarehouse, shift, sheet } from './BaseReportPanel'
 import { dateMonth } from '@/composable/piece/dateFormat';
-import { getWarehouseId } from '@/pages/Warehouses/Warehouses';
+import { getWarehouseById } from '@/pages/Warehouses/Warehouses';
 import { getProblemFromDB } from '@/pages/Problems/Problem'
 
 
@@ -124,7 +124,7 @@ export default {
             let baseReportFile = isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
             // get value for title
             let periode2 = dateMonth(Number(selectedPeriode.value || new Date()))
-            let warehouseName = await getWarehouseId(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
+            let warehouseName = await getWarehouseById(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
 
             // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
             if(!baseReportFile) {

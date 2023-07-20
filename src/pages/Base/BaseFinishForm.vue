@@ -63,7 +63,7 @@ import { onMounted, onUnmounted, ref, watch } from "vue"
 import { getHeadspvId } from "@/pages/Headspv/Headspv"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
+import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 import { baseClock } from '@/pages/BaseReport/BaseReportClock'
 import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
@@ -103,7 +103,7 @@ export default {
             document.value = await getDocument(Number(selectedPeriode.value), selectedWarehouse.value, shift.value)
             supervisor.value = await getSupervisorId(document.value.name).then((res) => res.name)
             headSpv.value = await getHeadspvId(document.value.head).then((res) => res.name)
-            warehouseName.value = await getWarehouseId(document.value.warehouse).then((res) => res.name)
+            warehouseName.value = await getWarehouseById(document.value.warehouse).then((res) => res.name)
             // console.log('supervisor' supervisor.value)
             // console.log('warehouseName', )
             
