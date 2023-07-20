@@ -46,7 +46,7 @@ import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
 import { updateSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
 import { updateHeadspv, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
-import { lists as listsWarehouse } from '@/pages/Warehouses/Warehouses'
+import { lists as listsWarehouse, getWarehouseNotGroupedAndTheSupervisors } from '@/pages/Warehouses/Warehouses'
 import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { useStore } from "vuex"
 import { ymdTime } from "@/composable/piece/dateFormat"
@@ -64,7 +64,7 @@ export default {
         const headLists = ref([])
         const periode = ref()
         const lowerPeriode = ref('')
-        const warehousesLists = ref([])
+        const warehousesLists = ref();
         const store = useStore()
         const BaseReportFileClass = new BaseReportFile();
         const { addBaseReportFile } = BaseReportFileClass;
@@ -82,18 +82,12 @@ export default {
               }, 300)
         }
 
-        onBeforeMount(() => {
-            warehousesLists.value.length = 0
+        onBeforeMount(async () => {
             supervisorsEnabled().forEach((spv) => {
                 spvLists.value[spv.id] = spv
             })
             headLists.value = headspvEnabled()
-            listsWarehouse.forEach((warehouse) => {
-                let findGroup = warehousesLists.value.findIndex((warehouseList) => warehouseList.group == warehouse.id)
-                if(findGroup < 0) {
-                    warehousesLists.value.push(warehouse)
-                }
-            })
+            warehousesLists.value = await getWarehouseNotGroupedAndTheSupervisors()
             lowerPeriode.value = new Date(getLastDate())
         })
 

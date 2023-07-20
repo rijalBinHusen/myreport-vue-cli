@@ -1,5 +1,8 @@
 import { getSupervisorId } from '../Supervisors/Supervisors'
 import { useIdb } from '@/utils/localforage';
+import { progressMessage2 } from "../../components/parts/Loader/state";
+import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+import { ref } from 'vue';
 
 interface Warehouse {
     disabled: boolean
@@ -99,9 +102,6 @@ export const getSupervisorShift1ByWarehouse = async (idWarehouse: string) => {
 }
 
 
-import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData, putData, deleteData } from "../../utils/sendDataToServer";
-import { ref } from 'vue';
 export async function syncWarehouseToServer () {
 
     let allData = await db.getItems<Warehouse>();
@@ -183,4 +183,36 @@ export async function syncWarehouseToServer () {
     }
 
     return true;
+  }
+
+  import { type Supervisor } from "@/pages/Supervisors/Supervisors"
+
+  interface WarehouseAndTheSupervisors extends Warehouse {
+    supervisorsAndDetail: Supervisor[]
+  }
+
+  export async function getWarehouseNotGroupedAndTheSupervisors(): Promise<WarehouseAndTheSupervisors[]> {
+    await getWarehouses();
+
+    let result = <WarehouseAndTheSupervisors[]>[];
+
+    const uniqueeWarehouses = lists.value.filter((rec) => !rec.isGrouped);
+
+    for(let warehouse of uniqueeWarehouses) {
+        if(warehouse.supervisors.length){
+
+            let supervisors = <Supervisor[]>[]
+
+            for(let supervisorId of warehouse.supervisors) {
+                const supervisorInfo = await getSupervisorId(supervisorId);
+                supervisors.push(supervisorInfo);
+            }
+
+            result.push({ ...warehouse, supervisorsAndDetail: supervisors })
+
+        }
+
+    }
+
+    return result;
   }

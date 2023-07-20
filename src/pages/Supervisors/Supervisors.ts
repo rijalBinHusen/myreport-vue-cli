@@ -4,7 +4,7 @@ import { progressMessage2 } from "../../components/parts/Loader/state"
 import { useIdb } from "@/utils/localforage";
 import { ref } from "vue";
 
-interface Supervisor {
+export interface Supervisor {
     disabled: boolean
     id: string
     name: string
