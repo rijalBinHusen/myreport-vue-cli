@@ -57,13 +57,13 @@
             @trig="supervisors($event)" 
             />
 
-          <Button 
+          <!-- <Button 
             secondary 
             value="Head" 
             :datanya="prop.id" 
             type="button" 
             @trig="head($event)" 
-            />
+            /> -->
 
           <Button 
             primary 
@@ -142,7 +142,8 @@ export default {
 
     const edit = async (ev) => {
       idWarehouse.value = ev
-      warehouse.value = await getWarehouseById(ev)?.name
+      const getWarehouseInfo = await getWarehouseById(ev)
+      warehouse.value = getWarehouseInfo.name
     }
 
     const setGroup = async (idWarehouse, idWarehouseGroup) => {

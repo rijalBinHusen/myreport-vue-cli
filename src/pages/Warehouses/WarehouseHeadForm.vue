@@ -1,7 +1,7 @@
 <template>
 	<div>
-		<Input type="text" label="Gudang" placeholder="Kosong" :value="info?.name" disabled/>
-		<div class="w3-col s4 w3-large w3-margin-top" v-for="list in listsHeadSpv" :key="list.id">
+		<Input type="text" label="Gudang" placeholder="Kosong" :value="warehouseName" disabled/>
+		<div class="w3-col s4 w3-large w3-margin-top" v-for="list in lists" :key="list.id">
 			<input 
 				type="checkbox" 
 				v-model="pickedHead"
@@ -22,43 +22,31 @@
 	</div>
 </template>
 
-<script>
-import Input from "@/components/elements/Input.vue"
-import Button from "@/components/elements/Button.vue"
-import { getWarehouseById, updateWarehouse } from '@/pages/Warehouses/Warehouses'
-import { lists } from '@/pages/Headspv/Headspv'
-import { ref, onBeforeMount } from "vue"
-import { useStore } from "vuex"
+<script setup lang="ts">
+	import Input from "@/components/elements/Input.vue"
+	import Button from "@/components/elements/Button.vue"
+	import { getWarehouseById, updateWarehouse } from '@/pages/Warehouses/Warehouses'
+	import { lists } from '@/pages/Headspv/Headspv'
+	import { ref, onBeforeMount } from "vue"
+	import { useStore } from "vuex"
 
-export default {
-	setup() {
-		const info = ref('')
-		const listsHeadSpv = ref([])
-		const pickedHead = ref("")
-		const store = useStore()
-		
-		const update = async () => {
-			// console.log(info.value.id, pickedHead.value)
-			// await updateHeadspv(info.value.id, pickedHead.value)
-			// await updateWarehouse(info.value.id, {  })
-			store.commit('Modal/tunnelMessage', true)
-			store.commit("Modal/active");
-		}
+	const warehouseId = ref('')
+	const pickedHead = ref("")
+	const warehouseName = ref("")
+	const store = useStore()
+	
+	const update = async () => {
+		// console.log(warehouseId.value.id, pickedHead.value)
+		// await updateHeadspv(warehouseId.value.id, pickedHead.value)
+		// await updateWarehouse(warehouseId.value.id, {  })
+		store.commit('Modal/tunnelMessage', true)
+		store.commit("Modal/active");
+	}
 
-		onBeforeMount(() => {
-			info.value = getWarehouseById(store.getters['Modal/obj']?.obj?.id)
-			listsHeadSpv.value = lists
-			pickedHead.value = info.value?.head
-		})
-
-		return {
-			info,
-			listsHeadSpv,
-			pickedHead,
-			update,
-		}
-
-	},
-	components: { Input, Button },
-}
-</script>@/pages/Warehouses/Warehouses
+	onBeforeMount(async () => {
+		const warehouseDetails = await getWarehouseById(store.getters['Modal/obj']?.obj?.id)
+		warehouseId.value = warehouseDetails.id
+		warehouseName.value = warehouseDetails.name
+		// pickedHead.value = warehouseDetails.
+	})
+</script>
