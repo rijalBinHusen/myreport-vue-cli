@@ -1,22 +1,21 @@
 import { postData, deleteData, putData } from "../../utils/sendDataToServer"
 import { useIdb } from '@/utils/localforage';
 import { progressMessage2 } from "../../components/parts/Loader/state";
+import { ref } from "vue";
 
-export let lists = []
+export let lists = ref([])
 const storeName = "headspv";
 const db = useIdb(storeName)
 
 export const getHeadspv = async () => {
-    lists = []
-    lists = await db.getItems();
+    if(lists.value.length) return;
+    lists.value = await db.getItems();
     // getData({ store: 'Headspv', orderBy: 'id', desc: true })
 }
 
 export const getHeadspvId = async (headId) => {
-    if(!lists.length) {
-        await getHeadspv()
-    }
-    const findIndex = lists.findIndex((rec) => rec?.id === headId)
+    await getHeadspv()
+    const findIndex = lists.value.findIndex((rec) => rec?.id === headId)
 
     if(findIndex > -1) return lists[findIndex];
 
@@ -27,7 +26,7 @@ export const updateHeadspv = async (idHeadspv, objectToUpdate) =>{
   //idb
   await db.updateItem(idHeadspv, objectToUpdate)
 //   await update({ store: "Headspv", criteria: { id: idHeadspv}, obj : objectToUpdate })
-  lists = lists.map((val) => {
+  lists.value = lists.value.map((val) => {
     if(val.id == idHeadspv) {
         return { ...val, ...objectToUpdate }
     }
@@ -41,15 +40,15 @@ export const addHeadspv = async (name, phone) => {
 
     if(insertedId !== null);
 
-    lists.unshift({id: insertedId, ...record})
+    lists.value.unshift({id: insertedId, ...record})
 }
 
 export const headspvEnabled = () => {
-    return lists.filter((val) => !val.disabled);
+    return lists.value.filter((val) => !val.disabled);
 }
 
 export const headspvByShift = (shift) => {
-let rec = lists.find((val) => val.shift == shift);
+let rec = lists.value.find((val) => val.shift == shift);
     return rec && rec.name && !rec?.disabled
         ? rec
         : {

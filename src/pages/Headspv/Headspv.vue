@@ -23,8 +23,9 @@
     <br />
     <br />
     <Table 
+      v-if="lists.length"
       :headers="['Nama']" 
-      :lists="headLists" 
+      :lists="lists" 
       :keys="['name']"
       options
     >
@@ -62,11 +63,11 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMount } from "vue";
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import Table from "@/components/elements/Table.vue"
-import { updateHeadspv, addHeadspv, getHeadspvId, lists } from './Headspv'
+import { updateHeadspv, addHeadspv, getHeadspvId, lists, getHeadspv } from './Headspv'
 
 export default {
   components: {
@@ -78,15 +79,10 @@ export default {
     const head = ref('')
     const phone = ref('')
     const idHeadspv = ref('')
-    const headLists = ref([])
     let timeout = ''
 
-    const renewLists = () => {
-      headLists.value = lists
-    }
-
-    onMounted(() => {
-      renewLists()
+    onBeforeMount(async() => {
+      await getHeadspv();
     })
 
     const changeShift = (id, shift) => {
@@ -117,7 +113,7 @@ export default {
       else {
         await addHeadspv(head.value, phone.value)
       }
-      renewLists()
+      
       cancel()
     }
 
@@ -130,11 +126,11 @@ export default {
 
     const disableName = async (ev, disabled) => {
       await updateHeadspv(ev, { disabled: !disabled})
-      renewLists()
+      
     }
 
     return {
-      head, phone, idHeadspv, headLists, changeShift, cancel, send, edit, disableName,
+      head, phone, idHeadspv, lists, changeShift, cancel, send, edit, disableName,
     }
 
   }
