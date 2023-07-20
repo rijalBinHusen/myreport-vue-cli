@@ -100,8 +100,8 @@ export default {
     const warehouse = ref('')
     const idWarehouse = ref('')
 
-    const supervisors = async (ev) => {
-      let res = await subscribeMutation(
+    const supervisors = (ev) => {
+      subscribeMutation(
         "Edit supervisors",
         "WarehouseSupervisorsForm",
         { id: ev },
@@ -109,8 +109,8 @@ export default {
       )
     }
 
-    const head = async (ev) => {
-      let res = await subscribeMutation(
+    const head = (ev) => {
+      subscribeMutation(
         "Edit Head",
         "WarehouseHeadForm",
         { id: ev },
@@ -167,8 +167,7 @@ export default {
       lists,
       cancel,
       setGroup,
-      head,
-      lists
+      head
     }
 
   },

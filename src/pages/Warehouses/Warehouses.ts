@@ -63,7 +63,7 @@ export const updateWarehouse = async (idWarehouse: string, objToUpdate: Warehous
 
     if(findIndex > -1) {
         let record = lists.value[findIndex];
-        let updateRecord = { ...record, objToUpdate};
+        let updateRecord = { ...record, ...objToUpdate};
         lists.value[findIndex] = updateRecord;
     }
     
