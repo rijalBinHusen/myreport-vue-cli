@@ -21,7 +21,7 @@ const storeName = "warehouses";
 const db = useIdb(storeName);
 
 export const getWarehouses = async () => {
-    lists.value.length = 0
+    if(lists.value.length > 0) return;
     lists.value = await db.getItems<Warehouse>();
 }
 

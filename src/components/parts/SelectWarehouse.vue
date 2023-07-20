@@ -15,18 +15,21 @@
 </template>
 
 <script>
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, computed } from 'vue';
 import SelectVue from '../elements/Select.vue';
-import { lists } from '@/pages/Warehouses/Warehouses';
+import { lists, getWarehouses } from '@/pages/Warehouses/Warehouses';
 
 export default {
     emit: ['selectedWarehouse'],
     props: ['inSelectWarehouse', 'disabled', 'noLabel'],
     setup(props, { emit }) {
-        const warehouses = ref([])
+        const warehouses = computed(() => lists.value.map((rec) => ({
+            id: rec.id,
+            name: rec.name
+         })))
 
         onBeforeMount(() => {
-            warehouses.value = lists
+            getWarehouses()
         })
 
         const handleChange = (ev) => {
@@ -39,4 +42,4 @@ export default {
         SelectVue,
     }
 }
-</script>@/pages/Warehouses/Warehouses
+</script>
