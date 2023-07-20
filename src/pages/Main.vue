@@ -35,9 +35,6 @@
 	import { useStore } from 'vuex';
 	import { signOut } from "./Login/users"
 	import FieldProblemVue from '@/pages/FieldProblems/FieldProblem.vue';
-	import { getWarehouses } from "./Warehouses/Warehouses";
-	import { getSupervisors } from "./Supervisors/Supervisors";
-	import { getHeadspv } from "./Headspv/Headspv";
 	import ImportActivityUser from './Import/ImportActivity.vue'
 	
 
@@ -55,9 +52,6 @@
 			})
 			
 			onBeforeMount(() => {
-				getWarehouses()
-				getSupervisors()
-				getHeadspv()
 				isSignIn.value = localStorage.getItem('loginya')
 				store.subscribe(() => {
 					// get time last activity that stored

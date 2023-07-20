@@ -36,12 +36,18 @@ const signIn = async (username: string, password: string) => {
             throw new Error("Username atau password salah")
         }
         // kembalikan success
-        await dbLogin.createItem({
+        const insertedId = await dbLogin.createItem({
             username: user[0]?.username,
             time: new Date().getTime(),
             totalActivity: 0,
             backup: false,
         })
+
+        if(insertedId === undefined) return;
+        
+        localStorage.setItem('loginya', insertedId);
+        localStorage.setItem('loginActivity', '0')
+        localStorage.setItem('lastActivity', new Date().getTime() + 14400000 + '')
 
         return true
     } catch (err: any) {
