@@ -10,7 +10,7 @@
 
 <script>
 // import { getAllItems, lists as stateItems } from '@/composable/components/Baseitem'
-import { lists as stateItems, BaseItem } from "@/pages/BaseItem/Baseitem"
+import { lists as stateItems, BaseItem, baseItem } from "@/pages/BaseItem/Baseitem"
 import { dateMonth } from '@/composable/piece/dateFormat'
 
 export default {
@@ -45,9 +45,9 @@ export default {
     },
     name: "InputItem",
     async mounted() {
-        const item = new BaseItem();
+        const item = baseItem();
         await item.getAllItems();
         this.render = true
     },
 }
-</script>@/pages/BaseItem/Baseitem
+</script>

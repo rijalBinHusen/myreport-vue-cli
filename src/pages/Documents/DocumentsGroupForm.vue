@@ -47,7 +47,7 @@ import { ref, onBeforeMount } from "vue"
 import { updateSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
 import { updateHeadspv, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
 import { lists as listsWarehouse } from '@/pages/Warehouses/Warehouses'
-import { getLastDate, addData as addNewDocument } from '@/pages/Documents/DocumentsPeriod'
+import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { useStore } from "vuex"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
@@ -68,6 +68,7 @@ export default {
         const store = useStore()
         const BaseReportFileClass = new BaseReportFile();
         const { addBaseReportFile } = BaseReportFileClass;
+        const { addData: addNewDocument, getLastDate } = Documents();
 
         const changeShift = (store, idFL, shift) => {
             if(id.value == idFL) {

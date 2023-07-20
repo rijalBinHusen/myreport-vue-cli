@@ -61,8 +61,8 @@ type Partial<T> = {
 type ComplainUpdate = Partial<Complain>;
 type ComplainImportUpdate = Partial<ComplainImport>;
 
-let lists = <ComplainMapped[]>[];
-let listsComplainImport = <ComplainImportMapped[]>[];
+export let lists = <ComplainMapped[]>[];
+export let listsComplainImport = <ComplainImportMapped[]>[];
 
 const storeName = "complains";
 

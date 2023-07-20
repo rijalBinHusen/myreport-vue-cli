@@ -25,6 +25,7 @@ export interface Problem {
   solusiPanjang: string
   sumberMasalah: string
   warehouse: string
+  linkToDocument: boolean
 }
 
 interface ProblemMapped extends Problem {
@@ -164,6 +165,7 @@ export const addProblem = async (
     tanggalSelesai,
     isFinished: false,
     shiftSelesai: 0,
+    linkToDocument: false
   };
   
   const insertedId = await db.createItem(rec);

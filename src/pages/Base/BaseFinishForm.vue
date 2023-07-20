@@ -57,17 +57,21 @@
 <script>
 import Select from "../../components/elements/Select.vue"
 import Button from "../../components/elements/Button.vue"
-import { isGenerateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb as getDocument } from '@/pages/Documents/DocumentsPeriod'
+import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { selectedPeriode, selectedWarehouse, shift } from "./BaseReportPanel"
 import { onMounted, onUnmounted, ref, watch } from "vue"
 import { getHeadspvId } from "@/pages/Headspv/Headspv"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
 import { getWarehouseId } from "@/pages/Warehouses/Warehouses"
-import { clockDetails } from '@/pages/BaseReport/BaseReportClock'
-import { stockDetails } from '@/pages/BaseReport/BaseReportStock'
+import { baseClock } from '@/pages/BaseReport/BaseReportClock'
+import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { problemActiveBySpvAndPeriode, updateProblem } from '@/pages/Problems/Problem'
+
+const { isGenerateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb: getDocument } = Documents();
+const { stockDetails } = baseReportStock();
+const { clockDetails } = baseClock();
 
 
 

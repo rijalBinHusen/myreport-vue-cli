@@ -164,24 +164,7 @@ import { ref, onBeforeMount, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { lists as listsHeadSPV } from '@/pages//Headspv/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { 
-    getUncollectedDocuments, 
-    listsOfDocuments, 
-    documentsBySupervisor,
-    documentMore2DaysBySpv,
-    allDocumentMore2Days,
-    collectDocument,
-    ijinDocument,
-    kosongDocument,
-    getCollectedDocuments,
-    approveDocument,
-    unApproveDocument,
-    unCollectDocument,
-    getApprovedDocuments,
-    getDocuments,
-    shareDocument,
-    findDocument
-} from "./DocumentsPeriod"
+import { lists as listsOfDocuments, Documents } from "./DocumentsPeriod"
 
 import { lists as listsSupervisor } from '@/pages/Supervisors/Supervisors'
 import DocumentOptions from "./DocumentOptions.vue"
@@ -206,6 +189,23 @@ export default {
         const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
         const isModeCollected = computed(() =>  mode.value == 'Collected' )
         const isModeApproval = computed(() => mode.value == 'Approval')
+        const { getUncollectedDocuments, 
+                documentsBySupervisor, 
+                documentMore2DaysBySpv, 
+                allDocumentMore2Days,
+                collectDocument,
+                ijinDocument,
+                kosongDocument,
+                getCollectedDocuments,
+                approveDocument,
+                unApproveDocument,
+                unCollectDocument,
+                getApprovedDocuments,
+                getDocuments,
+                shareDocument,
+                findDocument 
+            } = Documents();
+
         const headsTable = computed(() => {
             if(viewByPeriode.value) {
                 if(isModeUncollected.value) {

@@ -30,7 +30,9 @@
 import Input from "../../components/elements/Input.vue"
 import Button from "../../components/elements/Button.vue"
 import InputItem from "./InputItem.vue"
-import { appendData } from "@/pages/BaseReport/BaseReportStock"
+import { baseReportStock } from "@/pages/BaseReport/BaseReportStock"
+
+const { appendData } = baseReportStock();
 
 export default {
     methods: {

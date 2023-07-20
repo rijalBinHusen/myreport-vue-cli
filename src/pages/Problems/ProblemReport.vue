@@ -38,9 +38,9 @@ import ProblemReportForm from "./ProblemReportForm.vue"
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
 import { onMounted, ref, watch } from "vue"
-import { getProblemFromDB, listsProblem, getProblemBetweenPeriode, duplicate } from './Problem'
+import { getProblemFromDB, lists as listsProblem, getProblemBetweenPeriode, duplicate } from './Problem'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
-import { getSupervisorShift1ByWarehouse, warehouseId } from '@/pages/Warehouses/Warehouses'
+import { getSupervisorShift1ByWarehouse, getWarehouseById } from '@/pages/Warehouses/Warehouses'
 
 export default {
     setup() {
@@ -89,7 +89,7 @@ export default {
                         if(grouped.hasOwnProperty(val['warehouse'])) {
                             group[grouped[val['warehouse']]].push({ ...val })
                         } else {
-                                let warehouse = warehouseId(val.warehouse)
+                                let warehouse = getWarehouseById(val.warehouse)
                                 if(warehouse?.group) {
                                 // if('namaGudang' && (val?.namaGudang.includes("jabon") || val?.namaGudang.includes("biscuit"))) {
                                     grouped[val.warehouse] = group.length

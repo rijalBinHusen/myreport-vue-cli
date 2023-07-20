@@ -41,7 +41,7 @@
 <script>
 import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
-import { getDocuments, listsOfDocuments, removeDocument } from './Documents/DocumentsPeriod'
+import { lists as listsOfDocuments, Documents } from './Documents/DocumentsPeriod'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 import { ref } from '@vue/reactivity'
 import { useStore } from 'vuex'
@@ -51,6 +51,7 @@ export default {
     setup() {
         const lists = ref([])
         const store = useStore()
+        const { getDocuments, removeDocument } = Documents()
 
         const pickPeriode = async () => {
             let period = await subscribeMutation("Set periode to show", "PeriodePicker",  false, 'Modal/tunnelMessage')

@@ -151,7 +151,7 @@ import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 import { addProblem, problemId, updateProblem } from '@/pages/Problems/Problem'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { ymdTime } from '@/composable/piece/dateFormat'
-import { updateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb } from '@/pages/Documents/DocumentsPeriod'
+import {  Documents } from '@/pages/Documents/DocumentsPeriod'
 
 export default {
     data() {
@@ -200,11 +200,14 @@ export default {
         },
         async linkToDocument (bool) {
             if(bool) {
+                const { updateDocument } = Documents();
                 let doc = await getDocumentByPeriodeByWarehouseByShiftFromDb(this.periode, this.warehouse, this.shiftMulai)
                 // reflect the variance to document
-                updateDocument(doc?.id, { itemVariance: doc?.itemVariance ? doc?.itemVariance + 1 : 1 })
+                // updateDocument(doc?.id, { itemVariance: doc?.itemVariance ? doc?.itemVariance + 1 : 1 })
+                updateDocument(doc.id,  { itemVariance: doc?.itemVariance ? doc?.itemVariance + 1 : 1 })
                 // update the problem
-                updateProblem(this.id, { linkedToDocument: true })
+                // updateProblem(this.id, { linkedToDocument: true })
+                updateProblem(this.id, { linkToDocument: true });
             }
         },
     },

@@ -25,7 +25,7 @@
 <script>
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import { updateSupervisors, warehouseId } from '@/pages/Warehouses/Warehouses'
+import { getWarehouseById, updateWarehouse } from '@/pages/Warehouses/Warehouses'
 import { lists } from '@/pages/Supervisors/Supervisors'
 import { ref, onBeforeMount } from "vue"
 import { useStore } from "vuex"
@@ -39,13 +39,14 @@ export default {
 		
 		const update = async () => {
 			// console.log(info.value.id, pickedSupervisors.value)
-			await updateSupervisors(info.value.id, [ ...pickedSupervisors.value])
+			// await updateSupervisors(info.value.id, [ ...pickedSupervisors.value])
+			await updateWarehouse(info.value.id, { supervisors: pickedSupervisors });
 			store.commit('Modal/tunnelMessage', true)
 			store.commit("Modal/active");
 		}
 
 		onBeforeMount(() => {
-			info.value = warehouseId(store.getters['Modal/obj']?.obj?.id)
+			info.value = getWarehouseById(store.getters['Modal/obj']?.obj?.id)
 			listsSupervisors.value = lists
 			pickedSupervisors.value = info.value.supervisors
 		})

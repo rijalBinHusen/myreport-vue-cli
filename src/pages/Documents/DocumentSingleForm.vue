@@ -38,7 +38,7 @@
 
 import Button from "@/components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
-import { addData, updateDocument, findDocument } from "./DocumentsPeriod"
+import { Documents } from "./DocumentsPeriod"
 import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
 import SelectShift from "@/components/parts/SelectShift.vue"
@@ -61,6 +61,7 @@ export default {
         const changed = {}
         const collectedModel = ref(new Date())
         const approvalModel = ref(new Date())
+        const { addData, updateDocument, findDocument } = Documents();
 
         const store = useStore()
 

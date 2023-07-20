@@ -49,9 +49,11 @@ import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
-import { addCase, updateCase, getCaseId } from "@/pages/Cases/Cases"
+import { Cases } from "@/pages/Cases/Cases"
 import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
+
+const { addCase, updateCase, getCaseById } = Cases();
 
 export default {
     components: {
@@ -123,12 +125,12 @@ export default {
     },
     created() {
         let obj = this.$store.getters["Modal/obj"].obj
-        let getCase = getCaseId(obj?.id)
+        let getCase = getCaseById(obj?.id)
         // get the base record
-        let base = getCaseId(obj?.parent || getCase?.parent)
+        let base = getCaseById(obj?.parent || getCase?.parent)
         
         if(obj?.edit) {
-            let getCase = getCaseId(obj.id)
+            let getCase = getCaseById(obj.id)
             this.parent = getCase?.parent
             this.periodeModel = new Date(getCase?.periode)
             this.name = getCase?.name

@@ -38,7 +38,7 @@
 
     <Datatable
         v-if="renderTable && lists"
-        :datanya="lists"
+        :datanya="unfinished ? unFinishedDocument : FinishedDocument"
         :heads="['Periode', 'Nama', 'Gudang', 'Kabag', 'Shift']"
         :keys="['periode2', 'spvName', 'warehouseName', 'headName', 'shift']"
         option
@@ -77,12 +77,11 @@ import exportWeeklyReportToExcel from "@/excelReport/WeeklyReport"
 import exportWeeklyKabag from "@/excelReport/WeeklyKabag"
 import WeeklyWarehouses from "@/excelReport/WeeklyReportWarehouses"
 import Dropdown from "@/components/elements/Dropdown.vue"
-import { finishedDocument, getDocuments, unFinishedDocument } from '@/pages/Documents/DocumentsPeriod'
-import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
+import { Documents, lists } from '@/pages/Documents/DocumentsPeriod'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { ref, onMounted, watch } from "vue"
 import { useStore } from "vuex"
-import { warehouseId } from "@/pages/Warehouses/Warehouses"
+import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 
 export default {
     components: {
@@ -95,8 +94,9 @@ export default {
         const grouped = ref([])
         const groupedObject = ref([])
         const unfinished = ref(false)
-        const lists = ref([])
         const renderTable = ref(true)
+
+        const { getDocuments,  } = Documents();
 
         const markAll = () => {
             if(grouped.value.length) {
@@ -135,13 +135,11 @@ export default {
                 renewLists()
             }
         }
+
+        const unFinishedDocument = computed(() => lists.value.filter((rec) => !rec?.isfinished));
+        const finishedDocument = computed(() => lists.value.filter((rec) => rec?.isfinished));
         
         const renewLists = async () => {
-            if(unfinished.value) {
-                lists.value = await unFinishedDocument() 
-            } else {
-                lists.value = await finishedDocument()
-            }
             groupedObject.value.length = 0
             grouped.value.length =  0
         }
@@ -187,7 +185,7 @@ export default {
                 if(grouped.hasOwnProperty(val[ev])) {
                     group[grouped[val[ev]]].push({ ...val })
                 } else {
-                    let warehouse = warehouseId(val.warehouse)
+                    let warehouse = getWarehouseById(val.warehouse)
                     if(warehouse?.group) {
                     // if('namaGudang' && (val?.namaGudang.includes("jabon") || val?.namaGudang.includes("biscuit"))) {
                         grouped[val.warehouse] = group.length
@@ -301,7 +299,7 @@ export default {
         return { 
             unfinished, lists, renderTable, 
             markAll, push, pickPeriode, details, 
-            exportReport, grouped, 
+            exportReport, grouped, finishedDocument, unFinishedDocument
             // broadcastDocument
         }
 		

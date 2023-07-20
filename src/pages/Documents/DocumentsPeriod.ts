@@ -50,7 +50,7 @@ interface DocumentsMapped extends Document {
     finished2?: string
 }
 
-let lists = ref(<DocumentsMapped[]>[])
+export let lists = ref(<DocumentsMapped[]>[])
 const storeName = "document";
 
 
@@ -427,6 +427,30 @@ export function Documents () {
         return mapIt;
     }
     
+    return {
+        addData,
+        getDocuments,
+        updateDocument,
+        isGenerateDocument,
+        removeDocument,
+        findDocument,
+        getUncollectedDocuments,
+        getCollectedDocuments,
+        getApprovedDocuments,
+        getLastDate,
+        documentsBySupervisor,
+        documentMore2DaysBySpv,
+        allDocumentMore2Days,
+        collectDocument,
+        approveDocument,
+        unCollectDocument,
+        ijinDocument,
+        kosongDocument,
+        shareDocument,
+        unApproveDocument,
+        markDocumentFinished,
+        getDocumentByPeriodeByWarehouseByShiftFromDb
+    }
           
 }
 

@@ -53,8 +53,10 @@ import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
 import readExcel from "@/utils/readExcel"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { removeComplain, listsComplain, getComplains } from './Complains'
+import { lists, listsComplainImport, Complains } from './Complains'
 import { loader } from "@/composable/piece/vuexModalLauncher"
+
+const { removeComplain, getComplains } = Complains();
 
 export default {
     data() {

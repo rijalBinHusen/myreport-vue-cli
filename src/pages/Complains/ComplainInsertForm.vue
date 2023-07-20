@@ -73,7 +73,9 @@ import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
-import { addComplain, updateComplain, getComplainId } from './Complains'
+import { Complains } from './Complains'
+
+const { addComplain, updateComplain, getComplainById } = Complains();
 
 export default {
     components: {
@@ -174,8 +176,8 @@ export default {
     },
     created() {
         let obj = this.$store.getters["Modal/obj"].obj
-        let getComplain = getComplainId(obj?.id)
-        let base = getComplainId(obj?.parent || getComplain.parent)
+        let getComplain = getComplainById(obj?.id)
+        let base = getComplainById(obj?.parent || getComplain.parent)
 
         if(obj?.edit) {
             // put to the 

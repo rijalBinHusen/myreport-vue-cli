@@ -91,7 +91,7 @@ import Button from "@/components/elements/Button.vue"
 import Table from "@/components/elements/Table.vue"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import { ref, onMounted } from "vue";
-import { updateWarehouse, addWarehouse, disableWarehouse, lists, warehouseId, updateWarehouseVariable } from '@/pages/Warehouses/Warehouses'
+import { addWarehouse, disableWarehouse, lists, getWarehouseById, updateWarehouse } from '@/pages/Warehouses/Warehouses'
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue";
 
 export default {
@@ -127,9 +127,13 @@ export default {
 
     const send = async () => {
       // jika update
-      if(idWarehouse.value) { await updateWarehouse(idWarehouse.value, warehouse.value) }
+      if(idWarehouse.value) { 
+        await updateWarehouse(idWarehouse.value, { name: warehouse.value }) 
+      }
       // jika tidak
-      else { await addWarehouse(warehouse.value) }
+      else { 
+        await addWarehouse(warehouse.value) 
+      }
       // reset the form
       cancel()
       renewLists()
@@ -151,10 +155,12 @@ export default {
 
     const edit = async (ev) => {
       idWarehouse.value = ev
-      warehouse.value = await warehouseId(ev)?.name
+      warehouse.value = await getWarehouseById(ev)?.name
     }
+
     const setGroup = async (idWarehouse, idWarehouseGroup) => {
-      await updateWarehouseVariable(idWarehouse, { group: idWarehouseGroup })
+      await updateWarehouse(idWarehouse, { group: idWarehouseGroup })
+      // updateWarehouseVariable(idWarehouse, { group: idWarehouseGroup })
       renewLists()
     }
 

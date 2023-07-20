@@ -61,7 +61,7 @@ import SelectShift from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 import { onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
-import { findDocument, updateDocument, collectDocument } from "./DocumentsPeriod"
+import { Documents } from "./DocumentsPeriod"
 import { dateMonth  } from "@/composable/piece/dateFormat"
 
 export default {
@@ -76,6 +76,7 @@ export default {
         const isEdit = ref(false)
         const changed = ref({})
         const timeCollected = ref({})
+        const { findDocument, updateDocument, collectDocument } = Documents();
 
         watch([date, supervisor, head, shift, warehouse], (newVal) => {
             if(isEdit.value) {
