@@ -24,7 +24,7 @@
     <Table 
       v-if="lists.length"
       :headers="['Nama gudang']" 
-      :lists="warehouseLists" 
+      :lists="lists" 
       :keys="['name']"
       options
     > 
@@ -91,7 +91,7 @@ import Button from "@/components/elements/Button.vue"
 import Table from "@/components/elements/Table.vue"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation";
 import { ref, onMounted } from "vue";
-import { addWarehouse, disableWarehouse, lists, getWarehouseById, updateWarehouse } from '@/pages/Warehouses/Warehouses'
+import { addWarehouse, disableWarehouse, lists, getWarehouseById, updateWarehouse, getWarehouses } from '@/pages/Warehouses/Warehouses'
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue";
 
 export default {
@@ -99,7 +99,6 @@ export default {
   setup () {
     const warehouse = ref('')
     const idWarehouse = ref('')
-    const warehouseLists = ref([])
 
     const supervisors = async (ev) => {
       let res = await subscribeMutation(
@@ -108,9 +107,6 @@ export default {
         { id: ev },
         'Modal/tunnelMessage'
       )
-      if(res) {
-        renewLists()
-      }
     }
 
     const head = async (ev) => {
@@ -120,9 +116,6 @@ export default {
         { id: ev },
         'Modal/tunnelMessage'
       )
-      if(res) {
-        renewLists()
-      }
     }
 
     const send = async () => {
@@ -136,11 +129,6 @@ export default {
       }
       // reset the form
       cancel()
-      renewLists()
-    }
-
-    const renewLists = () => {
-      warehouseLists.value = lists
     }
 
     const cancel = () => {
@@ -150,7 +138,6 @@ export default {
 
     const disable = async (ev, disabled) => {
       await disableWarehouse(ev, !disabled)
-      renewLists()
     }
 
     const edit = async (ev) => {
@@ -160,12 +147,14 @@ export default {
 
     const setGroup = async (idWarehouse, idWarehouseGroup) => {
       await updateWarehouse(idWarehouse, { group: idWarehouseGroup })
-      // updateWarehouseVariable(idWarehouse, { group: idWarehouseGroup })
-      renewLists()
+    }
+
+    const startWarehouses = () => {
+      getWarehouses();
     }
 
     onMounted(() => {
-      renewLists()
+      startWarehouses();
     })
 
     return {
@@ -177,9 +166,9 @@ export default {
       edit,
       lists,
       cancel,
-      warehouseLists,
       setGroup,
-      head
+      head,
+      lists
     }
 
   },
