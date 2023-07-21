@@ -65,9 +65,14 @@ export function baseItem () {
             findItem = await db.findOneItemByKeyValue('kode', itemKode);
         }
 
-        updateItem(findItem?.id, false, false, ymdTime());
+        if(findItem?.name) {
 
-        return findItem || { itemId, kode: 'Not found', name: 'Not found' }
+            updateItem(findItem?.id, false, false, ymdTime());
+            
+        }
+
+
+        return findItem || { id: 'Nothing', kode: 'Not found', name: 'Not found' }
     }
 
     async function removeItem(itemId) {

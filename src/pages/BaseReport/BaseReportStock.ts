@@ -288,7 +288,7 @@ export function baseReportStock() {
   };
 
   const updateBaseStock = async (id: string, objtToUpdate: BaseStockUpdate) => {
-    const isNoValueToUpdate = Object.values(objtToUpdate).length > 0;
+    const isNoValueToUpdate = Object.values(objtToUpdate).length === 0;
 
     if (isNoValueToUpdate) return;
 

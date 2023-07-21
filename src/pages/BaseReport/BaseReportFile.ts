@@ -60,7 +60,6 @@ export function BaseReportFile() {
                 lists.value.push(mapIt);
             }
         }
-        console.log('lists', lists.value)
     }
 
     async function recordMapper(record: BaseReportFileInterface) {
@@ -131,7 +130,7 @@ export function BaseReportFile() {
     }
 
     async function updateBaseReport(id: string, obj: BaseReportFileInterfaceForUpdate) {
-        const isNoValueToUpdate = Object.values(obj).length > 0;
+        const isNoValueToUpdate = Object.values(obj).length === 0;
 
         if (isNoValueToUpdate) return;
 

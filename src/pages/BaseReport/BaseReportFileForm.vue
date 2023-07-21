@@ -43,7 +43,7 @@ const { startImportStock } = baseReportStock();
 export default {
     components: { Select, Button, },
     setup() {
-        const { updateBaseReport } = new BaseReportFile();
+        const { updateBaseReport } = BaseReportFile();
         const clock = ref(null)
         const stock = ref(null)
         const infoBaseReport = ref(null)

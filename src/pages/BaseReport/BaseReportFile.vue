@@ -146,15 +146,16 @@ export default {
             // bring the loader up
             loader()
             let excel = await readExcelFile(e.target.files[0])
-            let warehouseName = infobase.warehouseName
             let periode2 = dateMonth(infobase?.periode )
 
-            subscribeMutation(
-                warehouseName?.name + " " + periode2,
+            await subscribeMutation(
+                infobase.warehouseName + " " + periode2,
                 'BaseReportFile',
-                { base: importId.value, excel: excel },
+                { base: importId, excel: excel },
                 'Modal/tunnelMessage'
             )
+
+            importerBase.value.value = ''
 		}
 
         return {
