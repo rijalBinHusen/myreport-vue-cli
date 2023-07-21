@@ -76,7 +76,7 @@ import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import DatatableVue from "@/components/parts/Datatable.vue";
 import { warehouseNameBySpv } from '@/pages/Warehouses/Warehouses';
-import { updateSupervisor, addSupervisor, getSupervisorId, lists, getSupervisors } from './Supervisors'
+import { updateSupervisor, addSupervisor, getSupervisorId, lists, getSupervisors, updateShiftSupervisor } from './Supervisors'
 import { ref, onBeforeMount } from 'vue';
 
     const supervisor = ref('')
@@ -91,7 +91,6 @@ import { ref, onBeforeMount } from 'vue';
     const disableName = async (ev, disabled) => {
       // cek dulu apakah dia sudah di pick di suatu gudang
       let warehouseName = await warehouseNameBySpv(ev)
-      console.log(warehouseName)
       // kalau belum dipick
       if(!warehouseName) { 
         alert("Supervisor belum ditugaskan digudang")
@@ -102,18 +101,7 @@ import { ref, onBeforeMount } from 'vue';
     }
 
     const changeShift = async (id, shift) => {
-
-      if(shift === null) return;
-      
-      if(idSupervisor.value == id) { clearTimeout(timeout) }
-
-      idSupervisor.value = id
-
-      timeout = setTimeout(() => {
-        updateSupervisor(id, { shift })
-        cancel()
-      }, 1000)
-
+      updateShiftSupervisor(id, shift);
     }
 
     const send = async () => {

@@ -44,7 +44,7 @@ import Button from "@/components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
 import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
-import { updateSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
+import { updateShiftSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
 import { updateHeadspv, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
 import { lists as listsWarehouse, getWarehouseNotGroupedAndTheSupervisors } from '@/pages/Warehouses/Warehouses'
 import { Documents } from '@/pages/Documents/DocumentsPeriod'
@@ -63,7 +63,7 @@ export default {
         const spvLists = ref({})
         const headLists = ref([])
         const periode = ref()
-        const lowerPeriode = ref('')
+        const lowerPeriode = ref(new Date())
         const warehousesLists = ref();
         const store = useStore()
         const BaseReportFileClass = new BaseReportFile();
@@ -71,15 +71,9 @@ export default {
         const { addData: addNewDocument, getLastDate } = Documents();
 
         const changeShift = (store, idFL, shift) => {
-            if(id.value == idFL) {
-                clearTimeout(timeout.value)
-              }
-              id.value = idFL
-              timeout.value = setTimeout(() => {
-                    store == 'Supervisors'
-                        ? updateSupervisor(idFL, { shift })
-                        : updateHeadspv(idFL, { shift })
-              }, 300)
+            store == 'Supervisors'
+                ? updateShiftSupervisor(idFL, shift)
+                : updateHeadspv(idFL, { shift })
         }
 
         onBeforeMount(async () => {
@@ -129,4 +123,4 @@ export default {
         }
     },
 }
-</script>@/pages/BaseReportFile/BaseReportFile@/pages/BaseReport/BaseReportFile@/pages/Documents/DocumentsPeriod
+</script>

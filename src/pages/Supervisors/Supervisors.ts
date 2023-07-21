@@ -92,6 +92,26 @@ export const supervisorsEnabled = () => {
   return lists.value.filter((val) => val.disabled === false)
 }
 
+let timerUpdateShift: ReturnType<typeof setTimeout>;
+let idSpvUpdateShift = '';
+
+export function updateShiftSupervisor(supervisorId: string, shift: number) {
+  const isNotOkeToUpdate = typeof supervisorId !== 'string' || shift < 1 || shift > 3;
+
+  if(isNotOkeToUpdate) return;
+
+  clearTimeout(timerUpdateShift);
+
+  idSpvUpdateShift = supervisorId;
+
+  timerUpdateShift = setTimeout(() => {
+
+    updateSupervisor(supervisorId, { shift });
+    idSpvUpdateShift = ''
+
+  }, 500)
+
+}
 
 export async function syncSupervisorToServer () {
 
