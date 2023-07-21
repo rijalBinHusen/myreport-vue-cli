@@ -33,7 +33,6 @@
                 option
                 id="tableImportBase"
                 #default="{ prop }"
-                v-if="renderTable"
             >
 
                 <div v-if="!prop.imported">
@@ -63,18 +62,13 @@ import Button from "@/components/elements/Button.vue"
 import Datatable from "@/components/parts/Datatable.vue"
 import readExcelFile from "@/utils/readExcel"
 import { ref, onMounted } from 'vue'
-import { BaseReportFile, lists as BaseReportFileLists } from "./BaseReportFile";
+import { BaseReportFile, lists } from "./BaseReportFile";
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
 import { dateMonth } from "@/composable/piece/dateFormat"
 import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 import { useStore } from "vuex"
-import { baseClock } from '@/pages/BaseReport/BaseReportClock' 
-import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
-import { getProblemFromDB } from '@/pages/Problems/Problem'
-
-const { removeClockByParent } = baseClock();
-const { removeStockByParent } = baseReportStock();
+// import { getProblemFromDB } from '@/pages/Problems/Problem'
 
 export default {
     name: "Collect",
@@ -85,18 +79,15 @@ export default {
     },
     setup() {
         const importId = ref(null)
-        const lists = ref([])
-        const renderTable = ref(false)
         const importerBase = ref(null)
         const store = useStore()
-        const BaseReportFileClass = new BaseReportFile();
-        const { getBaseReportFile, findBaseReportFileById, updateBaseReport, addBaseReportFileManual, removeBaseReport } = BaseReportFileClass;
+        const { getBaseReportFile, findBaseReportFileById, addBaseReportFileManual, removeBaseReport, removeBaseReportChilds } = BaseReportFile();
 
         const removeBase = async (idBaseReport) => {
             let res = await subscribeMutation('', 'Confirm', {pesan: 'Apakah anda yakin akan menghapus record?'}, 'Modal/tunnelMessage')
             if(res) {
                 await removeBaseReport(idBaseReport)
-                renewLists()
+                
             }
         }
 
@@ -108,17 +99,9 @@ export default {
                 'Modal/tunnelMessage'
                 )
             if(res) {
-                store.commit('Modal/active', { judul: '', form: 'Loader' })
+                loader()
                 await getBaseReportFile(res?.periode1, res?.periode2)
-                renewLists()
-                store.commit('Modal/active')
-            }
-        }
-
-        const renewLists = async () => {
-            lists.value = BaseReportFileLists
-            if(lists.value) {
-                renderTable.value = true
+                modalClose()
             }
         }
 
@@ -132,15 +115,10 @@ export default {
             if(res) {
                 store.commit('Modal/active', { judul: '', form: 'Loader' })
                 await addBaseReportFileManual(res?.periode1)
-                renewLists()
+                
                 store.commit('Modal/active')
             }
         }
-
-        onMounted(() => {
-            getProblemFromDB()
-            renewLists()
-        })
 
         const launch = (ev) => {
             importerBase.value.click()
@@ -155,44 +133,33 @@ export default {
                 'Modal/tunnelMessage'
             )
             // let sure = confirm("Apakah anda yakin akan menghapusnya?")
-            if(!res) { return; }
-            loader()
-                await removeStockByParent(ev)
-                await removeClockByParent(ev)
-                await updateBaseReport(ev, { 
-                    fileName: false,
-                    stock: false,
-                    clock: false,
-                    imported: false
-                })
-            modalClose()
-            renewLists()
+            if(res) {
+                loader()
+                await removeBaseReportChilds(ev);
+                modalClose()
+            }
         }
         // read file and put to the state
         const readExcel = async (e) => {
             // info of record
-            let infobase = findBaseReportFileById(importId.value)
+            let infobase = await findBaseReportFileById(importId.value)
             // bring the loader up
             loader()
             let excel = await readExcelFile(e.target.files[0])
-            let warehouseName = await getWarehouseById(infobase?.warehouse)
+            let warehouseName = infobase.warehouseName
             let periode2 = dateMonth(infobase?.periode )
 
-            let res = await subscribeMutation(
+            subscribeMutation(
                 warehouseName?.name + " " + periode2,
                 'BaseReportFile',
                 { base: importId.value, excel: excel },
                 'Modal/tunnelMessage'
             )
-            
-            if(res) {
-                renewLists()
-            }
 		}
 
         return {
-            importId, pickPeriode, lists, renderTable, importerBase, launch,
-            readExcel, remove, handleAddPeriode, removeBase
+            importId, pickPeriode, importerBase, launch,
+            readExcel, remove, handleAddPeriode, removeBase, lists
         }
     },
 }

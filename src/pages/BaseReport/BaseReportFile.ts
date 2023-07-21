@@ -3,6 +3,8 @@ import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
 import { getWarehouseById, lists as warehouseLists } from "../Warehouses/Warehouses";
 import { postData, deleteData, putData } from "../../utils/sendDataToServer";
+import { baseClock } from "./BaseReportClock";
+import { baseReportStock } from "./BaseReportStock"
 
 export interface BaseReportFileInterface {
     clock: string
@@ -32,11 +34,15 @@ const storeName = "basereportfile";
 
 export function BaseReportFile() {
     const db = useIdb(storeName);
+    const { removeClockByParent } = baseClock();
+    const { removeStockByParent } = baseReportStock();
 
     async function getBaseReportFile(periode1: number, periode2: number) {
-        const getData = await db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan<BaseReportFileInterface>('periode', periode1, periode2);
+        // empty state
+        lists.value.length = 0
 
-        if (getData) {
+        const getData = await db.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan<BaseReportFileInterface>('periode', periode1, periode2);
+        if (getData.length) {
             for (let datum of getData) {
 
                 let dataToMap: BaseReportFileInterface = {
@@ -54,6 +60,7 @@ export function BaseReportFile() {
                 lists.value.push(mapIt);
             }
         }
+        console.log('lists', lists.value)
     }
 
     async function recordMapper(record: BaseReportFileInterface) {
@@ -147,9 +154,9 @@ export function BaseReportFile() {
         let record = {
             periode,
             warehouse,
-            fileName: "",
-            stock: "",
-            clock: "",
+            fileName: "Not imported",
+            stock: "Not imported",
+            clock: "Not imported",
             imported: false,
             isRecordFinished: false,
         }
@@ -182,6 +189,17 @@ export function BaseReportFile() {
         await db.removeItem(idBaseReport);
     }
 
+    async function removeBaseReportChilds(idBaseReport: string) {
+        await removeClockByParent(idBaseReport);
+        await removeStockByParent(idBaseReport);
+        await updateBaseReport(idBaseReport, { 
+            fileName: "Not imported",
+            stock: "Not imported",
+            clock: "Not imported",
+            imported: false
+        })
+    }
+
     return {
         getBaseReportFile,
         dateBaseReportFileImported,
@@ -192,7 +210,8 @@ export function BaseReportFile() {
         someRecordFinished,
         isRecordExistsByPeriodeAndWarehouse,
         addBaseReportFileManual,
-        removeBaseReport
+        removeBaseReport,
+        removeBaseReportChilds
     }
 
 }
