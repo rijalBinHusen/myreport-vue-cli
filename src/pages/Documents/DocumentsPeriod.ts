@@ -39,8 +39,9 @@ type Partial<T> = {
   [P in keyof T]?: T[P];
 };
 
-type DocumentUpdate = Partial<Document>;
-interface DocumentsMapped extends Document {
+export type DocumentUpdate = Partial<Document>;
+
+export interface DocumentsMapped extends Document {
     spvName?: string
     headName?: string
     warehouseName?: string
@@ -131,8 +132,9 @@ export function Documents () {
     }
 
     const updateDocument = async (idDocument: string, objToUpdate: DocumentUpdate) => {
+        console.log(idDocument, objToUpdate)
 
-        const isNoValueToUpdate = Object.values(objToUpdate).length > 0;
+        const isNoValueToUpdate = Object.values(objToUpdate).length === 0;
     
         if(isNoValueToUpdate) return;
 

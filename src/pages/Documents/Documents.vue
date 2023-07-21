@@ -179,14 +179,6 @@ export default {
     DocumentOptions,
 },
     setup() {
-        const store = useStore()
-        const viewByPeriode = ref(true)
-        const lists = ref([])
-        const mode = ref('Uncollected')
-        const renderTable = ref(true)
-        const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
-        const isModeCollected = computed(() =>  mode.value == 'Collected' )
-        const isModeApproval = computed(() => mode.value == 'Approval')
         const { getUncollectedDocuments, 
                 documentsBySupervisor, 
                 documentMore2DaysBySpv, 
@@ -203,6 +195,19 @@ export default {
                 shareDocument,
                 findDocument 
             } = Documents();
+        const store = useStore()
+        const viewByPeriode = ref(true)
+        const mode = ref('Uncollected')
+        const renderTable = ref(true)
+        const listsBySupervisor = ref([])
+        const lists = computed(() => 
+            viewByPeriode.value
+                ? listsOfDocuments.value
+                : listsBySupervisor.value
+        )
+        const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
+        const isModeCollected = computed(() =>  mode.value == 'Collected' )
+        const isModeApproval = computed(() => mode.value == 'Approval')
 
         const headsTable = computed(() => {
             if(viewByPeriode.value) {
@@ -528,21 +533,27 @@ export default {
             renderTable.value = false
                 if(isGetNewDocument) {
                     if(isModeUncollected.value) {
+
                         await getUncollectedDocuments()
+
                     } else if(isModeCollected.value) {
+
                         await getCollectedDocuments()
+
                     } else {
+
                         await getApprovedDocuments()
                         viewByPeriode.value = true
+
                     }
                 }
                 // if view by periode
                 if(viewByPeriode.value) {
-                    lists.value = listsOfDocuments.value
+                    listsBySupervisor.value = '';
                 } 
                 // if view by supervisor
                 else {
-                    lists.value = await documentsBySupervisor()
+                    listsBySupervisor.value = await documentsBySupervisor()
                 }
             renderTable.value = true
         }

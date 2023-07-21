@@ -30,7 +30,7 @@
                 <div class="w3-col s3" style="padding: 0 16px 0 16px;">
                     <SelectShift 
                         :disabled="!isEdit"
-                        :inSelectShift="shift"
+                        :inSelectShift="shift + ''"
                         :showLable="true"
                         @selectedShift="shift = $event"
                         />
@@ -50,7 +50,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 
 import Select from "@/components/elements/Select.vue"
 import Input from "@/components/elements/Input.vue"
@@ -61,48 +61,52 @@ import SelectHead from "@/pages/Headspv/SelectHead.vue"
 import SelectWarehouse from "@/pages/Warehouses/SelectWarehouse.vue"
 import { onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
-import { Documents } from "./DocumentsPeriod"
+import { Documents, type  DocumentsMapped, type DocumentUpdate} from "./DocumentsPeriod"
 import { dateMonth  } from "@/composable/piece/dateFormat"
 
 export default {
     setup() {
         const store = useStore()
-        let record = {}
+        let record = <DocumentsMapped>{}
         const date = ref('')
         const supervisor = ref('')
         const head = ref('')
-        const shift = ref('')
+        const shift = ref(0)
         const warehouse = ref('')
         const isEdit = ref(false)
-        const changed = ref({})
-        const timeCollected = ref({})
+        const changed = <DocumentUpdate>{};
+        const timeCollected = ref(0)
         const { findDocument, updateDocument, collectDocument } = Documents();
 
         watch([date, supervisor, head, shift, warehouse], (newVal) => {
             if(isEdit.value) {
                 // supervisor 
-                if(record['supervisor'] != newVal[1]) {
-                    changed.value['name'] = newVal[1]
+                if(record.name != newVal[1]) {
+                    changed['name'] = newVal[1]
                 }
                 // head
                 if(record['head'] != newVal[2]) {
-                    changed.value['head'] = newVal[2]
+                    changed['head'] = newVal[2]
                 }
                 // shift
-                if(record['shift'] != newVal[3]) {
-                    changed.value['shift'] = newVal[3]
+                if(record.shift != newVal[3]) {
+                    changed['shift'] = Number(newVal[3])
                 }
                 // warehouse
                 if(record['warehouse'] != newVal[4]) {
-                    changed.value['warehouse'] = newVal[4]
+                    changed['warehouse'] = newVal[4]
                 }
             }
         })
 
-        onMounted(() => {
+        onMounted( async () => {
             let obj = store.getters['Modal/obj']?.obj
             // console.log(obj)
-            record = findDocument(obj.id)
+            const getRecord = await findDocument(obj.id)
+            if(typeof getRecord === 'undefined') {
+                return;
+            }
+            record = getRecord
             date.value = dateMonth(record.periode)
             supervisor.value = record.name
             head.value = record.head
@@ -116,8 +120,8 @@ export default {
 
         const save = async () => {
             // if the record changed
-            if(Object.keys(changed.value).length) {
-                await updateDocument(record.id, changed.value)
+            if(Object.keys(changed).length) {
+                await updateDocument(record.id, changed)
             } 
             if(timeCollected.value < 1) {
                 await collectDocument(record.id, timeCollected.value)
