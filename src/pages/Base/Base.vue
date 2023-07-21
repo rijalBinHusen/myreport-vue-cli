@@ -102,7 +102,7 @@ import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "@/pages/Followup/followUp"
 import BasePanelVue from './BasePanel.vue'
 import { lists as baseReportClockLists, baseClock } from '@/pages/BaseReport/BaseReportClock'
-import { lists as baseReportStockLists, baseReportStock } from '@/pages/BaseReport/BaseReportStock'
+import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
@@ -142,7 +142,7 @@ export default {
         const renderTable = ref(false)
         const excelLabel = ref(null)
         const { getBaseClockByParentByShift, updateBaseClock, removeClock, appendData: appendClockRecord } = baseClock();
-        const { getBaseStockByParentByShift, markStockFinished, updateBaseStock, removeStock } = baseReportStock();
+        const { getBaseStockByParentByShift, markStockFinished, updateBaseStock, removeStock, getBaseReportStockLists } = baseReportStock();
         
         const message = async (ev, obj) => {
             // ev = jenis pesan, obj=lengtka
@@ -295,7 +295,7 @@ export default {
                 await getBaseClockByParentByShift(baseId.value, Number(nowShift.value))
                 await getBaseStockByParentByShift(baseId.value, Number(nowShift.value))
                 if(isStockSheet.value) {
-                    lists.value = await baseReportStockLists(baseId.value, Number(nowShift.value))
+                    lists.value = await getBaseReportStockLists(baseId.value, Number(nowShift.value))
                     nowSheet.value = 'stock'
                 } else {
                     lists.value = baseReportClockLists(baseId.value, Number(nowShift.value))

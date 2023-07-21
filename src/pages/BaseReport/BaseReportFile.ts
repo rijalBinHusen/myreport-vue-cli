@@ -29,6 +29,11 @@ interface BaseReportFileInterfaceForUpdate {
     warehouse?: string
 }
 
+export interface WarehouseByDate {
+    warehouse: string
+    warehouseName: string
+}
+
 export const lists = ref<BaseReportFileInterface[]>([])
 const storeName = "basereportfile";
 
@@ -87,14 +92,15 @@ export function BaseReportFile() {
         return result
     }
 
-    async function warehouseByDate(periode: number) {
-        let result = [];
+    function warehouseByDate(periode: number): WarehouseByDate[] {
+
+        const result = <WarehouseByDate[]>[];
 
         for (let val of lists.value) {
             if (val.periode == periode && val.imported) {
                 result.push({
                     warehouse: val?.warehouse,
-                    warehouseName: val?.warehouseName,
+                    warehouseName: val?.warehouseName || 'false',
                 });
             }
         };
@@ -171,10 +177,10 @@ export function BaseReportFile() {
         await updateBaseReport(idRecord, { isRecordFinished: true });
     }
 
-    function isRecordExistsByPeriodeAndWarehouse(periode: number, idWarehouse: string) {
-        const findIndex = lists.value.findIndex((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
+    function getBaseFileByPeriodeAndWarehouse(periode: number, idWarehouse: string) {
+        const find = lists.value.find((rec) => rec.periode == periode && rec.warehouse == idWarehouse && rec.imported)
 
-        return findIndex > -1;
+        return find;
     }
 
     async function addBaseReportFileManual(periode: number) {
@@ -207,7 +213,7 @@ export function BaseReportFile() {
         updateBaseReport,
         addBaseReportFile,
         someRecordFinished,
-        isRecordExistsByPeriodeAndWarehouse,
+        getBaseFileByPeriodeAndWarehouse,
         addBaseReportFileManual,
         removeBaseReport,
         removeBaseReportChilds

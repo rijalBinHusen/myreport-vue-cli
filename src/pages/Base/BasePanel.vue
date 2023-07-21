@@ -15,7 +15,7 @@
             judul="periode"
             text="periode2"
             @selected="selectedPeriode = $event"
-            :inselect="selectedPeriode"
+            :inselect="selectedPeriode + ''"
         />
             
 
@@ -73,10 +73,10 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
-import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
+import { BaseReportFile, WarehouseByDate } from "@/pages/BaseReport/BaseReportFile";
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
@@ -95,9 +95,8 @@ export default {
     },
     emits: ['baseReportChanged', 'mode'],
     setup(props, { emit }) {
-        const baseReportFileClass = new BaseReportFile();
-        const { getBaseReportFile, dateBaseReportFileImported, warehouseByDate, isRecordExistsByPeriodeAndWarehouse } = baseReportFileClass;
-        const warehouses = ref([])
+        const { getBaseReportFile, dateBaseReportFileImported, warehouseByDate, getBaseFileByPeriodeAndWarehouse } = BaseReportFile();
+        const warehouses = ref(<WarehouseByDate[]>[])
         const pickPeriode = async () => {
             let res = await subscribeMutation(
                 "Pilih periode yang akan ditampilkan", 
@@ -113,27 +112,27 @@ export default {
                 //close the loader
                 modalClose()
                 // renewLists()
-                selectedWarehouse.value = null
-                sheet.value = null
+                selectedWarehouse.value = ''
+                sheet.value = ''
             }
         }
 
         const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
 
         async function send () {
-            let baseReportFile = isRecordExistsByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
+            let baseReportFile = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
             // get value for title
             let periode2 = dateMonth(Number(selectedPeriode.value || new Date()))
             let warehouseName = await getWarehouseById(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
 
             // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
             if(!baseReportFile) {
-                selectedWarehouse.value = null
-                sheet.value = null
-                shift.value = null
+                selectedWarehouse.value = ''
+                sheet.value = ''
+                shift.value = ''
             }
 
-            warehouses.value = await warehouseByDate(selectedPeriode.value)
+            warehouses.value = warehouseByDate(selectedPeriode.value)
 
             emit('baseReportChanged', { 
                 periode: selectedPeriode.value,
@@ -155,7 +154,7 @@ export default {
             send()
         })
 
-        const mode = (ev) => {
+        const mode = (ev: string) => {
             emit('mode', ev)
         }
   
@@ -171,4 +170,4 @@ export default {
         }
     },
 }
-</script>@/pages/BaseReportFile/BaseReportFile@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportPanel@/pages/Warehouses/Warehouses@/pages/Problems/Problem
+</script>

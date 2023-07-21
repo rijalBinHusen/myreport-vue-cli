@@ -221,16 +221,16 @@ export function baseReportStock() {
   };
 
   async function interpretRecord(record: BaseStock): Promise<BaseStockMapped> {
-    const itemName = await getItemBykode(record.item);
+    const item = await getItemBykode(record.item);
     const problem2 = await masalah(record.problem);
     const selisih = Number(record.real) - (Number(record.awal) + Number(record.in) - Number(record.out));
     const planOut = record?.planOut || 0
 
-    return { ...record, itemName, problem2, selisih, planOut }
+    return { ...record, itemName: item.name , problem2, selisih, planOut }
 
   }
 
-  const baseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[] | undefined> => {
+  const getBaseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[] | undefined> => {
 
     let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
 
@@ -334,7 +334,7 @@ export function baseReportStock() {
     removeStock,
     removeStockByParent,
     getBaseStockByParentByShift,
-    baseReportStockLists,
+    getBaseReportStockLists,
     stockDetails,
     updateBaseStock,
     markStockFinished,
