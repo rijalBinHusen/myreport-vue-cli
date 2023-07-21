@@ -72,7 +72,7 @@ import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
-import SelectHead from "@/components/parts/SelectHead.vue"
+import SelectHead from "@/pages/Headspv/SelectHead.vue"
 import { Complains } from './Complains'
 
 const { addComplain, updateComplain, getComplainById } = Complains();

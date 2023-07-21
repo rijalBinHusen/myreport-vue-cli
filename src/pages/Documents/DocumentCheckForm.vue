@@ -20,11 +20,11 @@
                 </div>
                 <!-- Kabag -->
                 <div class="w3-col s3" style="padding: 0 16px 0 16px;">
-                    <!-- <SelectHead 
+                    <SelectHead 
                         :inSelectHead="head"
                         :disabled="!isEdit"
                         @selectedHead="head = $event"
-                        /> -->
+                        />
                 </div>
                 <!-- shift -->
                 <div class="w3-col s3" style="padding: 0 16px 0 16px;">
@@ -57,7 +57,7 @@ import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
 import SelectShift from "@/components/parts/SelectShift.vue"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
-// import SelectHead from "@/components/parts/SelectHead.vue"
+import SelectHead from "@/pages/Headspv/SelectHead.vue"
 import SelectWarehouse from "@/pages/Warehouses/SelectWarehouse.vue"
 import { onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
@@ -135,7 +135,7 @@ export default {
         Button,
         SelectShift,
         SelectSupervisors,
-        // SelectHead,
+        SelectHead,
         SelectWarehouse
     },
 }

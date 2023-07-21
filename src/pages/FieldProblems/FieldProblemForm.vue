@@ -93,7 +93,7 @@ import datepicker from "vue3-datepicker"
 import SelectVue from "@/components/elements/Select.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import SelectSupervisorsVue from '@/pages/Supervisors/SelectSupervisors.vue'
-import SelectHeadVue from "@/components/parts/SelectHead.vue"
+import SelectHeadVue from "@/pages/Headspv/SelectHead.vue"
 import InputVue from "@/components/elements/Input.vue"
 import { ref } from '@vue/reactivity'
 import { addData, updateData } from './FieldProblem'

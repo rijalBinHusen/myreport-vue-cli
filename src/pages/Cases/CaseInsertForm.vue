@@ -51,7 +51,7 @@ import { ymdTime } from "@/composable/piece/dateFormat"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { Cases } from "@/pages/Cases/Cases"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
-import SelectHead from "@/components/parts/SelectHead.vue"
+import SelectHead from "@/pages/Headspv/SelectHead.vue"
 
 const { addCase, updateCase, getCaseById } = Cases();
 

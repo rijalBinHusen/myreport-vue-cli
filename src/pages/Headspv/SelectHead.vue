@@ -16,8 +16,8 @@
 
 <script>
 import { ref, onBeforeMount } from 'vue';
-import SelectVue from '../elements/Select.vue';
-import { lists, getHeadspv } from '@/pages/Headspv/Headspv';
+import SelectVue from '@/components/elements/Select.vue';
+import { lists, getHeadspv } from './Headspv';
 
 export default {
     emit: ['selectedHead'],
@@ -27,7 +27,7 @@ export default {
         
         onBeforeMount( async () => {
             await getHeadspv();
-            head.value = lists
+            head.value = lists.value
         })
 
         const handleChange = (ev) => {

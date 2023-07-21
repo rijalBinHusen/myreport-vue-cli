@@ -145,7 +145,7 @@ import InputItem from "@/pages/Base/InputItem.vue"
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import SelectSupervisorsVue from "@/pages/Supervisors/SelectSupervisors.vue"
-import SelectHeadVue from "@/components/parts/SelectHead.vue"
+import SelectHeadVue from "@/pages/Headspv/SelectHead.vue"
 import SelectShiftVue from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/pages/Warehouses/SelectWarehouse.vue"
 import { addProblem, problemId, updateProblem } from '@/pages/Problems/Problem'
