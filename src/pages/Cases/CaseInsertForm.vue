@@ -50,7 +50,7 @@ import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { Cases } from "@/pages/Cases/Cases"
-import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
+import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
 
 const { addCase, updateCase, getCaseById } = Cases();

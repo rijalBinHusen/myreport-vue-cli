@@ -17,7 +17,7 @@
 <script>
 import { ref, onBeforeMount } from 'vue';
 import SelectVue from '../elements/Select.vue';
-import { lists } from '@/pages/Headspv/Headspv';
+import { lists, getHeadspv } from '@/pages/Headspv/Headspv';
 
 export default {
     emit: ['selectedHead'],
@@ -25,7 +25,8 @@ export default {
     setup(props, { emit }) {
         const head = ref([])
         
-        onBeforeMount(() => {
+        onBeforeMount( async () => {
+            await getHeadspv();
             head.value = lists
         })
 

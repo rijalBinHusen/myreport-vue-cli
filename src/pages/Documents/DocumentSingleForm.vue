@@ -39,7 +39,7 @@
 import Button from "@/components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
 import { Documents } from "./DocumentsPeriod"
-import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
+import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
 import SelectShift from "@/components/parts/SelectShift.vue"
 import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"

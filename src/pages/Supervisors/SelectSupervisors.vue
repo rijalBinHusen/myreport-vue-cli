@@ -16,19 +16,21 @@
 
 <script>
 import { ref, onBeforeMount } from 'vue';
-import SelectVue from '../elements/Select.vue';
-import { supervisorsEnabled, lists as supervisorLists } from '@/pages/Supervisors/Supervisors'
+import SelectVue from '@/components/elements/Select.vue';
+import { supervisorsEnabled, lists as supervisorLists, getSupervisors } from '@/pages/Supervisors/Supervisors'
 export default {
     emit: ['selectedSpv'],
     props: ['inSelectSpv', 'disabled', 'spvEnabled'],
     setup(props, { emit }) {
         const supervisors = ref([])
 
-        onBeforeMount(() => {
+        onBeforeMount(async () => {
+            await getSupervisors();
+
             if(props?.spvEnabled) {
                 supervisors.value = supervisorsEnabled()
             } else {
-                supervisors.value = supervisorLists
+                supervisors.value = supervisorLists.value
             }
         })
                             

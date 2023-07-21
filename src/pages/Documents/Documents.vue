@@ -415,15 +415,12 @@ export default {
         }
 
         const edit = async (ev) => {
-            let res = await subscribeMutation(
+            await subscribeMutation(
                         `Edit document`,
                         "DocumentCheckForm",
                         { id: ev,  mode: 'edit' },
                         'Modal/tunnelMessage'
                     )
-                if(res) {
-                    renewLists()
-                }
         }
 
         const check = async (ev) => {

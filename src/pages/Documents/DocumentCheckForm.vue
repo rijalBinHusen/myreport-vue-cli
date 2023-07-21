@@ -20,11 +20,11 @@
                 </div>
                 <!-- Kabag -->
                 <div class="w3-col s3" style="padding: 0 16px 0 16px;">
-                    <SelectHead 
+                    <!-- <SelectHead 
                         :inSelectHead="head"
                         :disabled="!isEdit"
                         @selectedHead="head = $event"
-                        />
+                        /> -->
                 </div>
                 <!-- shift -->
                 <div class="w3-col s3" style="padding: 0 16px 0 16px;">
@@ -37,11 +37,11 @@
                 </div>
                 <!-- warehouse -->
                 <div class="w3-col s3">
-                    <SelectWarehouse 
+                    <!-- <SelectWarehouse 
                         :disabled="!isEdit"
                         :inSelectWarehouse="warehouse"
                         @selectedWarehouse="warehouse = $event"
-                        />
+                        /> -->
                 </div>
 
             </div>
@@ -55,10 +55,10 @@
 import Select from "@/components/elements/Select.vue"
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
-import SelectHead from "@/components/parts/SelectHead.vue"
 import SelectShift from "@/components/parts/SelectShift.vue"
-import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
+import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
+// import SelectHead from "@/components/parts/SelectHead.vue"
+// import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
 import { onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
 import { Documents } from "./DocumentsPeriod"
@@ -101,6 +101,7 @@ export default {
 
         onMounted(() => {
             let obj = store.getters['Modal/obj']?.obj
+            // console.log(obj)
             record = findDocument(obj.id)
             date.value = dateMonth(record.periode)
             supervisor.value = record.name
@@ -132,10 +133,10 @@ export default {
         Input,
         Select,
         Button,
-        SelectSupervisors,
-        SelectHead,
         SelectShift,
-        SelectWarehouse
+        SelectSupervisors,
+        // SelectHead,
+        // SelectWarehouse
     },
 }
-</script>@/pages/Documents/DocumentsPeriod
+</script>

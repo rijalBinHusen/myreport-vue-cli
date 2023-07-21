@@ -71,7 +71,7 @@ import datepicker from "vue3-datepicker"
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
-import SelectSupervisors from "@/components/parts/SelectSupervisors.vue"
+import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/components/parts/SelectHead.vue"
 import { Complains } from './Complains'
 
