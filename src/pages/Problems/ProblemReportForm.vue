@@ -147,7 +147,7 @@ import Button from "@/components/elements/Button.vue"
 import SelectSupervisorsVue from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHeadVue from "@/components/parts/SelectHead.vue"
 import SelectShiftVue from "@/components/parts/SelectShift.vue"
-import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
+import SelectWarehouse from "@/pages/Warehouses/SelectWarehouse.vue"
 import { addProblem, problemId, updateProblem } from '@/pages/Problems/Problem'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { ymdTime } from '@/composable/piece/dateFormat'

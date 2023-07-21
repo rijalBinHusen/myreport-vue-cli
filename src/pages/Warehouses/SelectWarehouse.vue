@@ -16,7 +16,7 @@
 
 <script>
 import { ref, onBeforeMount, computed } from 'vue';
-import SelectVue from '../elements/Select.vue';
+import SelectVue from '@/components/elements/Select.vue';
 import { lists, getWarehouses } from '@/pages/Warehouses/Warehouses';
 
 export default {

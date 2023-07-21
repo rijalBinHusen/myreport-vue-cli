@@ -37,11 +37,11 @@
                 </div>
                 <!-- warehouse -->
                 <div class="w3-col s3">
-                    <!-- <SelectWarehouse 
+                    <SelectWarehouse 
                         :disabled="!isEdit"
                         :inSelectWarehouse="warehouse"
                         @selectedWarehouse="warehouse = $event"
-                        /> -->
+                        />
                 </div>
 
             </div>
@@ -58,7 +58,7 @@ import Button from "@/components/elements/Button.vue"
 import SelectShift from "@/components/parts/SelectShift.vue"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 // import SelectHead from "@/components/parts/SelectHead.vue"
-// import SelectWarehouse from "@/components/parts/SelectWarehouse.vue"
+import SelectWarehouse from "@/pages/Warehouses/SelectWarehouse.vue"
 import { onMounted, ref, watch } from "vue"
 import { useStore } from "vuex"
 import { Documents } from "./DocumentsPeriod"
@@ -136,7 +136,7 @@ export default {
         SelectShift,
         SelectSupervisors,
         // SelectHead,
-        // SelectWarehouse
+        SelectWarehouse
     },
 }
 </script>

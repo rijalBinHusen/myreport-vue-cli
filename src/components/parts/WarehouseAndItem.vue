@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import SelectWarehouseVue from "./SelectWarehouse.vue"
+import SelectWarehouseVue from "@/pages/Warehouses/SelectWarehouse.vue"
 import InputItemVue from "@/pages/Base/InputItem.vue"
 import Button from "../elements/Button.vue"
 
