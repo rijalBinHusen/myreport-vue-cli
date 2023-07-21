@@ -132,7 +132,6 @@ export function Documents () {
     }
 
     const updateDocument = async (idDocument: string, objToUpdate: DocumentUpdate) => {
-        console.log(idDocument, objToUpdate)
 
         const isNoValueToUpdate = Object.values(objToUpdate).length === 0;
     
