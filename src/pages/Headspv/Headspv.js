@@ -34,6 +34,30 @@ export const updateHeadspv = async (idHeadspv, objectToUpdate) =>{
   })
 }
 
+
+
+let timerUpdateShift;
+let idHeadSpvUpdateShift = '';
+
+export function updateShiftHeadSupervisor(headSpvId, shift) {
+  const isNotOkeToUpdate = typeof headSpvId !== 'string' || shift < 1 || shift > 3;
+
+  console.log(isNotOkeToUpdate, shift, shift < 1)
+  if(isNotOkeToUpdate) return;
+
+  clearTimeout(timerUpdateShift);
+
+  idHeadSpvUpdateShift = headSpvId;
+
+  timerUpdateShift = setTimeout(() => {
+
+    updateHeadspv(headSpvId, { shift });
+    idHeadSpvUpdateShift = ''
+
+  }, 500)
+
+}
+
 export const addHeadspv = async (name, phone) => {
     let record = { name, phone, disabled: true, shift: 1 };
     const insertedId  = await db.createItem(record);

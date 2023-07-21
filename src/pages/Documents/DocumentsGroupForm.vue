@@ -45,7 +45,7 @@ import Datepicker from "vue3-datepicker"
 import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
 import { updateShiftSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
-import { updateHeadspv, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
+import { updateShiftHeadSupervisor, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
 import { lists as listsWarehouse, getWarehouseNotGroupedAndTheSupervisors } from '@/pages/Warehouses/Warehouses'
 import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { useStore } from "vuex"
@@ -58,8 +58,6 @@ export default {
         Input, Datepicker,
     },
     setup() {
-        let timeout = ref('')
-        let id = ref('')
         const spvLists = ref({})
         const headLists = ref([])
         const periode = ref()
@@ -72,8 +70,8 @@ export default {
 
         const changeShift = (store, idFL, shift) => {
             store == 'Supervisors'
-                ? updateShiftSupervisor(idFL, shift)
-                : updateHeadspv(idFL, { shift })
+                ? updateShiftSupervisor(idFL, Number(shift))
+                : updateShiftHeadSupervisor(idFL, Number(shift))
         }
 
         onBeforeMount(async () => {

@@ -67,7 +67,7 @@ import { ref, onBeforeMount } from "vue";
 import Button from "@/components/elements/Button.vue"
 import Select from "@/components/elements/Select.vue"
 import Table from "@/components/elements/Table.vue"
-import { updateHeadspv, addHeadspv, getHeadspvId, lists, getHeadspv } from './Headspv'
+import { updateHeadspv, addHeadspv, getHeadspvId, lists, getHeadspv, updateShiftHeadSupervisor } from './Headspv'
 
 export default {
   components: {
@@ -86,16 +86,7 @@ export default {
     })
 
     const changeShift = (id, shift) => {
-      if(idHeadspv.value == id) {
-        clearTimeout(timeout)
-      }
-  
-      idHeadspv.value = id
-  
-      timeout = setTimeout(() => {
-        updateHeadspv(id, { shift })
-        cancel()
-      }, 1000)
+      updateShiftHeadSupervisor(id, shift)
     }
     
     const  cancel = () => {
