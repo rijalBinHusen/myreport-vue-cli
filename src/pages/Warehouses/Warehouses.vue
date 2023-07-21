@@ -147,7 +147,13 @@ export default {
     }
 
     const setGroup = async (idWarehouse, idWarehouseGroup) => {
-      await updateWarehouse(idWarehouse, { group: idWarehouseGroup })
+      let isGrouped = false;
+
+      if(idWarehouseGroup) { 
+        isGrouped = true
+       }
+
+      await updateWarehouse(idWarehouse, { group: idWarehouseGroup, isGrouped })
     }
 
     const startWarehouses = () => {

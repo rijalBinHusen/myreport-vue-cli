@@ -196,16 +196,33 @@ export async function syncWarehouseToServer () {
 
     let result = <WarehouseAndTheSupervisors[]>[];
 
-    const uniqueeWarehouses = lists.value.filter((rec) => !rec.isGrouped);
+    // const uniqueeWarehouses = lists.value.filter((rec) => !rec.isGrouped);
 
-    for(let warehouse of uniqueeWarehouses) {
-        if(warehouse.supervisors.length){
+    for(let warehouse of lists.value) {
+        const isGrouped = warehouse.isGrouped;
+        let isWarehousePushed = false;
+
+        if(isGrouped) {
+            let findIndex = result.findIndex((rec) => rec.id === warehouse.group);
+            isWarehousePushed = findIndex > -1;
+        }
+
+        if(!isWarehousePushed && warehouse.supervisors.length && !warehouse.disabled){
 
             let supervisors = <Supervisor[]>[]
 
             for(let supervisorId of warehouse.supervisors) {
                 const supervisorInfo = await getSupervisorId(supervisorId);
-                supervisors.push(supervisorInfo);
+
+                if(supervisorInfo.disabled) {
+                    
+                    continue;
+
+                } else {
+
+                    supervisors.push(supervisorInfo);
+
+                }
             }
 
             result.push({ ...warehouse, supervisorsAndDetail: supervisors })
