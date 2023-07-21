@@ -17,11 +17,11 @@
     </div>
     <div v-for="warehouse in warehousesLists" :key="warehouse.id"  class=" w3-topbar w3-bottombar w3-col s2 w3-round-large w3-padding-small w3-small">
         <h5>{{ warehouse.name.replace('jadi ', '') }}</h5>
-        <span v-for="spv in warehouse.supervisors" :key="spv">
+        <span v-for="spv in warehouse.supervisorsAndDetail" :key="spv.id">
             <Input 
-                v-if="spvLists[spv]"
-                :label="spvLists[spv]?.name" placeholder="Shift" class="w3-row w3-padding" type="number"
-                :value="spvLists[spv]?.shift+''" @inp="changeShift('Supervisors', spvLists[spv]?.id, $event)"
+                v-if="spv.id"
+                :label="spv.name" placeholder="Shift" class="w3-row w3-padding" type="number"
+                :value="spv.shift" @inp="changeShift('Supervisors', spv?.id, $event)"
             />
         </span>
     </div>
@@ -38,19 +38,27 @@
 
 </template>
 
-<script>
+<script lang="ts">
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import Datepicker from "vue3-datepicker"
 import Input from "@/components/elements/Input.vue"
 import { ref, onBeforeMount } from "vue"
-import { updateShiftSupervisor, supervisorsEnabled } from "@/pages/Supervisors/Supervisors"
+import { updateShiftSupervisor } from "@/pages/Supervisors/Supervisors"
 import { updateShiftHeadSupervisor, headspvEnabled, headspvByShift } from "@/pages/Headspv/Headspv"
-import { lists as listsWarehouse, getWarehouseNotGroupedAndTheSupervisors } from '@/pages/Warehouses/Warehouses'
+import { getWarehouseNotGroupedAndTheSupervisors, type WarehouseAndTheSupervisors } from '@/pages/Warehouses/Warehouses'
 import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { useStore } from "vuex"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
+
+interface HeadSpv {
+  disabled: boolean
+  id: string
+  name: string
+  phone: string
+  shift: number
+}
 
 export default {
     components: {
@@ -59,25 +67,22 @@ export default {
     },
     setup() {
         const spvLists = ref({})
-        const headLists = ref([])
+        const headLists = ref(<HeadSpv[]>[])
         const periode = ref()
         const lowerPeriode = ref(new Date())
-        const warehousesLists = ref();
+        const warehousesLists = ref(<WarehouseAndTheSupervisors[]>[]);
         const store = useStore()
-        const BaseReportFileClass = new BaseReportFile();
+        const BaseReportFileClass = BaseReportFile();
         const { addBaseReportFile } = BaseReportFileClass;
         const { addData: addNewDocument, getLastDate } = Documents();
 
-        const changeShift = (store, idFL, shift) => {
+        const changeShift = (store: string, idFL: string, shift: string|number) => {
             store == 'Supervisors'
                 ? updateShiftSupervisor(idFL, Number(shift))
                 : updateShiftHeadSupervisor(idFL, Number(shift))
         }
 
         onBeforeMount(async () => {
-            supervisorsEnabled().forEach((spv) => {
-                spvLists.value[spv.id] = spv
-            })
             headLists.value = headspvEnabled()
             warehousesLists.value = await getWarehouseNotGroupedAndTheSupervisors()
             lowerPeriode.value = new Date(getLastDate())
@@ -90,20 +95,21 @@ export default {
                 // jadikkan this.periode sebagai new Date().getTime()
                 let periodeTime = ymdTime(periode.value)
                 //// iterate gudang, kemudian iterate nama spv yang ada didalam gudang
-                for(let warehouse of listsWarehouse) {
+                for(let warehouse of warehousesLists.value) {
                     if(!warehouse?.disabled) {
                         // baseReportFile record, masukkan berdasar iteraatenya gudang
-                        await addBaseReportFile(periodeTime, warehouse?.id)
+                        await addBaseReportFile(periodeTime, warehouse?.id);
 
                         // Document record, iterate spv yang ada digudang
-                        for(let spv of warehouse?.supervisors) {
-                            let shiftNow = spvLists.value[spv]?.shift
+                        for(let spv of warehouse?.supervisorsAndDetail) {
+                            let shiftNow = spv.shift
+                            let headSpv = headspvByShift(shiftNow == 3 ? 2 : shiftNow )
                             if(shiftNow) {
                                 await addNewDocument(
-                                    spv, 
+                                    spv.id, 
                                     periodeTime, 
                                     shiftNow,
-                                    headspvByShift(shiftNow == 3 ? 2 : shiftNow )?.id,
+                                    headSpv.id,
                                     warehouse?.id
                                 )
                             }

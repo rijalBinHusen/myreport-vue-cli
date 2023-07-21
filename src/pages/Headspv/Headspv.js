@@ -7,6 +7,14 @@ export let lists = ref([])
 const storeName = "headspv";
 const db = useIdb(storeName)
 
+// interface HeadSpv {
+//   disabled: boolean
+//   id: string
+//   name: string
+//   phone: string
+//   shift: number
+// }
+
 export const getHeadspv = async () => {
     if(lists.value.length) return;
     lists.value = await db.getItems();
@@ -72,10 +80,11 @@ export const headspvEnabled = () => {
 }
 
 export const headspvByShift = (shift) => {
-let rec = lists.value.find((val) => val.shift == shift);
-    return rec && rec.name && !rec?.disabled
+let rec = lists.value.find((val) => val.shift == shift && !val.disabled);
+    return rec && rec.name
         ? rec
         : {
+            id: 'False',
             name: "Vacant",
             phone: "Not found",
         };

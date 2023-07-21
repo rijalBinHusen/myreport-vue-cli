@@ -187,7 +187,7 @@ export async function syncWarehouseToServer () {
 
   import { type Supervisor } from "@/pages/Supervisors/Supervisors"
 
-  interface WarehouseAndTheSupervisors extends Warehouse {
+  export interface WarehouseAndTheSupervisors extends Warehouse {
     supervisorsAndDetail: Supervisor[]
   }
 
