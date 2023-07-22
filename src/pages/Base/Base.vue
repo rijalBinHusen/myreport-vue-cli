@@ -293,13 +293,11 @@ export default {
             
             if(baseId.value && nowShift.value) {
                 renderTable.value = false
-                await getBaseClockByParentByShift(baseId.value, Number(nowShift.value))
-                await getBaseStockByParentByShift(baseId.value, Number(nowShift.value))
                 if(isStockSheet.value) {
-                    lists.value = await getBaseReportStockLists(baseId.value, Number(nowShift.value))
+                    lists.value = await getBaseStockByParentByShift(baseId.value, Number(nowShift.value))
                     nowSheet.value = 'stock'
                 } else {
-                    lists.value = baseReportClockLists(baseId.value, Number(nowShift.value))
+                    lists.value = await getBaseClockByParentByShift(baseId.value, Number(nowShift.value))
                     nowSheet.value = 'clock'
                 }
                 excelLabel.value = ev?.title || excelLabel.value
@@ -358,4 +356,4 @@ export default {
         }
     }
 }
-</script>@/pages/BaseReport/BaseReportFile@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses../../pages/Followup/followUp@/pages/Supervisors/Supervisors
+</script>

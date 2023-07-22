@@ -188,36 +188,26 @@ export function baseReportStock() {
 
   };
 
-  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStock | undefined> => {
+  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStock[]> => {
 
-    let findRec = lists.find(
+    let filterRec = lists.filter(
       (rec) => rec.parent == parent && rec.shift == shift
     );
 
-    if (typeof findRec === 'undefined') {
+    if (filterRec.length === 0) {
       const getRecord = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
 
       if (getRecord && getRecord.length) {
-        findRec = {
-          awal: getRecord[0]?.awal,
-          dateEnd: getRecord[0]?.dateEnd,
-          dateIn: getRecord[0]?.dateIn,
-          dateOut: getRecord[0]?.dateOut,
-          id: getRecord[0]?.id,
-          in: getRecord[0]?.in,
-          item: getRecord[0]?.item,
-          out: getRecord[0]?.out,
-          parent: getRecord[0]?.parent,
-          parentDocument: getRecord[0]?.parentDocument,
-          planOut: getRecord[0]?.planOut,
-          problem: getRecord[0]?.problem,
-          real: getRecord[0]?.real,
-          shift: getRecord[0]?.shift,
+        for(let record of getRecord) {
+          const interpretIt = await interpretRecord(record);
+
+          lists.push(interpretIt);
+          filterRec.push(interpretIt);
         }
       }
     }
 
-    return findRec;
+    return filterRec;
   };
 
   async function interpretRecord(record: BaseStock): Promise<BaseStockMapped> {
@@ -230,27 +220,27 @@ export function baseReportStock() {
 
   }
 
-  const getBaseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[] | undefined> => {
+  // const getBaseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[] | undefined> => {
 
-    let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
+  //   let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
 
-    if (!result.length) {
-      const retrieveFromDb = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
+  //   if (!result.length) {
+  //     const retrieveFromDb = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
 
-      if (typeof retrieveFromDb === 'undefined') return;
+  //     if (typeof retrieveFromDb === 'undefined') return;
 
-      for (let record of retrieveFromDb) {
-        const interpretIt = await interpretRecord(record);
+  //     for (let record of retrieveFromDb) {
+  //       const interpretIt = await interpretRecord(record);
 
-        lists.push(interpretIt);
-        result.push(interpretIt);
+  //       lists.push(interpretIt);
+  //       result.push(interpretIt);
 
-      }
+  //     }
 
-    }
+  //   }
 
-    return result;
-  };
+  //   return result;
+  // };
 
   const stockDetails = (parent: string, shift: number) => {
     /*
@@ -334,7 +324,6 @@ export function baseReportStock() {
     removeStock,
     removeStockByParent,
     getBaseStockByParentByShift,
-    getBaseReportStockLists,
     stockDetails,
     updateBaseStock,
     markStockFinished,

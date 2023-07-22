@@ -15,6 +15,10 @@ interface BaseClock {
   rehat: number
 }
 
+interface BaseClockMapped extends BaseClock {
+  totalTime: number
+}
+
 interface BaseClockForUpdate {
   parent?: string;
   shift?: number;
@@ -29,7 +33,7 @@ interface unknownObject {
   [key: string|number]: string
 }
 
-export let lists = <BaseClock[]>[];
+export let lists = <BaseClockMapped[]>[];
 let storeName = "basereportclock";
 
 export function baseClock() {
@@ -51,7 +55,9 @@ export function baseClock() {
 
     if(typeof insertedId !== 'undefined') {
 
-      lists.push({ id : insertedId, ...objToInsert })
+      const interpretIt = interpretRecord({ id : insertedId, ...objToInsert })
+
+      lists.unshift(interpretIt)
 
     } else {
       
@@ -60,6 +66,14 @@ export function baseClock() {
     }
     
   };
+
+  const interpretRecord = (record: BaseClock): BaseClockMapped => {
+    const countTime = totalTime(record.start, record.finish) - record.rehat * 60;
+    return {
+      ...record,
+      totalTime: countTime
+    }
+  }
   
   const startImportClock = async (sheets: Sheet, parentId: string) => {
     // dapatkan ref
@@ -118,19 +132,28 @@ export function baseClock() {
 
   };
 
-  const getBaseClockByParentByShift = async (parent: string, shift: number) => {
-    let findRecFirst = lists.findIndex((rec) => rec.parent == parent && rec.shift == shift);
+  const getBaseClockByParentByShift = async (parent: string, shift: number): Promise<BaseClockMapped[]> => {
 
-    if (findRecFirst < 0) {
-      const getData= await db.getItemsByTwoKeyValue<BaseClock>('parent', parent, 'shift', shift);
+    let filterRec = lists.filter((rec) => rec.parent == parent && rec.shift == shift);
 
-      if(getData == undefined) {
+    if (filterRec.length === 0) {
+      const records = await db.getItemsByTwoKeyValue<BaseClock>('parent', parent, 'shift', shift);
+
+      if(records.length == 0) {
         await appendData(parent, shift, 0, '12:00', '12:00', '01:00', 0);
-        return;
+        getBaseClockByParentByShift(parent, shift);
+        return [lists[lists.length - 1]];
       };
 
-      lists = lists.concat(getData);
+      for(let record of records) {
+        const interpretIt = interpretRecord(record);
+        filterRec.push(interpretIt);
+        lists.push(interpretIt);
+      }
+
     }
+
+    return filterRec
   };
 
   const updateBaseClock = async (id: string, objtToUpdate: BaseClockForUpdate) => {
