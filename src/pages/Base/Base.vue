@@ -108,7 +108,7 @@ import { useStore } from "vuex"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
-import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode } from './BaseReportPanel'
+import { sheet as nowSheet, shift as nowShift, selectedWarehouse, selectedPeriode, freezePanel  } from './BaseReportPanel'
 import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
@@ -289,6 +289,7 @@ export default {
         }
         const renewLists = async (ev) => {
             baseId.value = ev?.baseReportFile || baseId.value
+            freezePanel.value = true;
             
             if(baseId.value && nowShift.value) {
                 renderTable.value = false
@@ -304,6 +305,8 @@ export default {
                 excelLabel.value = ev?.title || excelLabel.value
                 renderTable.value = true
             }
+
+            freezePanel.value = false;
                 
         }
 

@@ -1,5 +1,6 @@
 <template>
-    <div id="set-periode" class="w3-row w3-center">
+    <div id="set-periode" :class="['w3-row w3-center', freezePanel ? 'w3-disabled' : '']">
+
         <ButtonVue 
             class="w3-left w3-col s2 w3-margin-top w3-margin-right" 
             primary 
@@ -7,6 +8,7 @@
             type="button" 
             @trig="pickPeriode"
         />
+
         <!-- Date Base report -->
         <SelectVue 
             class="w3-col s1 w3-margin-right"
@@ -18,7 +20,6 @@
             :inselect="selectedPeriode + ''"
         />
             
-
         <!-- Warehouse Base report -->
         <SelectVue
             v-if="selectedPeriode"
@@ -70,10 +71,11 @@
             type="button" 
             @trig="mode('BaseFinishedForm')"
         />
+
     </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import ButtonVue from '@/components/elements/Button.vue';
 import SelectVue from '@/components/elements/Select.vue';
 import { BaseReportFile, WarehouseByDate } from "@/pages/BaseReport/BaseReportFile";
@@ -81,93 +83,73 @@ import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 import { computed, ref, watch, onMounted } from 'vue';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import SelectShift from '@/components/parts/SelectShift.vue';
-import { selectedPeriode, selectedWarehouse, shift, sheet } from './BaseReportPanel'
+import { selectedPeriode, selectedWarehouse, shift, sheet, freezePanel } from './BaseReportPanel'
 import { dateMonth } from '@/composable/piece/dateFormat';
 import { getWarehouseById } from '@/pages/Warehouses/Warehouses';
 import { getProblemFromDB } from '@/pages/Problems/Problem'
 
+    const emits = defineEmits(['baseReportChanged', 'mode'])
+    
+    const { getBaseReportFile, dateBaseReportFileImported, warehouseByDate, getBaseFileByPeriodeAndWarehouse } = BaseReportFile();
+    const warehouses = ref(<WarehouseByDate[]>[])
+    const pickPeriode = async () => {
+        let res = await subscribeMutation(
+            "Pilih periode yang akan ditampilkan", 
+            "PeriodePicker",
+            {},
+            'Modal/tunnelMessage'
+            )
+        if(res) {
+            //open the loader
+            loader()
+            // wait the process get base report file
+            await getBaseReportFile(res?.periode1, res?.periode2)
+            //close the loader
+            modalClose()
+            // renewLists()
+            selectedWarehouse.value = ''
+            sheet.value = ''
+        }
+    }
 
-export default {
-    components: {
-        ButtonVue,
-        SelectVue,
-        SelectShift,
-    },
-    emits: ['baseReportChanged', 'mode'],
-    setup(props, { emit }) {
-        const { getBaseReportFile, dateBaseReportFileImported, warehouseByDate, getBaseFileByPeriodeAndWarehouse } = BaseReportFile();
-        const warehouses = ref(<WarehouseByDate[]>[])
-        const pickPeriode = async () => {
-            let res = await subscribeMutation(
-                "Pilih periode yang akan ditampilkan", 
-                "PeriodePicker",
-                {},
-                'Modal/tunnelMessage'
-                )
-            if(res) {
-                //open the loader
-                loader()
-                // wait the process get base report file
-                await getBaseReportFile(res?.periode1, res?.periode2)
-                //close the loader
-                modalClose()
-                // renewLists()
-                selectedWarehouse.value = ''
-                sheet.value = ''
-            }
+    const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
+
+    async function send () {
+        let baseReportFile = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
+        // get value for title
+        let periode2 = dateMonth(Number(selectedPeriode.value || new Date()))
+        let warehouseName = await getWarehouseById(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
+
+        // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
+        if(!baseReportFile) {
+            selectedWarehouse.value = ''
+            sheet.value = ''
+            shift.value = ''
         }
 
-        const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
+        warehouses.value = warehouseByDate(selectedPeriode.value)
 
-        async function send () {
-            let baseReportFile = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
-            // get value for title
-            let periode2 = dateMonth(Number(selectedPeriode.value || new Date()))
-            let warehouseName = await getWarehouseById(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
+        emits('baseReportChanged', { 
+            periode: selectedPeriode.value,
+            warehouse: selectedWarehouse.value,
+            shift: shift.value,
+            baseReportFile,
+            sheet: sheet.value,
+            title: periode2 + ' - ' + warehouseName + ', Shift ' + shift.value
+            })
+    }
+    
+    watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
+        // selectedperiode
+        send()            
+    })
 
-            // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
-            if(!baseReportFile) {
-                selectedWarehouse.value = ''
-                sheet.value = ''
-                shift.value = ''
-            }
+    onMounted( async () => {
+        await getProblemFromDB()
+        send()
+    })
 
-            warehouses.value = warehouseByDate(selectedPeriode.value)
-
-            emit('baseReportChanged', { 
-                periode: selectedPeriode.value,
-                warehouse: selectedWarehouse.value,
-                shift: shift.value,
-                baseReportFile,
-                sheet: sheet.value,
-                title: periode2 + ' - ' + warehouseName + ', Shift ' + shift.value
-             })
-        }
-        
-        watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
-            // selectedperiode
-            send()            
-        })
-
-        onMounted( async () => {
-            await getProblemFromDB()
-            send()
-        })
-
-        const mode = (ev: string) => {
-            emit('mode', ev)
-        }
-  
-        return { 
-            shift, 
-            sheet, 
-            pickPeriode, 
-            dateBaseReportFile, 
-            warehouses, 
-            selectedPeriode,
-            selectedWarehouse,
-            mode,         
-        }
-    },
-}
+    const mode = (ev: string) => {
+        emits('mode', ev)
+    }
 </script>
