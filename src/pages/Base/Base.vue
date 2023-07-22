@@ -190,36 +190,35 @@ export default {
         }
         
         const duplicateRecord = async (ev) => {
-            // console.log('duplicateRecord', ev)
-            await appendClockRecord(ev.parent, ev.shift, +ev.noDo++, ev.reg, ev.start, ev.finish, ev.rehat)
-            renewLists()
+            let confirm = await subscribeMutation('', 'Confirm', { pesan: 'Record akan digandakan?'}, 'Modal/tunnelMessage')
+            if(confirm) {
+
+                await appendClockRecord(ev.parent, ev.shift, +ev.noDo++, ev.reg, ev.start, ev.finish, ev.rehat)
+                renewLists()
+
+            }
         }
 
         const handleProblem = async (ev, obj) => {
             if(ev === "delete") {
                 let confirm = await subscribeMutation('', 'Confirm', { pesan: 'Semua problem akan dihapus!'}, 'Modal/tunnelMessage')
-                if(confirm) {
-                    await updateBaseStock(obj.id, { problem: [] })
-                } else {
+                if(!confirm) {
                     return
                 }
+                await updateBaseStock(obj.id, { problem: [] })
             } else {
-                let edit =  await subscribeMutation(
-                        'Edit problem', 
-                        'BaseProblemForm', 
-                        { 
+                let infoToSend = { 
                             id: obj.id, 
                             periode: +selectedPeriode.value, 
                             warehouse: selectedWarehouse.value, 
                             item: obj.item,
                             itemName: obj.itemName,
                             problem: obj.problem
-                        }, 
-                        'Modal/tunnelMessage'
-                    )
-                    if(!edit) {
-                        return
-                    }
+                        };
+                let edit =  await subscribeMutation('Edit problem', 'BaseProblemForm', infoToSend, 'Modal/tunnelMessage')
+                if(!edit) {
+                    return
+                }
             }
             renewLists()
         }

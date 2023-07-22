@@ -421,11 +421,19 @@ export function Documents () {
         return
     }
 
-    const getDocumentByPeriodeByWarehouseByShiftFromDb = async (periode: number, warehouse: string, shift: 1|2|3): Promise<DocumentsMapped|undefined> => {
-        const getData = await db.getItemsByThreeKeyValue<Document>('periode', periode, 'warehouse', warehouse, 'shift', shift);
-        if(getData.length === 0) return;
-        const mapIt = await documentsMapper(getData[0]);
-        return mapIt;
+    const getDocumentByPeriodeByWarehouseByShift = async (periode: number, warehouse: string, shift: 1|2|3): Promise<DocumentsMapped|undefined> => {
+        let findRec = lists.value.find((rec) => rec.periode === periode && rec.warehouse === warehouse && rec.shift === shift);
+
+        if(typeof findRec === 'undefined') {
+
+            const getRecord = await db.getItemsByThreeKeyValue<Document>('periode', periode, 'warehouse', warehouse, 'shift', shift);
+            if(getRecord.length === 0) return;
+            const mapIt = await documentsMapper(getRecord[0]);
+            findRec = mapIt;
+
+        }
+
+        return findRec;
     }
     
     return {
@@ -450,7 +458,7 @@ export function Documents () {
         shareDocument,
         unApproveDocument,
         markDocumentFinished,
-        getDocumentByPeriodeByWarehouseByShiftFromDb
+        getDocumentByPeriodeByWarehouseByShift
     }
           
 }

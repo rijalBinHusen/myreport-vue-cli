@@ -54,146 +54,101 @@
     </div>
 </template>
 
-<script>
-import Select from "../../components/elements/Select.vue"
+<script lang="ts" setup>
 import Button from "../../components/elements/Button.vue"
-import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { selectedPeriode, selectedWarehouse, shift } from "./BaseReportPanel"
-import { onMounted, onUnmounted, ref, watch } from "vue"
-import { getHeadspvId } from "@/pages/Headspv/Headspv"
-import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
+import { onMounted, onUnmounted, ref, watch, computed } from "vue"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
-import { baseClock } from '@/pages/BaseReport/BaseReportClock'
-import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { problemActiveBySpvAndPeriode, updateProblem } from '@/pages/Problems/Problem'
-
-const { isGenerateDocument, getDocumentByPeriodeByWarehouseByShiftFromDb: getDocument } = Documents();
-const { stockDetails } = baseReportStock();
-const { clockDetails } = baseClock();
+import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
 
 
-
-export default {
-    components: {
-        Select,
-        Button,
-    },
-    props: {
+    const props = defineProps({
         base: {
             required: true,
             type: String,
         }
-    },
-    setup(props, { emit }) {
-        const supervisor = ref(null)
-        const headSpv = ref(null)
-        const warehouseName = ref(null)
-        const details = ref(null)
-        const generateReport = ref(false)
-        const timeout = ref(null)
-        const freezePage = ref(null)
-        const document = ref({})
-        const keyPress = ref({})
-        // const selisih
+    });
 
-        onMounted(async () => {
-            // find the document first
-            document.value = await getDocument(Number(selectedPeriode.value), selectedWarehouse.value, shift.value)
-            supervisor.value = await getSupervisorId(document.value.name).then((res) => res.name)
-            headSpv.value = await getHeadspvId(document.value.head).then((res) => res.name)
-            warehouseName.value = await getWarehouseById(document.value.warehouse).then((res) => res.name)
-            // console.log('supervisor' supervisor.value)
-            // console.log('warehouseName', )
-            
-            // if isFinished document
-            if(document.value?.isfinished) {
-                await subscribeMutation('', 'Confirm', { pesan: 'Document sudah diselesaikan', isAlert: true }, 'Modal/tunnelMessage')
-                details.value = document.value
-            } else {
-                if(!document.value?.collected) {
-                    await subscribeMutation('', 'Confirm', { pesan: 'Document belum di kumpulkan', isAlert: true }, 'Modal/tunnelMessage')
-                }
-                details.value = { ... clockDetails(props.base, document.value.shift), ...stockDetails(props.base, document.value.shift) }
-            }
-            // get item variance ffrom problem
-            const itemVariance = problemActiveBySpvAndPeriode(document.value.name, document.value.periode)
-            // reflecte the variacne to problem
-            if(itemVariance.length) {
-                updateProblem(itemVariance?.id, { linkedToDocument: true })
-            }
-            // automate set item variance 
-            details.value.itemVariance = itemVariance.length
-            // event listener
-            window.addEventListener("keydown", pressKey)
-            window.addEventListener("keyup", releaseKey)
-        })
+    const infoDocs = ref(<DocumentDetails>{})
+    
+    const supervisor = ref(null)
+    const headSpv = ref(null)
+    const warehouseName = ref(null)
+    const details = ref(null)
+    const generateReport = ref(false)
+    const timeout = ref(null)
+    const freezePage = ref(null)
+    const document = ref({})
+    const keyPress = ref(<{[key: string]: boolean}>{})
+    // const selisih
 
-        onUnmounted(() => {
-        //remove listen event
-            window.removeEventListener("keydown", pressKey)
-            window.removeEventListener("keyup", releaseKey)
-        })
+    onMounted(async () => {
+        
+        infoDocs.value = await getDocumentDetails(props.base, selectedPeriode.value, selectedWarehouse.value, shift.value)
+        // event listener
+        window.addEventListener("keydown", pressKey)
+        window.addEventListener("keyup", releaseKey)
+    })
 
-        const releaseKey = (event) => {
-            delete keyPress.value[event.key]
+    onUnmounted(() => {
+    //remove listen event
+        window.removeEventListener("keydown", pressKey)
+        window.removeEventListener("keyup", releaseKey)
+    })
+
+    const releaseKey = (event: KeyboardEvent) => {
+        delete keyPress.value[event.key]
+    }
+    function pressKey(event: KeyboardEvent) {
+        if(event.keyCode === 27) {
+            // console.log('esc')
+            emit('exit')
+            return
         }
-        function pressKey(event) {
-            if(event.keyCode === 27) {
-                // console.log('esc')
-                emit('exit')
-                return
-            }
-            keyPress.value[event.key] = true
-            // if the control button still pressed
-            if(keyPress.value['Control']) {
-                // if the S (83) button pressed ( CTRL + S )
-                if(event.keyCode === 83) {
-                // prevent dialog save as to launch
-                event.preventDefault()
-                // if any record edited
-                    if(document.value.collected && !document.value.isfinished) {
-                        // save the canged record
-                        save()
-                        // console.log('ctrl + s')
-                    }
+
+        keyPress.value[event.key] = true
+        // if the control button still pressed
+        if(keyPress.value['Control']) {
+            // if the S (83) button pressed ( CTRL + S )
+            if(event.keyCode === 83) {
+            // prevent dialog save as to launch
+            event.preventDefault()
+            // if any record edited
+                if(document.value.collected && !document.value.isfinished) {
+                    // save the canged record
+                    save()
+                    // console.log('ctrl + s')
                 }
             }
-            
-        }
-
-        const save = () => {
-            // dont do anything when the page freeze
-            if(freezePage.value) { return }
-            // console.log(this.document)
-            emit("finished", Object.assign({
-                parentDocument: document.value.id,
-                generateReport: generateReport.value,
-            }, details.value ))
-        }
-
-        watch([generateReport, document], (newVal, oldVal) => {
-            if(newVal[0] !== oldVal[0]) {
-                clearTimeout(timeout.value)
-                freezePage.value = true
-                timeout.value = setTimeout(() => {
-                    freezePage.value = false
-                    isGenerateDocument(document.value.id, newVal[0])
-                }, 600)
-            }
-        })
-
-        return {
-            supervisor, headSpv, warehouseName, document, dateMonth, 
-            details, generateReport, save
         }
         
-    },
-    emits: ["exit", "finished"],
-    computed: {
-        inputs() {
-            return [
+    }
+
+    const save = () => {
+        // dont do anything when the page freeze
+        if(freezePage.value) { return }
+        // console.log(this.document)
+        emit("finished", Object.assign({
+            parentDocument: document.value.id,
+            generateReport: generateReport.value,
+        }, details.value ))
+    }
+
+    watch([generateReport, document], (newVal, oldVal) => {
+        if(newVal[0] !== oldVal[0]) {
+            clearTimeout(timeout.value)
+            freezePage.value = true
+            timeout.value = setTimeout(() => {
+                freezePage.value = false
+                isGenerateDocument(document.value.id, newVal[0])
+            }, 600)
+        }
+    })
+    const emit = defineEmits(["exit", "finished"]);
+
+    const inputs = computed(() => [
                 { label: "Total produk keluar", valueFrom: "totalQTYOut", editable: false },
                 { label: "Total item bergerak", valueFrom: "totalItemMoving", editable: false },
                 { label: "Total produk masuk", valueFrom: "totalQTYIn", editable: false },
@@ -205,7 +160,5 @@ export default {
                 { label: "Produk tidak FIFO",  valueFrom: "totalProductNotFIFO", editable: true},
                 { label: "Produk variance", valueFrom: "itemVariance", editable: true },
             ]
-        }
-    },
-}
-</script>@/pages/BaseReport/BaseReportClock@/pages/BaseReport/BaseReportStock@/pages/BaseReport/BaseReportPanel@/pages/Documents/DocumentsPeriod@/pages/Warehouses/Warehouses@/pages/Headspv/Headspv@/pages/Supervisors/Supervisors@/pages/Problems/Problem
+        )
+</script>
