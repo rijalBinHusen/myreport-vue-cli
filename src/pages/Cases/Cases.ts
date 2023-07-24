@@ -26,7 +26,7 @@ interface CaseMapped extends Case {
   insert2?: string,
 }
 
-interface CaseImport {
+export interface CaseImport {
   id:string
   bagian:string
   divisi:string
@@ -156,7 +156,7 @@ export function Cases() {
             dl: Number(datum?.dl),
             head: datum?.head,
             id: datum?.id,
-            insert: Boolean(datum?.insert),
+            insert: datum?.insert,
             masalah: datum?.masalah,
             name: datum?.name,
             parent: datum?.parent,

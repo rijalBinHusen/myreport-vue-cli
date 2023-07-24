@@ -1,6 +1,6 @@
 <template>
     <div class="w3-row">
-        <div class="w3-col s6 w3-padding-large" v-html="baseData" style="overflow: auto; height: 400px;">
+        <div class="w3-col s6 w3-padding-large" v-html="baseCase" style="overflow: auto; height: 400px;">
         </div>
         <div class="w3-col s6 w3-padding-large" style="overflow: auto; height: 400px;">
             <!-- Head spv -->
@@ -43,60 +43,49 @@
     </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import datepicker from "vue3-datepicker"
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
-import { Cases, type CaseUpdate } from "@/pages/Cases/Cases"
+import { Cases, type CaseUpdate, type CaseImport, type Case } from "@/pages/Cases/Cases"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/pages/Headspv/SelectHead.vue"
 import { useStore } from "vuex";
+import { ref } from "vue"
 
 const store = useStore();
 
 const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } = Cases();
 
-export default {
-    components: {
-        datepicker, Select, Button, SelectSupervisors, SelectHead
-    },
-    data() {
-        return {
-            baseData: "",
-            periodeModel: new Date(),
-            dlModel: new Date(),
-            parent: "",
-            periode: 0,
-            name: "",
-            head: "",
-            masalah: "",
-            sumberMasalah: "",
-            solusi: "",
-            pic: "",
-            dl: 0,
-            status: false,
-            changed: <CaseUpdate>{},
-            id: '',
+    const baseCase  = ref(<CaseImport>{})
+    const caseInserted = ref(<Case>{});
+    const periodeModel = ref(new Date())
+    const dlModel = ref(new Date());
+    const changed = ref(<CaseUpdate>{})
+
+    async function picName(name: string) {
+        pic.value = await getSupervisorId(name).then((res) => res?.name)
+        id.value ? changed.value.pic = pic.value : false
+    }
+
+    async function send() {
+        if(id.value) {
+
+            await updateCase(id.value, changed.value)
+
+        } else {
+
+            await addCase(periode.value, head.value, dl.value, ymdTime(), masalah.value, name.value, parent.value, pic.value, solusi.value, status.value, sumberMasalah.value)
+            await updateCaseImport(parent.value, { inserted: true })
+
         }
-    },
-    methods: {
-        async picName(name: string) {
-            this.pic = await getSupervisorId(name).then((res) => res?.name)
-            this.id ? this.changed['pic'] = this.pic : false
-        },
-        async send() {
-            if(this.id) {
-                await updateCase(this.id, this.changed)
-            } else {
-                await addCase(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah)
-                await updateCaseImport(this.parent, { inserted: true })
-            }
-            store.commit("Modal/tunnelMessage", true)
-            store.commit("Modal/active")
-        }
-    },
+
+        store.commit("Modal/tunnelMessage", true)
+        store.commit("Modal/active")
+    }
+
     watch: {
         periodeModel(newVal, oldVal) {
             this.periode = ymdTime(newVal)
@@ -128,6 +117,7 @@ export default {
     },
     async created() {
         let obj = store.getters["Modal/obj"].obj
+        
         let getCase = await getCaseById(obj?.id)
         if(typeof getCase === 'undefined') return;
         // get the base record
@@ -136,9 +126,9 @@ export default {
 
         if(obj?.edit) {
 
-            //this.baseData = 
-            let keyOfBase = Object.keys(base);
-            let addBreakTag = keyOfBase.map((val) => `${val}:<br> ${base[val]}`)
+            this.baseCase = Object.keys(base).join('-');
+            // let keyOfBase = 
+            // let addBreakTag = keyOfBase.map((val) => `${val}:<br> ${base[val]}`)
             // .map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
 
             this.parent = getCase?.parent
