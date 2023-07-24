@@ -2,6 +2,7 @@ import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
 import { getHeadspvId } from "@/pages/Headspv/Headspv";
 import { dateMonth } from "../../composable/piece/dateFormat";
 import { useIdb } from "../../utils/localforage";
+import { ref } from "vue"
 
 interface Case {
   id: string,
@@ -47,8 +48,8 @@ type Partial<T> = {
 type CaseImportUpdate = Partial<CaseImport>;
 type CaseUpdate = Partial<Case>
 
-export let lists = <CaseMapped[]>[];
-export let listsCaseImport = <CaseImport[]>[]
+export let lists = ref(<CaseMapped[]>[]);
+export let listsCaseImport = ref(<CaseImport[]>[])
 const storeName = "cases";
 
 export function Cases() {
@@ -85,7 +86,7 @@ export function Cases() {
 
     if(typeof insertedId === 'undefined') return;
       const interpretIt = await interpretCaseRecord({ id: insertedId, ...rec})
-      lists.unshift(interpretIt)
+      lists.value.unshift(interpretIt)
     
   }
   
@@ -117,7 +118,7 @@ export function Cases() {
     const insertedId = await db.createItem(rec);
     
     if(insertedId) {
-      listsCaseImport.unshift({ id: insertedId, ...rec });
+      listsCaseImport.value.unshift({ id: insertedId, ...rec });
     }
   }
   
@@ -131,7 +132,7 @@ export function Cases() {
 
         if(datum?.import) {
 
-          listsCaseImport.push({
+          listsCaseImport.value.push({
             bagian: datum?.bagian,
             divisi: datum?.divisi,
             fokus: datum?.fokus,
@@ -163,12 +164,14 @@ export function Cases() {
             sumberMasalah: datum?.sumberMasalah
           });
 
-          lists.push(interpretIt);
+          lists.value.push(interpretIt);
 
         }
 
       }
     }
+
+    console.log(lists.value)
 
   }
 
@@ -187,10 +190,10 @@ export function Cases() {
   }
   
   async function getCaseById(idCase: string): Promise<Case|undefined> {
-    const findIndex = lists.findIndex((rec) => rec.id == idCase);
+    const findIndex = lists.value.findIndex((rec) => rec.id == idCase);
 
     if(findIndex > -1) {
-      return lists[findIndex];
+      return lists.value[findIndex];
     }
 
     let getRecord = await db.getItem<Case>(idCase);
@@ -201,15 +204,15 @@ export function Cases() {
       getRecord = await interpretCaseRecord(getRecord);
     }
 
-    lists.push(getRecord);
+    lists.value.push(getRecord);
     return getRecord;
   } 
   
   async function getCaseImportById(idCase: string): Promise<CaseImport|undefined> {
-    const findIndex = listsCaseImport.findIndex((rec) => rec.id == idCase);
+    const findIndex = listsCaseImport.value.findIndex((rec) => rec.id == idCase);
 
     if(findIndex > -1) {
-      return listsCaseImport[findIndex];
+      return listsCaseImport.value[findIndex];
     }
 
     let getRecord = await db.getItem<CaseImport>(idCase);
@@ -218,7 +221,7 @@ export function Cases() {
 
     if(getRecord.import) {
 
-      listsCaseImport.push(getRecord);
+      listsCaseImport.value.push(getRecord);
       return getRecord;
       
     }
@@ -230,10 +233,10 @@ export function Cases() {
 
         if(isNoValueToUpdate) return;
 
-        const findIndex = lists.findIndex((rec) => rec?.id === idCase);
+        const findIndex = lists.value.findIndex((rec) => rec?.id === idCase);
 
         if(findIndex > -1) {
-            const record = lists[findIndex];
+            const record = lists.value[findIndex];
             delete record.headName;
             delete record.insert2;
             delete record.periode2;
@@ -241,7 +244,7 @@ export function Cases() {
             
             const updateRecord = { ...record, ...obj };
             const mapUpdateRecord = await interpretCaseRecord(updateRecord)
-            lists[findIndex] = mapUpdateRecord;
+            lists.value[findIndex] = mapUpdateRecord;
         }
         
         await db.updateItem(idCase, obj);
@@ -252,20 +255,24 @@ export function Cases() {
 
         if(isNoValueToUpdate) return;
 
-        const findIndex = listsCaseImport.findIndex((rec) => rec?.id === idCase);
+        const findIndex = listsCaseImport.value.findIndex((rec) => rec?.id === idCase);
 
         if(findIndex > -1) {
-            const record = listsCaseImport[findIndex];
+            const record = listsCaseImport.value[findIndex];
             
             const updateRecord = { ...record, ...obj };
-            listsCaseImport[findIndex] = updateRecord;
+            listsCaseImport.value[findIndex] = updateRecord;
         }
         
         await db.updateItem(idCase, obj);
   }
   
   const removeCase = async (id: string) => {
-    lists = lists.filter((rec) => rec.id !== id);
+    const findIndex = lists.value.findIndex((rec) => rec.id !== id);
+    
+    if(findIndex > -1) {
+      lists.value.splice(findIndex, 1)
+    }
     await db.removeItem(id);
   };
 
