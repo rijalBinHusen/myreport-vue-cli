@@ -21,10 +21,8 @@
                     class="w3-input w3-margin-top w3-margin-bottom"
                     type="number"
                     :disabled="!inp.editable"
-                    v-model="inp.valueFrom"
+                    v-model="infoDocs[inp.valueFrom]"
                     />
-                    <!-- value="1" -->
-                <!-- <input class="w3-input w3-margin-top w3-margin-bottom" :value="details[inp.valueFrom]" /> -->
 
             </div>
         </div>
@@ -93,6 +91,7 @@ import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from ".
     const releaseKey = (event: KeyboardEvent) => {
         delete keyPress.value[event.key]
     }
+
     function pressKey(event: KeyboardEvent) {
         if(event.keyCode === 27) {
             // console.log('esc')
@@ -118,6 +117,37 @@ import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from ".
         
     }
 
+    type keyToUPdate = 'totalQTYOut'|
+                        'totalItemMoving'|
+                        'totalQTYIn'|
+                        'planOut'|
+                        'totalItemKeluar'|
+                        'totalDo'|
+                        'totalWaktu'|
+                        'totalKendaraan'|
+                        'totalProductNotFIFO'|
+                        'itemVariance';
+    
+    interface inputsInterface {
+        label: string
+        valueFrom: keyToUPdate
+        editable: boolean
+    }
+
+    const inputs = computed(():inputsInterface[] => [
+                { label: "Total produk keluar", valueFrom: 'totalQTYOut', editable: false },
+                { label: "Total item bergerak", valueFrom: 'totalItemMoving', editable: false },
+                { label: "Total produk masuk", valueFrom: 'totalQTYIn', editable: false },
+                { label: "Coret DO", valueFrom: 'planOut', editable: false },
+                { label: "Jumlah item keluar", valueFrom: 'totalItemKeluar', editable: false },
+                { label: "Total DO", valueFrom: 'totalDo', editable: true },
+                { label: "Total waktu", valueFrom: 'totalWaktu', editable: true },
+                { label: "Total kendaraan", valueFrom: 'totalKendaraan', editable: true },
+                { label: "Produk tidak FIFO",  valueFrom: 'totalProductNotFIFO', editable: true},
+                { label: "Produk variance", valueFrom: 'itemVariance', editable: true },
+            ]
+        )
+
     const save = () => {
         // dont do anything when the page freeze
         if(freezePage.value) { return }
@@ -137,23 +167,10 @@ import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from ".
             timeout.value = setTimeout(() => {
                 freezePage.value = false
                 setGenerateDocument(infoDocs.value.id, newVal[0])
-            }, 600)
+            }, 100)
 
         }
     })
-    const emit = defineEmits(["exit", "finished"]);
 
-    const inputs = computed(() => [
-                { label: "Total produk keluar", valueFrom: infoDocs.value.totalQTYOut, editable: false },
-                { label: "Total item bergerak", valueFrom: infoDocs.value.totalItemMoving, editable: false },
-                { label: "Total produk masuk", valueFrom: infoDocs.value.totalQTYIn, editable: false },
-                { label: "Coret DO", valueFrom: infoDocs.value.planOut, editable: false },
-                { label: "Jumlah item keluar", valueFrom: infoDocs.value.totalItemKeluar, editable: false },
-                { label: "Total DO", valueFrom: infoDocs.value.totalDo, editable: true },
-                { label: "Total waktu", valueFrom: infoDocs.value.totalWaktu, editable: true },
-                { label: "Total kendaraan", valueFrom: infoDocs.value.totalKendaraan, editable: true },
-                { label: "Produk tidak FIFO",  valueFrom: infoDocs.value.totalProductNotFIFO, editable: true},
-                { label: "Produk variance", valueFrom: infoDocs.value.itemVariance, editable: true },
-            ]
-        )
+    const emit = defineEmits(["exit", "finished"]);
 </script>
