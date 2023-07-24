@@ -43,17 +43,20 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import datepicker from "vue3-datepicker"
 import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
 import { ymdTime } from "@/composable/piece/dateFormat"
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
-import { Cases } from "@/pages/Cases/Cases"
+import { Cases, type CaseUpdate } from "@/pages/Cases/Cases"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/pages/Headspv/SelectHead.vue"
+import { useStore } from "vuex";
 
-const { addCase, updateCase, getCaseById } = Cases();
+const store = useStore();
+
+const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } = Cases();
 
 export default {
     components: {
@@ -62,24 +65,24 @@ export default {
     data() {
         return {
             baseData: "",
-            periodeModel: "",
-            dlModel: "",
+            periodeModel: new Date(),
+            dlModel: new Date(),
             parent: "",
-            periode: "",
+            periode: 0,
             name: "",
             head: "",
             masalah: "",
             sumberMasalah: "",
             solusi: "",
             pic: "",
-            dl: "",
+            dl: 0,
             status: false,
-            changed: {},
-            id: null,
+            changed: <CaseUpdate>{},
+            id: '',
         }
     },
     methods: {
-        async picName(name) {
+        async picName(name: string) {
             this.pic = await getSupervisorId(name).then((res) => res?.name)
             this.id ? this.changed['pic'] = this.pic : false
         },
@@ -88,10 +91,10 @@ export default {
                 await updateCase(this.id, this.changed)
             } else {
                 await addCase(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah)
-                await updateCase(this.parent, { inserted: true })
+                await updateCaseImport(this.parent, { inserted: true })
             }
-            this.$store.commit("Modal/tunnelMessage", true)
-            this.$store.commit("Modal/active")
+            store.commit("Modal/tunnelMessage", true)
+            store.commit("Modal/active")
         }
     },
     watch: {
@@ -123,14 +126,21 @@ export default {
             this.id ? this.changed['status'] = newVal : false
         },
     },
-    created() {
-        let obj = this.$store.getters["Modal/obj"].obj
-        let getCase = getCaseById(obj?.id)
+    async created() {
+        let obj = store.getters["Modal/obj"].obj
+        let getCase = await getCaseById(obj?.id)
+        if(typeof getCase === 'undefined') return;
         // get the base record
-        let base = getCaseById(obj?.parent || getCase?.parent)
-        
+        let base = await getCaseImportById(getCase?.parent)
+        if(typeof base === 'undefined') return;
+
         if(obj?.edit) {
-            let getCase = getCaseById(obj.id)
+
+            //this.baseData = 
+            let keyOfBase = Object.keys(base);
+            let addBreakTag = keyOfBase.map((val) => `${val}:<br> ${base[val]}`)
+            // .map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
+
             this.parent = getCase?.parent
             this.periodeModel = new Date(getCase?.periode)
             this.name = getCase?.name
@@ -144,13 +154,15 @@ export default {
             setTimeout(() => {
                 this.id = obj?.id
             })
+
         } else {
+
             this.periodeModel = new Date()
             this.dlModel = new Date()
             this.parent = obj?.parent
+
         }
-        this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
         
     },
 }
-</script>@/pages/Cases/Cases
+</script>

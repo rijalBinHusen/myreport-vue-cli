@@ -4,11 +4,11 @@ import { dateMonth } from "../../composable/piece/dateFormat";
 import { useIdb } from "../../utils/localforage";
 import { ref } from "vue"
 
-interface Case {
+export interface Case {
   id: string,
   dl: number,
   head: string,
-  insert: boolean,
+  insert: number,
   masalah: string,
   name: string,
   parent: string,
@@ -46,7 +46,10 @@ type Partial<T> = {
 };
 
 type CaseImportUpdate = Partial<CaseImport>;
-type CaseUpdate = Partial<Case>
+export type CaseUpdate = Partial<Case>
+
+export const caseToEdit = ref(<Case>{});
+export const caseToInsert = ref(<Case>{});
 
 export let lists = ref(<CaseMapped[]>[]);
 export let listsCaseImport = ref(<CaseImport[]>[])
@@ -59,7 +62,7 @@ export function Cases() {
     periode: number,
     head: string,
     dl: number,
-    insert: boolean,
+    insert: number,
     masalah: string,
     name: string,
     parent: string,
@@ -170,8 +173,6 @@ export function Cases() {
 
       }
     }
-
-    console.log(lists.value)
 
   }
 
