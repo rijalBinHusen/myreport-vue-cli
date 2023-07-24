@@ -2,26 +2,26 @@
     <div>
         <label class="w3-margin-top">Nama gudang</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" 
-        :value="dateMonth(document.periode) + ' ' + warehouseName + ' / Shift ' + document.shift" 
+        :value="dateMonth(infoDocs.periode) + ' ' + infoDocs.warehouseName + ' / Shift ' + infoDocs.shift" 
         disabled />
         <!-- Supervisors -->
         <label>Nama supervisors</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" 
-        :value="supervisor" 
+        :value="infoDocs.supervisorName" 
         disabled />
         <!-- Head spv -->
         <label>Nama kabag</label>
         <input type="text" class="w3-input w3-margin-top w3-margin-bottom" 
-        :value="headSpv" 
+        :value="infoDocs.headSpvName" 
         disabled />
-        <div class="w3-row" v-if="details">
+        <div class="w3-row" v-if="infoDocs">
             <div v-for="inp in inputs" :key="inp.label" class="w3-col s2 w3-padding-small">
                 <label class="w3-margin-top">{{ inp.label }}</label>
                 <input 
                     class="w3-input w3-margin-top w3-margin-bottom"
                     type="number"
                     :disabled="!inp.editable"
-                    v-model="details[inp.valueFrom]" 
+                    v-model="inp.valueFrom"
                     />
                     <!-- value="1" -->
                 <!-- <input class="w3-input w3-margin-top w3-margin-bottom" :value="details[inp.valueFrom]" /> -->
@@ -37,7 +37,7 @@
             @trig="$emit('exit')" 
         />
         <Button 
-        v-if="document.collected && !document.isfinished"
+            v-if="infoDocs.collected && !infoDocs.isfinished"
             value="Save" 
             class="w3-right"
             type="button" 
@@ -46,7 +46,7 @@
             @trig="save" 
         />
         <div 
-        v-if="document?.collected && !document.isfinished" 
+        v-if="infoDocs.collected && !infoDocs.isfinished" 
         class="w3-right w3-large w3-margin-right">
             <label for="generate">Generate report </label>
             <input type="checkbox" id="generate" v-model="generateReport" />
@@ -59,9 +59,7 @@ import Button from "../../components/elements/Button.vue"
 import { selectedPeriode, selectedWarehouse, shift } from "./BaseReportPanel"
 import { onMounted, onUnmounted, ref, watch, computed } from "vue"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { problemActiveBySpvAndPeriode, updateProblem } from '@/pages/Problems/Problem'
-import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
+import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from "./BaseFinishForm"
 
 
     const props = defineProps({
@@ -72,15 +70,9 @@ import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
     });
 
     const infoDocs = ref(<DocumentDetails>{})
-    
-    const supervisor = ref(null)
-    const headSpv = ref(null)
-    const warehouseName = ref(null)
-    const details = ref(null)
     const generateReport = ref(false)
-    const timeout = ref(null)
-    const freezePage = ref(null)
-    const document = ref({})
+    const timeout = ref()
+    const freezePage = ref(false)
     const keyPress = ref(<{[key: string]: boolean}>{})
     // const selisih
 
@@ -116,7 +108,7 @@ import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
             // prevent dialog save as to launch
             event.preventDefault()
             // if any record edited
-                if(document.value.collected && !document.value.isfinished) {
+                if(infoDocs.value.collected && !infoDocs.value.isfinished) {
                     // save the canged record
                     save()
                     // console.log('ctrl + s')
@@ -131,34 +123,37 @@ import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
         if(freezePage.value) { return }
         // console.log(this.document)
         emit("finished", Object.assign({
-            parentDocument: document.value.id,
+            parentDocument: infoDocs.value.id,
             generateReport: generateReport.value,
-        }, details.value ))
+        }, infoDocs.value ))
     }
 
-    watch([generateReport, document], (newVal, oldVal) => {
+    watch([generateReport], (newVal, oldVal) => {
         if(newVal[0] !== oldVal[0]) {
+
             clearTimeout(timeout.value)
             freezePage.value = true
+
             timeout.value = setTimeout(() => {
                 freezePage.value = false
-                isGenerateDocument(document.value.id, newVal[0])
+                setGenerateDocument(infoDocs.value.id, newVal[0])
             }, 600)
+
         }
     })
     const emit = defineEmits(["exit", "finished"]);
 
     const inputs = computed(() => [
-                { label: "Total produk keluar", valueFrom: "totalQTYOut", editable: false },
-                { label: "Total item bergerak", valueFrom: "totalItemMoving", editable: false },
-                { label: "Total produk masuk", valueFrom: "totalQTYIn", editable: false },
-                { label: "Coret DO", valueFrom: "planOut", editable: false },
-                { label: "Jumlah item keluar", valueFrom: "totalItemKeluar", editable: false },
-                { label: "Total DO", valueFrom: "totalDo", editable: true },
-                { label: "Total waktu", valueFrom: "totalWaktu", editable: true },
-                { label: "Total kendaraan", valueFrom: "totalKendaraan", editable: true },
-                { label: "Produk tidak FIFO",  valueFrom: "totalProductNotFIFO", editable: true},
-                { label: "Produk variance", valueFrom: "itemVariance", editable: true },
+                { label: "Total produk keluar", valueFrom: infoDocs.value.totalQTYOut, editable: false },
+                { label: "Total item bergerak", valueFrom: infoDocs.value.totalItemMoving, editable: false },
+                { label: "Total produk masuk", valueFrom: infoDocs.value.totalQTYIn, editable: false },
+                { label: "Coret DO", valueFrom: infoDocs.value.planOut, editable: false },
+                { label: "Jumlah item keluar", valueFrom: infoDocs.value.totalItemKeluar, editable: false },
+                { label: "Total DO", valueFrom: infoDocs.value.totalDo, editable: true },
+                { label: "Total waktu", valueFrom: infoDocs.value.totalWaktu, editable: true },
+                { label: "Total kendaraan", valueFrom: infoDocs.value.totalKendaraan, editable: true },
+                { label: "Produk tidak FIFO",  valueFrom: infoDocs.value.totalProductNotFIFO, editable: true},
+                { label: "Produk variance", valueFrom: infoDocs.value.itemVariance, editable: true },
             ]
         )
 </script>
