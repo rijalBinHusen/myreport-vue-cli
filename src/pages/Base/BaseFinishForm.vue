@@ -47,7 +47,7 @@
         v-if="infoDocs.collected && !infoDocs.isfinished" 
         class="w3-right w3-large w3-margin-right">
             <label for="generate">Generate report </label>
-            <input type="checkbox" id="generate" v-model="generateReport" />
+            <input type="checkbox" id="generate" v-model="infoDocs.generateReport" />
         </div>
     </div>
 </template>
@@ -57,7 +57,7 @@ import Button from "../../components/elements/Button.vue"
 import { selectedPeriode, selectedWarehouse, shift } from "./BaseReportPanel"
 import { onMounted, onUnmounted, ref, watch, computed } from "vue"
 import { dateMonth } from "@/composable/piece/dateFormat"
-import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from "./BaseFinishForm"
+import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
 
 
     const props = defineProps({
@@ -68,8 +68,6 @@ import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from ".
     });
 
     const infoDocs = ref(<DocumentDetails>{})
-    const generateReport = ref(false)
-    const timeout = ref()
     const freezePage = ref(false)
     const keyPress = ref(<{[key: string]: boolean}>{})
     // const selisih
@@ -152,25 +150,8 @@ import { getDocumentDetails, type DocumentDetails, setGenerateDocument } from ".
         // dont do anything when the page freeze
         if(freezePage.value) { return }
         // console.log(this.document)
-        emit("finished", Object.assign({
-            parentDocument: infoDocs.value.id,
-            generateReport: generateReport.value,
-        }, infoDocs.value ))
+        emit("finished", infoDocs.value )
     }
-
-    watch([generateReport], (newVal, oldVal) => {
-        if(newVal[0] !== oldVal[0]) {
-
-            clearTimeout(timeout.value)
-            freezePage.value = true
-
-            timeout.value = setTimeout(() => {
-                freezePage.value = false
-                setGenerateDocument(infoDocs.value.id, newVal[0])
-            }, 100)
-
-        }
-    })
 
     const emit = defineEmits(["exit", "finished"]);
 </script>

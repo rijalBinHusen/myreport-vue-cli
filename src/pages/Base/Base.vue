@@ -86,7 +86,7 @@
             :base="baseId" 
             :shift="nowShift"
             @exit="mode = 'Main'"
-            @finished="markAsFinished($event)"
+            @finished="markAsFinished"
         />
     </div>
 </template>
@@ -249,10 +249,38 @@ export default {
             // ternyata kita tidak perlu melakukanya pada clock, kayak gaada gunanya gitu
             // await markClockFinished(baseId.value, nowShift.value, ev.parentDocument)
             // tambahkan parent document pada basereportstock
-            await markStockFinished(baseId.value, nowShift.value, ev.parentDocument)
+            const { 
+                id, 
+                generateReport,
+                totalQTYOut,
+                totalItemMoving,
+                totalQTYIn,
+                planOut,
+                totalItemKeluar,
+                totalDo,
+                totalWaktu,
+                totalKendaraan,
+                totalProductNotFIFO,
+                itemVariance,
+            } = ev
+
+            const valueDocumentToUpdate = { 
+                generateReport,
+                totalQTYOut,
+                totalItemMoving,
+                totalQTYIn,
+                planOut,
+                totalItemKeluar,
+                totalDo,
+                totalWaktu,
+                totalKendaraan,
+                totalProductNotFIFO,
+                itemVariance
+             }
+            
+            await markStockFinished(baseId.value, nowShift.value, id)
             // update details document  totalDO, totalKendaraan, totalWaktu, standartWaktu
-            const { parentDocument, ...details } = ev
-            await markDocumentFinished(ev.parentDocument, false, { ...details, baseReportFile: baseId.value})
+            await markDocumentFinished(id, false, valueDocumentToUpdate)
             await someRecordFinished(baseId.value)
             // close the base finish form
             mode.value = 'Main'
