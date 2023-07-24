@@ -5,7 +5,7 @@
             <Button primary value="Set periode" class="w3-right w3-margin-top" type="button" @trig="pickPeriode" />
             <Button primary value="Broad cast problem" class="w3-right w3-margin-top" type="button" @trig="handleBroadcast" />
             <Datatable
-                v-if="lists"
+                v-if="lists.length"
                 :datanya="lists"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Karu', 'Status']"
                 :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'supervisor', 'status']"
@@ -38,7 +38,7 @@ import ProblemReportForm from "./ProblemReportForm.vue"
 import Dropdown from '@/components/elements/Dropdown.vue'
 import { useStore } from 'vuex'
 import { onMounted, ref, watch } from "vue"
-import { getProblemFromDB, lists as listsProblem, getProblemBetweenPeriode, duplicate } from './Problem'
+import { getProblemFromDB, lists, getProblemBetweenPeriode, duplicate } from './Problem'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
 import { getSupervisorShift1ByWarehouse, getWarehouseById } from '@/pages/Warehouses/Warehouses'
 
@@ -48,7 +48,6 @@ export default {
         const form = ref(false)
         const editId =  ref(null)
         const store = useStore()
-        const lists = ref([])
 
         const handleButton = async (action, id) => {
             if(action === 'edit') {
@@ -67,7 +66,6 @@ export default {
             if(res) {
                 await duplicate(id)
             }
-            renewLists()
         }
 
         const handleBroadcast = async () => {
@@ -144,22 +142,10 @@ export default {
                 await getProblemBetweenPeriode(res?.periode1, res?.periode2)
                 store.commit("Modal/active");
             }
-            renewLists()
-        }
-        
-        watch([ form ], (newVal) => {
-            newVal[0] == false
-            ? renewLists()
-            : ''
-        })
-
-        const renewLists = async () => {
-            lists.value = await listsProblem()
         }
 
         onMounted( async () => {
             await getProblemFromDB()
-            await renewLists()
         })
 
         return { handleButton, form, editId, pickPeriode, lists, handleBroadcast }

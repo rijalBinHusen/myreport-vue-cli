@@ -59,6 +59,9 @@ export const getProblemBetweenPeriode = async (periode1: number, periode2: numbe
 };
 
 export const getProblemFromDB = async () => {
+
+  if(lists.value.length > 0) return;
+
   const getData = await db.getItemsByKeyValue<Problem>('isFinished', false);
   
   if(getData.length === 0) return;
