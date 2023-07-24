@@ -180,7 +180,7 @@ export const addProblem = async (
 };
 
 export const updateProblem = async (id: string, obj: ProblemUpdate) => {
-  const isNoValueToUpdate = Object.values(obj).length > 0;
+  const isNoValueToUpdate = Object.values(obj).length === 0;
 
   if(isNoValueToUpdate) return;
 

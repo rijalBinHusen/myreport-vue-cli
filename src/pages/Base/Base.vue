@@ -101,7 +101,7 @@ import BaseFinishForm from "./BaseFinishForm.vue"
 import Dropdown from "../../components/elements/Dropdown.vue"
 import { addData } from "@/pages/Followup/followUp"
 import BasePanelVue from './BasePanel.vue'
-import { lists as baseReportClockLists, baseClock } from '@/pages/BaseReport/BaseReportClock'
+import { baseClock } from '@/pages/BaseReport/BaseReportClock'
 import { baseReportStock } from '@/pages/BaseReport/BaseReportStock'
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
