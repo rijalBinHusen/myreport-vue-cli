@@ -116,6 +116,9 @@ const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } 
             if(key === 'periode') {
                 dlModel.value = new Date(value)
                 dlModel.value.setDate(dlModel.value.getDate() + 3)
+
+                caseInserted.value.periode = value
+                caseInserted.value.dl = dlModel.value.getTime()
             }
             changed.value[key] = value
         }
@@ -134,7 +137,6 @@ const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } 
         if(caseInserted.value.id) {
 
             await updateCase(caseInserted.value.id, changed.value)
-            console.log(changed.value)
 
         } else {
 
@@ -181,9 +183,13 @@ const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } 
         } else {
 
             if(obj.id)
+            
             var getCase = await getCaseById(obj.id);
             if(typeof getCase === 'undefined') return;
             caseInserted.value = getCase;
+            periodeModel.value = new Date(getCase.periode);
+            dlModel.value = new Date(getCase.dl);
+
             var getCaseImport = await getCaseImportById(getCase.parent);
             if(typeof getCaseImport === 'undefined') return;
             baseCase.value = getCaseImport;

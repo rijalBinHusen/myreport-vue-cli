@@ -253,7 +253,7 @@ export function Cases() {
   }
   
   async function updateCaseImport(idCase: string, obj: CaseImportUpdate) {
-    const isNoValueToUpdate = Object.values(obj).length > 0;
+    const isNoValueToUpdate = Object.values(obj).length === 0;
 
         if(isNoValueToUpdate) return;
 
