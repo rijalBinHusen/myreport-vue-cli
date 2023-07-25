@@ -1,158 +1,193 @@
 <template>
     <div class="w3-row">
-        <div class="w3-col s6 w3-padding-large" v-html="baseCase" style="overflow: auto; height: 400px;">
+        <div class="w3-col s6 w3-padding-large" v-html="baseCaseHtml" style="overflow: auto; height: 400px;">
         </div>
         <div class="w3-col s6 w3-padding-large" style="overflow: auto; height: 400px;">
             <!-- Head spv -->
             <SelectHead 
-                :inSelectHead="head"
-                @selectedHead="head = $event"
+                :inSelectHead="caseInserted.head"
+                @selectedHead="caseInserted.head = $event; updateChangedValue('head')"
             />
             
             <!-- Supervisor -->
             <SelectSupervisors 
-                @selectedSpv="name = $event; picName($event)"
-                :inSelectSpv="name"
+                :inSelectSpv="caseInserted.name"
+                @selectedSpv="caseInserted.name = $event; updateChangedValue('name')"
             
             />
 
             <label for="sumberMasalah">Sumber masalah: </label><br>
-            <textarea v-model="sumberMasalah" id="sumberMasalah" style="width:100%; height:60px;"></textarea>
+            <textarea v-model="caseInserted.sumberMasalah" @change="updateChangedValue('sumberMasalah')" id="sumberMasalah" style="width:100%; height:60px;"></textarea>
 
             <label for="solusi">solusi: </label><br>
-            <textarea v-model="solusi" id="solusi" style="width:100%; height:60px;"></textarea>
+            <textarea v-model="caseInserted.solusi" @change="updateChangedValue('solusi')" id="solusi" style="width:100%; height:60px;"></textarea>
 
             
             <!-- Periode -->
             <label for="periode">Periode:</label>
-            <datepicker id="periode" class="w3-margin-bottom w3-border w3-input" v-model="periodeModel"></datepicker>
+            <datepicker 
+                id="periode" 
+                class="w3-margin-bottom w3-border w3-input" 
+                v-model="periodeModel"
+                @update:model-value="updateChangedValue('periode', $event.getTime())"
+            />
 
             <label for="dl">Dead line:</label>
-            <datepicker id="dl" class="w3-margin-bottom w3-border w3-input" v-model="dlModel"></datepicker>
+            <datepicker 
+                id="dl" 
+                class="w3-margin-bottom w3-border w3-input" 
+                v-model="dlModel"
+                @update:model-value="updateChangedValue('dl', $event.getTime())"
+            />
             <!-- Masalah -->
             <label for="masalah">Masalah: </label><br>
-            <label for="masalah">Max length(255) {{ masalah.length }} </label><br>
-            <textarea v-model="masalah" rows="6" id="masalah" style="width:100%;"></textarea><label for="pic">PIC</label>
-            <textarea id="pic" v-model="pic" placeholder="Name PIC" style="width:100%;"></textarea>
+            <label v-if="caseInserted.masalah" for="masalah">Max length(255) {{ caseInserted.masalah.length }} </label><br>
+            <textarea v-model="caseInserted.masalah" @change="updateChangedValue('masalah')" rows="6" id="masalah" style="width:100%;"></textarea>
+            <label for="pic">PIC</label>
+            <textarea id="pic" v-model="caseInserted.pic" @change="updateChangedValue('pic')" placeholder="Name PIC" style="width:100%;"></textarea>
 
             <label for="status">Status done?</label>
-            <input type="checkbox" v-model="status" />
+            <input 
+                type="checkbox" 
+                v-model="caseInserted.status" 
+                @change="updateChangedValue('status')"
+                id="status"
+            />
 
-            <Button primary :value=" id ? 'Update' : 'Tambah' " class="w3-right" type="button" @trig="send"/>
+            <Button 
+                primary 
+                :value=" caseInserted.id ? 'Update' : 'Tambah' " 
+                class="w3-right" 
+                type="button"
+                @trig="send"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import datepicker from "vue3-datepicker"
-import Select from "@/components/elements/Select.vue"
 import Button from "@/components/elements/Button.vue"
-import { ymdTime } from "@/composable/piece/dateFormat"
-import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
-import { Cases, type CaseUpdate, type CaseImport, type Case } from "@/pages/Cases/Cases"
+import { Cases, type CaseImport, type Case } from "@/pages/Cases/Cases"
 import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/pages/Headspv/SelectHead.vue"
 import { useStore } from "vuex";
-import { ref } from "vue"
+import { ref, onBeforeMount, computed } from "vue"
+import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 
 const store = useStore();
 
 const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } = Cases();
-
-    const baseCase  = ref(<CaseImport>{})
-    const caseInserted = ref(<Case>{});
-    const periodeModel = ref(new Date())
+    
+    const periodeModel = ref(new Date());
     const dlModel = ref(new Date());
-    const changed = ref(<CaseUpdate>{})
+    const baseCase  = ref(<CaseImport>{})
+    const caseInserted = ref(<Case>{
+        dl: new Date().getTime(),
+        head: '',
+        insert: 0,
+        masalah: '-',
+        name: '',
+        parent: '-',
+        periode: new Date().getTime(),
+        pic: '-',
+        solusi: '-',
+        status: false,
+        sumberMasalah: '-'
+    });
+    const changed = ref(<{[key: string]: string|number|boolean}>{})
 
-    async function picName(name: string) {
-        pic.value = await getSupervisorId(name).then((res) => res?.name)
-        id.value ? changed.value.pic = pic.value : false
+    type KeyOfCase = keyof Case;
+
+    async function updateChangedValue (key: KeyOfCase, value?: any) {
+        let isValueChanged = caseInserted.value[key] !== changed.value[key];
+
+        if(isValueChanged) {
+            if(key === 'name') {
+                let spvInfo = await getSupervisorId(caseInserted.value[key])
+                changed.value['pic'] = spvInfo.name
+                caseInserted.value.pic = spvInfo.name
+            }
+
+            changed.value[key] = caseInserted.value[key]
+        }
+
+        if(value) {
+            if(key === 'periode') {
+                dlModel.value = new Date(value)
+                dlModel.value.setDate(dlModel.value.getDate() + 3)
+            }
+            changed.value[key] = value
+        }
+
     }
 
-    async function send() {
-        if(id.value) {
+    function typedObjectKeys<T extends Record<string, unknown>>(obj: T) {
+        return Object.keys(obj) as (keyof T)[]
+    }
 
-            await updateCase(id.value, changed.value)
+    const baseCaseHtml = computed(() => 
+        typedObjectKeys(baseCase.value).map((val) => `${val}:<br> ${baseCase.value[val]}`).join(`<hr/>`)
+    )
+
+    async function send() {
+        if(caseInserted.value.id) {
+
+            await updateCase(caseInserted.value.id, changed.value)
+            console.log(changed.value)
 
         } else {
 
-            await addCase(periode.value, head.value, dl.value, ymdTime(), masalah.value, name.value, parent.value, pic.value, solusi.value, status.value, sumberMasalah.value)
-            await updateCaseImport(parent.value, { inserted: true })
+            await addCase(caseInserted.value.periode, 
+                            caseInserted.value.head, 
+                            caseInserted.value.dl, 
+                            caseInserted.value.insert, 
+                            caseInserted.value.masalah, 
+                            caseInserted.value.name, 
+                            caseInserted.value.parent, 
+                            caseInserted.value.pic, 
+                            caseInserted.value.solusi, 
+                            caseInserted.value.status, 
+                            caseInserted.value.sumberMasalah
+                        )
+            await updateCaseImport(caseInserted.value.parent, { inserted: true })
 
         }
-
-        store.commit("Modal/tunnelMessage", true)
+        
         store.commit("Modal/active")
     }
 
-    watch: {
-        periodeModel(newVal, oldVal) {
-            this.periode = ymdTime(newVal)
-            this.dlModel = newVal
-            this.id ? this.changed['periode'] = newVal : false
-        },
-        dlModel(newVal, oldVal) {
-            this.dl = ymdTime(newVal)
-            this.id ? this.changed['dl'] = newVal : false
-        },
-        name(newVal) {
-            this.id ? this.changed['name'] = newVal : false
-        },
-        head(newVal) {
-            this.id ? this.changed['head'] = newVal : false
-        },
-        masalah(newVal) {
-            this.id ? this.changed['masalah'] = newVal : false
-        },
-        sumberMasalah(newVal) {
-            this.id ? this.changed['sumberMasalah'] = newVal : false
-        },
-        solusi(newVal) {
-            this.id ? this.changed['solusi'] = newVal : false
-        },
-        status(newVal) {
-            this.id ? this.changed['status'] = newVal : false
-        },
-    },
-    async created() {
-        let obj = store.getters["Modal/obj"].obj
-        
-        let getCase = await getCaseById(obj?.id)
-        if(typeof getCase === 'undefined') return;
-        // get the base record
-        let base = await getCaseImportById(getCase?.parent)
-        if(typeof base === 'undefined') return;
+    interface stateObject {
+        parent?: string
+        id?: string
+        edit: boolean
+    }
 
-        if(obj?.edit) {
+    onBeforeMount( async () => {
 
-            this.baseCase = Object.keys(base).join('-');
-            // let keyOfBase = 
-            // let addBreakTag = keyOfBase.map((val) => `${val}:<br> ${base[val]}`)
-            // .map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
+        let obj = store.getters["Modal/obj"].obj as stateObject;
+        // if obj.parent exists, it means we'are on insert case mode
+        // else, we're on edit case mode
+        const isInsertMode = obj.hasOwnProperty('parent');
 
-            this.parent = getCase?.parent
-            this.periodeModel = new Date(getCase?.periode)
-            this.name = getCase?.name
-            this.head = getCase?.head
-            this.masalah = getCase?.masalah
-            this.sumberMasalah = getCase?.sumberMasalah
-            this.solusi = getCase?.solusi
-            this.pic = getCase?.pic
-            this.dlModel = new Date(getCase?.dl)
-            this.status = getCase?.status
-            setTimeout(() => {
-                this.id = obj?.id
-            })
+        if(isInsertMode) {
+
+            if(obj.parent)
+            var getCaseImport = await getCaseImportById(obj.parent);
+            if(typeof getCaseImport === 'undefined') return;
+            baseCase.value = getCaseImport;
+            caseInserted.value.parent = getCaseImport.id
 
         } else {
 
-            this.periodeModel = new Date()
-            this.dlModel = new Date()
-            this.parent = obj?.parent
+            if(obj.id)
+            var getCase = await getCaseById(obj.id);
+            if(typeof getCase === 'undefined') return;
+            caseInserted.value = getCase;
+            var getCaseImport = await getCaseImportById(getCase.parent);
+            if(typeof getCaseImport === 'undefined') return;
+            baseCase.value = getCaseImport;
 
         }
-        
-    },
-}
+    })
 </script>

@@ -45,6 +45,7 @@ type Partial<T> = {
   [P in keyof T]?: T[P];
 };
 
+
 type CaseImportUpdate = Partial<CaseImport>;
 export type CaseUpdate = Partial<Case>
 
@@ -230,7 +231,7 @@ export function Cases() {
   } 
   
   async function updateCase(idCase: string, obj: CaseUpdate) {
-    const isNoValueToUpdate = Object.values(obj).length > 0;
+    const isNoValueToUpdate = Object.values(obj).length === 0;
 
         if(isNoValueToUpdate) return;
 
