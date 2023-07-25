@@ -17,7 +17,7 @@
     </div>
 
             <Datatable
-                v-if="renderTable"
+                v-if="lists.length"
                 :datanya="lists"
                 :heads="table?.heads"
                 :keys="table?.keys"
@@ -53,19 +53,28 @@ import Datatable from "@/components/parts/Datatable.vue"
 import Input from '@/components/elements/Input.vue'
 import readExcel from "@/utils/readExcel"
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { lists, listsComplainImport, Complains } from './Complains'
+import { lists as listsComplainInserted, listsComplainImport, Complains } from './Complains'
 import { loader } from "@/composable/piece/vuexModalLauncher"
+import { computed, ref } from "vue"
 
 const { removeComplain, getComplains } = Complains();
 
 export default {
     data() {
         return {
-            inserted: true,
             renderTable: false,
             grouped: [],
-            lists: [],
         }
+    },
+    setup() {
+        const inserted = ref(true);
+        const lists = computed(() => 
+            inserted.value
+                ? listsComplainInserted.value
+                : listsComplainImport.value
+        )
+
+        return { inserted, lists };
     },
     computed: {
         table() {
@@ -81,20 +90,16 @@ export default {
                 keys: ['tanggalKomplain', 'customer', 'spv', 'item', 'selisih'],
                 id: "tableComplainsImported"
             }
-        },
+        }
     },
     methods: {
         async readExcelFile(e) {
             // bring the loader up
             loader()
             let excelRead = await readExcel(e.target.files[0])
-            let res = await subscribeMutation(
+            await subscribeMutation(
                 "Import complain", "ComplainImportForm", excelRead, 'Modal/tunnelMessage'
             )
-
-            if(res) {
-                this.renewLists()
-            }
         },
         async remove(ev){
             let sure = await subscribeMutation(
@@ -102,7 +107,6 @@ export default {
             )
             if(sure) {
                 await removeComplain(ev)
-                this.renewLists()
             }
         },
         async removeAll(){
@@ -122,49 +126,28 @@ export default {
                 // close the modal
                 this.$store.commit("Modal/active");
             }
-            this.renewLists()
         },
         async insertComplain(id) {
-            let res = await subscribeMutation(
+            await subscribeMutation(
                 "Insert Complain",
                 "ComplainInsertForm",
                 { parent: id, edit: false },
                 'Modal/tunnelMessage'
             )
-            if(res) {
-                this.renewLists()
-            }
         },
 
         async edit(id) {
 
-            let res = await subscribeMutation(
+            await subscribeMutation(
                 "Edit Complain",
                 "ComplainInsertForm",
                 { id, edit: true },
                 'Modal/tunnelMessage'
             )
-            if(res) {
-                this.renewLists()
-            }
         },
-
-        async renewLists() {
-            this.renderTable = false
-            this.lists = await listsComplain(this.inserted)
-            setTimeout(() => {
-                this.renderTable = true
-            }, 150)
-        }
-    },
-    watch: {
-        inserted() {
-            this.renewLists()
-        }
     },
     async mounted() {
         await getComplains()
-        this.renewLists()
     },
     components: {
         Button,

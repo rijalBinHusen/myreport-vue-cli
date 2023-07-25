@@ -49,9 +49,6 @@ type Partial<T> = {
 type CaseImportUpdate = Partial<CaseImport>;
 export type CaseUpdate = Partial<Case>
 
-export const caseToEdit = ref(<Case>{});
-export const caseToInsert = ref(<Case>{});
-
 export let lists = ref(<CaseMapped[]>[]);
 export let listsCaseImport = ref(<CaseImport[]>[])
 const storeName = "cases";

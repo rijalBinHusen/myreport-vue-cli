@@ -61,8 +61,8 @@ type Partial<T> = {
 type ComplainUpdate = Partial<Complain>;
 type ComplainImportUpdate = Partial<ComplainImport>;
 
-export let lists = <ComplainMapped[]>[];
-export let listsComplainImport = <ComplainImportMapped[]>[];
+export let lists = ref(<ComplainMapped[]>[]);
+export let listsComplainImport = ref(<ComplainImportMapped[]>[]);
 
 const storeName = "complains";
 
@@ -106,7 +106,7 @@ export function Complains () {
     if(typeof insertedId === 'undefined') return;
 
     const interpretIt = await interpretComplain({ id: insertedId, ...rec})
-    lists.unshift(interpretIt)
+    lists.value.unshift(interpretIt)
   }
 
   async function addComplainImport(
@@ -153,7 +153,7 @@ export function Complains () {
     if(typeof insertedId === 'undefined') return;
 
     const interpretIt = interpretComplainImport({ id: insertedId, ...rec})
-    listsComplainImport.unshift(interpretIt)
+    listsComplainImport.value.unshift(interpretIt)
 
   }
   
@@ -183,61 +183,26 @@ export function Complains () {
       for(let datum of getData) {
 
         if(datum?.insert) {
-          let record = {
-            id: datum?.id.toString(),
-            dl: Number(datum?.dl),
-            head: datum?.head.toString(),
-            insert: Number(datum?.insert),
-            isCount: Boolean(datum?.isCount),
-            masalah: datum?.masalah.toString(),
-            name: datum?.name.toString(),
-            parent: datum?.parent.toString(),
-            periode: Number(datum?.periode),
-            pic: datum?.pic.toString(),
-            solusi: datum?.solusi.toString(),
-            status: Boolean(datum?.status),
-            sumberMasalah: datum?.sumberMasalah.toString(),
-            type: datum?.type.toString(),
-          }
-          let interpretRecord = await interpretComplain(record);
-          lists.push(interpretRecord);
+          let interpretRecord = await interpretComplain(datum);
+          lists.value.push(interpretRecord);
         }
         
         else if(datum?.import) {
-          let record = {
-            customer: datum?.customer.toString(),
-            do: Number(datum?.do),
-            gudang: datum?.gudang .toString(),
-            id: datum?.id .toString(),
-            import: Boolean(datum?.import),
-            inserted: Boolean(datum?.inserted),
-            item: datum?.item.toString(),
-            kabag: datum?.kabag.toString(),
-            nomorSJ: datum?.nomorSJ.toString(),
-            nopol: datum?.nopol.toString(),
-            real: Number(datum?.real),
-            row: datum?.row .toString(),
-            spv: datum?.spv .toString(),
-            tally: datum?.tally .toString(),
-            tanggalBongkar: datum?.tanggalBongkar .toString(),
-            tanggalInfo: datum?.tanggalInfo .toString(),
-            tanggalKomplain: datum?.tanggalKomplain .toString(),
-            tanggalSuratJalan: datum?.tanggalSuratJalan .toString(),
-            type: datum?.type.toString(),
-          }
-          let interpretRecord = interpretComplainImport(record);
+          let interpretRecord = interpretComplainImport(datum);
 
-          listsComplainImport.push(interpretRecord);
+          listsComplainImport.value.push(interpretRecord);
         }
       }
     }
+
+    console.log(lists.value)
   }
   
   async function getComplainById(id: string): Promise<Complain|undefined|ComplainImport> {
-    const findIndex = lists.findIndex((rec) => rec.id == id);
+    const findIndex = lists.value.findIndex((rec) => rec.id == id);
 
     if(findIndex > -1) {
-      return lists[findIndex];
+      return lists.value[findIndex];
     }
 
     let getRecord = await db.getItem<Complain&ComplainImport>(id);
@@ -246,27 +211,27 @@ export function Complains () {
 
     if(getRecord?.insert) {
       const rec = await interpretComplain(getRecord);
-      lists.push(rec);
+      lists.value.push(rec);
       return rec
     } 
     
     else if(getRecord?.import) {
       const rec = interpretComplainImport(getRecord);
-      listsComplainImport.push(rec);
+      listsComplainImport.value.push(rec);
       return rec
     }
 
   }
   
   async function updateComplain(idCase: string, obj: ComplainUpdate) {
-    const isNoValueToUpdate = Object.values(obj).length > 0;
+    const isNoValueToUpdate = Object.values(obj).length === 0;
 
         if(isNoValueToUpdate) return;
 
-        const findIndex = lists.findIndex((rec) => rec?.id === idCase);
+        const findIndex = lists.value.findIndex((rec) => rec?.id === idCase);
 
         if(findIndex > -1) {
-            const record = lists[findIndex];
+            const record = lists.value[findIndex];
             delete record.periode2;
             delete record.spvName;
             delete record.headName;
@@ -274,32 +239,37 @@ export function Complains () {
             
             const updateRecord = { ...record, ...obj };
             const mapUpdateRecord = await interpretComplain(updateRecord)
-            lists[findIndex] = mapUpdateRecord;
+            lists.value[findIndex] = mapUpdateRecord;
         }
         
         await db.updateItem(idCase, obj);
   }
   
   async function updateComplainImport(id: string, obj: ComplainImportUpdate): Promise<void|undefined> {
-    const isNoValueToUpdate = Object.values(obj).length > 0;
+    const isNoValueToUpdate = Object.values(obj).length === 0;
 
         if(isNoValueToUpdate) return;
 
-        const findIndex = listsComplainImport.findIndex((rec) => rec?.id === id);
+        const findIndex = listsComplainImport.value.findIndex((rec) => rec?.id === id);
 
         if(findIndex > -1) {
-            const record = listsComplainImport[findIndex];
+            const record = listsComplainImport.value[findIndex];
             delete record.selisih;
             
             const updateRecord = { ...record, ...obj };
-            listsComplainImport[findIndex] = updateRecord;
+            listsComplainImport.value[findIndex] = updateRecord;
         }
         
         await db.updateItem(id, obj);
   }
   
   const removeComplain = async (id: string) => {
-    lists = lists.filter((rec) => rec.id !== id);
+    const findIndex = lists.value.findIndex((rec) => rec.id === id)
+    
+    if(findIndex > -1) {
+      lists.value.splice(findIndex, 1);
+    }
+
     await db.removeItem(id);
   };
     
@@ -318,6 +288,7 @@ export function Complains () {
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "@/utils/localforage";
+import { ref } from "vue";
 export async function syncComplainsToServer () {
   const db = useIdb(storeName);
 
