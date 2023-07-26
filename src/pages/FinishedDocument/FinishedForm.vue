@@ -19,7 +19,9 @@
 
 import Input from "@/components/elements/Input.vue"
 import Button from "@/components/elements/Button.vue"
-import { updateDocument } from '@/pages/Documents/DocumentsPeriod'
+import { Documents } from '@/pages/Documents/DocumentsPeriod'
+
+const { updateDocument } = Documents();
 
 export default {
     methods: {
@@ -74,4 +76,4 @@ export default {
     },
     name: "FinishedForm",
 }
-</script>@/pages/Documents/DocumentsPeriod
+</script>

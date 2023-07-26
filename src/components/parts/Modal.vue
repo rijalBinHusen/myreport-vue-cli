@@ -35,7 +35,7 @@ import BaseProblemForm from "@/pages/Base/BaseProblemForm.vue";
 import BaseStockForm from "@/pages/Base/BaseStockForm.vue"
 import PeriodePicker from "../parts/PeriodePicker.vue"
 import WarehouseSupervisorsForm from "@/pages/Warehouses/WarehouseSupervisorsForm.vue"
-import FinishedForm from "@/pages/Base/BaseFinishForm.vue"
+import FinishedForm from "@/pages/FinishedDocument/FinishedForm.vue"
 import CaseInsertForm from "@/pages/Cases/CaseInsertForm.vue"
 import ComplainImportForm from "@/pages/Complains/ComplainImportForm.vue"
 import ComplainInsertForm from "@/pages/Complains/ComplainInsertForm.vue"
