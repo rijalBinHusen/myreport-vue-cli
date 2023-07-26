@@ -29,7 +29,7 @@ export default async function (baseReport) {
   // console.log(reportData.flat());
   let stocks = reportPromise.flat();
 
-  for (let stock of stocks) {
+  for (let [index, stock] of stocks.entries()) {
     //  add new promise
     tunggu.push(waitFor(1000));
     //   item name
@@ -46,7 +46,7 @@ export default async function (baseReport) {
     result.push(
       Object.assign(
         {
-          row: i + 1,
+          row: index + 1,
           namaItem: item.name,
           awal: stock?.awal || 0,
           Masuk: stock?.in || 0,

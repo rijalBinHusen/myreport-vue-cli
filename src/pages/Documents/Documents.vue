@@ -170,6 +170,7 @@ import DocumentOptions from "./DocumentOptions.vue"
 import { dateMonth, dayPlusOrMinus, full } from "@/composable/piece/dateFormat"
 import DailyReport from "@/excelReport/DailyReport"
 import DailyReportGroup from "@/excelReport/DailyReportGroup"
+import { loaderMessage } from "@/components/parts/Loader/state"
 
 export default {
     components: {
@@ -303,20 +304,30 @@ export default {
            })
         //    console.log(groups)
             // // iterate semua yang sudah digroup
-            for (let group of groups) {
+
+            for (let [index, group] of groups.entries()) {
+
+                loaderMessage.value = `Mengunduh ${index + 1} dari ${groups.length} laporan.`
+                
                 // console.log(group[i])
                 if(group.length > 1) {
                     await DailyReportGroup(group)
                 }   else {
                     await DailyReport(group[0])
                 }
+
+                group.forEach((rec) => {
+                    collect({ rec: rec.id, day: 0})
+                })
+
             }
+
             // mark all record as shared
-            for (let rec of groupedObject.value) {
-                if(!rec?.shared) {
-                    await collect({ rec: rec.id, day: 0})
-                }
-            }
+            // for (let rec of groupedObject.value) {
+            //     if(!rec?.shared) {
+            //         await collect({ rec: rec.id, day: 0})
+            //     }
+            // }
             // empty the groupedAsObject
             groupedObject.value = []
             grouped.value = []

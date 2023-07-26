@@ -29,7 +29,7 @@ export default async function (baseReport) {
   //   },
   // });
 
-  for (let stock of stocks) {
+  for (let [index, stock] of stocks.entries()) {
     //  add new promise
     waitingLists.push(waitFor(1000));
     //   item name
@@ -44,7 +44,7 @@ export default async function (baseReport) {
     result.push(
       Object.assign(
         {
-          row: i + 1,
+          row: index + 1,
           "Nama item": item?.name,
           "Stock awal": +stock.awal,
           "Produk masuk": +stock.in,
