@@ -11,7 +11,7 @@
             @trig="pickPeriode" 
         />
 
-        <div v-if="renderTable && lists" >
+        <div v-if="renderTable && lists.length" >
         
             <Button primary class="w3-right"  :value=" unfinished ? 'Finished' : 'Unfinished'" type="button" @trig="unfinished = !unfinished"/>
 
@@ -37,7 +37,7 @@
     </div>
 
     <Datatable
-        v-if="renderTable && lists"
+        v-if="renderTable && lists.length"
         :datanya="unfinished ? unFinishedDocument : FinishedDocument"
         :heads="['Periode', 'Nama', 'Gudang', 'Kabag', 'Shift']"
         :keys="['periode2', 'spvName', 'warehouseName', 'headName', 'shift']"
@@ -79,7 +79,7 @@ import WeeklyWarehouses from "@/excelReport/WeeklyReportWarehouses"
 import Dropdown from "@/components/elements/Dropdown.vue"
 import { Documents, lists } from '@/pages/Documents/DocumentsPeriod'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-import { ref, onMounted, watch } from "vue"
+import { ref, onMounted, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 
@@ -137,7 +137,7 @@ export default {
         }
 
         const unFinishedDocument = computed(() => lists.value.filter((rec) => !rec?.isfinished));
-        const finishedDocument = computed(() => lists.value.filter((rec) => rec?.isfinished));
+        const FinishedDocument = computed(() => lists.value.filter((rec) => rec?.isfinished));
         
         const renewLists = async () => {
             groupedObject.value.length = 0
@@ -299,7 +299,7 @@ export default {
         return { 
             unfinished, lists, renderTable, 
             markAll, push, pickPeriode, details, 
-            exportReport, grouped, finishedDocument, unFinishedDocument
+            exportReport, grouped, FinishedDocument, unFinishedDocument
             // broadcastDocument
         }
 		
