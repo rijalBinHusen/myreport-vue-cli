@@ -6,7 +6,7 @@ export default async function (periode, spvId) {
   let result = [];
   const dbComplain = useIdb('complains');
 
-  const complains = dbComplain.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+  const complains = await dbComplain.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
 
   if(complains.length === 0) return;
 
