@@ -308,31 +308,36 @@ export default {
             for (let [index, group] of groups.entries()) {
 
                 loaderMessage.value = `Mengunduh ${index + 1} dari ${groups.length} laporan.`
-                
+
                 // console.log(group[i])
                 if(group.length > 1) {
+
                     await DailyReportGroup(group)
+
                 }   else {
+
                     await DailyReport(group[0])
+
                 }
 
                 group.forEach((rec) => {
-                    collect({ rec: rec.id, day: 0})
+
+                    if(rec.shared == 0) {
+
+                        collect({ rec: rec.id, day: 0})
+
+                    }
+                    
                 })
 
             }
-
-            // mark all record as shared
-            // for (let rec of groupedObject.value) {
-            //     if(!rec?.shared) {
-            //         await collect({ rec: rec.id, day: 0})
-            //     }
-            // }
+            
             // empty the groupedAsObject
             groupedObject.value = []
             grouped.value = []
             // Close loader
             store.commit("Modal/active");
+            loaderMessage.value = '';
         }
 
         const pickPeriode = async () => {
@@ -478,9 +483,15 @@ export default {
         
         const collect = async (ev) => {
             if(Number(ev.day) < 1) {
+
                 if(isModeUncollected.value) {
+
                     await collectDocument(ev.rec, Number(ev.day))
-                } else if(isModeCollected.value) {
+
+                } 
+                
+                else if(isModeCollected.value) {
+
                     let rec = findDocument(ev.rec)
                     // is the document unfinished
                     if(!rec?.isfinished) {
@@ -492,6 +503,7 @@ export default {
                         )
                         if(!res) { return }
                     }
+
                     // is the document contain item variance
                     if(rec?.itemVariance) {
                         let res = await subscribeMutation(
@@ -502,9 +514,15 @@ export default {
                         )
                         if(!res) { return }
                     }
+
                     await approveDocument(ev.rec, Number(ev.day))
-                } else if(isModeApproval.value) {
+                    
+                } 
+                
+                else if(isModeApproval.value) {
+
                     await shareDocument(ev.rec)
+
                 }
             } else {
                 if(ev.day == 'ijin') {
