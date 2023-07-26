@@ -319,12 +319,14 @@ export default {
             freezePanel.value = true;
             
             if(baseId.value && nowShift.value) {
+                const getStock = await getBaseStockByParentByShift(baseId.value, Number(nowShift.value));
+                const getClock = await getBaseClockByParentByShift(baseId.value, Number(nowShift.value));
                 renderTable.value = false
                 if(isStockSheet.value) {
-                    lists.value = await getBaseStockByParentByShift(baseId.value, Number(nowShift.value))
+                    lists.value = getStock;
                     nowSheet.value = 'stock'
                 } else {
-                    lists.value = await getBaseClockByParentByShift(baseId.value, Number(nowShift.value))
+                    lists.value = getClock;
                     nowSheet.value = 'clock'
                 }
                 excelLabel.value = ev?.title || excelLabel.value

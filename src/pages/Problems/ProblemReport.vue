@@ -8,7 +8,7 @@
                 v-if="lists.length"
                 :datanya="lists"
                 :heads="['Gudang', 'Nama item', 'Masalah', 'Tanggal mulai', 'Karu', 'Status']"
-                :keys="['namaGudang', 'namaItem', 'masalah', 'periode', 'supervisor', 'status']"
+                :keys="['namaGudang', 'namaItem', 'masalah', 'periode2', 'supervisor', 'status']"
                 option
                 id="tableProblemReport"
                 #default="{ prop }"

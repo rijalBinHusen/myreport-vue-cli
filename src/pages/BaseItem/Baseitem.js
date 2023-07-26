@@ -14,9 +14,8 @@ export function baseItem () {
         let record = { kode, name }
         const insertedId = await db.createItem(record);
 
-        if(insertedId !== undefined) {
-            lists.unshift({id: insertedId, ...record });
-        }
+        if(typeof insertedId === 'undefined') return;
+        lists.unshift({id: insertedId, ...record });
     }
 
     async function updateItem(id, itemKode, itemName, lastUsed) {
@@ -26,17 +25,25 @@ export function baseItem () {
 
         let objToUpdate = {}
 
-        if(itemKode !== getItem?.kode) {
+        const isUpdateItemKode = Boolean(itemKode) && itemKode !== getItem?.kode;
+        const isUpdateItemName = Boolean(itemName) && itemName !== getItem?.name;
+        const isUpdateLastUsed = Boolean(lastUsed) && lastUsed > getItem?.lastUsed
+
+        if(isUpdateItemKode) {
             objToUpdate['kode'] = itemKode
         }
 
-        if(itemName !== getItem?.name) {
+        if(isUpdateItemName) {
             objToUpdate['name'] = itemName
         }
 
-        if(lastUsed > getItem?.lastUsed) {
+        if(isUpdateLastUsed) {
             objToUpdate['lastUsed'] = lastUsed
         }
+
+        const isAnyValueToUpdate  = isUpdateItemKode || isUpdateItemName || isUpdateLastUsed
+
+        if(!isAnyValueToUpdate) return;
 
         lists = lists.map((rec) => {
             if(rec?.id === id) {

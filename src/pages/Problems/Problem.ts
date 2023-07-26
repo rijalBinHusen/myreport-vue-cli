@@ -33,6 +33,7 @@ interface ProblemMapped extends Problem {
   namaItem?: string
   supervisor?: string
   status?: string
+  periode2?: string
 }
 
 type Partial<T> = {
@@ -87,7 +88,7 @@ export const interpretProblem = async (problem: Problem): Promise<ProblemMapped>
       namaGudang: warehouse.name,
       namaItem: item.name,
       masalah: problem.masalah,
-      periode: ddmmyyyy(problem.periode, '-'),
+      periode2: ddmmyyyy(problem.periode, '-'),
       supervisor: supervisor.name,
       status: problem?.isFinished ? "Closed" : "Progress",
     }
@@ -112,10 +113,11 @@ export const masalah = (arrayOfProblemId: string[]) => {
   if (arrayOfProblemId.length > 0) {
     lists.value.forEach((val) => {
       if (arrayOfProblemId.includes(val.id)) {
-        result.push(val.masalah + " " + dateMonth(val.periode));
+        result.push(val.masalah + " " + val.periode2);
       }
     });
   }
+  // console.log(result)
   return result.join(", ");
 };
 
