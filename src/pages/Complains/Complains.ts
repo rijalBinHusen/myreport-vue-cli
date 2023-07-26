@@ -195,23 +195,41 @@ export function Complains () {
       }
     }
 
-    console.log(lists.value)
   }
   
-  async function getComplainById(id: string): Promise<Complain|undefined|ComplainImport> {
+  async function getComplainById(id: string): Promise<Complain|undefined> {
     const findIndex = lists.value.findIndex((rec) => rec.id == id);
 
     if(findIndex > -1) {
       return lists.value[findIndex];
     }
 
-    let getRecord = await db.getItem<Complain&ComplainImport>(id);
+    let getRecord = await db.getItem<Complain>(id);
 
     if(getRecord ===null) return;
 
-    if(getRecord?.insert) {
+    if(getRecord?.parent) {
       const rec = await interpretComplain(getRecord);
       lists.value.push(rec);
+      return rec
+    } 
+
+  }
+  
+  async function getComplainImportById(id: string): Promise<ComplainImport|undefined> {
+    const findIndex = listsComplainImport.value.findIndex((rec) => rec.id == id);
+
+    if(findIndex > -1) {
+      return listsComplainImport.value[findIndex];
+    }
+
+    let getRecord = await db.getItem<ComplainImport>(id);
+
+    if(getRecord ===null) return;
+
+    if(getRecord?.import) {
+      const rec = interpretComplainImport(getRecord);
+      listsComplainImport.value.push(rec);
       return rec
     } 
     
@@ -265,9 +283,14 @@ export function Complains () {
   
   const removeComplain = async (id: string) => {
     const findIndex = lists.value.findIndex((rec) => rec.id === id)
+    const findIndexImport = listsComplainImport.value.findIndex((rec) => rec.id === id)
     
     if(findIndex > -1) {
       lists.value.splice(findIndex, 1);
+    } 
+    
+    else if(findIndexImport > -1) {
+      listsComplainImport.value.splice(findIndexImport, 1);
     }
 
     await db.removeItem(id);
@@ -281,6 +304,7 @@ export function Complains () {
     updateComplain,
     updateComplainImport,
     removeComplain,
+    getComplainImportById
   }
   
   

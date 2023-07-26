@@ -75,7 +75,7 @@ import SelectSupervisors from "@/pages/Supervisors/SelectSupervisors.vue"
 import SelectHead from "@/pages/Headspv/SelectHead.vue"
 import { Complains } from './Complains'
 
-const { addComplain, updateComplain, getComplainById } = Complains();
+const { addComplain, updateComplain, getComplainById, getComplainImportById, updateComplainImport } = Complains();
 
 export default {
     components: {
@@ -129,7 +129,7 @@ export default {
                 }
             } else {
                 await addComplain(this.periode, this.head, this.dl, ymdTime(), this.masalah, this.name, this.parent, this.pic, this.solusi, this.status, this.sumberMasalah, this.type, this.isCount)
-                await updateComplain(this.parent, { inserted: true })
+                await updateComplainImport(this.parent, { inserted: true })
             }
             this.$store.commit("Modal/tunnelMessage", true)
             this.$store.commit("Modal/active")
@@ -174,13 +174,22 @@ export default {
             this.id ? this.changed['isCount'] = newVal : false
         },
     },
-    created() {
+    async created() {
         let obj = this.$store.getters["Modal/obj"].obj
-        let getComplain = getComplainById(obj?.id)
-        let base = getComplainById(obj?.parent || getComplain.parent)
 
-        if(obj?.edit) {
+        let base;
+        let isInsertMode = obj.hasOwnProperty('parent')
+        
+        if(isInsertMode) {
+            
+            this.periodeModel = new Date()
+            this.dlModel = new Date()
+            this.parent = obj?.parent
+            base =  await getComplainImportById(obj?.parent)
+            
+        } else {
             // put to the 
+            let getComplain = await getComplainById(obj?.id)
             this.periodeModel = new Date(getComplain?.periode)
             this.dlModel = new Date(getComplain?.dl)
             this.parent = getComplain?.parent
@@ -193,18 +202,19 @@ export default {
             this.pic = getComplain?.pic
             this.status = getComplain?.status,
             this.isCount = getComplain?.isCount
+
             setTimeout(() => {
                 this.id = obj?.id
             }, 300)
-        } else {
-            this.periodeModel = new Date()
-            this.dlModel = new Date()
-            this.parent = obj?.parent
+
+            base =  await getComplainImportById(getComplain?.parent)
+
         }
+
         this.baseDataObj = base
         // show to the left view editor
         this.baseData = Object.keys(base).map((val) => `${val}:<br> ${base[val]}`).join(`<hr/>`)
         
     },
 }
-</script>@/pages/Complains/Complains
+</script>
