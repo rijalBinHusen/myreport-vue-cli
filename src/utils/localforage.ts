@@ -1,6 +1,7 @@
 import localforage from 'localforage';
 import { generateId } from './generatorId';
 import { ref } from "vue"
+import { LoginStorage } from "../pages/Login/users"
 
 interface SummaryRecord { total: number, lastId: string }
 
@@ -33,6 +34,7 @@ export const useIdb = (storeName: string) => {
   const store = localforage.createInstance({ name: 'myreport', storeName });
   const summaryDb = localforage.createInstance({ name: 'myreport', storeName: 'summary' });
   const logging = localforage.createInstance({ name: 'myreport', storeName: 'activity' });
+  const loginStore = new LoginStorage();
 
   async function getSummary() {
     //check is summary exists on state
@@ -73,6 +75,8 @@ export const useIdb = (storeName: string) => {
   }
 
   async function addActivity(type: string, idRecord: string) {
+
+    loginStore.updateLastActivity()
 
     const now = new Date();
     const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds

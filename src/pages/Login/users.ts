@@ -45,9 +45,8 @@ const signIn = async (username: string, password: string) => {
 
         if(insertedId === undefined) return;
         
-        localStorage.setItem('loginya', insertedId);
-        localStorage.setItem('loginActivity', '0')
-        localStorage.setItem('lastActivity', new Date().getTime() + 14400000 + '')
+        const loginStore = new LoginStorage();
+        loginStore.loginStart(insertedId)
 
         return true
     } catch (err: any) {
@@ -86,8 +85,47 @@ export const userCreate = () => {
 }
 
 export const signOut = () => {
-    localStorage.removeItem('loginya')
-    localStorage.removeItem('loginActivity')
-    localStorage.removeItem('lastActivity')
-    location.reload()
+    const loginStore = new LoginStorage();
+    loginStore.loginEnd();
+}
+
+export class LoginStorage {
+
+    loginId:string|null = '';
+    logId = 'loginya'
+    logAct = 'loginActivity'
+    lastAct = 'lastActivity'
+
+
+    constructor () {
+        this.loginId = localStorage.getItem(this.logId);
+    }
+    
+    loginStart (loginya: string) {
+        this.loginId = loginya;
+        localStorage.setItem(this.logId, loginya);
+        localStorage.setItem(this.logAct, '0');
+        this.updateLastActivity();
+    }
+
+    loginEnd () {
+        if(this.isLoginNotOke()) return;
+        localStorage.removeItem(this.logId)
+        localStorage.removeItem(this.logAct)
+        localStorage.removeItem(this.lastAct)
+        location.reload()
+    }
+
+    updateLastActivity () {
+        if(this.isLoginNotOke()) return;
+        localStorage.setItem(this.lastAct, new Date().getTime() + 14400000 + '')
+    }
+
+    isLoginNotOke() {
+        
+        return !Boolean(this.loginId)
+
+    }
+
+
 }
