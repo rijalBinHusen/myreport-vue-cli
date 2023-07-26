@@ -11,7 +11,7 @@ const storeName = "fieldproblem";
 const db = useIdb(storeName);
 
 const getFieldProblem = async () => {
-    if(!lists.length) {
+    if(!lists.value.length) {
         // get all data from indexeddb
         // await getData({store: 'fieldproblem', limit: 50, desc: true, orderBy: 'id'})
         // .then((val) => lists = val)
@@ -45,7 +45,7 @@ export const listsFieldProblem = async () => {
     await getFieldProblem()
     let result = []
 
-    for (let list of lists) {
+    for (let list of lists.value) {
         let getSupervisor = await getSupervisorId(list.supervisor)
         let getHead = await getHeadspvId(list.head)
         result.push({
@@ -62,7 +62,7 @@ export const listsFieldProblem = async () => {
 
 export const getFieldProblemById = async (idFieldProblem) => {
     await getFieldProblem()
-    return lists.find((rec) => rec.id === idFieldProblem)
+    return lists.value.find((rec) => rec.id === idFieldProblem)
 }
 
 export const updateData = async (idRecord, periode, supervisor, head, masalah, sumberMasalah, solusi, pic, dl) => {
@@ -89,7 +89,11 @@ export const updateData = async (idRecord, periode, supervisor, head, masalah, s
 
 export const deleteData = async (idRecord) => {
     
-    lists = lists.filter((rec) => rec.id !== idRecord)
+    const findIndex = lists.value.findIndex((rec) => rec.id === idRecord)
+
+    if(findIndex > -1) {
+        lists.value.splice(findIndex, 1)
+    }
     
     await db.removeItem(idRecord)
 }
