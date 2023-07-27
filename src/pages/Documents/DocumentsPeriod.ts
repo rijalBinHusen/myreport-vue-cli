@@ -99,7 +99,8 @@ export function Documents () {
     const documentsMapper = async (doc: Document): Promise<DocumentsMapped> => {
         const spv = await getSupervisorId(doc.name);
         const head = await getHeadspvId(doc.head);
-        const warehouseName = await getWarehouseById(doc.warehouse);
+        const warehouseiInfo = await getWarehouseById(doc.warehouse);
+        const warehouseName = warehouseiInfo.name.replace('Gudang jadi', '');
         const periode2 = dateMonth(doc.periode);
         const finished2 = dateMonth(doc.finished);
         const approval2 = typeof doc.approval === 'number' ? dateMonth(doc.approval) : doc.approval; 
@@ -109,7 +110,7 @@ export function Documents () {
             ...doc, 
             spvName: spv.name, 
             headName: head.name, 
-            warehouseName: warehouseName.name,
+            warehouseName: warehouseName,
             periode2,
             collected2,
             approval2,
