@@ -22,13 +22,14 @@
             <!-- Panel base report -->
             <div>
             <Datatable
-                v-if="renderTable"
+                v-if="renderTable && !freezePanel"
                 :datanya="lists"
                 :heads="table?.heads"
                 :keys="table?.keys"
                 :id="table?.idTable"
                 option
                 #default="{ prop }"
+                class
             >   
                 <!-- When there is a problem in base report stock -->
                 <span v-if="(prop.selisih || (prop.problem && prop.problem.length)) && isStockSheet">
@@ -142,7 +143,7 @@ export default {
         const renderTable = ref(false)
         const excelLabel = ref(null)
         const { getBaseClockByParentByShift, updateBaseClock, removeClock, appendData: appendClockRecord } = baseClock();
-        const { getBaseStockByParentByShift, markStockFinished, updateBaseStock, removeStock, getBaseReportStockLists } = baseReportStock();
+        const { getBaseStockByParentByShift, markStockFinished, updateBaseStock, removeStock } = baseReportStock();
         
         const message = async (ev, obj) => {
             // ev = jenis pesan, obj=lengtka
@@ -315,6 +316,7 @@ export default {
             }
         }
         const renewLists = async (ev) => {
+            console.log(ev)
             baseId.value = ev?.baseReportFile || baseId.value
             freezePanel.value = true;
             
@@ -381,7 +383,7 @@ export default {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
             handleProblem, launchForm, markAsFinished, save, remove,
             renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
-            excelLabel, nowShift , mode,
+            excelLabel, nowShift , mode
         }
     }
 }

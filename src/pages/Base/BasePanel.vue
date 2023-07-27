@@ -2,7 +2,7 @@
     <div id="set-periode" :class="['w3-row w3-center', freezePanel ? 'w3-disabled' : '']">
 
         <ButtonVue 
-            class="w3-left w3-col s2 w3-margin-top w3-margin-right" 
+            class="w3-left w3-col s1 w3-margin-top w3-margin-right" 
             primary 
             value="Set periode" 
             type="button" 
@@ -72,6 +72,15 @@
             @trig="mode('BaseFinishedForm')"
         />
 
+        <ButtonVue
+            v-if="sheet == 'stock'"
+            class="w3-left w3-col s1 w3-margin-top" 
+            primary 
+            value="Remap stock" 
+            type="button" 
+            @trig="remapCurrentStock"
+        />
+
     </div>
 </template>
 
@@ -87,11 +96,14 @@ import { selectedPeriode, selectedWarehouse, shift, sheet, freezePanel } from '.
 import { dateMonth } from '@/composable/piece/dateFormat';
 import { getWarehouseById } from '@/pages/Warehouses/Warehouses';
 import { getProblemFromDB } from '@/pages/Problems/Problem'
+import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
 
     const emits = defineEmits(['baseReportChanged', 'mode'])
     
     const { getBaseReportFile, dateBaseReportFileImported, warehouseByDate, getBaseFileByPeriodeAndWarehouse } = BaseReportFile();
+
     const warehouses = ref(<WarehouseByDate[]>[])
+
     const pickPeriode = async () => {
         let res = await subscribeMutation(
             "Pilih periode yang akan ditampilkan", 
@@ -112,19 +124,34 @@ import { getProblemFromDB } from '@/pages/Problems/Problem'
         }
     }
 
+    const remapCurrentStock = async () => {
+        freezePanel.value = true;
+
+        let baseReportFileInfo = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)
+
+        let { reMapStock } = baseReportStock();
+
+        if(typeof baseReportFileInfo === 'undefined') return;
+
+        await reMapStock(baseReportFileInfo?.id, shift.value);
+
+        freezePanel.value = false
+    }
+
     const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
 
-    async function send () {
-        let baseReportFile = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
+    async function getListPeriodeAndWarehouse () {
+
+        let baseReportFileId = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)?.id
         // get value for title
         let periode2 = dateMonth(Number(selectedPeriode.value || new Date()))
         let warehouseName = await getWarehouseById(selectedWarehouse.value || 'WHS22050002').then((res) => res.name)
 
         // jika base report file by periode and warehouse tidak exists maka selected warehouses kita kosongin 
-        if(!baseReportFile) {
+        if(!baseReportFileId) {
             selectedWarehouse.value = ''
             sheet.value = ''
-            shift.value = ''
+            shift.value = 1
         }
 
         warehouses.value = warehouseByDate(selectedPeriode.value)
@@ -133,7 +160,7 @@ import { getProblemFromDB } from '@/pages/Problems/Problem'
             periode: selectedPeriode.value,
             warehouse: selectedWarehouse.value,
             shift: shift.value,
-            baseReportFile,
+            baseReportFileId,
             sheet: sheet.value,
             title: periode2 + ' - ' + warehouseName + ', Shift ' + shift.value
             })
@@ -141,12 +168,12 @@ import { getProblemFromDB } from '@/pages/Problems/Problem'
     
     watch([selectedPeriode, selectedWarehouse, sheet, shift], async (newVal, oldVal) => {
         // selectedperiode
-        send()            
+        getListPeriodeAndWarehouse()            
     })
 
     onMounted( async () => {
         await getProblemFromDB()
-        send()
+        getListPeriodeAndWarehouse()
     })
 
     const mode = (ev: string) => {

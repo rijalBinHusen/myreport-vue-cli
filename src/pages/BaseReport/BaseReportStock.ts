@@ -220,28 +220,6 @@ export function baseReportStock() {
 
   }
 
-  // const getBaseReportStockLists = async (parent: string, shift: number): Promise<BaseStock[] | undefined> => {
-
-  //   let result = lists.filter((rec) => rec?.parent === parent && rec?.shift === shift);
-
-  //   if (!result.length) {
-  //     const retrieveFromDb = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
-
-  //     if (typeof retrieveFromDb === 'undefined') return;
-
-  //     for (let record of retrieveFromDb) {
-  //       const interpretIt = await interpretRecord(record);
-
-  //       lists.push(interpretIt);
-  //       result.push(interpretIt);
-
-  //     }
-
-  //   }
-
-  //   return result;
-  // };
-
   const stockDetails = (parent: string, shift: number) => {
     /*
        expected result = {
@@ -318,6 +296,21 @@ export function baseReportStock() {
     progressMessage2.value = '';
   }
 
+  async function reMapStock (parentDoc: string, shift: number) {
+
+    for(let i =0; i < lists.length; i++) {
+      let isRecordMatched = lists[i].parent === parentDoc && lists[i].shift === shift;
+
+      if(isRecordMatched) {
+        let mapIt = await interpretRecord(lists[i]);
+
+        lists[i] = mapIt;
+      }
+
+    }
+
+  };
+
   return {
     appendData,
     startImportStock,
@@ -327,6 +320,7 @@ export function baseReportStock() {
     stockDetails,
     updateBaseStock,
     markStockFinished,
+    reMapStock
   }
 
 }
