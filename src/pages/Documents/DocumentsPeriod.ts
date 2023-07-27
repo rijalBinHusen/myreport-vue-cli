@@ -101,7 +101,7 @@ export function Documents () {
         const spv = await getSupervisorId(doc.name);
         const head = await getHeadspvId(doc.head);
         const warehouseiInfo = await getWarehouseById(doc.warehouse);
-        const warehouseName = warehouseiInfo.name.replace('Gudang jadi', '');
+        const warehouseName = warehouseiInfo.name;
         const periode2 = dateMonth(doc.periode);
         const finished2 = dateMonth(doc.finished);
         const approval2 = typeof doc.approval === 'number' ? dateMonth(doc.approval) : doc.approval; 
@@ -260,7 +260,7 @@ export function Documents () {
                     id: list.id, 
                     periode: list.periode, 
                     periode2: list.periode2,
-                    warehouseName: list.warehouseName, 
+                    warehouseName: list.warehouseName?.replace('Gudang jadi', ''), 
                     shift: list.shift 
                 })
             } 
@@ -275,7 +275,7 @@ export function Documents () {
                         id: list.id, 
                         periode: list.periode, 
                         periode2: list.periode2, 
-                        warehouseName: list.warehouseName, 
+                        warehouseName: list.warehouseName?.replace('Gudang jadi', ''), 
                         shift: list.shift 
                     }]
                 })
