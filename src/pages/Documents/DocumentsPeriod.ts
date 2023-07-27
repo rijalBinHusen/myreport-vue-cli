@@ -1,10 +1,11 @@
 import { ref } from 'vue'
 import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '@/composable/piece/dateFormat'
-import { getHeadspvId } from '@/pages/Headspv/Headspv'
+import { getHeadspvId, headspvByShift } from '@/pages/Headspv/Headspv'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
-import { getWarehouseById, warehouseNameBySpv } from '@/pages/Warehouses/Warehouses'
+import { getWarehouseById, warehouseNameBySpv, lists as warehouseLists } from '@/pages/Warehouses/Warehouses'
 import { postData, deleteData, putData } from "@/utils/sendDataToServer";
 import { useIdb } from "@/utils/localforage"
+import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 
 interface Document {
     id: string
@@ -252,6 +253,7 @@ export function Documents () {
             let findRes = result.findIndex((res) => res.spvId == list.name)
             
             let spv = await getSupervisorId(list.name)
+            let warehouseName = await warehouseNameBySpv(list.name);
             // if the spv id exists in result
             if(findRes > -1) {
                 result[findRes].documents.push({ 
@@ -267,7 +269,7 @@ export function Documents () {
                 result.push({
                     spvId: list.name,
                     spvName: list.spvName,
-                    warehouseName: list.warehouseName,
+                    warehouseName,
                     phone: spv?.phone,
                     documents: [{ 
                         id: list.id, 
@@ -436,6 +438,24 @@ export function Documents () {
 
         return findRec;
     }
+
+    const addDocumentsGroup = async (periode: number) => {
+        const { addBaseReportFile } = BaseReportFile();
+
+        for(let warehouse of warehouseLists.value) {
+            if(!warehouse?.disabled) {
+                await addBaseReportFile(periode, warehouse.id);
+
+                for(let spvId of warehouse.supervisors) {
+                    const spvInfo = await getSupervisorId(spvId)
+                    const headSpv = headspvByShift(spvInfo.shift);
+                    if(!spvInfo.disabled) {
+                        await addData(spvId, periode, spvInfo.shift, headSpv.id, warehouse.id);
+                    }
+                }
+            }
+        }
+    }
     
     return {
         addData,
@@ -459,7 +479,8 @@ export function Documents () {
         shareDocument,
         unApproveDocument,
         markDocumentFinished,
-        getDocumentByPeriodeByWarehouseByShift
+        getDocumentByPeriodeByWarehouseByShift,
+        addDocumentsGroup
     }
           
 }

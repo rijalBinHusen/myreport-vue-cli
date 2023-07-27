@@ -50,7 +50,6 @@ import { getWarehouseNotGroupedAndTheSupervisors, type WarehouseAndTheSupervisor
 import { Documents } from '@/pages/Documents/DocumentsPeriod'
 import { useStore } from "vuex"
 import { ymdTime } from "@/composable/piece/dateFormat"
-import { BaseReportFile } from '@/pages/BaseReport/BaseReportFile'
 
 interface HeadSpv {
   disabled: boolean
@@ -66,15 +65,12 @@ export default {
         Input, Datepicker,
     },
     setup() {
-        const spvLists = ref({})
         const headLists = ref(<HeadSpv[]>[])
         const periode = ref()
         const lowerPeriode = ref(new Date())
         const warehousesLists = ref(<WarehouseAndTheSupervisors[]>[]);
         const store = useStore()
-        const BaseReportFileClass = BaseReportFile();
-        const { addBaseReportFile } = BaseReportFileClass;
-        const { addData: addNewDocument, getLastDate } = Documents();
+        const { getLastDate, addDocumentsGroup } = Documents();
 
         const changeShift = (store: string, idFL: string, shift: string|number) => {
             store == 'Supervisors'
@@ -94,28 +90,7 @@ export default {
                 store.commit("Modal/active", {judul: "", form: "Loader"});
                 // jadikkan this.periode sebagai new Date().getTime()
                 let periodeTime = ymdTime(periode.value)
-                //// iterate gudang, kemudian iterate nama spv yang ada didalam gudang
-                for(let warehouse of warehousesLists.value) {
-                    if(!warehouse?.disabled) {
-                        // baseReportFile record, masukkan berdasar iteraatenya gudang
-                        await addBaseReportFile(periodeTime, warehouse?.id);
-
-                        // Document record, iterate spv yang ada digudang
-                        for(let spv of warehouse?.supervisorsAndDetail) {
-                            let shiftNow = spv.shift
-                            let headSpv = headspvByShift(shiftNow == 3 ? 2 : shiftNow )
-                            if(shiftNow) {
-                                await addNewDocument(
-                                    spv.id, 
-                                    periodeTime, 
-                                    shiftNow,
-                                    headSpv.id,
-                                    warehouse?.id
-                                )
-                            }
-                        }
-                    }
-                }
+                await addDocumentsGroup(periodeTime);
                 //close the modeal
                 store.commit('Modal/tunnelMessage', true)
                 store.commit("Modal/active")
@@ -123,7 +98,7 @@ export default {
         }
 
         return {
-            changeShift, spvLists, headLists, periode, warehousesLists, lowerPeriode, send
+            changeShift, headLists, periode, warehousesLists, lowerPeriode, send
         }
     },
 }

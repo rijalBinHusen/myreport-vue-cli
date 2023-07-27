@@ -492,7 +492,7 @@ export default {
                 
                 else if(isModeCollected.value) {
 
-                    let rec = findDocument(ev.rec)
+                    let rec =  await findDocument(ev.rec)
                     // is the document unfinished
                     if(!rec?.isfinished) {
                         let res = await subscribeMutation(
