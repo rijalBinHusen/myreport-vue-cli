@@ -50,7 +50,7 @@
             :lists="headSPVLists"
             listsKey="phone"
             listsValue="name"
-            @trig="notApproval($event)"
+            @trig="sendMessageDocumentnotApproval($event)"
             class="w3-right"
             secondary
         />
@@ -384,9 +384,8 @@ export default {
 
         const oneClickMessageToAll = async (ev) => {
             // ambil dulu semua karu
-            let supervisors = listsSupervisor
             // iterate semua karu untuk kirim pesan
-            for (let supervisor of supervisors) {
+            for (let supervisor of listsSupervisor.value) {
                 // dapatkan dokumen yang lebih dari 2 hari
                 let listLaporan = await documentMore2DaysBySpv(supervisor?.id)
                 // jika ada dokumen yang lebih dari 2 hari
@@ -429,7 +428,9 @@ export default {
                                     'Modal/tunnelMessage'
                                     )
             let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${full()}:%0a%0a`
-            let messageText = await allDocumentMore2Days()
+            let messageText = await allDocumentMore2Days();
+            let message2 = `Status dokumen belum diapprove:%0a%0a`
+            let message3 = ``;
             if(prom) {
                 window.open(`https://wa.me/${ev}?text=${result+messageText}`)
             }
@@ -544,7 +545,7 @@ export default {
             renewLists()
         }
 
-        const notApproval = (ev) => {
+        const sendMessageDocumentnotApproval = (ev) => {
                 // dockumen yang belum tanda tangan kabag
                 let result = "Dokumen belum *approval* kapala bagian:%0a%0a"
                 let notApproval = this.$store.getters["Document/documentNotApproval"]
@@ -590,7 +591,7 @@ export default {
         return { 
             oneClickMessageToAll, pesan, pesanSemua, 
             viewByPeriode, lists, edit, check, addPeriod,
-            headSPVLists, notApproval, collect, mode, renderTable,
+            headSPVLists, sendMessageDocumentnotApproval, collect, mode, renderTable,
             isModeCollected, isModeUncollected, isModeApproval, cancel,
             headsTable, keysTable, dropDownApprovalOptions, handleAction,
             pickPeriode, dateMonth, grouped, push, markAll, exportReportAll
