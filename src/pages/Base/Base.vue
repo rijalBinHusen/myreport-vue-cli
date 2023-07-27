@@ -316,8 +316,8 @@ export default {
             }
         }
         const renewLists = async (ev) => {
-            console.log(ev)
-            baseId.value = ev?.baseReportFile || baseId.value
+            
+            baseId.value = ev?.baseReportFileId || baseId.value
             freezePanel.value = true;
             
             if(baseId.value && nowShift.value) {
@@ -383,7 +383,7 @@ export default {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
             handleProblem, launchForm, markAsFinished, save, remove,
             renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
-            excelLabel, nowShift , mode
+            excelLabel, nowShift , mode, freezePanel
         }
     }
 }

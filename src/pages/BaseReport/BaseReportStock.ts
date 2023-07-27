@@ -299,12 +299,15 @@ export function baseReportStock() {
   async function reMapStock (parentDoc: string, shift: number) {
 
     for(let i =0; i < lists.length; i++) {
-      let isRecordMatched = lists[i].parent === parentDoc && lists[i].shift === shift;
+      let isRecordMatched = lists[i].parent === parentDoc && lists[i].shift == shift;
+      let itemNotFound = lists[i].itemName === "Not found";
 
-      if(isRecordMatched) {
+      if(isRecordMatched && itemNotFound) {
+        
         let mapIt = await interpretRecord(lists[i]);
 
         lists[i] = mapIt;
+
       }
 
     }

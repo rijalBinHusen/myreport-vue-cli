@@ -127,6 +127,8 @@ import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
     const remapCurrentStock = async () => {
         freezePanel.value = true;
 
+        sheet.value = 'clock';
+
         let baseReportFileInfo = getBaseFileByPeriodeAndWarehouse(selectedPeriode.value, selectedWarehouse.value)
 
         let { reMapStock } = baseReportStock();
@@ -136,6 +138,7 @@ import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
         await reMapStock(baseReportFileInfo?.id, shift.value);
 
         freezePanel.value = false
+        sheet.value = 'stock';
     }
 
     const dateBaseReportFile = computed(() => dateBaseReportFileImported() )
@@ -151,7 +154,8 @@ import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
         if(!baseReportFileId) {
             selectedWarehouse.value = ''
             sheet.value = ''
-            shift.value = 1
+            // @ts-expect-error
+            shift.value = ''
         }
 
         warehouses.value = warehouseByDate(selectedPeriode.value)

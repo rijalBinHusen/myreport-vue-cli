@@ -76,10 +76,11 @@ export function baseItem () {
 
             updateItem(findItem?.id, false, false, ymdTime());
             
+            return findItem
         }
 
 
-        return findItem || { id: 'Nothing', kode: 'Not found', name: 'Not found' }
+        return { id: 'Nothing', kode: 'Not found', name: 'Not found' }
     }
 
     async function removeItem(itemId) {
