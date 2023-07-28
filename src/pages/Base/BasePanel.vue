@@ -73,7 +73,7 @@
         />
 
         <ButtonVue
-            v-if="sheet == 'stock'"
+            v-if="sheet == 'stock' && shift"
             class="w3-left w3-col s1 w3-margin-top" 
             primary 
             value="Remap stock" 

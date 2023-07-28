@@ -2,6 +2,10 @@
 const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "http://localhost/api-prod/";
 
 export function loginToServer(email, password) {
+
+   const isParameterNotOke = Boolean(email) && Boolean(password)
+
+   if(isParameterNotOke) return;
     
     let headersList = {
         "Accept": "*/*",
