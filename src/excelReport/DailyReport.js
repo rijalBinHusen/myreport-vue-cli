@@ -21,24 +21,13 @@ export default async function (baseReport) {
   let result = [];
   //   lists base report stock
   let stocks = await getBaseStockByParentByShift(baseReport?.baseReportFile, shift);
-  // func.findData({
-  //   store: "BaseReportStock",
-  //   criteria: {
-  //     parent: baseReport.baseReportFile,
-  //     shift: Number(baseReport.shift),
-  //   },
-  // });
 
   for (let [index, stock] of stocks.entries()) {
     //  add new promise
     waitingLists.push(waitFor(1000));
     //   item name
     let item = await getItemBykode(stock.item);
-
-    // await func.findData({
-    //   store: "Baseitem",
-    //   criteria: { kode: reportData[i].item },
-    // });
+    
     //   problem info
     let problem = await getProblem(stock.problem);
     result.push(
