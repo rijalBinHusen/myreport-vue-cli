@@ -17,17 +17,25 @@
 <script>
 import { ref, onBeforeMount } from 'vue';
 import SelectVue from '@/components/elements/Select.vue';
-import { lists, getHeadspv } from './Headspv';
+import { lists, getHeadspv, headspvEnabled } from './Headspv';
 
 export default {
     emit: ['selectedHead'],
-    props: ['inSelectHead', 'disabled'],
+    props: ['inSelectHead', 'disabled', 'enabledHeadOnly'],
     setup(props, { emit }) {
         const head = ref([])
         
         onBeforeMount( async () => {
             await getHeadspv();
-            head.value = lists.value
+            if(props.enabledHeadOnly) {
+
+                head.value = headspvEnabled();
+                
+            } else {
+
+                head.value = lists.value
+
+            }
         })
 
         const handleChange = (ev) => {
@@ -40,4 +48,4 @@ export default {
         SelectVue,
     }
 }
-</script>@/pages/Headspv/Headspv
+</script>

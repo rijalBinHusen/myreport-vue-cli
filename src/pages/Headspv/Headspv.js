@@ -50,7 +50,6 @@ let idHeadSpvUpdateShift = '';
 export function updateShiftHeadSupervisor(headSpvId, shift) {
   const isNotOkeToUpdate = typeof headSpvId !== 'string' || shift < 1 || shift > 3;
 
-  console.log(isNotOkeToUpdate, shift, shift < 1)
   if(isNotOkeToUpdate) return;
 
   clearTimeout(timerUpdateShift);

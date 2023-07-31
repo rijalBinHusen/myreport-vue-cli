@@ -24,6 +24,7 @@
                         :inSelectHead="head"
                         :disabled="!isEdit"
                         @selectedHead="head = $event"
+                        :enabledHeadOnly="true"
                         />
                 </div>
                 <!-- shift -->
