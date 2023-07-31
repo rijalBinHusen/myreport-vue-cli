@@ -12,11 +12,6 @@ export interface Summary {
 interface unknownObject {
   [key: string | number]: string | number
 }
-
-interface unknownObjectNumber {
-  [key: string | number]: number
-}
-
 export interface Activity {
   id: string
   idRecord: string
@@ -28,6 +23,7 @@ export interface Activity {
 
 const stateSummary = ref(<Summary>{});
 let timer: ReturnType<typeof setTimeout>;
+let storeNameToUpdate: string[] = [];
 
 export const useIdb = (storeName: string) => {
   // create instance
@@ -60,6 +56,15 @@ export const useIdb = (storeName: string) => {
   }
 
   function updateSummary(yourLastId: string) {
+
+    let isStoreNameNotExists = storeNameToUpdate.indexOf(storeName) === -1;
+    if(isStoreNameNotExists) {
+
+      storeNameToUpdate.push(storeName);
+      console.log(storeNameToUpdate)
+
+    }
+    
     clearTimeout(timer);
 
     let lastId = yourLastId;
@@ -69,9 +74,18 @@ export const useIdb = (storeName: string) => {
 
     timer = setTimeout(() => {
 
-      summaryDb.setItem(storeName, { lastId, total });
+      storeNameToUpdate.forEach((storeName) => {
+        
+        let lastId = stateSummary.value[storeName].lastId;
+        let total = stateSummary.value[storeName].total;
 
-    }, 3000);
+        summaryDb.setItem(storeName, { lastId, total });
+
+      })
+
+      storeNameToUpdate.length = 0
+
+    }, 1000);
   }
 
   async function addActivity(type: string, idRecord: string) {

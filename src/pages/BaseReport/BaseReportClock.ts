@@ -140,8 +140,8 @@ export function baseClock() {
       const records = await db.getItemsByTwoKeyValue<BaseClock>('parent', parent, 'shift', shift);
 
       if(records.length == 0) {
-        await appendData(parent, shift, 0, '12:00', '12:00', '01:00', 0);
-        getBaseClockByParentByShift(parent, shift);
+        await appendData(parent, shift, 100, '12:00', '12:00', '01:00', 0);
+        // getBaseClockByParentByShift(parent, shift);
         return [lists[lists.length - 1]];
       };
 
