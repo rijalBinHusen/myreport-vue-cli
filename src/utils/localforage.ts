@@ -61,7 +61,6 @@ export const useIdb = (storeName: string) => {
     if(isStoreNameNotExists) {
 
       storeNameToUpdate.push(storeName);
-      console.log(storeNameToUpdate)
 
     }
     
@@ -85,7 +84,7 @@ export const useIdb = (storeName: string) => {
 
       storeNameToUpdate.length = 0
 
-    }, 1000);
+    }, 500);
   }
 
   async function addActivity(type: string, idRecord: string) {
