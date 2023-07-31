@@ -25,8 +25,8 @@ const report = async  (startDate, endDate) => {
             result.push ({
                 Periode: dateMonth(doc?.periode),
                 Karu: spvInfo.name,
-                Bagian: spvInfo.name,
-                Kabag: spvInfo.name,
+                Bagian: warehouseInfo.name,
+                Kabag: headInfo.name,
                 Shift: doc?.shift,
                 Dikumpulkan: !isNaN(doc.collected+ "") ? dateMonth(doc?.collected) : doc?.collected,
                 Selesai: !isNaN(doc.finished+ "") ? dateMonth(doc?.finished) : doc?.finished,
@@ -35,8 +35,6 @@ const report = async  (startDate, endDate) => {
             })
         }
     }
-
-    console.log(result);
 
     if(result.length)
 
