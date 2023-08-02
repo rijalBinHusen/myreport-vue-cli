@@ -52,9 +52,9 @@ export default function (arrayOfArrayOfDocuments) {
         let arrayPeriodeSearched = [];
         val.forEach((val2) => {
           if (!arrayPeriodeSearched.includes(val2.periode)) {
-            arrProblem.push(getProblem({ periode: val2.periode, nameSpv: val2.name}));
-            arrProblem.push(getCases({ periode: val2.periode, name: val2.name}));
-            arrProblem.push(GetComplains({ periode: val2.periode, name: val2.name}));
+            arrProblem.push(getProblem(val2.periode, val2.name));
+            arrProblem.push(getCases(val2.periode, val2.name));
+            arrProblem.push(GetComplains(val2.periode,val2.name));
             arrProblem.push(GetFieldProblem(val2.periode, val2.name))
             arrayPeriodeSearched.push(val2.periode);
           }

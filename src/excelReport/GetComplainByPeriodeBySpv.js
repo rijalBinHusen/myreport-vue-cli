@@ -1,12 +1,23 @@
 import { dateMonth } from "@/composable/piece/dateFormat";
 import { useIdb } from "@/utils/localforage";
 
-export default async function (periode, spvId) {
+export default async function (periode, spvId, headSpvId) {
 
   let result = [];
   const dbComplain = useIdb('complains');
 
-  const complains = await dbComplain.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+  let complains;
+
+  if(spvId) {
+
+    complains = await dbComplain.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+
+  } else if( headSpvId ) {
+
+    complains = await dbComplain.getItemsByTwoKeyValue('periode', periode, 'head', headSpvId);
+
+  }
+
 
   if(complains.length === 0) return;
 

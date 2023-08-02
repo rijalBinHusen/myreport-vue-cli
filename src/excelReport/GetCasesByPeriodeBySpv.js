@@ -3,12 +3,22 @@
 import { dateMonth } from "@/composable/piece/dateFormat";
 import { useIdb } from "@/utils/localforage";
 
-export default async function (periode, spvId) {
+export default async function (periode, spvId, headSpvId) {
 
   let result = [];
   const dbCase = useIdb('cases');
 
-  const cases = await dbCase.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+  let cases = [];
+
+  if(spvId) {
+    
+    cases = await dbCase.getItemsByTwoKeyValue('periode', periode, 'name', spvId);
+
+  } else if(headSpvId) {
+
+    cases = await dbCase.getItemsByTwoKeyValue('periode', periode, 'head', headSpvId);
+
+  }
 
   if(cases.length === 0) return;
 

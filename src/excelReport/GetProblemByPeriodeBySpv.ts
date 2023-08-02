@@ -15,14 +15,24 @@ interface Report {
   dl: string
 }
 
-export default async function (periode: number, spvId: string): Promise<Report[]> {
+export default async function (periode: number, spvId?: string, headSpvId?: string): Promise<Report[]> {
 
   const result:Report[] = [];
 
   const dbProblem = useIdb('problem');
   const { getItemBykode } = baseItem();
 
-  const getProblems = await dbProblem.getItemsByTwoKeyValue<Problem>('periode', periode, 'nameSpv', spvId);
+  let getProblems = <Problem[]>[];
+  
+  if(spvId) {
+
+    getProblems = await dbProblem.getItemsByTwoKeyValue<Problem>('periode', periode, 'nameSpv', spvId);
+
+  } else if(headSpvId) {
+
+    getProblems = await dbProblem.getItemsByTwoKeyValue<Problem>('periode', periode, 'nameHeadSpv', headSpvId);
+
+  }
 
   if(getProblems.length > 0) {
     
