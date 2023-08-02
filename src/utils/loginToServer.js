@@ -3,7 +3,7 @@ const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-
 
 export function loginToServer(email, password) {
 
-   const isParameterNotOke = Boolean(email) && Boolean(password)
+   const isParameterNotOke = !Boolean(email) && !Boolean(password)
 
    if(isParameterNotOke) return;
     
