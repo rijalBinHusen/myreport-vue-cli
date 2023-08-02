@@ -1,5 +1,5 @@
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "http://localhost/api-prod/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "https://rijalbinhusen.cloud/";
 
 export function loginToServer(email, password) {
 
@@ -18,6 +18,8 @@ export function loginToServer(email, password) {
   const signal = controller.signal;
 
   return new Promise((resolve, reject) => {
+    let timer;
+
     fetch(`${hostURL}user/login`, { 
         signal,
         method: "POST",
@@ -35,9 +37,14 @@ export function loginToServer(email, password) {
       })
       .catch(error => {
         reject(error);
-      });
+      })
+    .finally(() => {
 
-    setTimeout(() => {
+      clearTimeout(timer)
+      
+    })
+
+    timer = setTimeout(() => {
       controller.abort();
       reject(new Error(`Request timed out after ${2000}ms`));
     }, 2000);

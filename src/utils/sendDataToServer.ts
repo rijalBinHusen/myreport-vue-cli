@@ -1,7 +1,7 @@
 import { getJWTToken } from "./cookie";
 import { useIdb } from "./localforage";
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "http://localhost/api-prod/myreport/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "https://rijalbinhusen.cloud/";
 const timeOutRequest = 5000;
 
 interface unknownObject {
@@ -74,7 +74,9 @@ export async function postData(endpoint: string, dataToSend: unknownObject): Pro
 
       })
       .finally(() => {
+
         clearTimeout(timeout);
+        
       })
   });
 }
