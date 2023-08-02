@@ -170,188 +170,116 @@ export async function syncBasedOnActivity() {
     // const storeToBackup = ['baseitem', 'basereportclock', 'basereportfile', 'basereportstock', 'cases', 'complains', 'document', 'fieldproblem', 'headspv', 'problem', 'supervisors', 'warehouses']
     loader();
 
-    const dbLogin = useIdb('login');
-
-    const loginRecords = await dbLogin.getItemsByKeyValue<Login>('backup', false)
-
-    if (!loginRecords) {
-        alert("All login is synced!");
-        modalClose();
-        return true
-    }
-
     let recordSynced = <{ [key: string]: string[] }>{};
 
     let isSuccess = true;
 
-    for (let [index, login] of loginRecords.entries()) {
+    const dbActivity = useIdb('activity');
 
-        progressMessage.value = '';
+    const activities = await dbActivity.getItems<Activity>();
+    // func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
 
-        loaderMessage.value = `Syncing login ${index + 1} dari ${loginRecords.length}`;
+    if (activities.length) {
 
-        const dbActivity = useIdb('activity');
+        const sortActivities = activities.sort((recA, recB) => recA.time - recB.time);
 
-        const loginActivities = await dbActivity.getItemsByKeyValue<Activity>('idLogin', login.id);
-        // func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
+        
+        for (let [index, activity] of sortActivities.entries()) {
+         
 
-        if (loginActivities) {
+            // dont sync when time < 1690383553857
+            const isNotOkeToSync = false
+            // activity?.time <= 1690383553857;
 
-            const sortActivities = loginActivities.sort((recA, recB) => recA.time - recB.time);
+            loaderMessage.value = `Syncing activity ${activities.length - (index + 1)}`;
 
-            for (let [index, activity] of sortActivities.entries()) {
+            // tidak di eksekusi
+            // id record berada dalam record synced
+            // id record berada dalam record synced tapi operation delete
 
-                progressMessage.value = `Syncing activity ${index + 1} dari ${loginActivities.length}`;
+            const isNotForExecute = recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)
 
-                // tidak di eksekusi
-                // id record berada dalam record synced
-                // id record berada dalam record synced tapi operation delete
+            if (isNotForExecute || isNotOkeToSync) {
+                // dont do anything
+                // console.warn(`Record ${activity.idRecord} exists, it should be doesn't send request to server`)
+                continue;
+            }
 
-                const isNotForExecute = recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)
+            else {
 
-                if (isNotForExecute) {
-                    // dont do anything
-                    // console.warn(`Record ${activity.idRecord} exists, it should be doesn't send request to server`)
-                    continue;
-                }
+                try {
 
-                else {
-
-                    try {
-
-                        switch (activity.store) {
-                            case 'baseitem':
-                                await syncItemRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'basereportclock':
-                                await syncClockRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'basereportfile':
-                                await syncBaseFileRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'basereportstock':
-                                await syncBaseStockRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'cases':
-                                await syncCaseRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'complains':
-                                await syncComplainRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'document':
-                                await syncDocumentRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'fieldproblem':
-                                await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'headspv':
-                                await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'problem':
-                                await syncProblemRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'supervisors':
-                                await syncSupervisorRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            case 'warehouses':
-                                await syncWarehouseRecordToServer(activity.idRecord, activity.type);
-                                break;
-                            default:
-                                break;
-                        }
-
-                    } catch (err) {
-                        isSuccess = false;
-                        console.log(err);
+                    switch (activity.store) {
+                        case 'baseitem':
+                            await syncItemRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'basereportclock':
+                            await syncClockRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'basereportfile':
+                            await syncBaseFileRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'basereportstock':
+                            await syncBaseStockRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'cases':
+                            await syncCaseRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'complains':
+                            await syncComplainRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'document':
+                            await syncDocumentRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'fieldproblem':
+                            await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'headspv':
+                            await syncHeadSpvRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'problem':
+                            await syncProblemRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'supervisors':
+                            await syncSupervisorRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'warehouses':
+                            await syncWarehouseRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        default:
+                            break;
                     }
 
-
-                    // record that synced
-                    recordSynced.hasOwnProperty(activity.store)
-                        ? recordSynced[activity.store].push(activity.idRecord)
-                        : recordSynced[activity.store] = [activity.idRecord];
-
+                } catch (err) {
+                    isSuccess = false;
+                    console.log(err);
                 }
 
+
+                // record that synced
+                recordSynced.hasOwnProperty(activity.store)
+                    ? recordSynced[activity.store].push(activity.idRecord)
+                    : recordSynced[activity.store] = [activity.idRecord];
+
             }
+
+            if(isSuccess) {
+
+                await dbActivity.removeItem(activity.id, true);
+
+            }
+            
         }
-        process.env.NODE_ENV === 'development' ? '' : await dbLogin.updateItem(login.id, { backup: true })
-        // updateWithoutAddActivity('login', { id: login?.id }, { backup: true })
     }
 
     modalClose();
 
-    if (isSuccess) {
-
-        process.env.NODE_ENV === 'development' ? '' : signOut();
-
-    }
-
 }
 
+export async function getSummaryData () {
+    const dbSummary = useIdb("summary");
 
-// ask the user, how "many" user before would backup seperate
-// backup all
-// find all "many" user activity
-// export const seperateUsers = async (sendToCloud: boolean) => {
-//     const logins = await func.findData({ store: 'login', criteria: { backup: false } })
+    let getAllKeys = await dbSummary.getKeys()
 
-//     if (!logins) { return true }
-
-//     let activities = logins.map(async (val) => {
-//         if (val) {
-//             await updateWithoutAddActivity('login', { id: val?.id }, { backup: true })
-//             return func.findData({ store: 'activity', criteria: { idLogin: val?.id } })
-//         }
-//     })
-
-//     await Promise.all(activities).then(async (allActivities) => {
-//         for (let userActivity of allActivities) {
-//             if (userActivity) {
-//                 let record = {}
-//                 let userActivities = userActivity
-//                 for (let activity of userActivity) {
-
-//                     record[activity?.store]
-//                         ? false
-//                         : record[activity?.store] = {}
-//                     // jika activity.type === create or update dan belum pernah di lakukan pencarian sebelumnya
-//                     if (['create', 'update'].includes(activity?.type) && activity?.idRecord && !record[activity?.store].hasOwnProperty(activity?.idRecord)) {
-//                         // cari datanya pada store (activity.store) dengan id (activity.idRecord)
-//                         let getRecord = await func.findData({ store: activity?.store, criteria: { id: activity?.idRecord } })
-//                         // jika ditemukan masukkan ke record
-//                         // periksa dulu apakah sudah ada storenya 
-//                         // jika belum bikin 
-//                         // jika sudah langsung push
-//                         if (getRecord) {
-//                             record[activity?.store][activity?.idRecord] = getRecord[0] || false
-//                         }
-//                         /**
-//                          * record {
-//                          *      nameOFStore: {
-//                          *           idRecord: { contentOfrecord id: 12312,3 123;k123-098-20390912039813 }
-//                          *          }
-//                          * }
-//                          */
-//                     }
-//                 }
-//                 // waiting for exporting data as file
-//                 if (record.hasOwnProperty(userActivities[0]?.store)) {
-//                     // console.log(record)
-//                     await startExport({
-//                         activities: userActivities,
-//                         record: record
-//                     },
-//                         full(userActivities[0]?.time) + '.json',
-//                         sendToCloud
-//                     )
-//                 }
-//             }
-//         }
-//     })
-//     return true
-// }
-// find all record that user create or update
-// and then push into object
-// 
-
+    console.log(getAllKeys);
+}

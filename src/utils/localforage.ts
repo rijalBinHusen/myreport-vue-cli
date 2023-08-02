@@ -174,10 +174,14 @@ export const useIdb = (storeName: string) => {
       });
   };
 
-  const removeItem = async (key: string) => {
+  const removeItem = async (key: string, dontRecordActivity?: boolean) => {
     await getSummary()
     // add activity
-    addActivity('delete', key);
+    if(!dontRecordActivity) {
+
+      addActivity('delete', key);
+      
+    }
     await store.removeItem(key);
     return;
   };
