@@ -1,5 +1,6 @@
 import { ref } from "vue"
 import { useIdb } from "@/utils/localforage"
+import { waitFor } from "@/utils/piece/waiting"
 
 const error = ref('')
 
@@ -42,6 +43,8 @@ const signIn = async (username: string, password: string) => {
             totalActivity: 0,
             backup: false,
         })
+
+        await waitFor(600)
 
         if(insertedId === undefined) return;
         
