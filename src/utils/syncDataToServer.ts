@@ -16,9 +16,10 @@ import { checkAndsyncProblemToServer } from "@/pages/Problems/Problem";
 import { checkAndsyncWarehouseToServer } from "@/pages/Warehouses/Warehouses";
 
 const isContinue = ref(true);
-const totalToSync = ref(0);
+export const totalToSync = ref(0);
+let timer:ReturnType<typeof setTimeout>;
 
-export interface Activity {
+interface Activity {
     id: string
     idRecord: string
     time: number
@@ -136,6 +137,7 @@ async function startSyncIng() {
             if(isSuccess) {
     
                 await activityDB.removeItem(activity?.id, true);
+                totalToSync.value--
     
             }
         }
@@ -146,13 +148,18 @@ async function startSyncIng() {
 }
 
 export function pauseSyncing () {
+    clearTimeout(timer);
     isContinue.value = false
     startSyncInMinute();
 }
 
 async function startSyncInMinute() {
-    setTimeout(() => {
+    timer = setTimeout(() => {
         isContinue.value = true
         startSyncIng();
     }, 5000)
+}
+
+export function incrementTotalSync() {
+    totalToSync.value++
 }

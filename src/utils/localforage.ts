@@ -2,6 +2,7 @@ import localforage from 'localforage';
 import { generateId } from './generatorId';
 import { ref } from "vue"
 import { LoginStorage } from "../pages/Login/users"
+import { pauseSyncing, incrementTotalSync } from './syncDataToServer';
 
 interface SummaryRecord { total: number, lastId: string }
 
@@ -88,6 +89,9 @@ export const useIdb = (storeName: string) => {
   }
 
   async function addActivity(type: string, idRecord: string) {
+
+    incrementTotalSync();
+    pauseSyncing();
 
     loginStore.updateLastActivity()
 

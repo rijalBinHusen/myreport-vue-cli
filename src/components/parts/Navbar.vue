@@ -2,6 +2,7 @@
 	<div v-if="active.id !== 'AGGrid'" class="w3-bar w3-teal w3-center w3-border w3-padding">
 		<Button primary style="left:13px;" class="w3-left" value="&#9776;" @trig="sideBarActive = !sideBarActive" type="button" />
 		<span class="w3-center w3-xlarge">{{ active.title }}</span>
+		<div class="w3-right w3-margin-top w3-badge">{{ totalToSync }}</div>
 		<div v-if="sideBarActive" class="w3-sidebar w3-border-teal w3-rightbar w3-bar-block w3-card w3-animate-left w3-right" style="left:0; position:fixed; top:0;"  id="leftMenu">
 				<button class=" w3-text-black w3-bar-item w3-button w3-large w3-right-align" @click="sideBarActive = !sideBarActive">&times;</button>
 				
@@ -43,10 +44,11 @@
 	import Button from "../elements/Button.vue";
 	import { mapGetters } from "vuex"
 	import { signOut } from "@/pages/Login/users"
+	import { totalToSync, pauseSyncing } from "@/utils/syncDataToServer"
 	
 	export default {
 		setup() {
-			return { signOut  }
+			return { signOut, totalToSync  }
 		},
 		name: "Navbar",
 		data() {
@@ -61,6 +63,7 @@
 			toNav(nav) {
 				this.$store.commit("Navbar/toNav", nav)
 				this.sideBarActive = false
+				pauseSyncing();
 			}
 		},
 		computed: {
