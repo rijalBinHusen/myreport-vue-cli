@@ -1,5 +1,5 @@
 import { totalTime } from "../../composable/piece/totalTimeAsMinute";
-import { postData, deleteData, putData } from "../../utils/requestToServer"
+import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage"
 import { type Sheet } from "../../utils/xlsx.type"
@@ -34,7 +34,7 @@ interface unknownObject {
 }
 
 export let lists = <BaseClockMapped[]>[];
-let storeName = "basereportclock";
+const storeName = "basereportclock";
 
 export function baseClock() {
   const db = useIdb(storeName);
@@ -321,4 +321,86 @@ export async function syncClockRecordToServer (idRecord: string, mode: string) {
 
     }
   return true
+}
+
+
+export async function checkAndsyncBaseClockToServer(idRecord: string, mode: string) {
+
+  if(typeof idRecord !== 'string') {
+      alert("Id record base report clock must be a string");
+      return
+  }
+
+  const isCreateMode = mode === 'create'; 
+  const isUpdateMode = mode === 'update';
+  const isDeleteMode = mode === 'delete';
+
+  let isSynced = false;
+
+  if(isDeleteMode) {
+      // the server must be return 404
+      const getOnServer = await getDataOnServer('base_clock/' + idRecord);
+
+      const isExistsOnServer = getOnServer?.status === 200
+
+      if(isExistsOnServer) {
+          let syncing = await syncClockRecordToServer(idRecord, 'delete')
+          isSynced = Boolean(syncing);
+      } else {
+          isSynced = true
+      }
+  }
+
+  else if(isCreateMode || isUpdateMode) {
+      const dbItem = useIdb(storeName);
+      const getItemInLocal = await dbItem.getItem<BaseClock>(idRecord);
+      const getItemInServer = await getDataOnServer('base_clock/' + idRecord);
+
+      const isLocalExists = Boolean(getItemInLocal?.id);
+      const isServerExists = getItemInServer?.status === 200;
+
+      if(isLocalExists && isServerExists) {
+
+          const serverKeyValue = await getItemInServer.json();
+          
+          const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
+          const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
+          const isNoDONotSame = serverKeyValue["no_do"] != getItemInLocal?.noDo
+          const isRegNotSame = serverKeyValue["reg"] != getItemInLocal?.reg
+          const isStartNotSame = serverKeyValue["start"] != getItemInLocal?.start
+          const isFinishNotSame = serverKeyValue["finish"] != getItemInLocal?.finish
+          const isRehatNotSame = serverKeyValue["rehat"] != getItemInLocal?.rehat
+
+          let isAnyValueToUpdate = isParentNotSame 
+                                  || isNoDONotSame 
+                                  || isShiftNotSame 
+                                  || isRegNotSame
+                                  || isStartNotSame
+                                  || isFinishNotSame
+                                  || isRehatNotSame
+
+          if(isAnyValueToUpdate) {
+
+            let syncing = await syncClockRecordToServer(idRecord, 'update')
+            isSynced = Boolean(syncing);
+
+          }
+
+      }
+
+      else if(isLocalExists && !isServerExists) {
+
+        let syncing = await syncClockRecordToServer(idRecord, 'create')
+        isSynced = Boolean(syncing);
+
+      }
+  }
+
+  if(isSynced) {
+
+      return true
+
+  }
+
+  return false
 }

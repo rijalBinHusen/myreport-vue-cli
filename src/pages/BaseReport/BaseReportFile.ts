@@ -2,7 +2,7 @@ import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
 import { getWarehouseById, lists as warehouseLists } from "../Warehouses/Warehouses";
-import { postData, deleteData, putData } from "../../utils/requestToServer";
+import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer";
 import { baseClock } from "./BaseReportClock";
 import { baseReportStock } from "./BaseReportStock"
 
@@ -323,3 +323,82 @@ export async function syncBaseFileRecordToServer(idRecord: string, mode: string)
     }
     return true;
 }
+
+export async function checkAndsyncBaseFileToServer(idRecord: string, mode: string) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record base report file must be a string");
+        return
+    }
+  
+    const isCreateMode = mode === 'create'; 
+    const isUpdateMode = mode === 'update';
+    const isDeleteMode = mode === 'delete';
+  
+    let isSynced = false;
+  
+    if(isDeleteMode) {
+        // the server must be return 404
+        const getOnServer = await getDataOnServer('base_file/' + idRecord);
+  
+        const isExistsOnServer = getOnServer?.status === 200
+  
+        if(isExistsOnServer) {
+            let syncing = await syncBaseFileRecordToServer(idRecord, 'delete')
+            isSynced = Boolean(syncing);
+        } else {
+            isSynced = true
+        }
+    }
+  
+    else if(isCreateMode || isUpdateMode) {
+        const dbItem = useIdb(storeName);
+        const getItemInLocal = await dbItem.getItem<BaseReportFileInterface>(idRecord);
+        const getItemInServer = await getDataOnServer('base_file/' + idRecord);
+  
+        const isLocalExists = Boolean(getItemInLocal?.id);
+        const isServerExists = getItemInServer?.status === 200;
+  
+        if(isLocalExists && isServerExists) {
+  
+            const serverKeyValue = await getItemInServer.json();
+                        
+            const isPeriodeNotSame = serverKeyValue["periode"] != getItemInLocal?.periode
+            const isWarehouseNotSame = serverKeyValue["warehouse_id"] != getItemInLocal?.warehouse
+            const isFileNameNotSame = serverKeyValue["file_name"] != getItemInLocal?.fileName
+            const isStockNotSame = serverKeyValue["stock_sheet"] != getItemInLocal?.stock
+            const isClockNotSame = serverKeyValue["clock_sheet"] != getItemInLocal?.clock
+            const isImportedNotSame = serverKeyValue["is_imported"] != getItemInLocal?.imported  
+
+            let isAnyValueToUpdate = isPeriodeNotSame
+                                    || isWarehouseNotSame
+                                    || isFileNameNotSame
+                                    || isStockNotSame
+                                    || isClockNotSame
+                                    || isImportedNotSame
+  
+            if(isAnyValueToUpdate) {
+  
+              let syncing = await syncBaseFileRecordToServer(idRecord, 'update')
+              isSynced = Boolean(syncing);
+  
+            }
+  
+        }
+  
+        else if(isLocalExists && !isServerExists) {
+  
+          let syncing = await syncBaseFileRecordToServer(idRecord, 'create')
+          isSynced = Boolean(syncing);
+  
+        }
+    }
+  
+    if(isSynced) {
+  
+        return true
+  
+    }
+  
+    return false
+  }

@@ -17,6 +17,14 @@ export interface errorDb {
   operation: string
 }
 
+interface Response {
+  ok: boolean;
+  status: number;
+  headers: Headers;
+  body: any;
+  json: any
+}
+
 async function errorSyncMessage(endpoint: string, operation: string, dataToSend: unknownObject, errorMessage: string) {
   const now = new Date();
   const utcOffset = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
@@ -186,7 +194,7 @@ export async function deleteData(endpoint: string): Promise<boolean> {
 }
 
 
-export async function getData(endpoint: string){
+export async function getData(endpoint: string) : Promise<Response|undefined>{
 
   let token = getJWTToken();
 

@@ -183,7 +183,7 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
   }
 
 
-  export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
+export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record head spv must be a string");
@@ -221,23 +221,14 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
 
             const serverKeyValue = await getItemInServer.json();
 
-            // check all the value
-            const keyToUpdate = {}
-            const keys = Object.keys(getItemInLocal);
+            const isNameNotSame = serverKeyValue["head_name"] != getItemInLocal?.name;
+            const isPhoneNotSame = serverKeyValue["head_phone"] != getItemInLocal?.phone;
+            const isShiftNotSame = serverKeyValue["head_shift"] != getItemInLocal?.shift;
+            const isDisabledNotSame = serverKeyValue["is_disabled"] != getItemInLocal?.disabled;
 
-            keys.forEach((key) => {
-                let localValue = getItemInLocal[key];
-                let serverValue = serverKeyValue[key];
-                let isNotSame = localValue != serverValue
+            let isAnyValueToUpdate = isNameNotSame || isPhoneNotSame || isShiftNotSame || isDisabledNotSame;
 
-                if(isNotSame) {
-                    keyToUpdate[key] = localValue
-                }
-            })
-
-            const anyValueToUpdate = Object.keys(keyToUpdate).length > 0;
-
-            if(anyValueToUpdate) {
+            if(isAnyValueToUpdate) {
                 isSynced = await syncHeadSpvRecordToServer(idRecord, 'update')
             }
 
@@ -246,7 +237,7 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
         else if(isLocalExists && !isServerExists) {
 
             isSynced = await syncHeadSpvRecordToServer(idRecord, 'create');
-            
+
         }
     }
 

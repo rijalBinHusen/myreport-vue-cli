@@ -289,7 +289,7 @@ export function Cases() {
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData, putData, deleteData } from "../../utils/requestToServer";
+import { postData, putData, deleteData, getData as getDataOnServer } from "../../utils/requestToServer";
 
 export async function syncCasesToServer () {
 
@@ -464,4 +464,200 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 
   }
   return true
+}
+
+
+export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: string) {
+
+  if(typeof idRecord !== 'string') {
+    alert("Id record case must be a string");
+    return;
+  }
+
+  const db = useIdb(storeName);
+
+  let record = await db.getItem<Case&CaseImport>(idRecord);
+
+  if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
+
+  // awal, dateEnd, dateIn, dateOut, id, in, item, 
+  //out, parent, parentDocument, planOut
+  //  problem, real, shift
+
+  // case import
+  // bagian, divisi, fokus, id, import, inserted, kabag, karu
+  // keterangan1, keterangan2, periode, temuan
+  let dataToSend;
+  let endPoint;
+
+  if(record?.import) {
+
+    dataToSend = {
+      "id": idRecord,
+      "bagian": record?.bagian || 0,
+      "divisi": record?.divisi || 0,
+      "fokus": record?.fokus || 0,
+      "kabag": record?.kabag || 0,
+      "karu": record?.karu || 0,
+      "keterangan1": record?.keterangan1 || 0,
+      "keterangan2": record?.keterangan2 || 0,
+      "periode": record?.periode || 0,
+      "temuan": record?.temuan || 0
+    }
+
+    endPoint = "case_import/";
+
+  } 
+
+  // case
+  // dl || 0, head || 0, id || 0, insert || 0, masalah || 0, name || 0, parent || 0, periode || 0, pic
+  // solusi || 0, status || 0, sumberMasalah
+  else {
+
+    dataToSend = {
+      "id": idRecord,
+      "periode": record?.periode || 0,
+      "head_spv_id": record?.head || 0,
+      "dl": record?.dl || 0,
+      "masalah": record?.masalah || 0,
+      "supervisor_id": record?.name || 0,
+      "parent": record?.parent || 0,
+      "pic": record?.pic || 0,
+      "solusi": record?.solusi || 0,
+      "status": record?.status || 0,
+      "sumber_masalah": record?.sumberMasalah || 0
+    }
+
+    endPoint = "case/";
+
+  }
+
+  try {
+
+    if(mode === 'create') {
+
+      const getServerData = await getDataOnServer(endPoint + idRecord);
+      const isDataNotExists = getServerData?.status === 404;
+
+      if(isDataNotExists) {
+
+        await postData(endPoint, dataToSend);
+
+      }
+
+
+    } 
+  
+    else if(mode === 'update') {
+      
+      const getServerData = await getDataOnServer(endPoint + idRecord);
+      const isDataNotExists = getServerData?.status === 404;
+
+      if(isDataNotExists) {
+
+        await postData(endPoint, dataToSend);
+
+      } else if(!isDataNotExists) {
+
+        const isAnyValueToUpdate = isValueNotSame(record, getServerData)
+
+        if(isAnyValueToUpdate) {
+
+          await putData(endPoint + idRecord, dataToSend)
+          
+        }
+
+
+      }
+
+
+    }
+
+    else if (mode === 'delete') {
+
+      const getServerData = await getDataOnServer(endPoint + idRecord);
+      const isDataExists = getServerData?.status === 200;
+
+      if(isDataExists) {
+
+        await deleteData(endPoint + idRecord)
+
+      }
+        
+    }
+
+  } catch(err) {
+
+    const errorMessage = 'Failed to send case record id :' + idRecord +' to server with error message: ' + err;
+    // alert(errorMessage);
+    console.log(errorMessage)
+    return false;
+
+  }
+  return true
+}
+
+function isValueNotSame(localData: Case|CaseImport, serverData: any): boolean {
+
+  const isCaseImport = localData.hasOwnProperty('import');
+
+  if(isCaseImport) {
+
+    const localDataAsCaseImport = localData as CaseImport;
+      
+    const isBagianNotSame = localDataAsCaseImport["bagian"] != serverData["bagian"]
+    const isDivisiNotSame = localDataAsCaseImport["divisi"] != serverData["divisi"]
+    const isFokusNotSame = localDataAsCaseImport["fokus"] != serverData["fokus"]
+    const isKabagNotSame = localDataAsCaseImport["kabag"] != serverData["kabag"]
+    const isKaruNotSame = localDataAsCaseImport["karu"] != serverData["karu"]
+    const isKeterangan1NotSame = localDataAsCaseImport["keterangan1"] != serverData["keterangan1"]
+    const isKeterangan2NotSame = localDataAsCaseImport["keterangan2"] != serverData["keterangan2"]
+    const isPeriodeNotSame = localDataAsCaseImport["periode"] != serverData["periode"]
+    const isTemuanNotSame = localDataAsCaseImport["temuan"] != serverData["temuan"]
+
+    const isAnyValueNotSame = isBagianNotSame
+                              || isDivisiNotSame
+                              || isFokusNotSame
+                              || isKabagNotSame
+                              || isKaruNotSame
+                              || isKeterangan1NotSame
+                              || isKeterangan2NotSame
+                              || isPeriodeNotSame
+                              || isTemuanNotSame;
+
+    
+    return isAnyValueNotSame
+
+    }
+    
+    else {
+
+      const localDataAsCase = localData as Case;
+
+      const isPeriodeNotSame = serverData["periode"] != localDataAsCase?.periode 
+      const isHeadNotSame = serverData["head_spv_id"] != localDataAsCase?.head 
+      const isDLNotSame = serverData["dl"] != localDataAsCase?.dl 
+      const isMasalahNotSame = serverData["masalah"] != localDataAsCase?.masalah 
+      const isSupervisorNotSame = serverData["supervisor_id"] != localDataAsCase?.name 
+      const isParetNotSame = serverData["parent"] != localDataAsCase?.parent 
+      const isPicNotSame = serverData["pic"] != localDataAsCase?.pic 
+      const isSolusiNotSame = serverData["solusi"] != localDataAsCase?.solusi 
+      const isStatusNotSame = serverData["status"] != localDataAsCase?.status 
+      const isSumberMasalahNotSame = serverData["sumber_masalah"] != localDataAsCase?.sumberMasalah
+  
+      const isAnyValueNotSame = isPeriodeNotSame
+                                || isHeadNotSame
+                                || isDLNotSame
+                                || isMasalahNotSame
+                                || isSupervisorNotSame
+                                || isParetNotSame
+                                || isPicNotSame
+                                || isSolusiNotSame
+                                || isStatusNotSame
+                                || isSumberMasalahNotSame;
+      return false
+    }
 }

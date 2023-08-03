@@ -2,7 +2,7 @@
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 import { masalah, problemActive } from "../Problems/Problem";
 import { baseItem } from '@/pages/BaseItem/Baseitem'
-import { postData, putData, deleteData } from "../../utils/requestToServer";
+import { postData, putData, deleteData, getData as getDataOnServer } from "../../utils/requestToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage";
 import { type Sheet } from "../../utils/xlsx.type"
@@ -434,4 +434,96 @@ export async function syncBaseStockRecordToServer(idRecord: string, mode: string
 
   }
   return true;
+}
+
+
+export async function checkAndsyncBaseStockToServer(idRecord: string, mode: string) {
+
+  if(typeof idRecord !== 'string') {
+      alert("Id record base report stock must be a string");
+      return
+  }
+
+  const isCreateMode = mode === 'create'; 
+  const isUpdateMode = mode === 'update';
+  const isDeleteMode = mode === 'delete';
+
+  let isSynced = false;
+
+  if(isDeleteMode) {
+      // the server must be return 404
+      const getOnServer = await getDataOnServer('base_stock/' + idRecord);
+
+      const isExistsOnServer = getOnServer?.status === 200
+
+      if(isExistsOnServer) {
+          let syncing = await syncBaseStockRecordToServer(idRecord, 'delete')
+          isSynced = Boolean(syncing);
+      } else {
+          isSynced = true
+      }
+  }
+
+  else if(isCreateMode || isUpdateMode) {
+      const dbItem = useIdb(storeName);
+      const getItemInLocal = await dbItem.getItem<BaseStock>(idRecord);
+      const getItemInServer = await getDataOnServer('base_stock/' + idRecord);
+
+      const isLocalExists = Boolean(getItemInLocal?.id);
+      const isServerExists = getItemInServer?.status === 200;
+
+      if(isLocalExists && isServerExists) {
+
+          const serverKeyValue = await getItemInServer.json();
+          
+          const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
+          const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
+          const isItemNotSame = serverKeyValue["item"] != getItemInLocal?.item
+          const isAwalNotSame = serverKeyValue["awal"] != getItemInLocal?.awal
+          const isInNotSame = serverKeyValue["in_stock"] != getItemInLocal?.in
+          const isOutNotSame = serverKeyValue["out_stock"] != getItemInLocal?.out
+          const isDateInNotSame = serverKeyValue["date_in"] != getItemInLocal?.dateIn
+          const isPlantOutNotSame = serverKeyValue["plan_out"] != getItemInLocal?.planOut
+          const isDateOutNotSame = serverKeyValue["date_out"] != getItemInLocal?.dateOut
+          const isDateEndNotSame = serverKeyValue["date_end"] != getItemInLocal?.dateEnd
+          const isRealStockNotSame = serverKeyValue["real_stock"] != getItemInLocal?.real
+          const isProblemNotSame = serverKeyValue["problem"] != getItemInLocal?.problem.toString()
+
+          let isAnyValueToUpdate = isParentNotSame
+                                  || isShiftNotSame
+                                  || isItemNotSame
+                                  || isAwalNotSame
+                                  || isInNotSame
+                                  || isOutNotSame
+                                  || isDateInNotSame
+                                  || isPlantOutNotSame
+                                  || isDateOutNotSame
+                                  || isDateEndNotSame
+                                  || isRealStockNotSame
+                                  || isProblemNotSame
+
+          if(isAnyValueToUpdate) {
+
+            let syncing = await syncBaseStockRecordToServer(idRecord, 'update')
+            isSynced = Boolean(syncing);
+
+          }
+
+      }
+
+      else if(isLocalExists && !isServerExists) {
+
+        let syncing = await syncBaseStockRecordToServer(idRecord, 'create')
+        isSynced = Boolean(syncing);
+
+      }
+  }
+
+  if(isSynced) {
+
+      return true
+
+  }
+
+  return false
 }
