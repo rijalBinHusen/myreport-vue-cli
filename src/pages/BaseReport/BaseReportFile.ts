@@ -316,7 +316,7 @@ export async function syncBaseFileRecordToServer(idRecord: string, mode: string)
     } catch (err) {
 
         const errorMessage = 'Failed to send base file record id :' + idRecord + ' with error message: ' + err;
-        alert(errorMessage);
+        // alert(errorMessage);
         console.log(errorMessage)
         return false;
 

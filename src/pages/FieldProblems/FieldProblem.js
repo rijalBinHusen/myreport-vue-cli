@@ -192,7 +192,7 @@ export async function syncFieldProblemToServer () {
     } catch(err) {
     
         const errorMessage = 'Failed to send field problem record id :' + idRecord +' with error message: ' + err;
-        alert(errorMessage); 
+        // alert(errorMessage); 
         console.log(errorMessage)
         return false;
 

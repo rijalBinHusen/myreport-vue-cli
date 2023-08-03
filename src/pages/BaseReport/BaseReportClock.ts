@@ -315,7 +315,7 @@ export async function syncClockRecordToServer (idRecord: string, mode: string) {
     } catch(err) {
 
       const errorMessage = 'Failed to send base report clock record id :' + idRecord +' to server with error message: ' + err;
-        alert(errorMessage); 
+        // alert(errorMessage); 
         console.log(errorMessage);
         return false;
 

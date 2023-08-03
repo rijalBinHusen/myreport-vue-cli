@@ -620,7 +620,7 @@ export async function syncDocumentToServer () {
     } catch(err) {
     
         const errorMessage = 'Failed to send document record id :' + idRecord +' to server with error message: ' + err;
-        alert(errorMessage); 
+        // alert(errorMessage); 
         console.log(errorMessage)
         return false;
 

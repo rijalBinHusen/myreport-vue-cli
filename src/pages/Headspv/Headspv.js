@@ -173,7 +173,7 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
     } catch(err) {
     
         const errorMessage = 'Failed to send record head supervisor id :' + idRecord +' with error message: ' + err;
-        alert(errorMessage); 
+        // alert(errorMessage); 
         console.log(errorMessage)
         return false;
 

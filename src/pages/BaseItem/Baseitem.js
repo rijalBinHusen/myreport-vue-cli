@@ -173,7 +173,7 @@ export async function syncItemRecordToServer(idRecord, mode) {
     } catch(err) {
 
         const errorMessage = 'Failed to send base item record id :' + idRecord +' to server with error message: '+ err;
-        alert(errorMessage);
+        // alert(errorMessage);
         console.log(errorMessage);
         return false
 

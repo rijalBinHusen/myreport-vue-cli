@@ -193,7 +193,7 @@ export async function syncSupervisorRecordToServer (idRecord: string, mode: stri
   } catch(err) {
       
       const errorMessage = 'Failed to sync supervisor record id :' + idRecord +' to server with message: ' + err;
-      alert(errorMessage); 
+      // alert(errorMessage); 
       console.log(errorMessage);
       return false;
 

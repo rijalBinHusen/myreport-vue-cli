@@ -188,8 +188,7 @@ export async function syncBasedOnActivity() {
          
 
             // dont sync when time < 1690383553857
-            const isNotOkeToSync = false
-            // activity?.time <= 1690383553857;
+            const isNotOkeToSync = activity?.time <= 1690383553857;
 
             loaderMessage.value = `Syncing activity ${activities.length - (index + 1)}`;
 
@@ -268,7 +267,7 @@ export async function syncBasedOnActivity() {
                 await dbActivity.removeItem(activity.id, true);
 
             }
-            
+
         }
     }
 

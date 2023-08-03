@@ -176,7 +176,7 @@ export async function syncWarehouseToServer () {
     } catch(err) {
         
       const errorMessage = 'Failed to send warehouse record id :' + idRecord +' with message: ' +err;
-      alert(errorMessage); 
+    //   alert(errorMessage); 
       console.error(errorMessage);
 
       return false;

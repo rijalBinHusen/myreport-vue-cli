@@ -458,7 +458,7 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
   } catch(err) {
 
     const errorMessage = 'Failed to send case record id :' + idRecord +' to server with error message: ' + err;
-    alert(errorMessage);
+    // alert(errorMessage);
     console.log(errorMessage)
     return false;
 

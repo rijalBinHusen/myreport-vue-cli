@@ -428,7 +428,7 @@ export async function syncBaseStockRecordToServer(idRecord: string, mode: string
   } catch (err) {
 
     const errorMessage = 'Failed to send base stock record id :' + idRecord + ' to server with error message: ' + err;
-    alert(errorMessage);
+    // alert(errorMessage);
     console.log(errorMessage)
     return false;
 
