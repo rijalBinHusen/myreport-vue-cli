@@ -17,8 +17,8 @@ import { checkAndsyncWarehouseToServer } from "@/pages/Warehouses/Warehouses";
 
 export const isContinue = ref(true);
 export const totalToSync = ref(0);
-let timer:ReturnType<typeof setTimeout>;
-let lastActivity:string|null;
+let timer: ReturnType<typeof setTimeout>;
+let lastActivity: string | null;
 
 interface Activity {
     id: string
@@ -27,7 +27,7 @@ interface Activity {
     time2: string
     type: string
     store: string
-  }
+}
 
 
 async function login() {
@@ -59,41 +59,36 @@ async function startSyncIng() {
             return
         }
     }
-    
+
     const activityDB = useIdb('activity');
     const activityKeys = await activityDB.getKeys();
     totalToSync.value = activityKeys.length;
     let recordSynced = <{ [key: string]: string[] }>{};
 
-    // ifTheValue > 1000
-    if(totalToSync.value > 1000) {
-        activityKeys.splice(1000, totalToSync.value);
-    }
-    // else
-    if(activityKeys.length === 0) return;
+    if (activityKeys.length === 0) return;
 
     // looping
-    for(let key of activityKeys) {
+    for (let key of activityKeys) {
 
         let isSuccess = true;
 
         let isContinue = checkLastActivity();
-        if(!isContinue) {
+        if (!isContinue) {
             pauseSyncing();
             return;
         };
-        
+
         const activity = await activityDB.getItem<Activity>(key);
 
         const isNotForExecute = activity && recordSynced.hasOwnProperty(activity?.store) && recordSynced[activity?.store].includes(activity?.idRecord)
 
         if (isNotForExecute) {
-            
+
             continue
 
         }
-        
-        else if(activity && !isNotForExecute) {
+
+        else if (activity && !isNotForExecute) {
             try {
 
                 switch (activity.store) {
@@ -143,42 +138,42 @@ async function startSyncIng() {
             }
 
             recordSynced.hasOwnProperty(activity?.store)
-                        ? recordSynced[activity?.store].push(activity?.idRecord)
-                        : recordSynced[activity?.store] = [activity?.idRecord];
-    
-            if(isSuccess) {
-    
-                await activityDB.removeItem(activity?.id, true);
-                totalToSync.value--
-    
-            }
+                ? recordSynced[activity?.store].push(activity?.idRecord)
+                : recordSynced[activity?.store] = [activity?.idRecord];
+
+        }
+
+        if (activity && isSuccess) {
+
+            await activityDB.removeItem(activity?.id, true);
+            totalToSync.value--
+
         }
 
 
     }
-    // ifIsCountinue == false
 }
 
-export function pauseSyncing () {
+export function pauseSyncing() {
 
-    isContinue.value = false
     startSyncInMinute();
+
 }
 
 async function startSyncInMinute() {
     let isContinue = checkLastActivity();
 
-    console.log('start syncing: ',isContinue)
+    console.log('Start syncing: ', isContinue)
 
     clearTimeout(timer);
 
     timer = setTimeout(() => {
-        if(isContinue) {
+        if (isContinue) {
 
             startSyncIng();
 
         } else {
-            
+
             startSyncInMinute()
 
         }
@@ -189,12 +184,21 @@ export function incrementTotalSync() {
     totalToSync.value++
 }
 
-function checkLastActivity () {
-    const checkLastActivity = localStorage.getItem('lastActivity');
+function checkLastActivity() {
+    const getLastActivity = localStorage.getItem('lastActivity');
 
-    isContinue.value = checkLastActivity == lastActivity;
+    isContinue.value = getLastActivity === lastActivity;
 
-    lastActivity = checkLastActivity;
+    if (isContinue.value) {
+
+        setTimeout(() => {
+
+            lastActivity = getLastActivity;
+
+        }, 600);
+
+    }
+
 
     return isContinue.value;
 }
