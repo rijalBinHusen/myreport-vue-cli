@@ -15,9 +15,10 @@ import { checkAndsyncHeadSpvToServer } from "@/pages/Headspv/Headspv";
 import { checkAndsyncProblemToServer } from "@/pages/Problems/Problem";
 import { checkAndsyncWarehouseToServer } from "@/pages/Warehouses/Warehouses";
 
-const isContinue = ref(true);
+export const isContinue = ref(true);
 export const totalToSync = ref(0);
 let timer:ReturnType<typeof setTimeout>;
+let lastActivity:string|null;
 
 interface Activity {
     id: string
@@ -73,15 +74,26 @@ async function startSyncIng() {
 
     // looping
     for(let key of activityKeys) {
+
         let isSuccess = true;
 
-        if(!isContinue.value) return;
+        let isContinue = checkLastActivity();
+        if(!isContinue) {
+            pauseSyncing();
+            return;
+        };
         
         const activity = await activityDB.getItem<Activity>(key);
 
-        const isForExecute = activity && !recordSynced.hasOwnProperty(activity?.store) && !recordSynced[activity?.store].includes(activity?.idRecord)
+        const isNotForExecute = activity && recordSynced.hasOwnProperty(activity?.store) && recordSynced[activity?.store].includes(activity?.idRecord)
 
-        if (isForExecute) {
+        if (isNotForExecute) {
+            
+            continue
+
+        }
+        
+        else if(activity && !isNotForExecute) {
             try {
 
                 switch (activity.store) {
@@ -148,18 +160,41 @@ async function startSyncIng() {
 }
 
 export function pauseSyncing () {
-    clearTimeout(timer);
+
     isContinue.value = false
     startSyncInMinute();
 }
 
 async function startSyncInMinute() {
+    let isContinue = checkLastActivity();
+
+    console.log('start syncing: ',isContinue)
+
+    clearTimeout(timer);
+
     timer = setTimeout(() => {
-        isContinue.value = true
-        startSyncIng();
-    }, 5000)
+        if(isContinue) {
+
+            startSyncIng();
+
+        } else {
+            
+            startSyncInMinute()
+
+        }
+    }, 4000)
 }
 
 export function incrementTotalSync() {
     totalToSync.value++
+}
+
+function checkLastActivity () {
+    const checkLastActivity = localStorage.getItem('lastActivity');
+
+    isContinue.value = checkLastActivity == lastActivity;
+
+    lastActivity = checkLastActivity;
+
+    return isContinue.value;
 }

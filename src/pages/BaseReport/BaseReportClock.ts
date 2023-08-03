@@ -357,7 +357,7 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
       const getItemInServer = await getDataOnServer('base_clock/' + idRecord);
 
       const isLocalExists = Boolean(getItemInLocal?.id);
-      const isServerExists = getItemInServer?.status === 200;
+      const isServerExists = getItemInServer?.status == 200;
 
       if(isLocalExists && isServerExists) {
 

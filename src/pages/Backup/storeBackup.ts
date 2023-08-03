@@ -282,29 +282,42 @@ export async function getSummaryData () {
 
 export async function createDummyActivity () {
 
-    // let items = <string[]>[];
+    loader();
 
-    // const dbHeadSpv = useIdb('headspv');
-    const dbItem = useIdb('baseitem')
-    // const idItems = await dbItem.getKeys();
-    const items = await dbItem.getKeys();
+    const dbSummary = useIdb('summary');
+
+    const storeNames = await dbSummary.getKeys();
 
     const activityDb = useIdb("activity");
 
-    for(let [index, idRecord] of items.entries())  {
-        let time = new Date();
+    for(let [index, storeName] of storeNames.entries()) {
 
-        let recordToSet = <Activity>{
-            id: time.getTime() + index + '',
-            idRecord,
-            store: 'baseitem',
-            time: time.getTime(),
-            time2: time.toISOString(),
-            type: 'create'
+        loaderMessage.value = `Membuat activity dummy ${index} dari ${storeNames.length} nama table`
+        
+        const dbItem = useIdb(storeName);
+        const itemKeys = await dbItem.getKeys();
+
+
+        for(let [index, idRecord] of itemKeys.entries()) {
+            progressMessage.value = `Menanamkan activity ${itemKeys.length - index +1}`
+
+            let time = new Date();
+
+            let recordToSet = <Activity>{
+                id: time.getTime() + index + '',
+                idRecord,
+                store: storeName,
+                time: time.getTime(),
+                time2: time.toISOString(),
+                type: 'create'
+            }
+
+            await activityDb.setItem(recordToSet.id, recordToSet);
         }
-
-        await activityDb.setItem(recordToSet.id, recordToSet);
     }
+    
+
+    modalClose();
 
 }
 
