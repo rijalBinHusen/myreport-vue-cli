@@ -1,7 +1,7 @@
 import { getSupervisorId } from '../Supervisors/Supervisors'
 import { useIdb } from '@/utils/localforage';
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData, putData, deleteData } from "../../utils/requestToServer";
+import { postData, putData, deleteData, getData as getDataOnServer } from "../../utils/requestToServer";
 import { ref } from 'vue';
 
 interface Warehouse {
@@ -232,4 +232,80 @@ export async function syncWarehouseToServer () {
     }
 
     return result;
+  }
+
+  
+
+
+export async function checkAndsyncWarehouseToServer(idRecord: string, mode: string) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record warehouse must be a string");
+        return
+    }
+  
+    const isCreateMode = mode === 'create'; 
+    const isUpdateMode = mode === 'update';
+    const isDeleteMode = mode === 'delete';
+  
+    let isSynced = false;
+  
+    if(isDeleteMode) {
+        // the server must be return 404
+        const getOnServer = await getDataOnServer('warehouse/' + idRecord);
+  
+        const isExistsOnServer = getOnServer?.status === 200
+  
+        if(isExistsOnServer) {
+            let syncing = await syncWarehouseRecordToServer(idRecord, 'delete')
+            isSynced = Boolean(syncing);
+        } else {
+            isSynced = true
+        }
+    }
+  
+    else if(isCreateMode || isUpdateMode) {
+        const dbItem = useIdb(storeName);
+        const getItemInLocal = await dbItem.getItem<Warehouse>(idRecord);
+        const getItemInServer = await getDataOnServer('warehouse/' + idRecord);
+  
+        const isLocalExists = Boolean(getItemInLocal?.id);
+        const isServerExists = getItemInServer?.status === 200;
+  
+        if(isLocalExists && isServerExists) {
+  
+            const serverKeyValue = await getItemInServer.json();
+            
+            const isNameNotSame = serverKeyValue["warehouse_name"] != getItemInLocal?.name;
+            const isGroupNotSame = serverKeyValue["warehouse_group"] != getItemInLocal?.group;
+            const isSPVNotSame = serverKeyValue["warehouse_supervisors"] != getItemInLocal?.supervisors.toString();
+  
+            let isAnyValueToUpdate = isNameNotSame 
+                                    || isGroupNotSame
+                                    || isSPVNotSame;
+  
+            if(isAnyValueToUpdate) {
+  
+              let syncing = await syncWarehouseRecordToServer(idRecord, 'update')
+              isSynced = Boolean(syncing);
+  
+            }
+  
+        }
+  
+        else if(isLocalExists && !isServerExists) {
+  
+          let syncing = await syncWarehouseRecordToServer(idRecord, 'create')
+          isSynced = Boolean(syncing);
+  
+        }
+    }
+  
+    if(isSynced) {
+  
+        return true
+  
+    }
+  
+    return false
   }

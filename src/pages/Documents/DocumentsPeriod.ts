@@ -3,7 +3,7 @@ import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '@/composable/piece
 import { getHeadspvId, headspvByShift } from '@/pages/Headspv/Headspv'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { getWarehouseById, warehouseNameBySpv, lists as warehouseLists } from '@/pages/Warehouses/Warehouses'
-import { postData, deleteData, putData } from "@/utils/requestToServer";
+import { postData, deleteData, putData, getData as getDataOnServer } from "@/utils/requestToServer";
 import { useIdb } from "@/utils/localforage"
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 
@@ -627,4 +627,124 @@ export async function syncDocumentToServer () {
 
     }
     return true
+  }
+
+  
+
+
+export async function checkAndsyncDocumentToServer(idRecord: string, mode: string) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record document must be a string");
+        return
+    }
+  
+    const isCreateMode = mode === 'create'; 
+    const isUpdateMode = mode === 'update';
+    const isDeleteMode = mode === 'delete';
+  
+    let isSynced = false;
+  
+    if(isDeleteMode) {
+        // the server must be return 404
+        const getOnServer = await getDataOnServer('document/' + idRecord);
+  
+        const isExistsOnServer = getOnServer?.status === 200
+  
+        if(isExistsOnServer) {
+            let syncing = await syncDocumentRecordToServer(idRecord, 'delete')
+            isSynced = Boolean(syncing);
+        } else {
+            isSynced = true
+        }
+    }
+  
+    else if(isCreateMode || isUpdateMode) {
+        const dbItem = useIdb(storeName);
+        const getItemInLocal = await dbItem.getItem<Document>(idRecord);
+        const getItemInServer = await getDataOnServer('document/' + idRecord);
+  
+        const isLocalExists = Boolean(getItemInLocal?.id);
+        const isServerExists = getItemInServer?.status === 200;
+  
+        if(isLocalExists && isServerExists) {
+  
+            const serverKeyValue = await getItemInServer.json();
+            
+            const isCollectedNotSame = serverKeyValue["collected"] != getItemInLocal?.collected;
+            const isApprovalNotSame = serverKeyValue["approval"] != getItemInLocal?.approval;
+            const isStatusNotSame = serverKeyValue["status"] != getItemInLocal?.status;
+            const isSharedNotSame = serverKeyValue["shared"] != getItemInLocal?.shared;
+            const isFinishedNotSame = serverKeyValue["finished"] != getItemInLocal?.finished;
+            const isTotalDONotSame = serverKeyValue["total_do"] != getItemInLocal?.totalDo;
+            const isTotalKendaraanNotSame = serverKeyValue["total_kendaraan"] != getItemInLocal?.totalKendaraan;
+            const isTotalWaktuNotSame = serverKeyValue["total_waktu"] != getItemInLocal?.totalWaktu;
+            const isBaseFileNotSame = serverKeyValue["base_report_file"] != getItemInLocal?.baseReportFile;
+            const isIsFinishedNotSame = serverKeyValue["is_finished"] != getItemInLocal?.isfinished;
+            const isSPVIdNotSame = serverKeyValue["supervisor_id"] != getItemInLocal?.name;
+            const isPeriodeNotSame = serverKeyValue["periode"] != getItemInLocal?.periode;
+            const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift;
+            const isHeadSpvIdNotSame = serverKeyValue["head_spv_id"] != getItemInLocal?.head;
+            const isWarehouseNotSame = serverKeyValue["warehouse_id"] != getItemInLocal?.warehouse;
+            const isGenerateDocumentNotSame = serverKeyValue["is_generated_document"] != getItemInLocal?.generateReport;
+            const isItemVarianceNotSame = serverKeyValue["item_variance"] != getItemInLocal?.itemVariance;
+            const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent;
+            const isParentDocumentNotSame = serverKeyValue["parent_document"] != getItemInLocal?.parentDocument;
+            const isPlanOutNotSame = serverKeyValue["plan_out"] != getItemInLocal?.planOut;
+            const isTotalItemKeluarNotSame = serverKeyValue["total_item_keluar"] != getItemInLocal?.totalItemKeluar;
+            const isTotalItemMovingNotSame = serverKeyValue["total_item_moving"] != getItemInLocal?.totalItemMoving;
+            const isTotalProductNotFIFONotSame = serverKeyValue["total_product_not_FIFO"] != getItemInLocal?.totalProductNotFIFO;
+            const isTotalQTYInNotSame = serverKeyValue["total_qty_in"] != getItemInLocal?.totalQTYIn;
+            const isTotalQTYOutNotSame = serverKeyValue["total_qty_out"] != getItemInLocal?.totalQTYOut;
+  
+            let isAnyValueToUpdate = isCollectedNotSame 
+                                    || isApprovalNotSame 
+                                    || isStatusNotSame 
+                                    || isSharedNotSame
+                                    || isFinishedNotSame
+                                    || isTotalDONotSame
+                                    || isTotalKendaraanNotSame
+                                    || isTotalWaktuNotSame
+                                    || isBaseFileNotSame
+                                    || isIsFinishedNotSame
+                                    || isSPVIdNotSame
+                                    || isPeriodeNotSame
+                                    || isShiftNotSame
+                                    || isHeadSpvIdNotSame
+                                    || isWarehouseNotSame
+                                    || isGenerateDocumentNotSame
+                                    || isItemVarianceNotSame
+                                    || isParentDocumentNotSame
+                                    || isParentNotSame
+                                    || isPlanOutNotSame
+                                    || isTotalItemKeluarNotSame
+                                    || isTotalItemMovingNotSame
+                                    || isTotalProductNotFIFONotSame
+                                    || isTotalQTYInNotSame
+                                    || isTotalQTYOutNotSame;
+  
+            if(isAnyValueToUpdate) {
+  
+              let syncing = await syncDocumentRecordToServer(idRecord, 'update')
+              isSynced = Boolean(syncing);
+  
+            }
+  
+        }
+  
+        else if(isLocalExists && !isServerExists) {
+  
+          let syncing = await syncDocumentRecordToServer(idRecord, 'create')
+          isSynced = Boolean(syncing);
+  
+        }
+    }
+  
+    if(isSynced) {
+  
+        return true
+  
+    }
+  
+    return false
   }

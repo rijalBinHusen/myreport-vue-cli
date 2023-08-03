@@ -560,14 +560,17 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
         await postData(endPoint, dataToSend);
 
-      } else if(!isDataNotExists) {
+      } 
+      
+      else if(!isDataNotExists) {
+        const keyValueServerData = await getServerData?.json();
 
-        const isAnyValueToUpdate = isValueNotSame(record, getServerData)
+        const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)
 
         if(isAnyValueToUpdate) {
 
           await putData(endPoint + idRecord, dataToSend)
-          
+
         }
 
 
@@ -658,6 +661,6 @@ function isValueNotSame(localData: Case|CaseImport, serverData: any): boolean {
                                 || isSolusiNotSame
                                 || isStatusNotSame
                                 || isSumberMasalahNotSame;
-      return false
+      return isAnyValueNotSame
     }
 }

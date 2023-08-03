@@ -1,7 +1,7 @@
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
 import { getHeadspvId } from "@/pages/Headspv/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
-import { postData, deleteData, putData } from "../../utils/requestToServer";
+import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer";
 
 interface Complain {
   dl: number
@@ -501,4 +501,232 @@ export async function syncComplainRecordToServer (idRecord: string, mode: string
     }
   
   return true
+}
+
+export async function checkAndSyncComplainRecordToServer (idRecord: string, mode: string) {
+
+  if(typeof idRecord !== 'string') {
+    alert("Id record complain must be a string");
+    return;
+  }
+
+  const db = useIdb(storeName);
+
+  const record = await db.getItem<Complain&ComplainImport>(idRecord);
+
+  if(!record) {
+      // dont do anything if record doesn't exist;
+      return
+  }
+
+    // customer, do, gudang, id, import, inserted, item
+    // kabag, nomorSJ, nopol, real, row, spv, tally, tanggalBongkar
+    // tanggalInfo, tanggalKomplain, tanggalSuratJalan, type
+
+    let dataToSend;
+    let endPoint;
+
+    if(record?.import) {
+
+      dataToSend = {
+        "id": idRecord,
+        "customer": record?.customer || 0,
+        "do_": record?.do || 0,
+        "gudang": record?.gudang || 0,
+        "item": record?.item || 0,
+        "kabag": record?.kabag || 0,
+        "nomor_SJ": record?.nomorSJ || 0,
+        "nopol": record?.nopol || 0,
+        "real_": record?.real || 0,
+        "row_": record?.row || 0,
+        "spv": record?.spv || 0,
+        "tally": record?.tally || 0,
+        "tanggal_bongkar": record?.tanggalBongkar || 0,
+        "tanggal_info": record?.tanggalInfo || 0,
+        "tanggal_komplain": record?.tanggalKomplain || 0,
+        "tanggal_SJ": record?.tanggalSuratJalan || 0,
+        "type_": record?.type || 0
+      }
+
+      endPoint = "complain_import/";
+
+    } 
+
+    // complain
+    // dl || 0, head || 0, id || 0, insert || 0, insert2 || 0, masalah || 0, name || 0, parent
+    // periode || 0, pic || 0, solusi || 0, status || 0, sumberMasalah || 0, type
+    else {
+
+      dataToSend = {
+        "id": idRecord,
+        "periode": record?.periode || 0,
+        "head_spv_id": record?.head || 0,
+        "dl": record?.dl || 0,
+        "inserted": record?.insert || 0,
+        "masalah": record?.masalah || 0,
+        "supervisor_id": record?.name || 0,
+        "parent": record?.parent || 0,
+        "pic": record?.pic || 0,
+        "solusi": record?.solusi || 0,
+        "is_status_done": record?.status || 0,
+        "sumber_masalah": record?.sumberMasalah || 0,
+        "type": record?.type || 0,
+        "is_count": record?.isCount || 0
+      }
+
+      endPoint = "complain/";
+
+    }
+
+    try {
+
+      if(mode === 'create') {
+  
+
+        const getServerData = await getDataOnServer(endPoint + idRecord);
+        const isDataNotExists = getServerData?.status === 404;
+  
+        if(isDataNotExists) {
+  
+          await postData(endPoint, dataToSend);
+  
+        }
+  
+      } 
+    
+      else if(mode === 'update') {
+      
+        const getServerData = await getDataOnServer(endPoint + idRecord);
+        const isDataNotExists = getServerData?.status === 404;
+  
+        if(isDataNotExists) {
+  
+          await postData(endPoint, dataToSend);
+  
+        } 
+        
+        else if(!isDataNotExists) {
+          const keyValueServerData = await getServerData?.json();
+  
+          const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)
+  
+          if(isAnyValueToUpdate) {
+  
+            await putData(endPoint + idRecord, dataToSend)
+  
+          }
+  
+  
+        }
+  
+      }
+
+      else if (mode === 'delete') {
+
+        const getServerData = await getDataOnServer(endPoint + idRecord);
+        const isDataExists = getServerData?.status === 200;
+  
+        if(isDataExists) {
+  
+          await deleteData(endPoint + idRecord)
+  
+        }
+          
+      }
+
+    } catch(err) {
+      
+      const errorMessage = 'Failed to send complain record id :' + idRecord +' to server with error message: '+ err;
+      // alert(errorMessage); 
+      console.log(errorMessage)
+      return false;
+
+
+    }
+  
+  return true
+}
+
+
+function isValueNotSame(localData: Complain|ComplainImport, serverData: any): boolean {
+
+  const isCaseImport = localData.hasOwnProperty('import');
+
+  if(isCaseImport) {
+
+    const localDataAsComplainImport = localData as ComplainImport;
+
+    const isCustomerNotSame = serverData["customer"] != localDataAsComplainImport?.customer;
+    const isdoNotSame = serverData["do_"] != localDataAsComplainImport?.do;
+    const isgudangNotSame = serverData[ "gudang"] != localDataAsComplainImport?.gudang;
+    const isitemNotSame = serverData["item"] != localDataAsComplainImport?.item;
+    const isKabagNotSame = serverData["kabag"] != localDataAsComplainImport?.kabag;
+    const isNomorSJNotSame = serverData["nomor_SJ"] != localDataAsComplainImport?.nomorSJ;
+    const isNopolNotSame = serverData["nopol"] != localDataAsComplainImport?.nopol;
+    const isRealNotSame = serverData["real_"] != localDataAsComplainImport?.real;
+    const isRowNotSame = serverData["row_"] != localDataAsComplainImport?.row;
+    const isSPVNotSame = serverData["spv"] != localDataAsComplainImport?.spv;
+    const isTallyNotSame = serverData["tally"] != localDataAsComplainImport?.tally;
+    const isTanggalBongkarNotSame = serverData["tanggal_bongkar"] != localDataAsComplainImport?.tanggalBongkar;
+    const isTanggalInfoNotSame = serverData["tanggal_info"] != localDataAsComplainImport?.tanggalInfo;
+    const isTanggalKomplainNotSame = serverData["tanggal_komplain"] != localDataAsComplainImport?.tanggalKomplain;
+    const isTanggalSJNotSame = serverData["tanggal_SJ"] != localDataAsComplainImport?.tanggalSuratJalan;
+    const isTypeNotSame = serverData["type_"] != localDataAsComplainImport?.type;
+
+    const isAnyValueNotSame = isCustomerNotSame
+                              || isdoNotSame
+                              || isgudangNotSame
+                              || isitemNotSame
+                              || isKabagNotSame
+                              || isNomorSJNotSame
+                              || isNopolNotSame
+                              || isRealNotSame
+                              || isRowNotSame
+                              || isSPVNotSame
+                              || isTallyNotSame
+                              || isTanggalBongkarNotSame
+                              || isTanggalInfoNotSame
+                              || isTanggalKomplainNotSame
+                              || isTanggalSJNotSame
+                              || isTypeNotSame;
+
+
+    
+    return isAnyValueNotSame
+
+    }
+    
+    else {
+
+      const localDataAsComplain = localData as Complain;
+
+      const isPeriodeNotSame = serverData["periode"] != localDataAsComplain?.periode;
+      const isHeadSPVIdNotSame = serverData["head_spv_id"] != localDataAsComplain?.head;
+      const isDLNotSame = serverData["dl"] != localDataAsComplain?.dl;
+      const isInsertedNotSame = serverData["inserted"] != localDataAsComplain?.insert;
+      const isMasalahNotSame = serverData["masalah"] != localDataAsComplain?.masalah;
+      const isSPVIdNotSame = serverData["supervisor_id"] != localDataAsComplain?.name;
+      const isParentNotSame = serverData["parent"] != localDataAsComplain?.parent;
+      const isPICNotSame = serverData["pic"] != localDataAsComplain?.pic;
+      const isSolusiNotSame = serverData["solusi"] != localDataAsComplain?.solusi;
+      const isIsDoneNotSame = serverData["is_status_done"] != localDataAsComplain?.status;
+      const isSumberMasalahNotSame = serverData["sumber_masalah"] != localDataAsComplain?.sumberMasalah;
+      const isTypeNotSame = serverData["type"] != localDataAsComplain?.type;
+      const isisCountNotSame = serverData["is_count"] != localDataAsComplain?.isCount;
+  
+      const isAnyValueNotSame = isPeriodeNotSame
+                                || isHeadSPVIdNotSame
+                                || isDLNotSame
+                                || isInsertedNotSame
+                                || isMasalahNotSame
+                                || isSPVIdNotSame
+                                || isParentNotSame
+                                || isPICNotSame
+                                || isSolusiNotSame
+                                || isIsDoneNotSame
+                                || isSumberMasalahNotSame
+                                || isTypeNotSame
+                                || isisCountNotSame;
+      return isAnyValueNotSame
+    }
 }

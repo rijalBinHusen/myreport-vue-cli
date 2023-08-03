@@ -1,5 +1,5 @@
 // import { getData, update, append, getDataByKey } from '../../myfunction'
-import { postData, deleteData, putData } from "../../utils/requestToServer"
+import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer"
 import { progressMessage2 } from "../../components/parts/Loader/state"
 import { useIdb } from "@/utils/localforage";
 import { ref } from "vue";
@@ -200,4 +200,80 @@ export async function syncSupervisorRecordToServer (idRecord: string, mode: stri
   }
 
   return true;
+}
+
+
+export async function checkAndsyncSupervisorToServer(idRecord: string, mode: string) {
+
+  if(typeof idRecord !== 'string') {
+      alert("Id record supervisor must be a string");
+      return
+  }
+
+  const isCreateMode = mode === 'create'; 
+  const isUpdateMode = mode === 'update';
+  const isDeleteMode = mode === 'delete';
+
+  let isSynced = false;
+
+  if(isDeleteMode) {
+      // the server must be return 404
+      const getOnServer = await getDataOnServer('supervisor/' + idRecord);
+
+      const isExistsOnServer = getOnServer?.status === 200
+
+      if(isExistsOnServer) {
+          let syncing = await syncSupervisorRecordToServer(idRecord, 'delete')
+          isSynced = Boolean(syncing);
+      } else {
+          isSynced = true
+      }
+  }
+
+  else if(isCreateMode || isUpdateMode) {
+      const dbItem = useIdb(storeName);
+      const getItemInLocal = await dbItem.getItem<Supervisor>(idRecord);
+      const getItemInServer = await getDataOnServer('supervisor/' + idRecord);
+
+      const isLocalExists = Boolean(getItemInLocal?.id);
+      const isServerExists = getItemInServer?.status === 200;
+
+      if(isLocalExists && isServerExists) {
+
+          const serverKeyValue = await getItemInServer.json();
+          
+          const isNameNotSame = serverKeyValue["supervisor_name"] != getItemInLocal?.name;
+          const isPhoneNotSame = serverKeyValue["supervisor_phone"] != getItemInLocal?.phone;
+          const isShiftNotSame = serverKeyValue["supervisor_shift"] != getItemInLocal?.shift;
+          const isIsDisabledNotSame = serverKeyValue["is_disabled"] != getItemInLocal?.disabled;
+
+          let isAnyValueToUpdate = isNameNotSame 
+                                  || isPhoneNotSame
+                                  || isShiftNotSame
+                                  || isIsDisabledNotSame;
+
+          if(isAnyValueToUpdate) {
+
+            let syncing = await syncSupervisorRecordToServer(idRecord, 'update')
+            isSynced = Boolean(syncing);
+
+          }
+
+      }
+
+      else if(isLocalExists && !isServerExists) {
+
+        let syncing = await syncSupervisorRecordToServer(idRecord, 'create')
+        isSynced = Boolean(syncing);
+
+      }
+  }
+
+  if(isSynced) {
+
+      return true
+
+  }
+
+  return false
 }

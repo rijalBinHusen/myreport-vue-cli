@@ -3,7 +3,7 @@ import { ddmmyyyy, dateMonth } from "../../composable/piece/dateFormat";
 import { getSupervisorId } from "../Supervisors/Supervisors";
 import { getWarehouseById } from "../Warehouses/Warehouses";
 import { baseItem } from '@/pages/BaseItem/Baseitem'
-import { postData, deleteData, putData } from "../../utils/requestToServer"
+import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer"
 import { useIdb } from "@/utils/localforage";
 
 export interface Problem {
@@ -343,4 +343,107 @@ export async function syncProblemRecordToServer (idRecord: string, mode: string)
   }
 
   return true
+}
+
+
+
+export async function checkAndsyncProblemToServer(idRecord: string, mode: string) {
+
+  if(typeof idRecord !== 'string') {
+      alert("Id record problem must be a string");
+      return
+  }
+
+  const isCreateMode = mode === 'create'; 
+  const isUpdateMode = mode === 'update';
+  const isDeleteMode = mode === 'delete';
+
+  let isSynced = false;
+
+  if(isDeleteMode) {
+      // the server must be return 404
+      const getOnServer = await getDataOnServer('problem/' + idRecord);
+
+      const isExistsOnServer = getOnServer?.status === 200
+
+      if(isExistsOnServer) {
+          let syncing = await syncProblemRecordToServer(idRecord, 'delete')
+          isSynced = Boolean(syncing);
+      } else {
+          isSynced = true
+      }
+  }
+
+  else if(isCreateMode || isUpdateMode) {
+      const dbItem = useIdb(storeName);
+      const getItemInLocal = await dbItem.getItem<Problem>(idRecord);
+      const getItemInServer = await getDataOnServer('problem/' + idRecord);
+
+      const isLocalExists = Boolean(getItemInLocal?.id);
+      const isServerExists = getItemInServer?.status === 200;
+
+      if(isLocalExists && isServerExists) {
+
+          const serverKeyValue = await getItemInServer.json();
+          
+          const isWarehouseNotSame = serverKeyValue["warehouse_id"] != getItemInLocal?.warehouse;
+          const isSupervisorNotSame = serverKeyValue["supervisor_id"] != getItemInLocal?.nameSpv;
+          const isHeadSPVNotSame = serverKeyValue["head_spv_id"] != getItemInLocal?.nameHeadSpv;
+          const isItemNotSame = serverKeyValue["item_kode"] != getItemInLocal?.item;
+          const isTanggalMulaiNotSame = serverKeyValue["tanggal_mulai"] != getItemInLocal?.periode;
+          const isShiftMulaiNotSame = serverKeyValue["shift_mulai"] != getItemInLocal?.shiftMulai;
+          const isPICNotSame = serverKeyValue["pic"] != getItemInLocal?.pic;
+          const isDLNotSame = serverKeyValue["dl"] != getItemInLocal?.dl;
+          const isMasalahNotSame = serverKeyValue["masalah"] != getItemInLocal?.masalah;
+          const isSumberMasalahNotSame = serverKeyValue["sumber_masalah"] != getItemInLocal?.sumberMasalah;
+          const isSolusiNotSame = serverKeyValue["solusi"] != getItemInLocal?.solusi;
+          const isSolusiPanjangNotSame = serverKeyValue["solusi_panjang"] != getItemInLocal?.solusiPanjang;
+          const isDLPanjangNotSame = serverKeyValue["dl_panjang"] != getItemInLocal?.dlPanjang;
+          const isPICPanjangNotSame = serverKeyValue["pic_panjang"] != getItemInLocal?.picPanjang;
+          const isTanggalSelesaiNotSame = serverKeyValue["tanggal_selesai"] != getItemInLocal?.tanggalSelesai;
+          const isShiftSelesaiNotSame = serverKeyValue["shift_selesai"] != getItemInLocal?.shiftSelesai;
+          const isIsFinishedNotSame = serverKeyValue["is_finished"] != getItemInLocal?.isFinished;
+
+          let isAnyValueToUpdate = isWarehouseNotSame 
+                                  || isSupervisorNotSame
+                                  || isHeadSPVNotSame
+                                  || isItemNotSame
+                                  || isTanggalMulaiNotSame
+                                  || isShiftMulaiNotSame
+                                  || isPICNotSame
+                                  || isDLNotSame
+                                  || isMasalahNotSame
+                                  || isSumberMasalahNotSame
+                                  || isSolusiNotSame
+                                  || isSolusiPanjangNotSame
+                                  || isDLPanjangNotSame
+                                  || isPICPanjangNotSame
+                                  || isTanggalSelesaiNotSame
+                                  || isShiftSelesaiNotSame
+                                  || isIsFinishedNotSame;
+
+          if(isAnyValueToUpdate) {
+
+            let syncing = await syncProblemRecordToServer(idRecord, 'update')
+            isSynced = Boolean(syncing);
+
+          }
+
+      }
+
+      else if(isLocalExists && !isServerExists) {
+
+        let syncing = await syncProblemRecordToServer(idRecord, 'create')
+        isSynced = Boolean(syncing);
+
+      }
+  }
+
+  if(isSynced) {
+
+      return true
+
+  }
+
+  return false
 }

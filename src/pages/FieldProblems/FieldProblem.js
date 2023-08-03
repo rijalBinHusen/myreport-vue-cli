@@ -1,7 +1,7 @@
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { getHeadspvId } from '../Headspv/Headspv'
-import { postData, deleteData as DeleteRecordOnServer, putData } from "../../utils/requestToServer"
+import { postData, deleteData as DeleteRecordOnServer, putData, getData as getDataOnServer } from "../../utils/requestToServer"
 import { useIdb } from "@/utils/localforage"
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { ref } from 'vue'
@@ -139,7 +139,7 @@ export async function syncFieldProblemToServer () {
     return true
   }
 
-  export async function syncFieldProblemRecordToServer (idRecord, mode) {
+export async function syncFieldProblemRecordToServer (idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert('Id record field problem must be a string');
@@ -153,10 +153,10 @@ export async function syncFieldProblemToServer () {
         // dont do anything if record doesn't exist;
         return
     }
-    
+
     // dl, head, id, masalah, periode, pic, solusi, sumberMasalah
     //    supervisor
-  
+
     let dataToSend = {
         "id": idRecord,
         "periode": record?.periode || 0,
@@ -172,15 +172,15 @@ export async function syncFieldProblemToServer () {
     try {
 
         if(mode === 'create') {
-    
-          await postData('field_problem', dataToSend);
-    
+
+            await postData('field_problem', dataToSend);
+
         } 
-      
+        
         else if(mode === 'update') {
-    
+
             await putData('field_problem/'+ idRecord, dataToSend)
-    
+
         }
 
         else if (mode === 'delete') {
@@ -190,7 +190,7 @@ export async function syncFieldProblemToServer () {
         }
 
     } catch(err) {
-    
+
         const errorMessage = 'Failed to send field problem record id :' + idRecord +' with error message: ' + err;
         // alert(errorMessage); 
         console.log(errorMessage)
@@ -198,5 +198,90 @@ export async function syncFieldProblemToServer () {
 
 
     }
+
     return true
+}
+
+
+export async function checkAndsyncFieldProblemToServer(idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record field problem must be a string");
+        return
+    }
+  
+    const isCreateMode = mode === 'create'; 
+    const isUpdateMode = mode === 'update';
+    const isDeleteMode = mode === 'delete';
+  
+    let isSynced = false;
+  
+    if(isDeleteMode) {
+        // the server must be return 404
+        const getOnServer = await getDataOnServer('field_problem/' + idRecord);
+  
+        const isExistsOnServer = getOnServer?.status === 200
+  
+        if(isExistsOnServer) {
+            let syncing = await syncFieldProblemRecordToServer(idRecord, 'delete')
+            isSynced = Boolean(syncing);
+        } else {
+            isSynced = true
+        }
+    }
+  
+    else if(isCreateMode || isUpdateMode) {
+        const dbItem = useIdb(storeName);
+        const getItemInLocal = await dbItem.getItem(idRecord);
+        const getItemInServer = await getDataOnServer('field_problem/' + idRecord);
+  
+        const isLocalExists = Boolean(getItemInLocal?.id);
+        const isServerExists = getItemInServer?.status === 200;
+  
+        if(isLocalExists && isServerExists) {
+  
+            const serverKeyValue = await getItemInServer.json();
+            
+            const isPeriodeNotSame = serverKeyValue["periode"] != getItemInLocal?.periode;
+            const isSupervisorNotSame = serverKeyValue["supervisor_id"] != getItemInLocal?.supervisor;
+            const isHeadSPVNotSame = serverKeyValue["head_spv_id"] != getItemInLocal?.head;
+            const isMasalahNotSame = serverKeyValue["masalah"] != getItemInLocal?.masalah;
+            const isSumberMasalahNotSame = serverKeyValue["sumber_masalah"] != getItemInLocal?.sumberMasalah;
+            const isSolusiNotSame = serverKeyValue["solusi"] != getItemInLocal?.solusi;
+            const isPICNotSame = serverKeyValue["pic"] != getItemInLocal?.pic;
+            const isDLNotSame = serverKeyValue["dl"] != getItemInLocal?.dl;
+  
+            let isAnyValueToUpdate = isPeriodeNotSame 
+                                    || isSupervisorNotSame
+                                    || isHeadSPVNotSame
+                                    || isMasalahNotSame
+                                    || isSumberMasalahNotSame
+                                    || isSolusiNotSame
+                                    || isPICNotSame
+                                    || isDLNotSame;
+  
+            if(isAnyValueToUpdate) {
+  
+              let syncing = await syncFieldProblemRecordToServer(idRecord, 'update')
+              isSynced = Boolean(syncing);
+  
+            }
+  
+        }
+  
+        else if(isLocalExists && !isServerExists) {
+  
+          let syncing = await syncFieldProblemRecordToServer(idRecord, 'create')
+          isSynced = Boolean(syncing);
+  
+        }
+    }
+  
+    if(isSynced) {
+  
+        return true
+  
+    }
+  
+    return false
   }
