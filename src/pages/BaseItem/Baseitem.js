@@ -196,7 +196,7 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
     const isUpdateMode = mode === 'update';
     const isDeleteMode = mode === 'delete';
 
-    const isSynced = false;
+    let isSynced = false;
 
     if(isDeleteMode) {
         // the server must be return 404
@@ -206,7 +206,10 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
 
         if(isExistsOnServer) {
             isSynced = await syncItemRecordToServer(idRecord, 'delete')
-        } else {
+        } 
+        
+        else {
+
             isSynced = true
         }
     }
@@ -219,39 +222,33 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;
 
-        console.log('local', getItemInLocal);
-        console.log('server', getItemInServer);
-
         if(isLocalExists && isServerExists) {
 
-            const serverKeyValue = await getItemInServer.json();
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0]
 
-            // check all the value
-            const keyToUpdate = {}
-            const keys = Object.keys(getItemInLocal);
+            const isItemKodeNotSame = serverKeyValue['item_kode'] != getItemInLocal['kode']
+            const isItemNameNotSame = serverKeyValue['item_name'] != getItemInLocal['name']
+            const isItemLastUsedNotSame = serverKeyValue['last_used'] != (getItemInLocal['lastUsed'] || 0)
 
-            keys.forEach((key) => {
-                let localValue = getItemInLocal[key];
-                let serverValue = serverKeyValue[key];
-                let isNotSame = localValue != serverValue
+            let isAnyValueNotSame = isItemKodeNotSame || isItemNameNotSame || isItemLastUsedNotSame
 
-                if(isNotSame) {
-                    keyToUpdate[key] = localValue
-                }
-            })
+            if(isAnyValueNotSame) {
 
-            const anyValueToUpdate = Object.keys(keyToUpdate).length > 0;
+                isSynced = await syncItemRecordToServer(idRecord, 'update')
 
-            if(anyValueToUpdate) {
-                // isSynced = await syncItemRecordToServer(idRecord, 'update')
-                console.log(anyValueToUpdate);
+            }
+
+            else {
+
+                isSynced = true
+                console.log('base item is nothing to change')
             }
 
         }
 
         else if(isLocalExists && !isServerExists) { 
-            // isSynced = await syncItemRecordToServer(idRecord, 'create');
-            console.log('item need to create on server')
+            isSynced = await syncItemRecordToServer(idRecord, 'create');
         }
     }
 

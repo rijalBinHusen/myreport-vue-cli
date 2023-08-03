@@ -243,8 +243,10 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
 
         }
 
-        else if(isLocalExists && !isServerExists) { 
+        else if(isLocalExists && !isServerExists) {
+
             isSynced = await syncHeadSpvRecordToServer(idRecord, 'create');
+            
         }
     }
 

@@ -282,18 +282,22 @@ export async function getSummaryData () {
 
 export async function createDummyActivity () {
 
-    const dbItem = useIdb('headspv');
-    const items = await dbItem.getItems<{ [key: string]: string|number|boolean }>();
+    // let items = <string[]>[];
+
+    // const dbHeadSpv = useIdb('headspv');
+    const dbItem = useIdb('baseitem')
+    // const idItems = await dbItem.getKeys();
+    const items = await dbItem.getKeys();
 
     const activityDb = useIdb("activity");
 
-    for(let [index, item] of items.entries())  {
+    for(let [index, idRecord] of items.entries())  {
         let time = new Date();
 
         let recordToSet = <Activity>{
             id: time.getTime() + index + '',
-            idRecord: item?.id,
-            store: 'headspv',
+            idRecord,
+            store: 'baseitem',
             time: time.getTime(),
             time2: time.toISOString(),
             type: 'create'
