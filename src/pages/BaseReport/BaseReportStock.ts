@@ -2,7 +2,7 @@
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 import { masalah, problemActive } from "../Problems/Problem";
 import { baseItem } from '@/pages/BaseItem/Baseitem'
-import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/requestToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage";
 import { type Sheet } from "../../utils/xlsx.type"

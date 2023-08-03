@@ -1,7 +1,7 @@
 import { getSupervisorId } from '../Supervisors/Supervisors'
 import { useIdb } from '@/utils/localforage';
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/requestToServer";
 import { ref } from 'vue';
 
 interface Warehouse {

@@ -289,7 +289,7 @@ export function Cases() {
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData, putData, deleteData } from "../../utils/sendDataToServer";
+import { postData, putData, deleteData } from "../../utils/requestToServer";
 
 export async function syncCasesToServer () {
 

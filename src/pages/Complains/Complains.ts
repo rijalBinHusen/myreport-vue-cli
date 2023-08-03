@@ -1,7 +1,7 @@
 import { getSupervisorId } from "@/pages/Supervisors/Supervisors";
 import { getHeadspvId } from "@/pages/Headspv/Headspv";
 import { dateMonth } from "@/composable/piece/dateFormat";
-import { postData, deleteData, putData } from "../../utils/sendDataToServer";
+import { postData, deleteData, putData } from "../../utils/requestToServer";
 
 interface Complain {
   dl: number

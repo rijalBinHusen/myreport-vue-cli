@@ -16,19 +16,20 @@
             <br />
             <br />
             <br />
-            <ButtonVue primary value="Mulai backup" type="button" @trig="handleBackup"/>
+            <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
         </div>
         <ButtonVue primary value="Login" type="button" @trig="tryToLogin"/>
         <ButtonVue primary value="Sync data" type="button" @trig="syncAllDataToServer"/>
         <ButtonVue primary value="Sync activity" type="button" @trig="syncBasedOnActivity"/>
         <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
-        <!-- <ButtonVue primary value="Test" type="button" @trig="getSummary"/> -->
+        <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyActivity"/>
+        <ButtonVue primary value="Check and sync activity" type="button" @trig="checkAndsyncTheActivity"/>
     </div>
 </template>
 
 <script>
 import { useStore } from "vuex"
-import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend, getSummaryData } from "./storeBackup"
+import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend, getSummaryData, createDummyActivity, checkAndsyncTheActivity } from "./storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
@@ -81,7 +82,18 @@ export default {
             getSummaryData();
         }
 
-        return { handleBackup, options, checkedOption, tryToLogin, syncAllDataToServer, syncBasedOnActivity, errorSyncResend, getSummary }
+        return { 
+            handleBackup, 
+            options, 
+            checkedOption, 
+            tryToLogin, 
+            syncAllDataToServer, 
+            syncBasedOnActivity, 
+            errorSyncResend, 
+            getSummary,
+            createDummyActivity,
+            checkAndsyncTheActivity
+        }
     },
     name: "Backup",
     components: {

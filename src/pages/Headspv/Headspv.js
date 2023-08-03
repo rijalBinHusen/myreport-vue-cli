@@ -1,4 +1,4 @@
-import { postData, deleteData, putData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer"
 import { useIdb } from '@/utils/localforage';
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { ref } from "vue";
@@ -181,3 +181,78 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
 
     return true
   }
+
+
+  export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record head spv must be a string");
+        return
+    }
+
+    const isCreateMode = mode === 'create'; 
+    const isUpdateMode = mode === 'update';
+    const isDeleteMode = mode === 'delete';
+
+    let isSynced = false;
+
+    if(isDeleteMode) {
+        // the server must be return 404
+        const getOnServer = await getDataOnServer('head_spv/' + idRecord);
+
+        const isExistsOnServer = getOnServer?.status === 200
+
+        if(isExistsOnServer) {
+            isSynced = await syncHeadSpvRecordToServer(idRecord, 'delete')
+        } else {
+            isSynced = true
+        }
+    }
+
+    else if(isCreateMode || isUpdateMode) {
+        const dbItem = useIdb(storeName);
+        const getItemInLocal = await dbItem.getItem(idRecord);
+        const getItemInServer = await getDataOnServer('head_spv/' + idRecord);
+
+        const isLocalExists = Boolean(getItemInLocal?.id);
+        const isServerExists = getItemInServer?.status === 200;
+
+        if(isLocalExists && isServerExists) {
+
+            const serverKeyValue = await getItemInServer.json();
+
+            // check all the value
+            const keyToUpdate = {}
+            const keys = Object.keys(getItemInLocal);
+
+            keys.forEach((key) => {
+                let localValue = getItemInLocal[key];
+                let serverValue = serverKeyValue[key];
+                let isNotSame = localValue != serverValue
+
+                if(isNotSame) {
+                    keyToUpdate[key] = localValue
+                }
+            })
+
+            const anyValueToUpdate = Object.keys(keyToUpdate).length > 0;
+
+            if(anyValueToUpdate) {
+                isSynced = await syncHeadSpvRecordToServer(idRecord, 'update')
+            }
+
+        }
+
+        else if(isLocalExists && !isServerExists) { 
+            isSynced = await syncHeadSpvRecordToServer(idRecord, 'create');
+        }
+    }
+
+    if(isSynced) {
+
+        return true
+
+    }
+
+    return false
+}

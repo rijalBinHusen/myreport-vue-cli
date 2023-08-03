@@ -1,5 +1,5 @@
 import { totalTime } from "../../composable/piece/totalTimeAsMinute";
-import { postData, deleteData, putData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/requestToServer"
 import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage"
 import { type Sheet } from "../../utils/xlsx.type"

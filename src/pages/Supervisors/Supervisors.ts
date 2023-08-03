@@ -1,5 +1,5 @@
 // import { getData, update, append, getDataByKey } from '../../myfunction'
-import { postData, deleteData, putData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/requestToServer"
 import { progressMessage2 } from "../../components/parts/Loader/state"
 import { useIdb } from "@/utils/localforage";
 import { ref } from "vue";

@@ -3,7 +3,7 @@ import { ddmmyyyy, dateMonth } from "../../composable/piece/dateFormat";
 import { getSupervisorId } from "../Supervisors/Supervisors";
 import { getWarehouseById } from "../Warehouses/Warehouses";
 import { baseItem } from '@/pages/BaseItem/Baseitem'
-import { postData, deleteData, putData } from "../../utils/sendDataToServer"
+import { postData, deleteData, putData } from "../../utils/requestToServer"
 import { useIdb } from "@/utils/localforage";
 
 export interface Problem {

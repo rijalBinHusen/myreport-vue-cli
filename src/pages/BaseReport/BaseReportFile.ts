@@ -2,7 +2,7 @@ import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
 import { getWarehouseById, lists as warehouseLists } from "../Warehouses/Warehouses";
-import { postData, deleteData, putData } from "../../utils/sendDataToServer";
+import { postData, deleteData, putData } from "../../utils/requestToServer";
 import { baseClock } from "./BaseReportClock";
 import { baseReportStock } from "./BaseReportStock"
 

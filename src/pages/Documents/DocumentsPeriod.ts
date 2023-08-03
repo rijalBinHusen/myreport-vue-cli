@@ -3,7 +3,7 @@ import { dateMonth, dayPlus1, ymdTime, dayPlusOrMinus } from '@/composable/piece
 import { getHeadspvId, headspvByShift } from '@/pages/Headspv/Headspv'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { getWarehouseById, warehouseNameBySpv, lists as warehouseLists } from '@/pages/Warehouses/Warehouses'
-import { postData, deleteData, putData } from "@/utils/sendDataToServer";
+import { postData, deleteData, putData } from "@/utils/requestToServer";
 import { useIdb } from "@/utils/localforage"
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 

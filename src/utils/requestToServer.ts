@@ -184,3 +184,52 @@ export async function deleteData(endpoint: string): Promise<boolean> {
       });
   });
 }
+
+
+export async function getData(endpoint: string){
+
+  let token = getJWTToken();
+
+  if (token === null) return;
+
+  let headersList = {
+    "Accept": "application/json",
+    "JWT-Authorization": token,
+    "Content-Type": "application/json"
+  }
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const timeout = setTimeout(() => {
+
+    controller.abort();
+    throw new Error(`Request timed out after ${timeOutRequest}ms`);
+
+  }, timeOutRequest);
+
+  return new Promise((resolve) => {
+    fetch(hostURL + endpoint, {
+      signal,
+      method: "GET",
+      headers: headersList,
+    })
+      .then(async response => {
+        
+
+        resolve(response);
+        
+      })
+      .catch(error => {
+        
+        resolve(error)
+
+      })
+      .finally(() => {
+
+        clearTimeout(timeout);
+
+      })
+  });
+}
+

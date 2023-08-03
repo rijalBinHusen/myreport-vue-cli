@@ -4,20 +4,19 @@ import { getJWTToken, setJWTToken } from "../../utils/cookie";
 import { syncClockToServer, syncClockRecordToServer } from "../BaseReport/BaseReportClock";
 import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../BaseReport/BaseReportFile";
 import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../BaseReport/BaseReportStock";
-import { syncItemToServer, syncItemRecordToServer } from "../BaseItem/Baseitem";
+import { syncItemToServer, syncItemRecordToServer, checkAndsyncItemToServer } from "../BaseItem/Baseitem";
 import { syncCasesToServer, syncCaseRecordToServer } from "../Cases/Cases";
 import { syncComplainsToServer, syncComplainRecordToServer } from "../Complains/Complains";
 import { syncDocumentToServer, syncDocumentRecordToServer } from "../Documents/DocumentsPeriod";
 import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../FieldProblems/FieldProblem";
-import { syncHeadSpvToServer, syncHeadSpvRecordToServer } from "../Headspv/Headspv";
+import { syncHeadSpvToServer, syncHeadSpvRecordToServer, checkAndsyncHeadSpvToServer } from "../Headspv/Headspv";
 import { syncProblemToServer, syncProblemRecordToServer } from "../Problems/Problem";
 import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../Supervisors/Supervisors";
 import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../Warehouses/Warehouses";
 import { modalClose, loader } from "../../composable/piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";
-import { postData, deleteData, putData, errorDb } from "../../utils/sendDataToServer";
+import { postData, deleteData, putData, errorDb } from "../../utils/requestToServer";
 import { loginToServer } from "../../utils/loginToServer"
-import { signOut, type Login } from "@/pages/Login/users";
 import { useIdb, type Activity } from "@/utils/localforage"
 
 export interface Backup {
@@ -181,14 +180,12 @@ export async function syncBasedOnActivity() {
 
     if (activities.length) {
 
+        isSuccess = true;
+
         const sortActivities = activities.sort((recA, recB) => recA.time - recB.time);
 
         
         for (let [index, activity] of sortActivities.entries()) {
-         
-
-            // dont sync when time < 1690383553857
-            const isNotOkeToSync = activity?.time <= 1690383553857;
 
             loaderMessage.value = `Syncing activity ${activities.length - (index + 1)}`;
 
@@ -198,7 +195,7 @@ export async function syncBasedOnActivity() {
 
             const isNotForExecute = recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)
 
-            if (isNotForExecute || isNotOkeToSync) {
+            if (isNotForExecute) {
                 // dont do anything
                 // console.warn(`Record ${activity.idRecord} exists, it should be doesn't send request to server`)
                 continue;
@@ -281,4 +278,139 @@ export async function getSummaryData () {
     let getAllKeys = await dbSummary.getKeys()
 
     console.log(getAllKeys);
+}
+
+export async function createDummyActivity () {
+
+    const dbItem = useIdb('headspv');
+    const items = await dbItem.getItems<{ [key: string]: string|number|boolean }>();
+
+    const activityDb = useIdb("activity");
+
+    for(let [index, item] of items.entries())  {
+        let time = new Date();
+
+        let recordToSet = <Activity>{
+            id: time.getTime() + index + '',
+            idRecord: item?.id,
+            store: 'headspv',
+            time: time.getTime(),
+            time2: time.toISOString(),
+            type: 'create'
+        }
+
+        await activityDb.setItem(recordToSet.id, recordToSet);
+    }
+
+}
+
+export async function checkAndsyncTheActivity() {
+    const isTokenExists = getJWTToken();
+
+    if (isTokenExists == null) {
+        const tryLogin = await login();
+
+        if (tryLogin === false) {
+            alert('Email or password invalid');
+            return
+        }
+    }
+    // const storeToBackup = ['baseitem', 'basereportclock', 'basereportfile', 'basereportstock', 'cases', 'complains', 'document', 'fieldproblem', 'headspv', 'problem', 'supervisors', 'warehouses']
+    loader();
+
+    let recordSynced = <{ [key: string]: string[] }>{};
+
+    let isSuccess = true;
+
+    const dbActivity = useIdb('activity');
+
+    const activities = await dbActivity.getItems<Activity>();
+    // func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
+
+    if (activities.length) {
+
+        const sortActivities = activities.sort((recA, recB) => recA.time - recB.time);
+
+        
+        for (let [index, activity] of sortActivities.entries()) {
+
+            isSuccess = true;
+
+            loaderMessage.value = `Syncing activity ${activities.length - (index + 1)}`;
+
+            const isNotForExecute = recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)
+
+            if (isNotForExecute) {
+                continue;
+            }
+
+            else {
+
+                try {
+
+                    switch (activity.store) {
+                        case 'baseitem':
+                            await checkAndsyncItemToServer(activity.idRecord, activity.type);
+                            break;
+                        // case 'basereportclock':
+                        //     await syncClockRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'basereportfile':
+                        //     await syncBaseFileRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'basereportstock':
+                        //     await syncBaseStockRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'cases':
+                        //     await syncCaseRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'complains':
+                        //     await syncComplainRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'document':
+                        //     await syncDocumentRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'fieldproblem':
+                        //     await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        case 'headspv':
+                            await checkAndsyncHeadSpvToServer(activity.idRecord, activity.type);
+                            break;
+                        // case 'problem':
+                        //     await syncProblemRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'supervisors':
+                        //     await syncSupervisorRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // case 'warehouses':
+                        //     await syncWarehouseRecordToServer(activity.idRecord, activity.type);
+                        //     break;
+                        // default:
+                        //     break;
+                    }
+
+                } catch (err) {
+                    isSuccess = false;
+                    console.log(err);
+                }
+
+
+                // record that synced
+                recordSynced.hasOwnProperty(activity.store)
+                    ? recordSynced[activity.store].push(activity.idRecord)
+                    : recordSynced[activity.store] = [activity.idRecord];
+
+            }
+
+            if(isSuccess) {
+
+                await dbActivity.removeItem(activity.id, true);
+
+            }
+
+        }
+    }
+
+    modalClose();
+
 }

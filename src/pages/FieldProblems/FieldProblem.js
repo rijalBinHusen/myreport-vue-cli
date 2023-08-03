@@ -1,7 +1,7 @@
 import { ymdTime, ddmmyyyy } from '@/composable/piece/dateFormat'
 import { getSupervisorId } from '@/pages/Supervisors/Supervisors'
 import { getHeadspvId } from '../Headspv/Headspv'
-import { postData, deleteData as DeleteRecordOnServer, putData } from "../../utils/sendDataToServer"
+import { postData, deleteData as DeleteRecordOnServer, putData } from "../../utils/requestToServer"
 import { useIdb } from "@/utils/localforage"
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { ref } from 'vue'
