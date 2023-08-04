@@ -347,11 +347,11 @@ export async function syncProblemRecordToServer (idRecord: string, mode: string)
 
 
 
-export async function checkAndsyncProblemToServer(idRecord: string, mode: string) {
+export async function checkAndsyncProblemToServer(idRecord: string, mode: string): Promise<boolean> {
 
   if(typeof idRecord !== 'string') {
       alert("Id record problem must be a string");
-      return
+      return false
   }
 
   const isCreateMode = mode === 'create'; 

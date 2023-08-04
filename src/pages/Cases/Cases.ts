@@ -471,7 +471,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
   if(typeof idRecord !== 'string') {
     alert("Id record case must be a string");
-    return;
+    return false;
   }
 
   const db = useIdb(storeName);
@@ -480,7 +480,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
   if(!record) {
       // dont do anything if record doesn't exist;
-      return
+      return true
   }
 
   // awal, dateEnd, dateIn, dateOut, id, in, item, 

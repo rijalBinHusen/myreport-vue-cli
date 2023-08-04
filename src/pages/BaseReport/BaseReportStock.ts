@@ -441,7 +441,7 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
 
   if(typeof idRecord !== 'string') {
       alert("Id record base report stock must be a string");
-      return
+      return false
   }
 
   const isCreateMode = mode === 'create'; 

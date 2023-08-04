@@ -503,11 +503,11 @@ export async function syncComplainRecordToServer (idRecord: string, mode: string
   return true
 }
 
-export async function checkAndSyncComplainRecordToServer (idRecord: string, mode: string) {
+export async function checkAndSyncComplainRecordToServer (idRecord: string, mode: string): Promise<boolean> {
 
   if(typeof idRecord !== 'string') {
     alert("Id record complain must be a string");
-    return;
+    return false;
   }
 
   const db = useIdb(storeName);
@@ -516,7 +516,7 @@ export async function checkAndSyncComplainRecordToServer (idRecord: string, mode
 
   if(!record) {
       // dont do anything if record doesn't exist;
-      return
+      return true;
   }
 
     // customer, do, gudang, id, import, inserted, item

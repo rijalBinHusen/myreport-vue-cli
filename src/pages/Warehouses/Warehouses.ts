@@ -241,7 +241,7 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
 
     if(typeof idRecord !== 'string') {
         alert("Id record warehouse must be a string");
-        return
+        return false
     }
   
     const isCreateMode = mode === 'create'; 

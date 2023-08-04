@@ -328,7 +328,7 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
 
     if(typeof idRecord !== 'string') {
         alert("Id record base report file must be a string");
-        return
+        return false
     }
   
     const isCreateMode = mode === 'create'; 

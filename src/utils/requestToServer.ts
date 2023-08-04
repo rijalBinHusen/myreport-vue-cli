@@ -222,15 +222,16 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
       method: "GET",
       headers: headersList,
     })
-      .then(async response => {
+      .then(async (response: Response) => {
         
 
         resolve(response);
         
       })
-      .catch(error => {
+      .catch((error) => {
         
         resolve(error)
+        errorSyncMessage(endpoint, "GET", {  }, error)
 
       })
       .finally(() => {

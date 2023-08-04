@@ -207,7 +207,7 @@ export async function checkAndsyncFieldProblemToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record field problem must be a string");
-        return
+        return false
     }
   
     const isCreateMode = mode === 'create'; 

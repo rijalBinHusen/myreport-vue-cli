@@ -328,7 +328,7 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
 
   if(typeof idRecord !== 'string') {
       alert("Id record base report clock must be a string");
-      return
+      return false
   }
 
   const isCreateMode = mode === 'create'; 

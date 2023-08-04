@@ -135,14 +135,14 @@ export async function syncItemRecordToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record base item must be a string");
-        return
+        return false
     }
     const dbItem = useIdb(store);
     const record = await dbItem.getItem(idRecord);
 
     if(!record) {
         // dont do anything if record doesn't exist;
-        return
+        return true
     }
 
     const dataToSend = {
@@ -182,14 +182,11 @@ export async function syncItemRecordToServer(idRecord, mode) {
     return true;
 }
 
-
-
-
 export async function checkAndsyncItemToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record base item must be a string");
-        return
+        return false
     }
 
     const isCreateMode = mode === 'create'; 

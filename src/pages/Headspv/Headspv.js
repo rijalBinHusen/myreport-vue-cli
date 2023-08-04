@@ -187,7 +187,7 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record head spv must be a string");
-        return
+        return false
     }
 
     const isCreateMode = mode === 'create'; 

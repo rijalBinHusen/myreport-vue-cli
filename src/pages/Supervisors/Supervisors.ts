@@ -203,11 +203,11 @@ export async function syncSupervisorRecordToServer (idRecord: string, mode: stri
 }
 
 
-export async function checkAndsyncSupervisorToServer(idRecord: string, mode: string) {
+export async function checkAndsyncSupervisorToServer(idRecord: string, mode: string): Promise<boolean> {
 
   if(typeof idRecord !== 'string') {
       alert("Id record supervisor must be a string");
-      return
+      return false
   }
 
   const isCreateMode = mode === 'create'; 

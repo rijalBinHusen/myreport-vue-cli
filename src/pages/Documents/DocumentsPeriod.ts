@@ -632,11 +632,11 @@ export async function syncDocumentToServer () {
   
 
 
-export async function checkAndsyncDocumentToServer(idRecord: string, mode: string) {
+export async function checkAndsyncDocumentToServer(idRecord: string, mode: string): Promise<boolean> {
 
     if(typeof idRecord !== 'string') {
         alert("Id record document must be a string");
-        return
+        return false
     }
   
     const isCreateMode = mode === 'create'; 

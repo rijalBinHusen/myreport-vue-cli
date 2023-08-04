@@ -72,7 +72,7 @@ async function startSyncIng() {
     // looping
     for (let key of activityKeys) {
 
-        let isSuccess = true;
+        let isSuccess = false;
 
         let isContinueBasedOnActivity = isContinueBasedOnLastActivity();
         if (!isContinueBasedOnActivity || !isContinueBasedOnVariable.value) {
@@ -165,46 +165,46 @@ function isContinueBasedOnLastActivity() {
 
 async function syncAndCheck(storeName: string, idRecord: string, activityType: string): Promise<boolean> {
 
-    let isSuccess = true;
+    let isSuccess = false;
 
     try {
 
         switch (storeName) {
             case 'baseitem':
-                await checkAndsyncItemToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncItemToServer(idRecord, activityType);
                 break;
             case 'basereportclock':
-                await checkAndsyncBaseClockToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncBaseClockToServer(idRecord, activityType);
                 break;
             case 'basereportfile':
-                await checkAndsyncBaseFileToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncBaseFileToServer(idRecord, activityType);
                 break;
             case 'basereportstock':
-                await checkAndsyncBaseStockToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncBaseStockToServer(idRecord, activityType);
                 break;
             case 'cases':
-                await checkAndsyncCaseRecordToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncCaseRecordToServer(idRecord, activityType);
                 break;
             case 'complains':
-                await checkAndSyncComplainRecordToServer(idRecord, activityType);
+                isSuccess = await checkAndSyncComplainRecordToServer(idRecord, activityType);
                 break;
             case 'document':
-                await checkAndsyncDocumentToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncDocumentToServer(idRecord, activityType);
                 break;
             case 'fieldproblem':
-                await checkAndsyncFieldProblemToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncFieldProblemToServer(idRecord, activityType);
                 break;
             case 'headspv':
-                await checkAndsyncHeadSpvToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncHeadSpvToServer(idRecord, activityType);
                 break;
             case 'problem':
-                await checkAndsyncProblemToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncProblemToServer(idRecord, activityType);
                 break;
             case 'supervisors':
-                await checkAndsyncSupervisorToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncSupervisorToServer(idRecord, activityType);
                 break;
             case 'warehouses':
-                await checkAndsyncWarehouseToServer(idRecord, activityType);
+                isSuccess = await checkAndsyncWarehouseToServer(idRecord, activityType);
                 break;
             default:
                 break;
