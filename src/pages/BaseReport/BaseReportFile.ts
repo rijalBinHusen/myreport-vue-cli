@@ -284,12 +284,12 @@ export async function syncBaseFileRecordToServer(idRecord: string, mode: string)
 
     let dataToSend = {
         "id": idRecord,
-        "periode": record?.periode || 0,
-        "warehouse_id": warehouseToSend || 0,
-        "file_name": record?.fileName || 0,
-        "stock_sheet": record?.stock || 0,
-        "clock_sheet": record?.clock || 0,
-        "is_imported": record?.imported || 0,
+        "periode": record?.periode,
+        "warehouse_id": warehouseToSend,
+        "file_name": record?.fileName || "Not imported",
+        "stock_sheet": record?.stock || "Not imported",
+        "clock_sheet": record?.clock || "Not imported",
+        "is_imported": record?.imported || false,
         "is_record_finished": record?.isRecordFinished || false
     }
 

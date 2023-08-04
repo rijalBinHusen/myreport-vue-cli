@@ -1,7 +1,7 @@
 import { getJWTToken } from "./cookie";
 import { useIdb } from "./localforage";
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "https://rijalbinhusen.cloud/myreport/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "http://localhost/api-prod/myreport/";
 const timeOutRequest = 5000;
 
 interface unknownObject {

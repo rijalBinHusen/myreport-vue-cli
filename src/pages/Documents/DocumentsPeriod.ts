@@ -680,13 +680,13 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
             const isTotalKendaraanNotSame = serverKeyValue["total_kendaraan"] != getItemInLocal?.totalKendaraan;
             const isTotalWaktuNotSame = serverKeyValue["total_waktu"] != getItemInLocal?.totalWaktu;
             const isBaseFileNotSame = serverKeyValue["base_report_file"] != getItemInLocal?.baseReportFile;
-            const isIsFinishedNotSame = serverKeyValue["is_finished"] != getItemInLocal?.isfinished;
+            const isIsFinishedNotSame = Boolean(serverKeyValue["is_finished"]) != Boolean(getItemInLocal?.isfinished);
             const isSPVIdNotSame = serverKeyValue["supervisor_id"] != getItemInLocal?.name;
             const isPeriodeNotSame = serverKeyValue["periode"] != getItemInLocal?.periode;
             const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift;
             const isHeadSpvIdNotSame = serverKeyValue["head_spv_id"] != getItemInLocal?.head;
             const isWarehouseNotSame = serverKeyValue["warehouse_id"] != getItemInLocal?.warehouse;
-            const isGenerateDocumentNotSame = serverKeyValue["is_generated_document"] != getItemInLocal?.generateReport;
+            const isGenerateDocumentNotSame = Boolean(serverKeyValue["is_generated_document"]) != Boolean(getItemInLocal?.generateReport);
             const isItemVarianceNotSame = serverKeyValue["item_variance"] != getItemInLocal?.itemVariance;
             const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent;
             const isParentDocumentNotSame = serverKeyValue["parent_document"] != getItemInLocal?.parentDocument;
