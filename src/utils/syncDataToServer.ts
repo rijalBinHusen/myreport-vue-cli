@@ -15,7 +15,7 @@ import { checkAndsyncHeadSpvToServer } from "@/pages/Headspv/Headspv";
 import { checkAndsyncProblemToServer } from "@/pages/Problems/Problem";
 import { checkAndsyncWarehouseToServer } from "@/pages/Warehouses/Warehouses";
 
-export const isContinue = ref(true);
+export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
 let timer: ReturnType<typeof setTimeout>;
 let lastActivity: string | null;
@@ -72,9 +72,11 @@ async function startSyncIng() {
 
         let isSuccess = true;
 
-        let isContinue = checkLastActivity();
-        if (!isContinue) {
-            pauseSyncing();
+        let isContinueBasedOnActivity = isContinueBasedOnLastActivity();
+        if (!isContinueBasedOnActivity || !isContinueBasedOnVariable.value) {
+            if(!isContinueBasedOnActivity) {
+                pauseSyncing();
+            }
             return;
         };
 
@@ -155,21 +157,20 @@ async function startSyncIng() {
 }
 
 export function pauseSyncing() {
-
+    isContinueBasedOnVariable.value = false
     startSyncInMinute();
-
 }
 
 async function startSyncInMinute() {
-    let isContinue = checkLastActivity();
+    let isContinue = isContinueBasedOnLastActivity();
 
     console.log('Start syncing: ', isContinue)
 
     clearTimeout(timer);
 
     timer = setTimeout(() => {
-        if (isContinue) {
-
+        if (isContinue && !isContinueBasedOnVariable.value) {
+            isContinueBasedOnVariable.value = true;
             startSyncIng();
 
         } else {
@@ -177,28 +178,20 @@ async function startSyncInMinute() {
             startSyncInMinute()
 
         }
-    }, 4000)
+    }, 10000)
 }
 
 export function incrementTotalSync() {
     totalToSync.value++
 }
 
-function checkLastActivity() {
+function isContinueBasedOnLastActivity() {
     const getLastActivity = localStorage.getItem('lastActivity');
 
-    isContinue.value = getLastActivity === lastActivity;
+    let isContinueBasedOnActivity = getLastActivity === lastActivity;
 
-    if (isContinue.value) {
-
-        setTimeout(() => {
-
-            lastActivity = getLastActivity;
-
-        }, 600);
-
-    }
+    lastActivity = getLastActivity;
 
 
-    return isContinue.value;
+    return isContinueBasedOnActivity;
 }
