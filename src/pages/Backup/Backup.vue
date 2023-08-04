@@ -18,23 +18,18 @@
             <br />
             <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
         </div>
-        <ButtonVue primary value="Login" type="button" @trig="tryToLogin"/>
         <ButtonVue primary value="Sync data" type="button" @trig="syncAllDataToServer"/>
-        <ButtonVue primary value="Sync activity" type="button" @trig="syncBasedOnActivity"/>
         <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
         <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyActivity"/>
-        <ButtonVue primary value="Check and sync activity" type="button" @trig="checkAndsyncTheActivity"/>
     </div>
 </template>
 
 <script>
 import { useStore } from "vuex"
-import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend, getSummaryData, createDummyActivity, checkAndsyncTheActivity } from "./storeBackup"
+import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend, getSummaryData, createDummyActivity } from "./storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { ref } from '@vue/reactivity'
-import { loginToServer } from "@/utils/loginToServer";
-import { setJWTToken } from "@/utils/cookie";
 
 export default {
     setup() {
@@ -65,18 +60,18 @@ export default {
 
         const checkedOption = ref([])
 
-        async function tryToLogin () {
-            let email = window.prompt('Insert your email');
-            let password = window.prompt('Insert your password');
+        // async function tryToLogin () {
+        //     let email = window.prompt('Insert your email');
+        //     let password = window.prompt('Insert your password');
 
-            let reqLogin = await loginToServer(email, password);
+        //     let reqLogin = await loginToServer(email, password);
             
-            if(reqLogin?.status === 200 && reqLogin?.ok === true) {
-                const resp = await reqLogin.json();
-                setJWTToken(resp.token);
-            }
+        //     if(reqLogin?.status === 200 && reqLogin?.ok === true) {
+        //         const resp = await reqLogin.json();
+        //         setJWTToken(resp.token);
+        //     }
 
-        }
+        // }
 
         const getSummary = async () => {
             getSummaryData();
@@ -85,14 +80,12 @@ export default {
         return { 
             handleBackup, 
             options, 
-            checkedOption, 
-            tryToLogin, 
+            checkedOption,
             syncAllDataToServer, 
             syncBasedOnActivity, 
             errorSyncResend, 
             getSummary,
-            createDummyActivity,
-            checkAndsyncTheActivity
+            createDummyActivity
         }
     },
     name: "Backup",
