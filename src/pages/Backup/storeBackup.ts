@@ -31,8 +31,6 @@ export const storeBackup = async (sendToCloud: boolean) => {
     const summaryKeys = await dbSummary.getKeys();
     allDocuments['summary'] = [];
 
-    let documents = ['activity']
-
     for (let store of summaryKeys) {
         const db = useIdb(store);
 
@@ -316,117 +314,6 @@ export async function createDummyActivity () {
         }
     }
     
-
-    modalClose();
-
-}
-
-export async function checkAndsyncTheActivity() {
-    const isTokenExists = getJWTToken();
-
-    if (isTokenExists == null) {
-        const tryLogin = await login();
-
-        if (tryLogin === false) {
-            alert('Email or password invalid');
-            return
-        }
-    }
-    // const storeToBackup = ['baseitem', 'basereportclock', 'basereportfile', 'basereportstock', 'cases', 'complains', 'document', 'fieldproblem', 'headspv', 'problem', 'supervisors', 'warehouses']
-    loader();
-
-    let recordSynced = <{ [key: string]: string[] }>{};
-
-    let isSuccess = true;
-
-    const dbActivity = useIdb('activity');
-
-    const activities = await dbActivity.getItems<Activity>();
-    // func.findData({ store: 'activity', criteria: { idLogin: login?.id } })
-
-    if (activities.length) {
-
-        const sortActivities = activities.sort((recA, recB) => recA.time - recB.time);
-
-        
-        for (let [index, activity] of sortActivities.entries()) {
-
-            isSuccess = true;
-
-            loaderMessage.value = `Syncing activity ${activities.length - (index + 1)}`;
-
-            const isNotForExecute = recordSynced[activity.store] && recordSynced[activity.store].includes(activity.idRecord)
-
-            if (isNotForExecute) {
-                continue;
-            }
-
-            else {
-
-                try {
-
-                    switch (activity.store) {
-                        case 'baseitem':
-                            await checkAndsyncItemToServer(activity.idRecord, activity.type);
-                            break;
-                        // case 'basereportclock':
-                        //     await syncClockRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'basereportfile':
-                        //     await syncBaseFileRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'basereportstock':
-                        //     await syncBaseStockRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'cases':
-                        //     await syncCaseRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'complains':
-                        //     await syncComplainRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'document':
-                        //     await syncDocumentRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'fieldproblem':
-                        //     await syncFieldProblemRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        case 'headspv':
-                            await checkAndsyncHeadSpvToServer(activity.idRecord, activity.type);
-                            break;
-                        // case 'problem':
-                        //     await syncProblemRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'supervisors':
-                        //     await syncSupervisorRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // case 'warehouses':
-                        //     await syncWarehouseRecordToServer(activity.idRecord, activity.type);
-                        //     break;
-                        // default:
-                        //     break;
-                    }
-
-                } catch (err) {
-                    isSuccess = false;
-                    console.log(err);
-                }
-
-
-                // record that synced
-                recordSynced.hasOwnProperty(activity.store)
-                    ? recordSynced[activity.store].push(activity.idRecord)
-                    : recordSynced[activity.store] = [activity.idRecord];
-
-            }
-
-            if(isSuccess) {
-
-                await dbActivity.removeItem(activity.id, true);
-
-            }
-
-        }
-    }
 
     modalClose();
 

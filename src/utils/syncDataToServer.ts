@@ -2,21 +2,23 @@ import { ref } from "vue";
 import { useIdb } from "./localforage";
 import { getJWTToken, setJWTToken } from "./cookie";
 import { loginToServer } from "./loginToServer";
-import { checkAndSyncComplainRecordToServer } from "@/pages/Complains/Complains";
-import { checkAndsyncSupervisorToServer } from "@/pages/Supervisors/Supervisors";
-import { checkAndsyncBaseClockToServer } from "@/pages/BaseReport/BaseReportClock";
-import { checkAndsyncBaseFileToServer } from "@/pages/BaseReport/BaseReportFile";
-import { checkAndsyncItemToServer } from "@/pages/BaseItem/Baseitem";
-import { checkAndsyncBaseStockToServer } from "@/pages/BaseReport/BaseReportStock";
-import { checkAndsyncCaseRecordToServer } from "@/pages/Cases/Cases";
-import { checkAndsyncDocumentToServer } from "@/pages/Documents/DocumentsPeriod";
-import { checkAndsyncFieldProblemToServer } from "@/pages/FieldProblems/FieldProblem";
-import { checkAndsyncHeadSpvToServer } from "@/pages/Headspv/Headspv";
-import { checkAndsyncProblemToServer } from "@/pages/Problems/Problem";
-import { checkAndsyncWarehouseToServer } from "@/pages/Warehouses/Warehouses";
+import { checkAndSyncComplainRecordToServer, syncComplainRecordToServer } from "@/pages/Complains/Complains";
+import { checkAndsyncSupervisorToServer, syncSupervisorRecordToServer } from "@/pages/Supervisors/Supervisors";
+import { checkAndsyncBaseClockToServer, syncClockRecordToServer } from "@/pages/BaseReport/BaseReportClock";
+import { checkAndsyncBaseFileToServer, syncBaseFileRecordToServer } from "@/pages/BaseReport/BaseReportFile";
+import { checkAndsyncItemToServer, syncItemRecordToServer } from "@/pages/BaseItem/Baseitem";
+import { checkAndsyncBaseStockToServer, syncBaseStockRecordToServer } from "@/pages/BaseReport/BaseReportStock";
+import { checkAndsyncCaseRecordToServer, syncCaseRecordToServer } from "@/pages/Cases/Cases";
+import { checkAndsyncDocumentToServer, syncDocumentRecordToServer } from "@/pages/Documents/DocumentsPeriod";
+import { checkAndsyncFieldProblemToServer, syncFieldProblemRecordToServer } from "@/pages/FieldProblems/FieldProblem";
+import { checkAndsyncHeadSpvToServer, syncHeadSpvRecordToServer } from "@/pages/Headspv/Headspv";
+import { checkAndsyncProblemToServer, syncProblemRecordToServer } from "@/pages/Problems/Problem";
+import { checkAndsyncWarehouseToServer, syncWarehouseRecordToServer } from "@/pages/Warehouses/Warehouses";
 
 export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
+export const syncMode = ref(<'sync'|'syncAndCheck'>'syncAndCheck');
+
 let timer: ReturnType<typeof setTimeout>;
 let lastActivity: string | null;
 
@@ -91,53 +93,18 @@ async function startSyncIng() {
         }
 
         else if (activity && !isNotForExecute) {
-            try {
+            let isSyncAndCheckMode = syncMode.value === 'syncAndCheck';
 
-                switch (activity.store) {
-                    case 'baseitem':
-                        await checkAndsyncItemToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'basereportclock':
-                        await checkAndsyncBaseClockToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'basereportfile':
-                        await checkAndsyncBaseFileToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'basereportstock':
-                        await checkAndsyncBaseStockToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'cases':
-                        await checkAndsyncCaseRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'complains':
-                        await checkAndSyncComplainRecordToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'document':
-                        await checkAndsyncDocumentToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'fieldproblem':
-                        await checkAndsyncFieldProblemToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'headspv':
-                        await checkAndsyncHeadSpvToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'problem':
-                        await checkAndsyncProblemToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'supervisors':
-                        await checkAndsyncSupervisorToServer(activity.idRecord, activity.type);
-                        break;
-                    case 'warehouses':
-                        await checkAndsyncWarehouseToServer(activity.idRecord, activity.type);
-                        break;
-                    default:
-                        break;
-                }
+            if(isSyncAndCheckMode) {
 
-            } catch (err) {
-                isSuccess = false;
-                console.log(err);
+                isSuccess = await syncAndCheck(activity?.store, activity.idRecord, activity.type)
+
+            } else {
+
+                isSuccess = await syncOnly(activity?.store, activity.idRecord, activity.type)
+
             }
+            
 
             recordSynced.hasOwnProperty(activity?.store)
                 ? recordSynced[activity?.store].push(activity?.idRecord)
@@ -194,4 +161,115 @@ function isContinueBasedOnLastActivity() {
 
 
     return isContinueBasedOnActivity;
+}
+
+async function syncAndCheck(storeName: string, idRecord: string, activityType: string): Promise<boolean> {
+
+    let isSuccess = true;
+
+    try {
+
+        switch (storeName) {
+            case 'baseitem':
+                await checkAndsyncItemToServer(idRecord, activityType);
+                break;
+            case 'basereportclock':
+                await checkAndsyncBaseClockToServer(idRecord, activityType);
+                break;
+            case 'basereportfile':
+                await checkAndsyncBaseFileToServer(idRecord, activityType);
+                break;
+            case 'basereportstock':
+                await checkAndsyncBaseStockToServer(idRecord, activityType);
+                break;
+            case 'cases':
+                await checkAndsyncCaseRecordToServer(idRecord, activityType);
+                break;
+            case 'complains':
+                await checkAndSyncComplainRecordToServer(idRecord, activityType);
+                break;
+            case 'document':
+                await checkAndsyncDocumentToServer(idRecord, activityType);
+                break;
+            case 'fieldproblem':
+                await checkAndsyncFieldProblemToServer(idRecord, activityType);
+                break;
+            case 'headspv':
+                await checkAndsyncHeadSpvToServer(idRecord, activityType);
+                break;
+            case 'problem':
+                await checkAndsyncProblemToServer(idRecord, activityType);
+                break;
+            case 'supervisors':
+                await checkAndsyncSupervisorToServer(idRecord, activityType);
+                break;
+            case 'warehouses':
+                await checkAndsyncWarehouseToServer(idRecord, activityType);
+                break;
+            default:
+                break;
+        }
+
+    } catch (err) {
+        isSuccess = false;
+        console.log(err);
+    }
+
+    return isSuccess;
+}
+
+
+async function syncOnly(storeName: string, idRecord: string, activityType: string): Promise<boolean> {
+
+    let isSuccess = true;
+
+    try {
+
+        switch (storeName) {
+            case 'baseitem':
+                await syncItemRecordToServer(idRecord, activityType);
+                break;
+            case 'basereportclock':
+                await syncClockRecordToServer(idRecord, activityType);
+                break;
+            case 'basereportfile':
+                await syncBaseFileRecordToServer(idRecord, activityType);
+                break;
+            case 'basereportstock':
+                await syncBaseStockRecordToServer(idRecord, activityType);
+                break;
+            case 'cases':
+                await syncCaseRecordToServer(idRecord, activityType);
+                break;
+            case 'complains':
+                await syncComplainRecordToServer(idRecord, activityType);
+                break;
+            case 'document':
+                await syncDocumentRecordToServer(idRecord, activityType);
+                break;
+            case 'fieldproblem':
+                await syncFieldProblemRecordToServer(idRecord, activityType);
+                break;
+            case 'headspv':
+                await syncHeadSpvRecordToServer(idRecord, activityType);
+                break;
+            case 'problem':
+                await syncProblemRecordToServer(idRecord, activityType);
+                break;
+            case 'supervisors':
+                await syncSupervisorRecordToServer(idRecord, activityType);
+                break;
+            case 'warehouses':
+                await syncWarehouseRecordToServer(idRecord, activityType);
+                break;
+            default:
+                break;
+        }
+
+    } catch (err) {
+        isSuccess = false;
+        console.log(err);
+    }
+
+    return isSuccess;
 }
