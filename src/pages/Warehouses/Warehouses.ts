@@ -300,6 +300,10 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
           isSynced = Boolean(syncing);
   
         }
+
+        else {
+          isSynced = true
+        }
     }
 
     return isSynced

@@ -742,6 +742,10 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
           isSynced = Boolean(syncing);
   
         }
+
+        else {
+          isSynced = true
+        }
     }
   
     return isSynced

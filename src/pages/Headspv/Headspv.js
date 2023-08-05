@@ -243,6 +243,10 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
             isSynced = await syncHeadSpvRecordToServer(idRecord, 'create');
 
         }
+
+        else {
+          isSynced = true
+        }
     }
 
     return isSynced

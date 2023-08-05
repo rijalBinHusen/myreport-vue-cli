@@ -271,6 +271,10 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
         isSynced = Boolean(syncing);
 
       }
+
+      else {
+        isSynced = true
+      }
   }
 
   return isSynced

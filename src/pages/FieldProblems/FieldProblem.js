@@ -279,6 +279,10 @@ export async function checkAndsyncFieldProblemToServer(idRecord, mode) {
           isSynced = Boolean(syncing);
   
         }
+
+        else {
+          isSynced = true
+        }
     }
   
     return isSynced

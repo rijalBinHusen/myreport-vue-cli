@@ -166,7 +166,7 @@ function isContinueBasedOnLastActivity() {
 
 async function syncAndCheck(storeName: string, idRecord: string, activityType: string): Promise<boolean> {
 
-    let isSuccess = false;
+    let isSuccess = true;
 
     try {
 

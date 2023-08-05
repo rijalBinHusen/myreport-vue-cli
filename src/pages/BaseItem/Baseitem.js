@@ -247,6 +247,10 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
         else if(isLocalExists && !isServerExists) { 
             isSynced = await syncItemRecordToServer(idRecord, 'create');
         }
+
+        else {
+          isSynced = true
+        }
     }
 
     if(isSynced) {

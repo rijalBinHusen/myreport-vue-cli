@@ -521,6 +521,10 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
         isSynced = Boolean(syncing);
 
       }
+
+      else {
+        isSynced = true
+      }
   }
 
   return isSynced

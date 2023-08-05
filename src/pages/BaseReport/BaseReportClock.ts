@@ -398,6 +398,10 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
         isSynced = Boolean(syncing);
 
       }
+
+      else {
+        isSynced = true
+      }
   }
 
   return isSynced

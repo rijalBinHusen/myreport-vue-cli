@@ -441,6 +441,10 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
         isSynced = Boolean(syncing);
 
       }
+
+      else {
+        isSynced = true
+      }
   }
 
   return isSynced
