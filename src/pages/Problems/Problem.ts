@@ -284,7 +284,7 @@ export async function syncProblemRecordToServer (idRecord: string, mode: string)
   let record = await db.getItem<Problem>(idRecord);
   // getDataByKey(storeName, idRecord);
 
-  if(!record) {
+  if(!record && mode != 'delete') {
       // dont do anything if record doesn't exist;
       return
   }

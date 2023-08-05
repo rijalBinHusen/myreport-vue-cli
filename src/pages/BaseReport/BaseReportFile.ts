@@ -271,7 +271,7 @@ export async function syncBaseFileRecordToServer(idRecord: string, mode: string)
 
     let record = await db.getItem<BaseReportFileInterface>(idRecord);
 
-    if (!record) {
+    if (!record && mode != 'delete') {
         // dont do anything if record doesn't exist;
         return
     }
@@ -284,8 +284,8 @@ export async function syncBaseFileRecordToServer(idRecord: string, mode: string)
 
     let dataToSend = {
         "id": idRecord,
-        "periode": record?.periode,
-        "warehouse_id": warehouseToSend,
+        "periode": record?.periode || 0,
+        "warehouse_id": warehouseToSend || '',
         "file_name": record?.fileName || "Not imported",
         "stock_sheet": record?.stock || "Not imported",
         "clock_sheet": record?.clock || "Not imported",

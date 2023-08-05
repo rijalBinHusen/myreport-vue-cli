@@ -143,17 +143,17 @@ export async function syncWarehouseToServer () {
     let record = await db.getItem<Warehouse>(idRecord);
     // await getDataByKey(storeName, idRecord);
 
-    if(record === null) {
+    if(!record && mode != 'delete') {
         // dont do anything if record doesn't exist;
         return
     }
     //group, id, isGrouped, name, supervisors
   
     let dataToSend = {
-        "id": record?.id,
+        "id": record?.id || '',
         "warehouse_name": record?.name || 0,
         "warehouse_group": record?.group || 0,
-        "warehouse_supervisors": record?.supervisors.toString()
+        "warehouse_supervisors": record?.supervisors.toString() || ''
     }
   
     try {

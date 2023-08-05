@@ -157,9 +157,9 @@ export async function syncSupervisorRecordToServer (idRecord: string, mode: stri
   // getDataByKey(storeName, idRecord);
   //disabled, id, name, phone, shift, warehouse, warehouseName
 
-    if(!record) {
-      // dont do anything if record doesn't exist;
-      return
+  if(!record && mode != 'delete') {
+    // dont do anything if record doesn't exist;
+    return
   }
 
   let dataToSend = {

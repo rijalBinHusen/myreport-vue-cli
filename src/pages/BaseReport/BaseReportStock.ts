@@ -381,7 +381,7 @@ export async function syncBaseStockRecordToServer(idRecord: string, mode: string
 
   let record = await db.getItem<BaseStock>(idRecord);
 
-  if (!record) {
+  if (!record && mode != 'delete') {
     // dont do anything if record doesn't exist;
     return
   }
@@ -455,10 +455,11 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
       const getOnServer = await getDataOnServer('base_stock/' + idRecord);
 
       const isExistsOnServer = getOnServer?.status === 200
-
+      
       if(isExistsOnServer) {
-          let syncing = await syncBaseStockRecordToServer(idRecord, 'delete')
-          isSynced = Boolean(syncing);
+        let syncing = await syncBaseStockRecordToServer(idRecord, 'delete')
+        isSynced = Boolean(syncing);
+        
       } else {
           isSynced = true
       }

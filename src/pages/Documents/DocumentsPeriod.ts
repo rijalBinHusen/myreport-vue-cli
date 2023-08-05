@@ -557,7 +557,7 @@ export async function syncDocumentToServer () {
     let record = await db.getItem<Document>(idRecord);
     // getDataByKey(storeName, idRecord);
 
-    if(record === null) {
+    if(record === null && mode != 'delete') {
         // dont do anything if record doesn't exist;
         return
     }

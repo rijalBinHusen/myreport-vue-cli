@@ -378,7 +378,7 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 
   let record = await db.getItem<Case&CaseImport>(idRecord);
 
-  if(!record) {
+  if(!record && mode != 'delete') {
       // dont do anything if record doesn't exist;
       return
   }
@@ -478,7 +478,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
   let record = await db.getItem<Case&CaseImport>(idRecord);
 
-  if(!record) {
+  if(!record && mode != 'delete') {
       // dont do anything if record doesn't exist;
       return true
   }
@@ -562,7 +562,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
       } 
       
-      else if(!isDataNotExists) {
+      else if(!isDataNotExists && record) {
         const keyValueServerData = await getServerData?.json();
 
         const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)

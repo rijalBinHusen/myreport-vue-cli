@@ -406,7 +406,7 @@ export async function syncComplainRecordToServer (idRecord: string, mode: string
 
   const record = await db.getItem<Complain&ComplainImport>(idRecord);
 
-  if(!record) {
+  if(!record && mode != 'delete') {
       // dont do anything if record doesn't exist;
       return
   }
@@ -514,7 +514,7 @@ export async function checkAndSyncComplainRecordToServer (idRecord: string, mode
 
   const record = await db.getItem<Complain&ComplainImport>(idRecord);
 
-  if(!record) {
+  if(!record && mode != 'delete') {
       // dont do anything if record doesn't exist;
       return true;
   }
@@ -605,7 +605,7 @@ export async function checkAndSyncComplainRecordToServer (idRecord: string, mode
   
         } 
         
-        else if(!isDataNotExists) {
+        else if(!isDataNotExists && record) {
           const keyValueServerData = await getServerData?.json();
   
           const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)

@@ -140,7 +140,7 @@ export async function syncItemRecordToServer(idRecord, mode) {
     const dbItem = useIdb(store);
     const record = await dbItem.getItem(idRecord);
 
-    if(!record) {
+    if(!record && mode != 'delete') {
         // dont do anything if record doesn't exist;
         return true
     }
@@ -186,7 +186,7 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record base item must be a string");
-        return false
+        return true
     }
 
     const isCreateMode = mode === 'create'; 

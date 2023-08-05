@@ -149,7 +149,7 @@ export async function syncFieldProblemRecordToServer (idRecord, mode) {
     let record = await db.getItem(idRecord);
     // await getDataByKey(storeName, idRecord);
 
-    if(!record) {
+    if(!record && mode != 'delete') {
         // dont do anything if record doesn't exist;
         return
     }

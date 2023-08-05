@@ -276,14 +276,14 @@ export async function syncClockRecordToServer (idRecord: string, mode: string) {
 
   let record = await db.getItem<BaseClock>(idRecord);
 
-  if(!record) {
+  if(!record && mode != 'delete') {
       // dont do anything if record doesn't exist;
       return
   }
 
     let dataToSend = {
       "id": idRecord,
-      "parent": record?.parent,
+      "parent": record?.parent || '',
       "shift": record?.shift || 1,
       "no_do": record?.noDo || 1,
       "reg": record?.reg || "00:00",
