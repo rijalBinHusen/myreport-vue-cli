@@ -140,7 +140,7 @@ export function pauseSyncing() {
     isContinueBasedOnVariable.value = false
     startSyncInMinute();
     const clock = new Date(new Date().getTime() + timerOut.value);
-    // console.log(`Sync will run at: ${clock.toLocaleTimeString()} ${timerOut.value} milisecond!`)
+    console.log(`Sync will run at: ${clock.toLocaleTimeString()} ${timerOut.value} milisecond!`)
     
 }
 
@@ -160,7 +160,8 @@ async function startSyncInMinute() {
 
         } else {
 
-            startSyncInMinute()
+            startSyncInMinute();
+            timerOut.value += 6000;
 
         }
     }, timerOut.value)
