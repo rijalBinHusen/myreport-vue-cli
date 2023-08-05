@@ -131,7 +131,7 @@ async function startSyncIng() {
     }
 
     // if looping finished, pause sync again so the sync function will run in minute
-    timerOut.value = 60000
+    timerOut.value += 60000
     pauseSyncing();
 }
 
@@ -160,7 +160,7 @@ async function startSyncInMinute() {
 
         } else {
 
-            startSyncInMinute();
+            pauseSyncing();
             timerOut.value += 6000;
 
         }
@@ -177,7 +177,7 @@ function isContinueBasedOnLastActivity() {
     let isContinueBasedOnActivity = getLastActivity === lastActivity;
 
     if(isContinueBasedOnActivity) {
-        timerOut.value = 6000;
+        timerOut.value += 6000;
     }
 
     lastActivity = getLastActivity;
