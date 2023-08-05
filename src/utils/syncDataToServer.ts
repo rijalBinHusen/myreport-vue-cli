@@ -18,6 +18,7 @@ import { checkAndsyncWarehouseToServer, syncWarehouseRecordToServer } from "@/pa
 export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
 export const syncMode = ref(<'sync'|'syncAndCheck'>'syncAndCheck');
+const timerOut = ref(6000)
 
 let timer: ReturnType<typeof setTimeout>;
 let lastActivity: string | null;
@@ -67,12 +68,18 @@ async function startSyncIng() {
     totalToSync.value = activityKeys.length;
     let recordSynced = <{ [key: string]: string[] }>{};
 
-    if (activityKeys.length === 0) return;
+    if (totalToSync.value === 0) {
+        timerOut.value+= 60000;
+        pauseSyncing();
+        return;
+    }
 
     // looping
+    let isSuccess = false;
+    
     for (let key of activityKeys) {
 
-        let isSuccess = false;
+        isSuccess = false;
 
         let isContinueBasedOnActivity = isContinueBasedOnLastActivity();
         if (!isContinueBasedOnActivity || !isContinueBasedOnVariable.value) {
@@ -122,23 +129,33 @@ async function startSyncIng() {
 
 
     }
+
+    // if looping finished, pause sync again so the sync function will run in minute
+    timerOut.value = 60000
+    pauseSyncing();
 }
 
 export function pauseSyncing() {
+
     isContinueBasedOnVariable.value = false
     startSyncInMinute();
+    const clock = new Date(new Date().getTime() + timerOut.value);
+    // console.log(`Sync will run at: ${clock.toLocaleTimeString()} ${timerOut.value} milisecond!`)
+    
 }
 
 async function startSyncInMinute() {
     let isContinue = isContinueBasedOnLastActivity();
 
-    console.log('Start syncing: ', isContinue)
+    console.log(`Start syncing: ${isContinue && !isContinueBasedOnVariable.value}`)
 
     clearTimeout(timer);
 
     timer = setTimeout(() => {
         if (isContinue && !isContinueBasedOnVariable.value) {
+
             isContinueBasedOnVariable.value = true;
+            timerOut.value = 6000;
             startSyncIng();
 
         } else {
@@ -146,7 +163,7 @@ async function startSyncInMinute() {
             startSyncInMinute()
 
         }
-    }, 3000)
+    }, timerOut.value)
 }
 
 export function incrementTotalSync() {
@@ -157,6 +174,10 @@ function isContinueBasedOnLastActivity() {
     const getLastActivity = localStorage.getItem('lastActivity');
 
     let isContinueBasedOnActivity = getLastActivity === lastActivity;
+
+    if(isContinueBasedOnActivity) {
+        timerOut.value = 6000;
+    }
 
     lastActivity = getLastActivity;
 
@@ -218,7 +239,6 @@ async function syncAndCheck(storeName: string, idRecord: string, activityType: s
 
     return isSuccess;
 }
-
 
 async function syncOnly(storeName: string, idRecord: string, activityType: string): Promise<boolean> {
 
