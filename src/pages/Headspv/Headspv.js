@@ -187,7 +187,7 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record head spv must be a string");
-        return false
+        return true
     }
 
     const isCreateMode = mode === 'create'; 
@@ -230,6 +230,10 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
 
             if(isAnyValueToUpdate) {
                 isSynced = await syncHeadSpvRecordToServer(idRecord, 'update')
+            } else {
+
+                isSynced = true
+                
             }
 
         }
@@ -241,11 +245,5 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
         }
     }
 
-    if(isSynced) {
-
-        return true
-
-    }
-
-    return false
+    return isSynced
 }

@@ -328,7 +328,7 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
 
   if(typeof idRecord !== 'string') {
       alert("Id record base report clock must be a string");
-      return false
+      return true
   }
 
   const isCreateMode = mode === 'create'; 
@@ -384,7 +384,11 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
             let syncing = await syncClockRecordToServer(idRecord, 'update')
             isSynced = Boolean(syncing);
 
-          }
+          } else {
+
+            isSynced = true
+            
+        }
 
       }
 
@@ -396,11 +400,5 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
       }
   }
 
-  if(isSynced) {
-
-      return true
-
-  }
-
-  return false
+  return isSynced
 }

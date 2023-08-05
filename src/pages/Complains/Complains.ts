@@ -507,7 +507,7 @@ export async function checkAndSyncComplainRecordToServer (idRecord: string, mode
 
   if(typeof idRecord !== 'string') {
     alert("Id record complain must be a string");
-    return false;
+    return true;
   }
 
   const db = useIdb(storeName);

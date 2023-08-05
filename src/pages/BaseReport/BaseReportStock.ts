@@ -441,7 +441,7 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
 
   if(typeof idRecord !== 'string') {
       alert("Id record base report stock must be a string");
-      return false
+      return true
   }
 
   const isCreateMode = mode === 'create'; 
@@ -507,7 +507,11 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
             let syncing = await syncBaseStockRecordToServer(idRecord, 'update')
             isSynced = Boolean(syncing);
 
-          }
+          } else {
+
+            isSynced = true
+            
+        }
 
       }
 
@@ -519,11 +523,5 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
       }
   }
 
-  if(isSynced) {
-
-      return true
-
-  }
-
-  return false
+  return isSynced
 }

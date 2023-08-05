@@ -88,6 +88,7 @@ async function startSyncIng() {
 
         if (isNotForExecute) {
 
+            isSuccess = true
             continue
 
         }
@@ -145,7 +146,7 @@ async function startSyncInMinute() {
             startSyncInMinute()
 
         }
-    }, 10000)
+    }, 3000)
 }
 
 export function incrementTotalSync() {

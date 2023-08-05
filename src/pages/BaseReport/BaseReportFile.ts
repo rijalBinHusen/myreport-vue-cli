@@ -328,7 +328,7 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
 
     if(typeof idRecord !== 'string') {
         alert("Id record base report file must be a string");
-        return false
+        return true
     }
   
     const isCreateMode = mode === 'create'; 
@@ -382,6 +382,10 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
               let syncing = await syncBaseFileRecordToServer(idRecord, 'update')
               isSynced = Boolean(syncing);
   
+            } else {
+
+                isSynced = true
+                
             }
   
         }
@@ -394,11 +398,5 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
         }
     }
   
-    if(isSynced) {
-  
-        return true
-  
-    }
-  
-    return false
+    return isSynced
   }

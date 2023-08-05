@@ -351,7 +351,7 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
 
   if(typeof idRecord !== 'string') {
       alert("Id record problem must be a string");
-      return false
+      return true
   }
 
   const isCreateMode = mode === 'create'; 
@@ -427,7 +427,11 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
             let syncing = await syncProblemRecordToServer(idRecord, 'update')
             isSynced = Boolean(syncing);
 
-          }
+          } else {
+
+            isSynced = true
+            
+        }
 
       }
 
@@ -439,11 +443,5 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
       }
   }
 
-  if(isSynced) {
-
-      return true
-
-  }
-
-  return false
+  return isSynced
 }

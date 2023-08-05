@@ -207,7 +207,7 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
 
   if(typeof idRecord !== 'string') {
       alert("Id record supervisor must be a string");
-      return false
+      return true
   }
 
   const isCreateMode = mode === 'create'; 
@@ -257,7 +257,11 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
             let syncing = await syncSupervisorRecordToServer(idRecord, 'update')
             isSynced = Boolean(syncing);
 
-          }
+          } else {
+
+            isSynced = true
+            
+        }
 
       }
 
@@ -269,11 +273,6 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
       }
   }
 
-  if(isSynced) {
-
-      return true
-
-  }
-
-  return false
+  return isSynced
+  
 }

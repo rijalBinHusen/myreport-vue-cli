@@ -234,14 +234,11 @@ export async function syncWarehouseToServer () {
     return result;
   }
 
-  
-
-
 export async function checkAndsyncWarehouseToServer(idRecord: string, mode: string) {
 
     if(typeof idRecord !== 'string') {
         alert("Id record warehouse must be a string");
-        return false
+        return true
     }
   
     const isCreateMode = mode === 'create'; 
@@ -289,6 +286,10 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
               let syncing = await syncWarehouseRecordToServer(idRecord, 'update')
               isSynced = Boolean(syncing);
   
+            } else {
+
+                isSynced = true
+                
             }
   
         }
@@ -300,12 +301,7 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
   
         }
     }
-  
-    if(isSynced) {
-  
-        return true
-  
-    }
-  
-    return false
+
+    return isSynced
+
   }

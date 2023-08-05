@@ -636,7 +636,7 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
 
     if(typeof idRecord !== 'string') {
         alert("Id record document must be a string");
-        return false
+        return true;
     }
   
     const isCreateMode = mode === 'create'; 
@@ -728,6 +728,10 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
               let syncing = await syncDocumentRecordToServer(idRecord, 'update')
               isSynced = Boolean(syncing);
   
+            } else {
+
+                isSynced = true
+                
             }
   
         }
@@ -740,11 +744,5 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
         }
     }
   
-    if(isSynced) {
-  
-        return true
-  
-    }
-  
-    return false
+    return isSynced
   }
