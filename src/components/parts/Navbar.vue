@@ -3,12 +3,13 @@
 		<Button primary style="left:13px;" class="w3-left" value="&#9776;" @trig="sideBarActive = !sideBarActive" type="button" />
 		<span class="w3-center w3-xlarge">{{ active.title }}</span>
 		
-		<div class="w3-right w3-button">{{ totalToSync }}</div>
+		<!-- <div class="w3-right w3-button">{{ totalToSync }}</div> -->
         <Dropdown
             :value="syncMode"
             :lists="[
                 { id: 'sync', name: 'Sync only' },
-                { id: 'syncAndCheck', name: 'Sync and check' }
+                { id: 'syncAndCheck', name: 'Sync and check' },
+				{ id: '', name: totalToSync }
             ]"
             listsKey="id"
             listsValue="name"

@@ -17,7 +17,7 @@ import { checkAndsyncWarehouseToServer, syncWarehouseRecordToServer } from "@/pa
 
 export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
-export const syncMode = ref(<'sync'|'syncAndCheck'>'syncAndCheck');
+export const syncMode = ref(<'sync' | 'syncAndCheck' | ''>'syncAndCheck');
 const timerOut = ref(6000)
 
 let timer: ReturnType<typeof setTimeout>;
@@ -69,21 +69,23 @@ async function startSyncIng() {
     let recordSynced = <{ [key: string]: string[] }>{};
 
     if (totalToSync.value === 0) {
-        timerOut.value+= 60000;
         pauseSyncing();
         return;
     }
 
     // looping
     let isSuccess = false;
-    
+
+    //set timeout to default
+    timerOut.value = 6000;
+
     for (let key of activityKeys) {
 
         isSuccess = false;
 
         let isContinueBasedOnActivity = isContinueBasedOnLastActivity();
         if (!isContinueBasedOnActivity || !isContinueBasedOnVariable.value) {
-            if(!isContinueBasedOnActivity) {
+            if (!isContinueBasedOnActivity) {
                 pauseSyncing();
             }
             return;
@@ -102,17 +104,18 @@ async function startSyncIng() {
 
         else if (activity && !isNotForExecute) {
             let isSyncAndCheckMode = syncMode.value === 'syncAndCheck';
+            let isSyncOnlyMode = syncMode.value === 'sync';
 
-            if(isSyncAndCheckMode) {
+            if (isSyncAndCheckMode) {
 
                 isSuccess = await syncAndCheck(activity?.store, activity.idRecord, activity.type)
 
-            } else {
+            } else if (isSyncOnlyMode) {
 
                 isSuccess = await syncOnly(activity?.store, activity.idRecord, activity.type)
 
-            }
-            
+            } else return;
+
 
             recordSynced.hasOwnProperty(activity?.store)
                 ? recordSynced[activity?.store].push(activity?.idRecord)
@@ -131,7 +134,6 @@ async function startSyncIng() {
     }
 
     // if looping finished, pause sync again so the sync function will run in minute
-    timerOut.value += 60000
     pauseSyncing();
 }
 
@@ -141,13 +143,11 @@ export function pauseSyncing() {
     startSyncInMinute();
     const clock = new Date(new Date().getTime() + timerOut.value);
     console.log(`Sync will run at: ${clock.toLocaleTimeString()} ${timerOut.value} milisecond!`)
-    
+
 }
 
 async function startSyncInMinute() {
     let isContinue = isContinueBasedOnLastActivity();
-
-    console.log(`Start syncing: ${isContinue && !isContinueBasedOnVariable.value}`)
 
     clearTimeout(timer);
 
@@ -155,7 +155,6 @@ async function startSyncInMinute() {
         if (isContinue && !isContinueBasedOnVariable.value) {
 
             isContinueBasedOnVariable.value = true;
-            timerOut.value = 6000;
             startSyncIng();
 
         } else {
@@ -176,9 +175,6 @@ function isContinueBasedOnLastActivity() {
 
     let isContinueBasedOnActivity = getLastActivity === lastActivity;
 
-    if(isContinueBasedOnActivity) {
-        timerOut.value += 6000;
-    }
 
     lastActivity = getLastActivity;
 
