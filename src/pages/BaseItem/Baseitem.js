@@ -105,7 +105,8 @@ export function baseItem () {
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncItemToServer() {
-    await getAllItems();
+    const dbItem = baseItem();
+    dbItem.getAllItems();
 
     for(let [index, list] of lists.entries()) {
 

@@ -73,12 +73,12 @@ async function startSyncIng() {
         return;
     }
 
-    // looping
+    
     let isSuccess = false;
-
     //set timeout to default
-    timerOut.value = 6000;
-
+    timerOut.value = 2000;
+    
+    // looping
     for (let key of activityKeys) {
 
         isSuccess = false;
@@ -160,10 +160,17 @@ async function startSyncInMinute() {
         } else {
 
             pauseSyncing();
-            timerOut.value += 6000;
-
+            
         }
     }, timerOut.value)
+
+    if(isContinue) {
+
+        timerOut.value += 6000;
+
+    }
+
+
 }
 
 export function incrementTotalSync() {
