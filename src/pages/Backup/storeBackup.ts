@@ -1,18 +1,18 @@
 import { full } from "../../composable/piece/dateFormat";
 import { startExport } from "../../composable/piece/exportAsFile"
 import { getJWTToken, setJWTToken } from "../../utils/cookie";
-import { syncClockToServer, syncClockRecordToServer } from "../BaseReport/BaseReportClock";
-import { syncBaseFileToServer, syncBaseFileRecordToServer } from "../BaseReport/BaseReportFile";
-import { syncBaseStockToServer, syncBaseStockRecordToServer } from "../BaseReport/BaseReportStock";
+import { syncClockToServer, syncClockRecordToServer, checkAndsyncBaseClockToServer } from "../BaseReport/BaseReportClock";
+import { syncBaseFileToServer, syncBaseFileRecordToServer, checkAndsyncBaseFileToServer } from "../BaseReport/BaseReportFile";
+import { syncBaseStockToServer, syncBaseStockRecordToServer, checkAndsyncBaseStockToServer } from "../BaseReport/BaseReportStock";
 import { syncItemToServer, syncItemRecordToServer, checkAndsyncItemToServer } from "../BaseItem/Baseitem";
-import { syncCasesToServer, syncCaseRecordToServer } from "../Cases/Cases";
-import { syncComplainsToServer, syncComplainRecordToServer } from "../Complains/Complains";
-import { syncDocumentToServer, syncDocumentRecordToServer } from "../Documents/DocumentsPeriod";
-import { syncFieldProblemToServer, syncFieldProblemRecordToServer } from "../FieldProblems/FieldProblem";
+import { syncCasesToServer, syncCaseRecordToServer, checkAndsyncCaseRecordToServer } from "../Cases/Cases";
+import { syncComplainsToServer, syncComplainRecordToServer, checkAndSyncComplainRecordToServer } from "../Complains/Complains";
+import { syncDocumentToServer, syncDocumentRecordToServer, checkAndsyncDocumentToServer } from "../Documents/DocumentsPeriod";
+import { syncFieldProblemToServer, syncFieldProblemRecordToServer, checkAndsyncFieldProblemToServer } from "../FieldProblems/FieldProblem";
 import { syncHeadSpvToServer, syncHeadSpvRecordToServer, checkAndsyncHeadSpvToServer } from "../Headspv/Headspv";
-import { syncProblemToServer, syncProblemRecordToServer } from "../Problems/Problem";
-import { syncSupervisorToServer, syncSupervisorRecordToServer } from "../Supervisors/Supervisors";
-import { syncWarehouseToServer, syncWarehouseRecordToServer } from "../Warehouses/Warehouses";
+import { syncProblemToServer, syncProblemRecordToServer, checkAndsyncProblemToServer } from "../Problems/Problem";
+import { syncSupervisorToServer, syncSupervisorRecordToServer, checkAndsyncSupervisorToServer } from "../Supervisors/Supervisors";
+import { syncWarehouseToServer, syncWarehouseRecordToServer, checkAndsyncWarehouseToServer } from "../Warehouses/Warehouses";
 import { modalClose, loader } from "../../composable/piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";
 import { postData, deleteData, putData, errorDb } from "../../utils/requestToServer";
@@ -59,7 +59,7 @@ export async function errorSyncResend() {
             alert('Email or password invalid');
             return
         }
-    }
+    };
 
     loader();
     // get all record
@@ -70,34 +70,93 @@ export async function errorSyncResend() {
     // send data to the server
     for (let [index, record] of errorRecords.entries()) {
         progressMessage.value = `Mengirim ulang ${index + 1} dari ${errorRecords.length}`;
-        try {
-            let isSuccess = false
-            switch (record?.operation) {
-                case 'POST':
-                    isSuccess = await postData(record?.endpoint, record?.dataToSend);
-                    break;
+
+        const storeName = record?.endpoint.split("/")[0];
+        const idRecord = record?.dataToSend?.id + '';
+        const isNotOkeToContinue = record?.operation == 'GET' && typeof idRecord != 'string';
+
+        function activityType (operation: string): string {
+
+            let operationMode = ''
+
+            switch (operation) {
                 case 'DELETE':
-                    isSuccess = await deleteData(record?.endpoint)
+                    operationMode = 'delete';
                     break;
                 case 'PUT':
-                    isSuccess = await putData(record?.endpoint, record?.dataToSend);
+                    operationMode = 'update';
                     break;
                 default:
-                    break;
+                    operationMode = 'create';
             }
+            
+            return operationMode;
+        }
+        
+        if(isNotOkeToContinue) {
+            console.log(record?.operation, idRecord)
+            continue
+        }
 
-            if (isSuccess) {
+        else {
 
-                await db.removeItem(record.id)
+            let isSuccess = true;
+    
+            try {
+    
+                switch (storeName) {
+                    case 'baseitem':
+                        isSuccess = await checkAndsyncItemToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'basereportclock':
+                        isSuccess = await checkAndsyncBaseClockToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'basereportfile':
+                        isSuccess = await checkAndsyncBaseFileToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'basereportstock':
+                        isSuccess = await checkAndsyncBaseStockToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'case':
+                        isSuccess = await checkAndsyncCaseRecordToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'complain':
+                        isSuccess = await checkAndSyncComplainRecordToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'document':
+                        isSuccess = await checkAndsyncDocumentToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'fieldproblem':
+                        isSuccess = await checkAndsyncFieldProblemToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'headspv':
+                        isSuccess = await checkAndsyncHeadSpvToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'problem':
+                        isSuccess = await checkAndsyncProblemToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'supervisor':
+                        isSuccess = await checkAndsyncSupervisorToServer(idRecord, activityType(record?.operation));
+                        break;
+                    case 'warehouse':
+                        isSuccess = await checkAndsyncWarehouseToServer(idRecord, activityType(record?.operation));
+                        break;
+                    default:
+                        break;
+                }
+    
+                } catch (err) {
+                    isSuccess = false;
+                    console.log(err);
+                }
 
+                if(isSuccess) {
+                    await db.removeItem(record?.id, true);
+                }
             }
-
-        } catch (err) {
-
-            console.log(err);
 
         }
-    }
+        
 
     modalClose()
 }
