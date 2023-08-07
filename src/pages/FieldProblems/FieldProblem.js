@@ -102,7 +102,7 @@ export async function syncFieldProblemToServer () {
 
     let allData = await db.getItems();
 
-    if(allData.length === 0) return;
+    if(allData.length === 0) return true;
     // await getData({ store: storeName, withKey: true })
     
     // dl, head, id, masalah, periode, pic, solusi, sumberMasalah

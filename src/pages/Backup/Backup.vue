@@ -6,19 +6,19 @@
         <div class="w3-row w3-center">
             <div class="w3-col s3" v-for="option in options" :key="option.id">
                 <CheckboxVue 
-                    :checkboxName="option.name" 
+                    :checkboxName="option.id" 
                     :value="option.id" 
                     :label="option.value"
-                    @check="checkedOption.push($event)"
-                    :isChecked="checkedOption.includes(option.id)"
+                    @check="toggleCheckOptions"
+                    :isChecked="checkedOptions.includes(option.id)"
                  />
             </div>
             <br />
             <br />
             <br />
-            <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
+            <!-- <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/> -->
+            <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
         </div>
-        <ButtonVue primary value="Sync data" type="button" @trig="syncAllDataToServer"/>
         <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
         <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyActivity"/>
     </div>
@@ -38,40 +38,59 @@ export default {
             // // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            if(checkedOption.value.includes(3)) {
-                await storeBackup(checkedOption.value.includes(2))
+            if(checkedOptions.includes(3)) {
+                await storeBackup(checkedOptions.includes(2))
             }
             // waiting for backup user activity
-            // if(checkedOption.value.includes(4)) {
-            //     await seperateUsers(checkedOption.value.includes(2))
+            // if(checkedOptions.includes(4)) {
+            //     await seperateUsers(checkedOptions.includes(2))
             // }
             // // close the spinner
             store.commit("Modal/active");
             // empty the option
-            checkedOption.value.length = 0
+            checkedOptions.length = 0
         }
 
         const options = [
-            { id: 1, value: 'Backup to local only', name: 'mode', }, 
-            { id: 2, value: 'Backup to cloud', name: 'mode', }, 
-            { id: 3, value: 'Backup all data', name: 'all',}, 
-            { id: 4, value: 'Backup user activity', name: 'user',}
+            {id: 'baseitem', value: 'Item'}, 
+            {id: 'basereportclock', value: 'Base report clock'}, 
+            {id: 'basereportfile', value: 'Base report file'},
+            {id: 'basereportstock', value: 'Base report stock'}, 
+            {id:'cases', value: 'Kasus'}, 
+            {id: 'complains', value: 'Komplain'}, 
+            {id: 'document', value: 'Dokumen'},
+            {id: 'fieldproblem',  value: 'Kendala lapangan'},
+            {id: 'headspv',  value: 'Kepala bagian'},
+            {id: 'problem',  value: 'Problem report'},
+            {id: 'supervisors',  value: 'Supervisor'},
+            {id: 'warehouses', value: 'Gudang'},
         ]
 
-        const checkedOption = ref([])
+        const checkedOptions = ref([])
 
-        // async function tryToLogin () {
-        //     let email = window.prompt('Insert your email');
-        //     let password = window.prompt('Insert your password');
+        function toggleCheckOptions (storeName) {
 
-        //     let reqLogin = await loginToServer(email, password);
+            let findIndex = checkedOptions.value.indexOf(storeName);
+            let isExists = findIndex > -1;
+
+            if(isExists) {
+
+                checkedOptions.value.splice(findIndex, 1)
+
+            } else {
+
+                checkedOptions.value.push(storeName);
+
+            }
+        }
+        
+        async function syncCheckedStoreName () {
+            let noCheckedStoreName = checkedOptions.value.length === 0
+
+            if(noCheckedStoreName) return;
             
-        //     if(reqLogin?.status === 200 && reqLogin?.ok === true) {
-        //         const resp = await reqLogin.json();
-        //         setJWTToken(resp.token);
-        //     }
-
-        // }
+            await syncAllDataToServer(checkedOptions.value)
+        }
 
         const getSummary = async () => {
             getSummaryData();
@@ -80,8 +99,9 @@ export default {
         return { 
             handleBackup, 
             options, 
-            checkedOption,
-            syncAllDataToServer, 
+            checkedOptions,
+            toggleCheckOptions,
+            syncCheckedStoreName, 
             syncBasedOnActivity, 
             errorSyncResend, 
             getSummary,

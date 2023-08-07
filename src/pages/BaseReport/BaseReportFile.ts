@@ -241,7 +241,8 @@ export async function syncBaseFileToServer() {
             "file_name": datum?.fileName || 0,
             "stock_sheet": datum?.stock || 0,
             "clock_sheet": datum?.clock || 0,
-            "is_imported": datum?.imported || 0
+            "is_imported": datum?.imported || 0,
+            "is_record_finished": datum?.isRecordFinished || false
         }
 
         try {

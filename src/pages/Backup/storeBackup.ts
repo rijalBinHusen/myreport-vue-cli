@@ -102,7 +102,7 @@ export async function errorSyncResend() {
     modalClose()
 }
 
-export async function syncAllDataToServer() {
+export async function syncAllDataToServer(storeName: string[]) {
     const isTokenExists = getJWTToken();
 
     if (isTokenExists == null) {
@@ -114,16 +114,66 @@ export async function syncAllDataToServer() {
         }
     }
 
-    const functionsToSync = [syncItemToServer, syncCasesToServer, syncComplainsToServer, syncDocumentToServer, syncFieldProblemToServer, syncHeadSpvToServer, syncProblemToServer, syncSupervisorToServer, syncWarehouseToServer, syncClockToServer, syncBaseFileToServer, syncBaseStockToServer];
-
     // launch modal
     loader();
     loaderMessage.value = "Mengirim data ke server";
 
-    for (let [index, func] of functionsToSync.entries()) {
-        progressMessage.value = `Sinkronisasi table ${index} dari ${functionsToSync.length}`;
-        const isSynced = await func();
+    let isSynced = true;
 
+    for (let [index, store] of storeName.entries()) {
+
+        isSynced = false;
+
+        progressMessage.value = `Sinkronisasi table ${index} dari ${storeName.length}`;
+        
+        try {
+
+            switch (store) {
+                case 'baseitem':
+                    isSynced = await syncItemToServer();
+                    break;
+                case 'basereportclock':
+                    isSynced = await syncClockToServer()
+                    break;
+                case 'basereportfile':
+                    isSynced = await syncBaseFileToServer();
+                    break;
+                case 'basereportstock':
+                    isSynced = await syncBaseStockToServer();
+                    break;
+                case 'cases':
+                    isSynced = await syncCasesToServer();
+                    break;
+                case 'complains':
+                    isSynced = await syncComplainsToServer();
+                    break;
+                case 'document':
+                    isSynced = await syncDocumentToServer();
+                    break;
+                case 'fieldproblem':
+                    isSynced = await syncFieldProblemToServer();
+                    break;
+                case 'headspv':
+                    isSynced = await syncHeadSpvToServer();
+                    break;
+                case 'problem':
+                    isSynced = await syncProblemToServer();
+                    break;
+                case 'supervisors':
+                    isSynced = await syncSupervisorToServer();
+                    break;
+                case 'warehouses':
+                    isSynced = await syncWarehouseToServer();
+                    break;
+                default:
+                    break;
+            }
+
+        } catch (err) {
+            isSynced = false;
+            console.log(err);
+        }
+        
         if (!isSynced) {
             modalClose();
             return;
