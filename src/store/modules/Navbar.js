@@ -20,8 +20,6 @@ const Navbar = {
       { id: "ReportExport", title: "Report export", group: "setting" },
       { id: "EditDocument", title: "Edit document", group: "setting" },
       { id: "FieldProblemVue", title: "Kendala lapangan", group: "reports" },
-      { id: "Listsbackup", title: "Lists Backup", group: "setting" },
-      { id: "ImportActivityUser", title: "Import Activity User", group: "setting" },
     ],
   },
   mutations: {
