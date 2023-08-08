@@ -333,7 +333,7 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
     const items: WarehouseFromServer[] = waitingServerKeyValue?.data
   
     for(let [index, item] of items.entries()) {
-        progressMessage2.value = `Menanamkan selisih stock ${index + 1} dari ${items.length}`;
+        progressMessage2.value = `Menanamkan nama gudang, ${index + 1} dari ${items.length}`;
   
         let recordToSet:Warehouse = {
             id: item.id,

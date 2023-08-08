@@ -12,6 +12,15 @@ export interface Supervisor {
     shift: number
 }
 
+interface SupervisorFromServer {
+  id: string,
+  supervisor_name: string,
+  supervisor_phone: string,
+  supervisor_warehouse: string,
+  supervisor_shift: string,
+  is_disabled: string
+}
+
 type Partial<T> = {
   [P in keyof T]?: T[P];
 };
@@ -281,4 +290,33 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
 
   return isSynced
   
+}
+
+
+export async function implantSupervisorFromServer () {
+  const fetchEndPoint = await getDataOnServer(`supervisors/`);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbItem = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const items: SupervisorFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of items.entries()) {
+      progressMessage2.value = `Menanamkan supervisor, ${index + 1} dari ${items.length}`;
+
+      let recordToSet:Supervisor = {
+          id: item.id,
+          disabled: Boolean(item.is_disabled),
+          name: item.supervisor_name,
+          phone: item.supervisor_phone,
+          shift: Number(item.supervisor_shift)
+      }
+
+      await dbItem.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = ''
 }

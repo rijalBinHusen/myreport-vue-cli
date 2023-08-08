@@ -512,3 +512,33 @@ export async function implantFieldProblemsFromServer (periode1: number, periode2
 
   progressMessage2.value = ''
 }
+
+
+export async function implantSupervisorFromServer () {
+  const fetchEndPoint = await getDataOnServer(`warehouses/`);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbItem = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const items: WarehouseFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of items.entries()) {
+      progressMessage2.value = `Menanamkan nama gudang, ${index + 1} dari ${items.length}`;
+
+      let recordToSet:Warehouse = {
+          id: item.id,
+          group: item?.warehouse_group,
+          name: item?.warehouse_name,
+          supervisors: item?.warehouse_supervisors.split(','),
+          isGrouped: Boolean(item?.warehouse_group),
+          disabled: Boolean(item?.is_warehouse_disabled)
+      }
+
+      await dbItem.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = ''
+}
