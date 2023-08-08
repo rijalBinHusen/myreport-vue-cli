@@ -105,40 +105,70 @@ export async function errorSyncResend() {
             try {
     
                 switch (storeName) {
-                    case 'baseitem':
+                    case 'base_item':
+                    case 'base_item/':
+                    case 'base_items':
                         isSuccess = await checkAndsyncItemToServer(idRecord, activityType(record?.operation));
                         break;
-                    case 'basereportclock':
+                    case 'base_clock':
+                    case 'base_clock/':
+                    case 'base_clocks':
                         isSuccess = await checkAndsyncBaseClockToServer(idRecord, activityType(record?.operation));
                         break;
-                    case 'basereportfile':
+                    case 'base_file':
+                    case 'base_file/':
+                    case 'base_files':
                         isSuccess = await checkAndsyncBaseFileToServer(idRecord, activityType(record?.operation));
                         break;
-                    case 'basereportstock':
+                    case 'base_stock':
+                    case 'base_stock/':
+                    case 'base_stocks':
                         isSuccess = await checkAndsyncBaseStockToServer(idRecord, activityType(record?.operation));
                         break;
                     case 'case':
+                    case 'case/':
+                    case 'cases':
+                    case 'case_import':
+                    case 'case_import/':
+                    case 'cases_import':
                         isSuccess = await checkAndsyncCaseRecordToServer(idRecord, activityType(record?.operation));
                         break;
                     case 'complain':
+                    case 'complain/':
+                    case 'complains':
+                    case 'complain_import':
+                    case 'complain_import/':
+                    case 'complains_import':
                         isSuccess = await checkAndSyncComplainRecordToServer(idRecord, activityType(record?.operation));
                         break;
                     case 'document':
+                    case 'document/':
+                    case 'documents':
                         isSuccess = await checkAndsyncDocumentToServer(idRecord, activityType(record?.operation));
                         break;
-                    case 'fieldproblem':
+                    case 'field_problem':
+                    case 'field_problem/':
+                    case 'field_problems':
                         isSuccess = await checkAndsyncFieldProblemToServer(idRecord, activityType(record?.operation));
                         break;
-                    case 'headspv':
+                    case 'head_spv':
+                    case 'head_spv/':
+                    case 'heads_spv':
                         isSuccess = await checkAndsyncHeadSpvToServer(idRecord, activityType(record?.operation));
                         break;
                     case 'problem':
+                    case 'problem/':
+                    case 'problems':
                         isSuccess = await checkAndsyncProblemToServer(idRecord, activityType(record?.operation));
                         break;
                     case 'supervisor':
+                    case 'supervisor/':
+                    case 'supervisors':
                         isSuccess = await checkAndsyncSupervisorToServer(idRecord, activityType(record?.operation));
                         break;
                     case 'warehouse':
+                    case 'warehouse/':
+                    case 'warehouses':
                         isSuccess = await checkAndsyncWarehouseToServer(idRecord, activityType(record?.operation));
                         break;
                     default:

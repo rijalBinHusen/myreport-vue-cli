@@ -21,6 +21,7 @@ type SupervisorUpdate = Partial<Supervisor>
 export const lists = ref(<Supervisor[]>[])
 const storeName = "supervisors";
 const db = useIdb(storeName);
+const endPoint = "supervisor/";
 
 export const getSupervisors = async () => {
     if(lists.value.length) return;
@@ -132,7 +133,7 @@ export async function syncSupervisorToServer () {
 
     try {
       progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-      await postData('supervisor', dataToSend);
+      await postData(endPoint, dataToSend);
 
     } catch(err) {
         
@@ -174,19 +175,19 @@ export async function syncSupervisorRecordToServer (idRecord: string, mode: stri
   try {
       if(mode === 'create') {
 
-        await postData('supervisor', dataToSend);
+        await postData(endPoint, dataToSend);
 
       } 
     
       else if(mode === 'update') {
 
-          await putData('supervisor/'+ idRecord, dataToSend)
+          await putData(endPoint+ idRecord, dataToSend)
 
       }
 
       else if (mode === 'delete') {
 
-          await deleteData('supervisor/'+ idRecord)
+          await deleteData(endPoint+ idRecord)
           
       }
 
@@ -218,7 +219,7 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
 
   if(isDeleteMode) {
       // the server must be return 404
-      const getOnServer = await getDataOnServer('supervisor/' + idRecord);
+      const getOnServer = await getDataOnServer(endPoint + idRecord);
 
       const isExistsOnServer = getOnServer?.status === 200
 
@@ -233,7 +234,7 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
   else if(isCreateMode || isUpdateMode) {
       const dbItem = useIdb(storeName);
       const getItemInLocal = await dbItem.getItem<Supervisor>(idRecord);
-      const getItemInServer = await getDataOnServer('supervisor/' + idRecord);
+      const getItemInServer = await getDataOnServer(endPoint + idRecord);
 
       const isLocalExists = Boolean(getItemInLocal?.id);
       const isServerExists = getItemInServer?.status === 200;
