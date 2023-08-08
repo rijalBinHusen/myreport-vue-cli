@@ -24,6 +24,22 @@ export interface BaseStock {
   shift: number;
 }
 
+interface BaseStockFromServer {
+  id: string
+  parent: string
+  shift: string
+  item: string
+  awal: string
+  in_stock: string
+  out_stock: string
+  date_in: string
+  plan_out: string
+  date_out: string
+  date_end: string
+  real_stock: string
+  problem: string
+}
+
 interface BaseStockMapped extends BaseStock {
 
   itemName?: string,
@@ -531,4 +547,41 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
   }
 
   return isSynced
+}
+
+export async function implantBaseStockFromServer (parent: string) {
+  const fetchEndPoint = await getDataOnServer('base_stocks?parent' + parent);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbBaseClock = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const baseClocks: BaseStockFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of baseClocks.entries()) {
+      progressMessage2.value = `Menanamkan base stock ${index + 1} dari ${baseClocks.length}`;
+
+      let recordToSet:BaseStock = {
+          id: item.id,
+          awal: Number(item.awal),
+          dateEnd: item.date_end,
+          dateIn: item.date_in,
+          dateOut: item.date_out,
+          in: Number(item.in_stock),
+          item: item.item,
+          out: Number(item.out_stock),
+          parent: item.parent,
+          parentDocument: item.parent,
+          planOut: Number(item.plan_out),
+          problem: item.problem.split(','),
+          real: Number(item.real_stock),
+          shift: Number(item.shift)
+      }
+
+      await dbBaseClock.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = '';
 }
