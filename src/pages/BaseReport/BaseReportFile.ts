@@ -3,8 +3,8 @@ import { ref } from "vue";
 import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
 import { getWarehouseById, lists as warehouseLists } from "../Warehouses/Warehouses";
 import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer";
-import { baseClock } from "./BaseReportClock";
-import { baseReportStock } from "./BaseReportStock"
+import { baseClock, implantBaseClockFromServer } from "./BaseReportClock";
+import { baseReportStock, implantBaseStockFromServer } from "./BaseReportStock"
 
 export interface BaseReportFileInterface {
     clock: string
@@ -17,6 +17,17 @@ export interface BaseReportFileInterface {
     warehouse: string
     warehouseName?: string
     periode2?: string
+}
+
+interface BaseReportFileFromServer {
+    id: string,
+    periode: string,
+    warehouse_id: string,
+    file_name: string,
+    stock_sheet: string,
+    clock_sheet: string,
+    is_imported: string,
+    is_record_finished: string
 }
 
 interface BaseReportFileInterfaceForUpdate {
@@ -222,7 +233,7 @@ export function BaseReportFile() {
 
 }
 
-import { progressMessage2 } from "../../components/parts/Loader/state";
+import { progressMessage2, progressMessage } from "../../components/parts/Loader/state";
 export async function syncBaseFileToServer() {
 
     const db = useIdb(storeName);
@@ -260,7 +271,6 @@ export async function syncBaseFileToServer() {
     }
     return true;
 }
-
 
 export async function syncBaseFileRecordToServer(idRecord: string, mode: string) {
 
@@ -406,4 +416,40 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
     }
   
     return isSynced
+  }
+
+  
+export async function implantBaseFileFromServer (periode1: number, periode2: number) {
+    const fetchEndPoint = await getDataOnServer(`base_files?periode1=${periode1}&periode2=${periode2}`);
+    const isFetchFailed = fetchEndPoint?.status != 200;
+  
+    if(isFetchFailed) return;
+  
+    const dbBaseClock = useIdb(storeName);
+  
+    const waitingServerKeyValue = await fetchEndPoint.json();
+    const baseClocks: BaseReportFileFromServer[] = waitingServerKeyValue?.data
+  
+    for(let [index, item] of baseClocks.entries()) {
+        progressMessage.value = `Menanamkan base report file ${index + 1} dari ${baseClocks.length}`;
+  
+        let recordToSet:BaseReportFileInterface = {
+            id: item.id,
+            clock: item.clock_sheet,
+            fileName: item.file_name,
+            imported: Boolean(item.is_imported),
+            isRecordFinished: Boolean(item.is_record_finished),
+            periode: Number(item.periode),
+            stock: item.stock_sheet,
+            warehouse: item.warehouse_id
+        }
+  
+        await dbBaseClock.setItem(item.id, recordToSet);
+
+        // implant base clock and stock
+        await implantBaseClockFromServer(item.id);
+        await implantBaseStockFromServer(item.id);
+    }
+  
+    progressMessage.value = '';
   }

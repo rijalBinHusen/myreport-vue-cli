@@ -427,7 +427,7 @@ export async function implantBaseClockFromServer (parent: string) {
   const baseClocks: BaseClockFromServer[] = waitingServerKeyValue?.data
 
   for(let [index, item] of baseClocks.entries()) {
-      progressMessage2.value = `Menanamkan base item ${index + 1} dari ${baseClocks.length}`;
+      progressMessage2.value = `Menanamkan base clock ${index + 1} dari ${baseClocks.length}`;
 
       let recordToSet:BaseClock = {
           id: item.id,
