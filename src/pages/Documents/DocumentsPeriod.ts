@@ -36,6 +36,35 @@ interface Document {
     totalWaktu: number
 }
 
+interface DocumentFromServer {
+    id: string,
+    collected: string,
+    approval: string,
+    status: string,
+    shared: string,
+    finished: string,
+    total_do: string,
+    total_kendaraan: string,
+    total_waktu: string,
+    base_report_file: string,
+    is_finished: string,
+    supervisor_id: string,
+    periode: string,
+    shift: string,
+    head_spv_id: string,
+    warehouse_id: string,
+    is_generated_document: string,
+    item_variance: string,
+    parent: string,
+    parent_document: string,
+    plan_out: string,
+    total_item_keluar: string,
+    total_item_moving: string,
+    total_product_not_FIFO: string,
+    total_qty_in: string,
+    total_qty_out: string
+}
+
 type Partial<T> = {
   [P in keyof T]?: T[P];
 };
@@ -545,7 +574,6 @@ export async function syncDocumentToServer () {
     return true
   }
 
-
   export async function syncDocumentRecordToServer (idRecord: string, mode: string) {
 
     if(typeof idRecord !== 'string') {
@@ -629,9 +657,6 @@ export async function syncDocumentToServer () {
     }
     return true
   }
-
-  
-
 
 export async function checkAndsyncDocumentToServer(idRecord: string, mode: string): Promise<boolean> {
 
@@ -751,4 +776,54 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
     }
   
     return isSynced
+  }
+  
+export async function implantDocumentsFromServer (periode1: number, periode2: number) {
+    const fetchEndPoint = await getDataOnServer(`documents/byperiode?periode1=${periode1}&periode2=${periode2}`);
+    const isFetchFailed = fetchEndPoint?.status != 200;
+  
+    if(isFetchFailed) return;
+  
+    const dbBaseClock = useIdb(storeName);
+  
+    const waitingServerKeyValue = await fetchEndPoint.json();
+    const documents: DocumentFromServer[] = waitingServerKeyValue?.data
+  
+    for(let [index, item] of documents.entries()) {
+        progressMessage2.value = `Menanamkan base dokumen ${index + 1} dari ${documents.length}`;
+  
+        let recordToSet:Document = {
+            id: item.id,
+            periode: Number(item.periode),
+            warehouse: item.warehouse_id,
+            approval: item.approval,
+            baseReportFile: item.base_report_file,
+            collected: item.collected,
+            finished: Number(item.finished),
+            generateReport: Boolean(item.is_generated_document),
+            head: item.head_spv_id,
+            isfinished: Boolean(item.is_finished),
+            itemVariance: Number(item.item_variance),
+            name: item.supervisor_id,
+            parent: item.parent,
+            parentDocument: item.parent_document,
+            planOut: Number(item.plan_out),
+            shared: Number(item.shared),
+            shift: Number(item.shift),
+            status: Number(item.status),
+            totalDo: Number(item.total_do),
+            totalItemKeluar: Number(item.total_item_keluar),
+            totalItemMoving: Number(item.total_item_moving),
+            totalKendaraan: Number(item.total_kendaraan),
+            totalProductNotFIFO: Number(item.total_product_not_FIFO),
+            totalQTYIn: Number(item.total_qty_in),
+            totalQTYOut: Number(item.total_qty_out),
+            totalWaktu: Number(item.total_waktu)
+        }
+  
+        await dbBaseClock.setItem(item.id, recordToSet);
+
+    }
+  
+    progressMessage2.value = '';
   }
