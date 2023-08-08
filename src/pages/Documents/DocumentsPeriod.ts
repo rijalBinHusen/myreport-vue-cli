@@ -53,6 +53,7 @@ export interface DocumentsMapped extends Document {
 }
 
 export let lists = ref(<DocumentsMapped[]>[])
+const endPoint = "document/";
 const storeName = "document";
 
 
@@ -601,19 +602,19 @@ export async function syncDocumentToServer () {
 
         if(mode === 'create') {
     
-          await postData('document', dataToSend);
+          await postData(endPoint, dataToSend);
     
         } 
       
         else if(mode === 'update') {
     
-            await putData('document/'+ idRecord, dataToSend)
+            await putData(endPoint+ idRecord, dataToSend)
     
         }
 
         else if (mode === 'delete') {
 
-            await deleteData('document/'+ idRecord)
+            await deleteData(endPoint+ idRecord)
             
         }
 
@@ -647,7 +648,7 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
   
     if(isDeleteMode) {
         // the server must be return 404
-        const getOnServer = await getDataOnServer('document/' + idRecord);
+        const getOnServer = await getDataOnServer(endPoint + idRecord);
   
         const isExistsOnServer = getOnServer?.status === 200
   
@@ -662,7 +663,7 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
     else if(isCreateMode || isUpdateMode) {
         const dbItem = useIdb(storeName);
         const getItemInLocal = await dbItem.getItem<Document>(idRecord);
-        const getItemInServer = await getDataOnServer('document/' + idRecord);
+        const getItemInServer = await getDataOnServer(endPoint + idRecord);
   
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;

@@ -44,6 +44,7 @@ type ProblemUpdate = Partial<Problem>;
 
 export const lists = ref(<ProblemMapped[]>[]);
 const storeName = "problem";
+const endPoint = "problem/";
 const db = useIdb(storeName);
 
 export const getProblemBetweenPeriode = async (periode1: number, periode2: number) => {
@@ -263,7 +264,7 @@ export async function syncProblemToServer () {
 
     try {
       progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-      await postData('problem', dataToSend);
+      await postData(endPoint, dataToSend);
 
     } catch(err) {
               
@@ -317,19 +318,19 @@ export async function syncProblemRecordToServer (idRecord: string, mode: string)
 
     if(mode === 'create') {
 
-      await postData('problem', dataToSend);
+      await postData(endPoint, dataToSend);
 
     } 
   
     else if(mode === 'update') {
 
-        await putData('problem/'+ idRecord, dataToSend)
+        await putData(endPoint+ idRecord, dataToSend)
 
     }
 
     else if (mode === 'delete') {
 
-        await deleteData('problem/'+ idRecord)
+        await deleteData(endPoint+ idRecord)
         
     }
 
@@ -362,7 +363,7 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
 
   if(isDeleteMode) {
       // the server must be return 404
-      const getOnServer = await getDataOnServer('problem/' + idRecord);
+      const getOnServer = await getDataOnServer(endPoint + idRecord);
 
       const isExistsOnServer = getOnServer?.status === 200
 
@@ -377,7 +378,7 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
   else if(isCreateMode || isUpdateMode) {
       const dbItem = useIdb(storeName);
       const getItemInLocal = await dbItem.getItem<Problem>(idRecord);
-      const getItemInServer = await getDataOnServer('problem/' + idRecord);
+      const getItemInServer = await getDataOnServer(endPoint + idRecord);
 
       const isLocalExists = Boolean(getItemInLocal?.id);
       const isServerExists = getItemInServer?.status === 200;

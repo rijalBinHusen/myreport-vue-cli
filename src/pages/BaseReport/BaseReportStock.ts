@@ -53,6 +53,7 @@ interface BaseStockUpdate {
 export let lists = <BaseStockMapped[]>[];
 
 const storeName = "basereportstock";
+const endPoint = "base_stock/"
 
 export function baseReportStock() {
   const db = useIdb(storeName);
@@ -357,7 +358,7 @@ export async function syncBaseStockToServer() {
 
     try {
       progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-      await postData('base_stock', dataToSend);
+      await postData(endPoint, dataToSend);
 
     } catch (err) {
 
@@ -409,19 +410,19 @@ export async function syncBaseStockRecordToServer(idRecord: string, mode: string
 
     if (mode === 'create') {
 
-      await postData('base_stock', dataToSend);
+      await postData(endPoint, dataToSend);
 
     }
 
     else if (mode === 'update') {
 
-      await putData('base_stock/' + idRecord, dataToSend)
+      await putData(endPoint + idRecord, dataToSend)
 
     }
 
     else if (mode === 'delete') {
 
-      await deleteData('base_stock/' + idRecord)
+      await deleteData(endPoint + idRecord)
 
     }
 
@@ -452,7 +453,7 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
 
   if(isDeleteMode) {
       // the server must be return 404
-      const getOnServer = await getDataOnServer('base_stock/' + idRecord);
+      const getOnServer = await getDataOnServer(endPoint + idRecord);
 
       const isExistsOnServer = getOnServer?.status === 200
       
@@ -468,7 +469,7 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
   else if(isCreateMode || isUpdateMode) {
       const dbItem = useIdb(storeName);
       const getItemInLocal = await dbItem.getItem<BaseStock>(idRecord);
-      const getItemInServer = await getDataOnServer('base_stock/' + idRecord);
+      const getItemInServer = await getDataOnServer(endPoint + idRecord);
 
       const isLocalExists = Boolean(getItemInLocal?.id);
       const isServerExists = getItemInServer?.status === 200;

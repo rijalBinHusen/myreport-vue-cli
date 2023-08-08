@@ -8,6 +8,7 @@ import { ref } from 'vue'
 
 let lists = ref([])
 const storeName = "fieldproblem";
+const endPoint = "field_problem/";
 const db = useIdb(storeName);
 
 const getFieldProblem = async () => {
@@ -125,7 +126,7 @@ export async function syncFieldProblemToServer () {
   
       try {
         progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-        await postData('field_problem', dataToSend);
+        await postData(endPoint, dataToSend);
   
       } catch(err) {
         
@@ -173,19 +174,19 @@ export async function syncFieldProblemRecordToServer (idRecord, mode) {
 
         if(mode === 'create') {
 
-            await postData('field_problem', dataToSend);
+            await postData(endPoint, dataToSend);
 
         } 
         
         else if(mode === 'update') {
 
-            await putData('field_problem/'+ idRecord, dataToSend)
+            await putData(endPoint + idRecord, dataToSend)
 
         }
 
         else if (mode === 'delete') {
 
-            await DeleteRecordOnServer('field_problem/'+ idRecord)
+            await DeleteRecordOnServer(endPoint + idRecord)
             
         }
 
@@ -218,7 +219,7 @@ export async function checkAndsyncFieldProblemToServer(idRecord, mode) {
   
     if(isDeleteMode) {
         // the server must be return 404
-        const getOnServer = await getDataOnServer('field_problem/' + idRecord);
+        const getOnServer = await getDataOnServer(endPoint  + idRecord);
   
         const isExistsOnServer = getOnServer?.status === 200
   
@@ -233,7 +234,7 @@ export async function checkAndsyncFieldProblemToServer(idRecord, mode) {
     else if(isCreateMode || isUpdateMode) {
         const dbItem = useIdb(storeName);
         const getItemInLocal = await dbItem.getItem(idRecord);
-        const getItemInServer = await getDataOnServer('field_problem/' + idRecord);
+        const getItemInServer = await getDataOnServer(endPoint  + idRecord);
   
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;

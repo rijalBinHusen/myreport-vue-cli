@@ -5,6 +5,7 @@ import { useIdb } from "../../utils/localforage";
 export let lists = []
 
 const store = 'baseitem'
+const endPoint = 'base_item/'
 
 export function baseItem () {
 
@@ -119,7 +120,7 @@ export async function syncItemToServer() {
 
         try {
             progressMessage2.value = `Mengirim data ${index} dari ${lists.length}`
-            await postData('base_item',dataToSend);
+            await postData(endPoint, dataToSend);
 
         } catch(err) {
 
@@ -157,17 +158,17 @@ export async function syncItemRecordToServer(idRecord, mode) {
         
         if(mode === 'create') {
 
-            await postData('base_item', dataToSend);
+            await postData(endPoint, dataToSend);
 
         } else if(mode === 'update') {
 
-            await putData('base_item/'+idRecord, dataToSend)
+            await putData(endPoint+idRecord, dataToSend)
 
         }
 
         else if (mode === 'delete') {
 
-            await deleteData('base_item/'+ idRecord)
+            await deleteData(endPoint+ idRecord)
             
         }
 
@@ -198,7 +199,7 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
 
     if(isDeleteMode) {
         // the server must be return 404
-        const getOnServer = await getDataOnServer('base_item/' + idRecord);
+        const getOnServer = await getDataOnServer(endPoint + idRecord);
 
         const isExistsOnServer = getOnServer?.status === 200
 
@@ -215,7 +216,7 @@ export async function checkAndsyncItemToServer(idRecord, mode) {
     else if(isCreateMode || isUpdateMode) {
         const dbItem = useIdb('baseitem');
         const getItemInLocal = await dbItem.getItem(idRecord);
-        const getItemInServer = await getDataOnServer('base_item/' + idRecord);
+        const getItemInServer = await getDataOnServer(endPoint + idRecord);
 
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;

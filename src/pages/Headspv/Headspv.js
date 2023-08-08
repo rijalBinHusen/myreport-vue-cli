@@ -5,6 +5,7 @@ import { ref } from "vue";
 
 export let lists = ref([])
 const storeName = "headspv";
+const endPoint = "head_spv/";
 const db = useIdb(storeName)
 
 // interface HeadSpv {
@@ -110,7 +111,7 @@ export async function syncHeadSpvToServer () {
   
       try {
         progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-        await postData('head_spv', dataToSend);
+        await postData(endPoint, dataToSend);
   
       } catch(err) {
         
@@ -153,19 +154,19 @@ export async function syncHeadSpvRecordToServer (idRecord, mode) {
 
         if(mode === 'create') {
     
-          await postData('head_spv', dataToSend);
+          await postData(endPoint, dataToSend);
     
         } 
       
         else if(mode === 'update') {
     
-            await putData('head_spv/'+ idRecord, dataToSend)
+            await putData(endPoint+ idRecord, dataToSend)
     
         }
 
         else if (mode === 'delete') {
 
-            await deleteData('head_spv/'+ idRecord)
+            await deleteData(endPoint+ idRecord)
             
         }
         
@@ -198,7 +199,7 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
 
     if(isDeleteMode) {
         // the server must be return 404
-        const getOnServer = await getDataOnServer('head_spv/' + idRecord);
+        const getOnServer = await getDataOnServer(endPoint + idRecord);
 
         const isExistsOnServer = getOnServer?.status === 200
 
@@ -212,7 +213,7 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
     else if(isCreateMode || isUpdateMode) {
         const dbItem = useIdb(storeName);
         const getItemInLocal = await dbItem.getItem(idRecord);
-        const getItemInServer = await getDataOnServer('head_spv/' + idRecord);
+        const getItemInServer = await getDataOnServer(endPoint + idRecord);
 
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;

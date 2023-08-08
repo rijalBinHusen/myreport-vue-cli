@@ -36,6 +36,7 @@ export interface WarehouseByDate {
 
 export const lists = ref<BaseReportFileInterface[]>([])
 const storeName = "basereportfile";
+const endPoint = "base_file/";
 
 export function BaseReportFile() {
     const db = useIdb(storeName);
@@ -247,7 +248,7 @@ export async function syncBaseFileToServer() {
 
         try {
             progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-            await postData('base_file', dataToSend);
+            await postData(endPoint, dataToSend);
 
         } catch (err) {
 
@@ -298,19 +299,19 @@ export async function syncBaseFileRecordToServer(idRecord: string, mode: string)
 
         if (mode === 'create') {
 
-            await postData('base_file', dataToSend);
+            await postData(endPoint, dataToSend);
 
         }
 
         else if (mode === 'update') {
 
-            await putData('base_file/' + idRecord, dataToSend)
+            await putData(endPoint + idRecord, dataToSend)
 
         }
 
         else if (mode === 'delete') {
 
-            await deleteData('base_file/' + idRecord)
+            await deleteData(endPoint + idRecord)
 
         }
 
@@ -340,7 +341,7 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
   
     if(isDeleteMode) {
         // the server must be return 404
-        const getOnServer = await getDataOnServer('base_file/' + idRecord);
+        const getOnServer = await getDataOnServer(endPoint + idRecord);
   
         const isExistsOnServer = getOnServer?.status === 200
   
@@ -355,7 +356,7 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
     else if(isCreateMode || isUpdateMode) {
         const dbItem = useIdb(storeName);
         const getItemInLocal = await dbItem.getItem<BaseReportFileInterface>(idRecord);
-        const getItemInServer = await getDataOnServer('base_file/' + idRecord);
+        const getItemInServer = await getDataOnServer(endPoint + idRecord);
   
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;
