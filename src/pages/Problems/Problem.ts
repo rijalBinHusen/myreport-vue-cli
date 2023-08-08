@@ -28,6 +28,27 @@ export interface Problem {
   linkToDocument: boolean
 }
 
+interface ProblemFromServer {
+  id: string,
+  warehouse_id: string,
+  supervisor_id: string,
+  head_spv_id: string,
+  item_kode: string,
+  tanggal_mulai: string,
+  shift_mulai: string,
+  pic: string,
+  dl: string,
+  masalah: string,
+  sumber_masalah: string,
+  solusi: string,
+  solusi_panjang: string,
+  dl_panjang: string,
+  pic_panjang: string,
+  tanggal_selesai: string,
+  shift_selesai: string,
+  is_finished: string
+}
+
 interface ProblemMapped extends Problem {
   namaGudang?: string
   namaItem?: string
@@ -277,7 +298,6 @@ export async function syncProblemToServer () {
   return true
 }
 
-
 export async function syncProblemRecordToServer (idRecord: string, mode: string) {
 
   if(typeof idRecord !== 'string') return;
@@ -345,8 +365,6 @@ export async function syncProblemRecordToServer (idRecord: string, mode: string)
 
   return true
 }
-
-
 
 export async function checkAndsyncProblemToServer(idRecord: string, mode: string): Promise<boolean> {
 
@@ -450,4 +468,47 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
   }
 
   return isSynced
+}
+
+
+export async function implantFieldProblemsFromServer (periode1: number, periode2: number) {
+  const fetchEndPoint = await getDataOnServer(`problems/byperiode?periode1=${periode1}&periode2=${periode2}`);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbItem = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const items: ProblemFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of items.entries()) {
+      progressMessage2.value = `Menanamkan selisih stock ${index + 1} dari ${items.length}`;
+
+      let recordToSet:Problem = {
+          id: item.id,
+          dl: Number(item.dl),
+          dlPanjang: Number(item.dl_panjang),
+          isFinished: Boolean(item.is_finished),
+          item: item.item_kode,
+          linkToDocument: false,
+          masalah: item.masalah,
+          nameHeadSpv: item.head_spv_id,
+          nameSpv: item.supervisor_id,
+          periode: Number(item.tanggal_mulai),
+          pic: item.pic,
+          picPanjang: item.pic_panjang,
+          shiftMulai: Number(item.shift_mulai),
+          shiftSelesai: Number(item.shift_selesai),
+          solusi: item.solusi,
+          solusiPanjang: item.solusi_panjang,
+          sumberMasalah: item.sumber_masalah,
+          tanggalSelesai: Number(item.tanggal_selesai),
+          warehouse: item.warehouse_id,
+      }
+
+      await dbItem.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = ''
 }
