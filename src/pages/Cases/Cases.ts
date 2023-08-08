@@ -19,6 +19,33 @@ export interface Case {
   sumberMasalah: string,
 }
 
+interface CaseFromServer {
+  id: string,
+  periode: string,
+  head_spv_id: string,
+  dl: string,
+  masalah: string,
+  supervisor_id: string,
+  parent: string,
+  pic: string,
+  solusi: string,
+  status: string,
+  sumber_masalah: string
+}
+
+interface CaseImportFromServer {
+  id: string,
+  bagian: string,
+  divisi: string,
+  fokus: string,
+  kabag: string,
+  karu: string,
+  keterangan1: string,
+  keterangan2: string,
+  periode: string,
+  temuan: string
+}
+
 interface CaseMapped extends Case {
   periode2?: string,
   spvName?: string,
@@ -366,7 +393,6 @@ export async function syncCasesToServer () {
   return true
 }
 
-
 export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 
   if(typeof idRecord !== 'string') {
@@ -665,4 +691,82 @@ function isValueNotSame(localData: Case|CaseImport, serverData: any): boolean {
                                 || isSumberMasalahNotSame;
       return isAnyValueNotSame
     }
+}
+
+
+async function implantCasesFromServer () {
+  const fetchEndPoint = await getDataOnServer('cases?limit='+ 100);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbBaseCase = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const baseClocks: CaseFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of baseClocks.entries()) {
+      progressMessage2.value = `Menanamkan case ${index + 1} dari ${baseClocks.length}`;
+
+      let recordToSet:Case = {
+          id: item.id,
+          dl: Number(item.dl),
+          head: item.head_spv_id,
+          insert: new Date().getTime(),
+          masalah: item.masalah,
+          name: item.supervisor_id,
+          parent: item.parent,
+          periode: Number(item.periode),
+          pic: item.pic,
+          solusi: item.solusi,
+          status: Boolean(item.status),
+          sumberMasalah: item.sumber_masalah
+      }
+
+      await dbBaseCase.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = '';
+}
+
+async function implantCasesImportFromServer () {
+  const fetchEndPoint = await getDataOnServer('cases_import?limit='+ 100);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbBaseCase = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const baseClocks: CaseImportFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of baseClocks.entries()) {
+      progressMessage2.value = `Menanamkan case import ${index + 1} dari ${baseClocks.length}`;
+
+      let recordToSet:CaseImport = {
+
+          id: item.id,
+          bagian: item.bagian,
+          divisi: item.divisi,
+          fokus: item.fokus,
+          import: true,
+          inserted: true,
+          kabag: item.kabag,
+          karu: item.karu,
+          keterangan1: item.keterangan1,
+          keterangan2: item.keterangan2,
+          periode: item.periode,
+          temuan: item.temuan
+
+      }
+
+      await dbBaseCase.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = '';
+}
+
+export async function implantAllCasesFromServer() {
+  await implantCasesImportFromServer();
+  await implantCasesFromServer()
 }
