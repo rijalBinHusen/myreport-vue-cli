@@ -19,7 +19,7 @@ interface headSpvFromServer {
 }
 
 
-export async function implantFieldProblemsFromServer () {
+export async function implantHeadSPVFromServer () {
     const fetchEndPoint = await getData('field_problems?limit=' + 100);
     const isFetchFailed = fetchEndPoint?.status != 200;
 

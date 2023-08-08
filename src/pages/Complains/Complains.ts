@@ -851,7 +851,7 @@ async function implantComplainsImportFromServer () {
   progressMessage2.value = '';
 }
 
-export async function implantAllCasesFromServer() {
+export async function implantAllComplainsFromServer() {
   await implantComplainsFromServer()
   await implantComplainsImportFromServer();
 }

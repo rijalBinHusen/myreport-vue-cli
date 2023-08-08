@@ -416,7 +416,7 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
 }
 
 export async function implantBaseClockFromServer (parent: string) {
-  const fetchEndPoint = await getDataOnServer('base_clocks?parent' + parent);
+  const fetchEndPoint = await getDataOnServer('base_clocks?parent=' + parent);
   const isFetchFailed = fetchEndPoint?.status != 200;
 
   if(isFetchFailed) return;

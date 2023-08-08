@@ -1,12 +1,5 @@
 <template>
-    <div class="w3-center">
-    <input
-      class="w3-hide"
-      @change.prevent="impor($event)"
-      type="file"
-      accept=".js"
-      ref="importerField"
-    />
+    <div>
     <br />
     <br />
     <br />
@@ -26,15 +19,53 @@
 import { ref } from '@vue/reactivity'
 import { useStore } from "vuex"
 import Button from "@/components/elements/Button.vue"
+import DatePicker from "vue3-datepicker";
+import { subscribeMutation } from '@/composable/piece/subscribeMutation';
+import { implantAllComplainsFromServer } from '../Complains/Complains';
+import { implantItemsFromServer } from '../BaseItem/GetBaseItemFromServer';
+import { implantBaseFileFromServer } from '../BaseReport/BaseReportFile';
+import { implantAllCasesFromServer } from '../Cases/Cases';
+import { implantDocumentsFromServer } from '../Documents/DocumentsPeriod';
+import { implantProblemsFromServer } from '../Problems/Problem';
+import { implantHeadSPVFromServer } from "../Headspv/ImplantHeadSpv"
+import { implantSupervisorFromServer } from '../Supervisors/Supervisors';
+import { implantWarehouseFromServer } from '../Warehouses/Warehouses';
+import { implantFieldProblemsFromServer } from "../FieldProblems/ImplantFieldProblem"
+import { ymdTime } from '@/composable/piece/dateFormat';
+import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 
 export default {
-    components: { Button },
+    components: { Button, DatePicker },
     setup() {
         const store = useStore()
         const importerField = ref(null)
 
-        const launchImporter = () => {
-            importerField.value.click()
+        const launchImporter = async () => {
+            let res = await subscribeMutation(
+                    'Pilih dari periode berapa yang akan di tanamkan',
+                    'PeriodePicker',
+                    '',
+                    'Modal/tunnelMessage'
+                    )
+                if(res) {
+                    loader();
+
+                    const periode1Time = ymdTime(res?.periode1);
+                    const periode2Time = ymdTime(res?.periode2);
+
+                    await implantItemsFromServer(periode1Time);
+                    await implantBaseFileFromServer(periode1Time, periode2Time);
+                    await implantAllCasesFromServer()
+                    await implantAllComplainsFromServer()
+                    await implantDocumentsFromServer(periode1Time, periode2Time)
+                    await implantFieldProblemsFromServer()
+                    await implantHeadSPVFromServer()
+                    await implantProblemsFromServer(periode1Time, periode2Time)
+                    await implantSupervisorFromServer()
+                    await implantWarehouseFromServer()
+
+                    modalClose()
+                }
         }
 
         const impor = (ev) => {
