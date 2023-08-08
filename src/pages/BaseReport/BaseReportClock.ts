@@ -357,24 +357,26 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
       const isServerExists = getItemInServer?.status == 200;
 
       if(isLocalExists && isServerExists) {
-
-          const serverKeyValue = await getItemInServer.json();
           
-          const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
-          const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
-          const isNoDONotSame = serverKeyValue["no_do"] != getItemInLocal?.noDo
-          const isRegNotSame = serverKeyValue["reg"] != getItemInLocal?.reg
-          const isStartNotSame = serverKeyValue["start"] != getItemInLocal?.start
-          const isFinishNotSame = serverKeyValue["finish"] != getItemInLocal?.finish
-          const isRehatNotSame = serverKeyValue["rehat"] != getItemInLocal?.rehat
 
-          let isAnyValueToUpdate = isParentNotSame 
-                                  || isNoDONotSame 
-                                  || isShiftNotSame 
-                                  || isRegNotSame
-                                  || isStartNotSame
-                                  || isFinishNotSame
-                                  || isRehatNotSame
+        const waitingServerKeyValue = await getItemInServer.json();
+        const serverKeyValue = waitingServerKeyValue?.data[0]
+          
+        const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
+        const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
+        const isNoDONotSame = serverKeyValue["no_do"] != getItemInLocal?.noDo
+        const isRegNotSame = serverKeyValue["reg"] != getItemInLocal?.reg
+        const isStartNotSame = serverKeyValue["start"] != getItemInLocal?.start
+        const isFinishNotSame = serverKeyValue["finish"] != getItemInLocal?.finish
+        const isRehatNotSame = serverKeyValue["rehat"] != getItemInLocal?.rehat
+
+        let isAnyValueToUpdate = isParentNotSame 
+                                || isNoDONotSame 
+                                || isShiftNotSame 
+                                || isRegNotSame
+                                || isStartNotSame
+                                || isFinishNotSame
+                                || isRehatNotSame
 
           if(isAnyValueToUpdate) {
 
@@ -385,7 +387,7 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
 
             isSynced = true
             
-        }
+          }
 
       }
 

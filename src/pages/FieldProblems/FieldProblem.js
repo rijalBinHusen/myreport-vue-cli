@@ -239,9 +239,10 @@ export async function checkAndsyncFieldProblemToServer(idRecord, mode) {
         const isLocalExists = Boolean(getItemInLocal?.id);
         const isServerExists = getItemInServer?.status === 200;
   
-        if(isLocalExists && isServerExists) {
-  
-            const serverKeyValue = await getItemInServer.json();
+        if(isLocalExists && isServerExists) {  
+
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0]
             
             const isPeriodeNotSame = serverKeyValue["periode"] != getItemInLocal?.periode;
             const isSupervisorNotSame = serverKeyValue["supervisor_id"] != getItemInLocal?.supervisor;

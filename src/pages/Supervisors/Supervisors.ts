@@ -240,7 +240,8 @@ export async function checkAndsyncSupervisorToServer(idRecord: string, mode: str
 
       if(isLocalExists && isServerExists) {
 
-          const serverKeyValue = await getItemInServer.json();
+        const waitingServerKeyValue = await getItemInServer.json();
+        const serverKeyValue = waitingServerKeyValue?.data[0]
           
           const isNameNotSame = serverKeyValue["supervisor_name"] != getItemInLocal?.name;
           const isPhoneNotSame = serverKeyValue["supervisor_phone"] != getItemInLocal?.phone;

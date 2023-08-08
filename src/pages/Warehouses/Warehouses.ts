@@ -271,8 +271,9 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
         const isServerExists = getItemInServer?.status === 200;
   
         if(isLocalExists && isServerExists) {
-  
-            const serverKeyValue = await getItemInServer.json();
+
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0]
             
             const isNameNotSame = serverKeyValue["warehouse_name"] != getItemInLocal?.name;
             const isGroupNotSame = serverKeyValue["warehouse_group"] != getItemInLocal?.group;

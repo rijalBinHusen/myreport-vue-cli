@@ -605,8 +605,10 @@ export async function checkAndSyncComplainRecordToServer (idRecord: string, mode
   
         } 
         
-        else if(!isDataNotExists && record) {
-          const keyValueServerData = await getServerData?.json();
+        else if(!isDataNotExists && record && getServerData) {
+
+          const waitingServerKeyValue = await getServerData.json();
+          const keyValueServerData = waitingServerKeyValue?.data[0]
   
           const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)
   

@@ -476,33 +476,34 @@ export async function checkAndsyncBaseStockToServer(idRecord: string, mode: stri
 
       if(isLocalExists && isServerExists) {
 
-          const serverKeyValue = await getItemInServer.json();
+        const waitingServerKeyValue = await getItemInServer.json();
+        const serverKeyValue = waitingServerKeyValue?.data[0]
           
-          const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
-          const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
-          const isItemNotSame = serverKeyValue["item"] != getItemInLocal?.item
-          const isAwalNotSame = serverKeyValue["awal"] != getItemInLocal?.awal
-          const isInNotSame = serverKeyValue["in_stock"] != getItemInLocal?.in
-          const isOutNotSame = serverKeyValue["out_stock"] != getItemInLocal?.out
-          const isDateInNotSame = serverKeyValue["date_in"] != getItemInLocal?.dateIn
-          const isPlantOutNotSame = serverKeyValue["plan_out"] != getItemInLocal?.planOut
-          const isDateOutNotSame = serverKeyValue["date_out"] != getItemInLocal?.dateOut
-          const isDateEndNotSame = serverKeyValue["date_end"] != getItemInLocal?.dateEnd
-          const isRealStockNotSame = serverKeyValue["real_stock"] != getItemInLocal?.real
-          const isProblemNotSame = serverKeyValue["problem"] != getItemInLocal?.problem.toString()
+        const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
+        const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
+        const isItemNotSame = serverKeyValue["item"] != getItemInLocal?.item
+        const isAwalNotSame = serverKeyValue["awal"] != getItemInLocal?.awal
+        const isInNotSame = serverKeyValue["in_stock"] != getItemInLocal?.in
+        const isOutNotSame = serverKeyValue["out_stock"] != getItemInLocal?.out
+        const isDateInNotSame = serverKeyValue["date_in"] != getItemInLocal?.dateIn
+        const isPlantOutNotSame = serverKeyValue["plan_out"] != getItemInLocal?.planOut
+        const isDateOutNotSame = serverKeyValue["date_out"] != getItemInLocal?.dateOut
+        const isDateEndNotSame = serverKeyValue["date_end"] != getItemInLocal?.dateEnd
+        const isRealStockNotSame = serverKeyValue["real_stock"] != getItemInLocal?.real
+        const isProblemNotSame = serverKeyValue["problem"] != getItemInLocal?.problem.toString()
 
-          let isAnyValueToUpdate = isParentNotSame
-                                  || isShiftNotSame
-                                  || isItemNotSame
-                                  || isAwalNotSame
-                                  || isInNotSame
-                                  || isOutNotSame
-                                  || isDateInNotSame
-                                  || isPlantOutNotSame
-                                  || isDateOutNotSame
-                                  || isDateEndNotSame
-                                  || isRealStockNotSame
-                                  || isProblemNotSame
+        let isAnyValueToUpdate = isParentNotSame
+                                || isShiftNotSame
+                                || isItemNotSame
+                                || isAwalNotSame
+                                || isInNotSame
+                                || isOutNotSame
+                                || isDateInNotSame
+                                || isPlantOutNotSame
+                                || isDateOutNotSame
+                                || isDateEndNotSame
+                                || isRealStockNotSame
+                                || isProblemNotSame
 
           if(isAnyValueToUpdate) {
 

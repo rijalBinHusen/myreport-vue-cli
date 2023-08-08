@@ -220,7 +220,8 @@ export async function checkAndsyncHeadSpvToServer(idRecord, mode) {
 
         if(isLocalExists && isServerExists) {
 
-            const serverKeyValue = await getItemInServer.json();
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0]
 
             const isNameNotSame = serverKeyValue["head_name"] != getItemInLocal?.name;
             const isPhoneNotSame = serverKeyValue["head_phone"] != getItemInLocal?.phone;

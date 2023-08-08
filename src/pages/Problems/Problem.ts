@@ -385,7 +385,8 @@ export async function checkAndsyncProblemToServer(idRecord: string, mode: string
 
       if(isLocalExists && isServerExists) {
 
-          const serverKeyValue = await getItemInServer.json();
+        const waitingServerKeyValue = await getItemInServer.json();
+        const serverKeyValue = waitingServerKeyValue?.data[0]
           
           const isWarehouseNotSame = serverKeyValue["warehouse_id"] != getItemInLocal?.warehouse;
           const isSupervisorNotSame = serverKeyValue["supervisor_id"] != getItemInLocal?.nameSpv;

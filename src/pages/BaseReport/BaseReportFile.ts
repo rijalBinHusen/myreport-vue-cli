@@ -363,7 +363,8 @@ export async function checkAndsyncBaseFileToServer(idRecord: string, mode: strin
   
         if(isLocalExists && isServerExists) {
   
-            const serverKeyValue = await getItemInServer.json();
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0]
                         
             const isPeriodeNotSame = serverKeyValue["periode"] != getItemInLocal?.periode
             const isWarehouseNotSame = serverKeyValue["warehouse_id"] != getItemInLocal?.warehouse

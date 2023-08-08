@@ -554,7 +554,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
     else if(mode === 'update') {
       
       const getServerData = await getDataOnServer(endPoint + idRecord);
-      const isDataNotExists = getServerData?.status === 404;
+      const isDataNotExists = getServerData?.status == 404;
 
       if(isDataNotExists) {
 
@@ -562,8 +562,10 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
       } 
       
-      else if(!isDataNotExists && record) {
-        const keyValueServerData = await getServerData?.json();
+      else if(!isDataNotExists && record && getServerData?.json) {
+
+        const waitingServerKeyValue = await getServerData.json();
+        const keyValueServerData = waitingServerKeyValue?.data[0]
 
         const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)
 

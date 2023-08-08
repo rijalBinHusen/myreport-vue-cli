@@ -669,8 +669,9 @@ export async function checkAndsyncDocumentToServer(idRecord: string, mode: strin
         const isServerExists = getItemInServer?.status === 200;
   
         if(isLocalExists && isServerExists) {
-  
-            const serverKeyValue = await getItemInServer.json();
+
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0]
             
             const isCollectedNotSame = serverKeyValue["collected"] != getItemInLocal?.collected;
             const isApprovalNotSame = serverKeyValue["approval"] != getItemInLocal?.approval;
