@@ -15,6 +15,17 @@ interface BaseClock {
   rehat: number
 }
 
+interface BaseClockFromServer {
+  id: string
+  parent: string
+  shift: string
+  no_do: string
+  reg: string
+  start: string
+  finish: string
+  rehat: string
+}
+
 interface BaseClockMapped extends BaseClock {
   totalTime: number
 }
@@ -261,7 +272,6 @@ export async function syncClockToServer () {
   return true
 }
 
-
 export async function syncClockRecordToServer (idRecord: string, mode: string) {
 
   let db = useIdb(storeName);
@@ -319,7 +329,6 @@ export async function syncClockRecordToServer (idRecord: string, mode: string) {
     }
   return true
 }
-
 
 export async function checkAndsyncBaseClockToServer(idRecord: string, mode: string) {
 
@@ -404,4 +413,35 @@ export async function checkAndsyncBaseClockToServer(idRecord: string, mode: stri
   }
 
   return isSynced
+}
+
+export async function implantBaseClockFromServer (parent: string) {
+  const fetchEndPoint = await getDataOnServer('base_clocks?parent' + parent);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbBaseClock = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const baseClocks: BaseClockFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of baseClocks.entries()) {
+      progressMessage2.value = `Menanamkan base item ${index + 1} dari ${baseClocks.length}`;
+
+      let recordToSet:BaseClock = {
+          id: item.id,
+          finish: item.finish,
+          noDo: Number(item.no_do),
+          parent: item.parent,
+          reg: item.reg,
+          rehat: Number(item.rehat),
+          shift: Number(item.shift),
+          start: item.start
+      }
+
+      await dbBaseClock.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = '';
 }

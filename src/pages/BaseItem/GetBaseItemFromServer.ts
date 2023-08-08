@@ -17,7 +17,7 @@ interface Item {
     name: string
 }
 
-export async function syncItemsFromServer (periode: number) {
+export async function implantItemsFromServer (periode: number) {
     const fetchEndPoint = await getData('base_items?last_used=' + periode);
     const isFetchFailed = fetchEndPoint?.status != 200;
 
@@ -40,4 +40,6 @@ export async function syncItemsFromServer (periode: number) {
 
         await dbItem.setItem(item.id, recordToSet);
     }
+
+    progressMessage.value = ''
 }
