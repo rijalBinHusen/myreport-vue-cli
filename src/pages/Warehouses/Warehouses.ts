@@ -13,6 +13,14 @@ interface Warehouse {
     supervisors: string[]
 }
 
+interface WarehouseFromServer {
+    id: string
+    warehouse_name: string
+    warehouse_group: string
+    warehouse_supervisors: string
+    is_warehouse_disabled: string
+}
+
 type Partial<T> = {
     [P in keyof T]?: T[P]
 }
@@ -310,4 +318,34 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
 
     return isSynced
 
+  }
+
+
+  export async function implantWarehouseFromServer () {
+    const fetchEndPoint = await getDataOnServer(`warehouses/`);
+    const isFetchFailed = fetchEndPoint?.status != 200;
+  
+    if(isFetchFailed) return;
+  
+    const dbItem = useIdb(storeName);
+  
+    const waitingServerKeyValue = await fetchEndPoint.json();
+    const items: WarehouseFromServer[] = waitingServerKeyValue?.data
+  
+    for(let [index, item] of items.entries()) {
+        progressMessage2.value = `Menanamkan selisih stock ${index + 1} dari ${items.length}`;
+  
+        let recordToSet:Warehouse = {
+            id: item.id,
+            group: item?.warehouse_group,
+            name: item?.warehouse_name,
+            supervisors: item?.warehouse_supervisors.split(','),
+            isGrouped: Boolean(item?.warehouse_group),
+            disabled: Boolean(item?.is_warehouse_disabled)
+        }
+  
+        await dbItem.setItem(item.id, recordToSet);
+    }
+  
+    progressMessage2.value = ''
   }
