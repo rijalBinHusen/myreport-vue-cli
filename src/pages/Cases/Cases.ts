@@ -703,10 +703,10 @@ async function implantCasesFromServer () {
   const dbBaseCase = useIdb(storeName);
 
   const waitingServerKeyValue = await fetchEndPoint.json();
-  const baseClocks: CaseFromServer[] = waitingServerKeyValue?.data
+  const cases: CaseFromServer[] = waitingServerKeyValue?.data
 
-  for(let [index, item] of baseClocks.entries()) {
-      progressMessage2.value = `Menanamkan case ${index + 1} dari ${baseClocks.length}`;
+  for(let [index, item] of cases.entries()) {
+      progressMessage2.value = `Menanamkan case ${index + 1} dari ${cases.length}`;
 
       let recordToSet:Case = {
           id: item.id,
@@ -738,10 +738,10 @@ async function implantCasesImportFromServer () {
   const dbBaseCase = useIdb(storeName);
 
   const waitingServerKeyValue = await fetchEndPoint.json();
-  const baseClocks: CaseImportFromServer[] = waitingServerKeyValue?.data
+  const casesImport: CaseImportFromServer[] = waitingServerKeyValue?.data
 
-  for(let [index, item] of baseClocks.entries()) {
-      progressMessage2.value = `Menanamkan case import ${index + 1} dari ${baseClocks.length}`;
+  for(let [index, item] of casesImport.entries()) {
+      progressMessage2.value = `Menanamkan case import ${index + 1} dari ${casesImport.length}`;
 
       let recordToSet:CaseImport = {
 

@@ -20,6 +20,23 @@ interface Complain {
   type: string
 }
 
+interface ComplainFromServer {
+  id: string,
+  periode: string,
+  head: string,
+  dl: string,
+  inserted: string,
+  masalah: string,
+  supervisor_id: string,
+  parent: string,
+  pic: string,
+  solusi: string,
+  is_status_done: string,
+  sumber_masalah: string,
+  type: string,
+  is_count: string
+}
+
 interface ComplainMapped extends Complain {
   periode2?: string
   spvName?: string
@@ -47,6 +64,26 @@ interface ComplainImport {
   tanggalKomplain: string
   tanggalSuratJalan: string
   type: string
+}
+
+interface ComplainImportFromServer {
+  id: string,
+  customer: string,
+  do_: string,
+  gudang: string,
+  item: string,
+  kabag: string,
+  nomor_SJ: string,
+  nopol: string,
+  real_: string,
+  row_: string,
+  spv: string,
+  tally: string,
+  tanggal_bongkar: string,
+  tanggal_info: string,
+  tanggal_komplain: string,
+  tanggal_SJ: string,
+  type_: string
 }
 
 interface ComplainImportMapped extends ComplainImport {
@@ -731,4 +768,90 @@ function isValueNotSame(localData: Complain|ComplainImport, serverData: any): bo
                                 || isisCountNotSame;
       return isAnyValueNotSame
     }
+}
+
+async function implantComplainsFromServer () {
+  const fetchEndPoint = await getDataOnServer('complains?limit='+ 100);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbBaseCase = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const Complains: ComplainFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of Complains.entries()) {
+      progressMessage2.value = `Menanamkan complain ${index + 1} dari ${Complains.length}`;
+
+      let recordToSet:Complain = {
+          id: item.id,
+          dl: Number(item.dl),
+          insert: new Date().getTime(),
+          masalah: item.masalah,
+          name: item.supervisor_id,
+          parent: item.parent,
+          periode: Number(item.periode),
+          pic: item.pic,
+          solusi: item.solusi,
+          sumberMasalah: item.sumber_masalah,
+          head: item.head,
+          isCount: Boolean(item.is_count),
+          status: Boolean(item.is_status_done),
+          type: item.type
+      }
+
+      await dbBaseCase.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = '';
+}
+
+async function implantComplainsImportFromServer () {
+  const fetchEndPoint = await getDataOnServer('complains_import?limit='+ 100);
+  const isFetchFailed = fetchEndPoint?.status != 200;
+
+  if(isFetchFailed) return;
+
+  const dbBaseCase = useIdb(storeName);
+
+  const waitingServerKeyValue = await fetchEndPoint.json();
+  const baseClocks: ComplainImportFromServer[] = waitingServerKeyValue?.data
+
+  for(let [index, item] of baseClocks.entries()) {
+      progressMessage2.value = `Menanamkan Complain import ${index + 1} dari ${baseClocks.length}`;
+
+      let recordToSet:ComplainImport = {
+
+          id: item.id,
+          import: true,
+          inserted: true,
+          kabag: item.kabag,
+          customer: item.customer,
+          do: Number(item.do_),
+          gudang: item.gudang,
+          item: item.item,
+          nomorSJ: item.nomor_SJ,
+          nopol: item.nopol,
+          real: Number(item.real_),
+          row: item.row_,
+          spv: item.spv,
+          tally: item.tally,
+          tanggalBongkar: item.tanggal_bongkar,
+          tanggalInfo: item.tanggal_info,
+          tanggalKomplain: item.tanggal_komplain,
+          tanggalSuratJalan: item.tanggal_SJ,
+          type: item.type_
+
+      }
+
+      await dbBaseCase.setItem(item.id, recordToSet);
+  }
+
+  progressMessage2.value = '';
+}
+
+export async function implantAllCasesFromServer() {
+  await implantComplainsFromServer()
+  await implantComplainsImportFromServer();
 }
