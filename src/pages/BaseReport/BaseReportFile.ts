@@ -437,8 +437,8 @@ export async function implantBaseFileFromServer (periode1: number, periode2: num
             id: item.id,
             clock: item.clock_sheet,
             fileName: item.file_name,
-            imported: Boolean(item.is_imported),
-            isRecordFinished: Boolean(item.is_record_finished),
+            imported: Boolean(Number(item.is_imported)),
+            isRecordFinished: Boolean(Number(item.is_record_finished)),
             periode: Number(item.periode),
             stock: item.stock_sheet,
             warehouse: item.warehouse_id
