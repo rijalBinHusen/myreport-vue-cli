@@ -300,13 +300,11 @@ export function baseReportStock() {
       loaderMessage.value = `Memindai ${index + 1} dari ${lists.length}.`;
       // if state?.shift == payload.shift && payload?.parent
       if (list?.shift == shift && list?.parent == BaseFile) {
-        // jika documentId kosong
-        if (!list.parentDocument) {
+        // jika parentDocument kosong
           progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
           // update recordnya
           await updateBaseStock(list.id, { parentDocument: documentId });
           markFinished++
-        }
       }
     }
     loaderMessage.value = '';
@@ -331,6 +329,28 @@ export function baseReportStock() {
 
   };
 
+  const getBaseStockByDocumentId = async (documentId: string): Promise<BaseStock[]> => {
+
+    let filterRec = lists.filter(
+      (rec) => rec.parentDocument === documentId
+    );
+
+    if (filterRec.length === 0) {
+      const getRecord = await db.getItemsByKeyValue<BaseStock>('parentDocument', documentId);
+
+      if (getRecord && getRecord.length) {
+        for(let record of getRecord) {
+          const interpretIt = await interpretRecord(record);
+
+          lists.push(interpretIt);
+          filterRec.push(interpretIt);
+        }
+      }
+    }
+
+    return filterRec;
+  };
+
   return {
     appendData,
     startImportStock,
@@ -340,7 +360,8 @@ export function baseReportStock() {
     stockDetails,
     updateBaseStock,
     markStockFinished,
-    reMapStock
+    reMapStock,
+    getBaseStockByDocumentId
   }
 
 }

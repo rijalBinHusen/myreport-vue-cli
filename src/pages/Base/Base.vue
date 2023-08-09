@@ -276,7 +276,8 @@ export default {
                 totalWaktu,
                 totalKendaraan,
                 totalProductNotFIFO,
-                itemVariance
+                itemVariance,
+                baseReportFile: baseId.value
              }
             
             await markStockFinished(baseId.value, nowShift.value, id)
