@@ -21,7 +21,7 @@
         </div>
         <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
         <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyActivity"/>
-        <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/>
+        <!-- <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/> -->
     </div>
 </template>
 

@@ -2,12 +2,12 @@
 import exportToXlsSeperateSheet from "@/utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
 import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
-import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
 import { waitFor } from "@/utils/piece/waiting";
 import { baseItem } from "@/pages/BaseItem/Baseitem";
+import { useIdb } from "@/utils/localforage";
 
 export default async function (baseReport) {
-  const { getBaseStockByParentByShift } = baseReportStock();
+  const dbStock = useIdb('basereportstock');
   const { getItemBykode } = baseItem();
   // baseReport must be a group, e.g = [baseReport, baseReport]
   let details = detailsDocument(baseReport);
@@ -18,7 +18,7 @@ export default async function (baseReport) {
   let tunggu = [];
   let result = [];
   //   lists base report stock
-  let reportPromise = await Promise.all(baseReport.map((val) => getBaseStockByParentByShift(val.baseReportFile, Number(val.shift))));
+  let reportPromise = await Promise.all(baseReport.map((val) => dbStock.getItemsByKeyValue('parentDocument', val?.id)));
     // func.findData({
     //   store: "BaseReportStock",
     //   criteria: {

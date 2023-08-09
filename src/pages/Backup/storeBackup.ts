@@ -525,6 +525,8 @@ export async function fixAllParentDocumentBaseStock() {
 
     // get all documents
     const documents = await dbDocument.getItems<Document>();
+    const baseReportFiles = await dbBaseReportFile.getItems<BaseReportFile>();
+    const baseStocks = await dbBaseReportStock.getItems<BaseStock>();
 
     if(documents.length ===0) return;
     loader();
@@ -534,20 +536,21 @@ export async function fixAllParentDocumentBaseStock() {
         loaderMessage.value = `Menanamkan parent document ${index} dari ${documents.length}`;
 
         // get base report file based periode, and warehouse
-        const baseReportFiles = await dbBaseReportFile.getItemsByTwoKeyValue<BaseReportFile>('periode', document.periode, 'warehouse', document.warehouse);
-        if(baseReportFiles.length)
-        for(let baseFile of baseReportFiles) {
-            // get all base stock based on parent
-            const baseStocks = await dbBaseReportStock.getItemsByTwoKeyValue<BaseStock>('parent', baseFile.id, 'shift', document.shift);
+        const filterBaseReportFiles = baseReportFiles.filter((rec) => rec.periode == document.periode && rec.warehouse == document.warehouse);
 
-            if(baseStocks.length)
-            for(let stock of baseStocks) {
+        if(filterBaseReportFiles.length)
+        for(let baseFile of filterBaseReportFiles) {
+            // get all base stock based on parent
+            const filterBaseStocks = baseStocks.filter((rec) => rec.parent == baseFile.id && rec.shift == document.shift);
+
+            if(filterBaseStocks.length)
+            for(let stock of filterBaseStocks) {
                 // update parentDocument
                 let isParentDocumentNotSame = stock.parentDocument != document.id;
                 if(isParentDocumentNotSame) {
 
                     await dbBaseReportStock.updateItem(stock.id, { parentDocument: document.id });
-                    
+
                 }
             }
         }
