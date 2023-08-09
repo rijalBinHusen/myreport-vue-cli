@@ -162,7 +162,7 @@ import Datatable from "@/components/parts/Datatable.vue"
 import Dropdown from "@/components/elements/Dropdown.vue"
 import { ref, onBeforeMount, watch, computed } from "vue"
 import { useStore } from "vuex"
-import { lists as headSPVLists } from '@/pages//Headspv/Headspv'
+import { headspvEnabled } from '@/pages//Headspv/Headspv'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { lists as listsOfDocuments, Documents } from "./DocumentsPeriod"
 import { lists as listsSupervisor } from '@/pages/Supervisors/Supervisors'
@@ -209,6 +209,7 @@ export default {
         const isModeUncollected = computed(() =>  mode.value == 'Uncollected' )
         const isModeCollected = computed(() =>  mode.value == 'Collected' )
         const isModeApproval = computed(() => mode.value == 'Approval')
+        const headSPVLists = computed(() => headspvEnabled());
 
         const headsTable = computed(() => {
             if(viewByPeriode.value) {
@@ -223,6 +224,7 @@ export default {
                 return ['Gudang', 'Nama']
             }
         })
+
         const keysTable = computed(() => {
             if(viewByPeriode.value) {
                 if(isModeUncollected.value) {
@@ -236,6 +238,7 @@ export default {
                 return ['warehouseName', 'spvName']
             }
         })
+
         // Approval documents
         const grouped = ref([])
         const groupedObject = ref([])
