@@ -489,7 +489,7 @@ export async function implantProblemsFromServer (periode1: number, periode2: num
           id: item.id,
           dl: Number(item.dl),
           dlPanjang: Number(item.dl_panjang),
-          isFinished: Boolean(item.is_finished),
+          isFinished: Boolean(Number(item.is_finished)),
           item: item.item_kode,
           linkToDocument: false,
           masalah: item.masalah,

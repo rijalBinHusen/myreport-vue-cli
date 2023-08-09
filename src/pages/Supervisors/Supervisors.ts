@@ -309,7 +309,7 @@ export async function implantSupervisorFromServer () {
 
       let recordToSet:Supervisor = {
           id: item.id,
-          disabled: Boolean(item.is_disabled),
+          disabled: Boolean(Number(item.is_disabled)),
           name: item.supervisor_name,
           phone: item.supervisor_phone,
           shift: Number(item.supervisor_shift)

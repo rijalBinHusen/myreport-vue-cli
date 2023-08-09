@@ -575,7 +575,7 @@ export async function implantBaseStockFromServer (parent: string) {
           parent: item.parent,
           parentDocument: item.parent,
           planOut: Number(item.plan_out),
-          problem: item.problem.split(','),
+          problem: item.problem != '0' ? item.problem.split(',') : [],
           real: Number(item.real_stock),
           shift: Number(item.shift)
       }

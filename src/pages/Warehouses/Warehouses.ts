@@ -340,8 +340,8 @@ export async function checkAndsyncWarehouseToServer(idRecord: string, mode: stri
             group: item?.warehouse_group,
             name: item?.warehouse_name,
             supervisors: item?.warehouse_supervisors.split(','),
-            isGrouped: Boolean(item?.warehouse_group),
-            disabled: Boolean(item?.is_warehouse_disabled)
+            isGrouped: item?.warehouse_group != '0',
+            disabled: Boolean(Number(item?.is_warehouse_disabled))
         }
   
         await dbItem.setItem(item.id, recordToSet);

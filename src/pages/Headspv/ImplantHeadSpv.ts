@@ -20,7 +20,7 @@ interface headSpvFromServer {
 
 
 export async function implantHeadSPVFromServer () {
-    const fetchEndPoint = await getData('field_problems?limit=' + 100);
+    const fetchEndPoint = await getData('heads_spv');
     const isFetchFailed = fetchEndPoint?.status != 200;
 
     if(isFetchFailed) return;
@@ -35,7 +35,7 @@ export async function implantHeadSPVFromServer () {
 
         let recordToSet:headSpv = {
             id: item.id,
-            disabled: Boolean(item.is_disabled),
+            disabled: Boolean(Number(item.is_disabled)),
             name: item.head_name,
             phone: item.head_phone,
             shift: item.head_shift
