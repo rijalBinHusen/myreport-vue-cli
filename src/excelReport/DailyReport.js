@@ -3,11 +3,11 @@ import { waitFor } from "@/utils/piece/waiting"
 import exportToXlsSeperateSheet from "@/utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
 import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
-import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
 import { baseItem } from "@/pages/BaseItem/Baseitem"
+import { useIdb } from "@/utils/localforage";
 
 export default async function (baseReport) {
-  const { getBaseStockByParentByShift } = baseReportStock();
+  const dbBaseStock = useIdb('basereportstock');
   const { getItemBykode } = baseItem();
   // console.log(baseReport)
   const { totalDo, totalKendaraan, totalWaktu, shift, totalProductNotFIFO, spvName, warehouseName, periode2, headName } = baseReport
@@ -20,7 +20,7 @@ export default async function (baseReport) {
   let waitingLists = [];
   let result = [];
   //   lists base report stock
-  let stocks = await getBaseStockByParentByShift(baseReport?.baseReportFile, shift);
+  let stocks = await dbBaseStock.getItemsByKeyValue('parentDocument', baseReport?.id);
 
   for (let [index, stock] of stocks.entries()) {
     //  add new promise

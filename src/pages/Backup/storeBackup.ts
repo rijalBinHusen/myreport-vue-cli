@@ -15,7 +15,7 @@ import { syncSupervisorToServer, syncSupervisorRecordToServer, checkAndsyncSuper
 import { syncWarehouseToServer, syncWarehouseRecordToServer, checkAndsyncWarehouseToServer } from "../Warehouses/Warehouses";
 import { modalClose, loader } from "../../composable/piece/vuexModalLauncher";
 import { loaderMessage, progressMessage } from "../../components/parts/Loader/state";
-import { postData, deleteData, putData, errorDb } from "../../utils/requestToServer";
+import { errorDb } from "../../utils/requestToServer";
 import { loginToServer } from "../../utils/loginToServer"
 import { useIdb, type Activity } from "@/utils/localforage"
 
@@ -456,4 +456,103 @@ export async function createDummyActivity () {
 
     modalClose();
 
+}
+
+
+interface Document {
+    id: string
+    baseReportFile: string
+    generateReport: boolean
+    head: string
+    isfinished:boolean
+    name: string
+    parent: string
+    parentDocument: string
+    shift: number
+    warehouse: string
+    approval: number|string
+    collected: number|string
+    finished: number
+    itemVariance: number
+    periode: number
+    planOut: number
+    shared: number
+    status: number
+    totalDo: number
+    totalItemKeluar: number
+    totalItemMoving: number
+    totalKendaraan: number
+    totalProductNotFIFO: number
+    totalQTYIn: number
+    totalQTYOut: number
+    totalWaktu: number
+}
+
+interface BaseReportFile {
+    clock: string
+    fileName: string
+    id: string
+    imported: boolean
+    isRecordFinished: boolean
+    periode: number
+    stock: string
+    warehouse: string
+    warehouseName?: string
+    periode2?: string
+}
+
+interface BaseStock {
+    awal: number;
+    dateEnd: string;
+    dateIn: string;
+    dateOut: string;
+    id: string;
+    in: number;
+    item: string;
+    out: number;
+    parent: string;
+    parentDocument: string;
+    planOut: number;
+    problem: string[];
+    real: number;
+    shift: number;
+  }
+
+export async function fixAllParentDocumentBaseStock() {
+    const dbDocument = useIdb('document');
+    const dbBaseReportFile = useIdb('basereportfile');
+    const dbBaseReportStock = useIdb('basereportstock');
+
+    // get all documents
+    const documents = await dbDocument.getItems<Document>();
+
+    if(documents.length ===0) return;
+    loader();
+
+    for(let [index, document] of documents.entries()) {
+
+        loaderMessage.value = `Menanamkan parent document ${index} dari ${documents.length}`;
+
+        // get base report file based periode, and warehouse
+        const baseReportFiles = await dbBaseReportFile.getItemsByTwoKeyValue<BaseReportFile>('periode', document.periode, 'warehouse', document.warehouse);
+        if(baseReportFiles.length)
+        for(let baseFile of baseReportFiles) {
+            // get all base stock based on parent
+            const baseStocks = await dbBaseReportStock.getItemsByTwoKeyValue<BaseStock>('parent', baseFile.id, 'shift', document.shift);
+
+            if(baseStocks.length)
+            for(let stock of baseStocks) {
+                // update parentDocument
+                let isParentDocumentNotSame = stock.parentDocument != document.id;
+                if(isParentDocumentNotSame) {
+
+                    await dbBaseReportStock.updateItem(stock.id, { parentDocument: document.id });
+                    
+                }
+            }
+        }
+
+    }
+
+    modalClose();
 }
