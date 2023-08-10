@@ -348,7 +348,8 @@ export async function syncCasesToServer () {
         "keterangan1": datum?.keterangan1 || 0,
         "keterangan2": datum?.keterangan2 || 0,
         "periode": datum?.periode || 0,
-        "temuan": datum?.temuan || 0
+        "temuan": datum?.temuan || 0,
+        "is_inserted": datum?.inserted
       }
 
       endPoint = "case_import";
@@ -431,7 +432,8 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
       "keterangan1": record?.keterangan1 || 0,
       "keterangan2": record?.keterangan2 || 0,
       "periode": record?.periode || 0,
-      "temuan": record?.temuan || 0
+      "temuan": record?.temuan || 0,
+      "is_inserted": record?.inserted
     }
 
     endPoint = "case_import/";

@@ -383,7 +383,8 @@ export async function syncComplainsToServer () {
         "tanggal_info": datum?.tanggalInfo || 0,
         "tanggal_komplain": datum?.tanggalKomplain || 0,
         "tanggal_SJ": datum?.tanggalSuratJalan || 0,
-        "type_": datum?.type || 0
+        "type_": datum?.type || 0,
+        "is_inserted": datum?.inserted
       }
 
       endPoint = "complain_import";
@@ -474,7 +475,8 @@ export async function syncComplainRecordToServer (idRecord: string, mode: string
         "tanggal_info": record?.tanggalInfo || 0,
         "tanggal_komplain": record?.tanggalKomplain || 0,
         "tanggal_SJ": record?.tanggalSuratJalan || 0,
-        "type_": record?.type || 0
+        "type_": record?.type || 0,
+        "is_inserted": record?.inserted
       }
 
       endPoint = "complain_import/";
