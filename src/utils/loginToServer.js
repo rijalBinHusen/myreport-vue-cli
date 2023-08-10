@@ -1,5 +1,5 @@
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "http://localhost/api-prod/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "https://rijalbinhusen.cloud/";
 
 export function loginToServer(email, password) {
 
