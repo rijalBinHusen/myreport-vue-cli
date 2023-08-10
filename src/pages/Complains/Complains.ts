@@ -84,6 +84,7 @@ interface ComplainImportFromServer {
   tanggal_komplain: string,
   tanggal_SJ: string,
   type_: string
+  is_inserted: string
 }
 
 interface ComplainImportMapped extends ComplainImport {
@@ -827,7 +828,7 @@ async function implantComplainsImportFromServer () {
 
           id: item.id,
           import: true,
-          inserted: true,
+          inserted: Boolean(Number(item?.is_inserted)),
           kabag: item.kabag,
           customer: item.customer,
           do: Number(item.do_),

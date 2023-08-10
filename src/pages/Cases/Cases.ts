@@ -44,6 +44,7 @@ interface CaseImportFromServer {
   keterangan2: string,
   periode: string,
   temuan: string
+  is_intered: string
 }
 
 interface CaseMapped extends Case {
@@ -295,11 +296,18 @@ export function Cases() {
   
   const removeCase = async (id: string) => {
     const findIndex = lists.value.findIndex((rec) => rec.id !== id);
+    const findIndexCaseImport = listsCaseImport.value.findIndex((rec) => rec.id !== id);
     
     if(findIndex > -1) {
       lists.value.splice(findIndex, 1)
     }
+    
+    if(findIndexCaseImport > -1) {
+      listsCaseImport.value.splice(findIndex, 1)
+    }
+
     await db.removeItem(id);
+    
   };
 
   return {
@@ -752,7 +760,7 @@ async function implantCasesImportFromServer () {
           divisi: item.divisi,
           fokus: item.fokus,
           import: true,
-          inserted: true,
+          inserted: Boolean(Number(item?.is_intered)),
           kabag: item.kabag,
           karu: item.karu,
           keterangan1: item.keterangan1,
