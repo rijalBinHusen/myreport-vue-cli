@@ -433,10 +433,11 @@ export default {
                                     )
             let message1 = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${full()}:%0a%0a`
             let documentMorethan2Days = await allDocumentMore2Days();
-            let message2 = `Status dokumen belum approval:%0a%0a`
+            const border = "============================%0a%0a"
+            let message2 = `Dokumen belum approval kepala bagian:%0a%0a`
             let documentUnApprove = await countDocumentUnApproved();
 
-            const result = message1+documentMorethan2Days+message2+documentUnApprove;
+            const result = message1+documentMorethan2Days+border+message2+documentUnApprove;
 
             if(prom) {
                 // console.log(result)

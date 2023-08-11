@@ -512,7 +512,7 @@ export function Documents () {
         }
 
         let headNames = Object.keys(result);
-        let mapHeadNames = headNames.map((rec) => `${rec} = *${result[rec]} Dokumen*`);
+        let mapHeadNames = headNames.map((rec) => `*${rec}* = *${result[rec]}* Dokumen`);
 
         return mapHeadNames.join("%0a");
         
