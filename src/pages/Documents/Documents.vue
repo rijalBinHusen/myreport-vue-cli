@@ -194,7 +194,8 @@ export default {
                 getApprovedDocuments,
                 getDocuments,
                 shareDocument,
-                findDocument 
+                findDocument,
+                countDocumentUnApproved
             } = Documents();
         const store = useStore()
         const viewByPeriode = ref(true)
@@ -430,12 +431,16 @@ export default {
                                     { pesan: `Kamu akan mengirim pesan kepada ${ev} `},
                                     'Modal/tunnelMessage'
                                     )
-            let result = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${full()}:%0a%0a`
-            let messageText = await allDocumentMore2Days();
-            let message2 = `Status dokumen belum diapprove:%0a%0a`
-            let message3 = ``;
+            let message1 = `*Tidak perlu dibalas*%0a%0aBerikut kami kirimkan daftar laporan yang belum dikumpulkan pada ${full()}:%0a%0a`
+            let documentMorethan2Days = await allDocumentMore2Days();
+            let message2 = `Status dokumen belum approval:%0a%0a`
+            let documentUnApprove = await countDocumentUnApproved();
+
+            const result = message1+documentMorethan2Days+message2+documentUnApprove;
+
             if(prom) {
-                window.open(`https://wa.me/${ev}?text=${result+messageText}`)
+                // console.log(result)
+                window.open(`https://wa.me/${ev}?text=${result}`)
             }
         }
 

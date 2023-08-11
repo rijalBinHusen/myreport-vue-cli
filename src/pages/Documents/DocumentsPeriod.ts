@@ -486,6 +486,37 @@ export function Documents () {
             }
         }
     }
+
+    async function countDocumentUnApproved () : Promise<string|undefined> {
+        const getData = await db.getItemsByKeyValue<Document>('status', 1);
+
+        if(getData.length === 0) return;
+
+        let result = <{[key: string]: number }>{};
+
+        for(let datum of getData) {
+            const mapIt = await documentsMapper(datum);
+            if(mapIt?.headName) {
+
+                let isHeadNameExists = result.hasOwnProperty(mapIt.headName)
+
+                if(isHeadNameExists) {
+                    result[mapIt.headName]++
+                }
+
+                else {
+                    result[mapIt.headName] = 1;
+                }
+
+            }
+        }
+
+        let headNames = Object.keys(result);
+        let mapHeadNames = headNames.map((rec) => `${rec} = *${result[rec]} Dokumen*`);
+
+        return mapHeadNames.join("%0a");
+        
+    }
     
     return {
         addData,
@@ -510,7 +541,8 @@ export function Documents () {
         unApproveDocument,
         markDocumentFinished,
         getDocumentByPeriodeByWarehouseByShift,
-        addDocumentsGroup
+        addDocumentsGroup,
+        countDocumentUnApproved
     }
           
 }
