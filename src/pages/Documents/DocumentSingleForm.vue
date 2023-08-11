@@ -105,11 +105,11 @@ export default {
             store.commit("Modal/active")
         }
 
-        onMounted(() => {
+        onMounted(async () => {
             let obj = store.getters['Modal/obj']?.obj
             if(obj) {
                 // get the document
-                let doc = findDocument(obj?.idDocument)
+                let doc = await findDocument(obj?.idDocument)
                 supervisor.value = doc?.name
                 periodeModel.value = new Date(doc?.periode)
                 shift.value = doc?.shift
