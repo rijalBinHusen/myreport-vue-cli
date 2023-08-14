@@ -20,7 +20,7 @@ export default async function (periode, supervisor, head) {
   if(typeof problems === 'undefined') return;
 
   for (let problem of problems) {
-    const supervisor = getSupervisorId(problem.supervisor);
+    const supervisor = await getSupervisorId(problem.supervisor);
 
     result.push({
       periode: dateMonth(problem.periode),

@@ -3,6 +3,7 @@ import exportToXlsSeperateSheet from "../utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByPeriodeBySpv";
 import getCases from "./GetCasesByPeriodeBySpv";
 import GetComplains from "./GetComplainByPeriodeBySpv";
+import getFieldProblems from "./GetFieldProblemByPeriodeBySpv";
 import { JSToExcelDate } from "@/composable/piece/dateFormat";
 
 /*
@@ -54,6 +55,7 @@ export default function (arrayOfArrayOfDocuments) {
             arrProblem.push(getProblem(val2.periode, val2.name));
             arrProblem.push(getCases(val2.periode, val2.name));
             arrProblem.push(GetComplains(val2.periode, val2.name));
+            arrProblem.push(getFieldProblems(val2?.periode, val2?.name));
             arrayPeriodeSearched.push(val2.periode+val2?.name);
           }
           // new details document
