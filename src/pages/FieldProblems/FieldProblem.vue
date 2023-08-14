@@ -26,7 +26,8 @@
                     value="Opsi" 
                     :lists="[
                         { id: 'edit', content: 'Edit'}, 
-                        { id: 'delete', content: 'Delete'}
+                        { id: 'delete', content: 'Delete'}, 
+                        { id: 'duplicate', content: 'Duplicate'}
                     ]"
                     listsKey="id"
                     listsValue="content"
@@ -42,7 +43,7 @@
 import ButtonVue from '@/components/elements/Button.vue'
 import Dropdown from '@/components/elements/Dropdown.vue'
 import DatatableVue from '@/components/parts/Datatable.vue'
-import { listsFieldProblem, deleteData } from './FieldProblem'
+import { listsFieldProblem, deleteData, addData, getFieldProblemById } from './FieldProblem'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 import { subscribeMutation } from '@/composable/piece/subscribeMutation'
@@ -66,16 +67,35 @@ export default {
         })
         
         const handleButton = async (action, id) => {
-            let form = action === 'delete' ? 'Confirm' : 'FieldProblemForm'
+            const form = action === 'edit' ? 'FieldProblemForm' : 'Confirm'
+            const info = action === 'edit' 
+                                ? id 
+                                : action == 'duplicate'
+                                ? { pesan: 'Record akan digandakan?' }
+                                : '';
+            const title =  action === 'edit' ? 'Edit kendala lapangan' : '';
             // subscribe mutation
-            let res = await subscribeMutation( 'Edit kendala lapangan',  form, id, 'Modal/tunnelMessage')
+            let res = await subscribeMutation( title,  form, info, 'Modal/tunnelMessage')
 
             if(action === 'delete') {
                 // if the mutation contain payload true
                 if(res) {
+
                     await deleteData(id)
                 }
             }
+
+            if(action === 'duplicate') {
+                let fieldProblem = await getFieldProblemById(id);
+
+                const { supervisor, head, masalah, sumberMasalah, solusi, pic, dl } = fieldProblem;
+
+                if(res) {
+
+                    await addData( new Date().getTime(), supervisor, head,masalah, sumberMasalah, solusi, pic, dl );
+                }
+            }
+
             // if the mutation receive message true
             if(res) {
                 renewLists()

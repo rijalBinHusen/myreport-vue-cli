@@ -85,7 +85,7 @@ const { addCase, updateCase, getCaseById, getCaseImportById, updateCaseImport } 
     const caseInserted = ref(<Case>{
         dl: new Date().getTime(),
         head: '',
-        insert: 0,
+        insert: new Date().getTime(),
         masalah: '-',
         name: '',
         parent: '-',
