@@ -65,6 +65,7 @@ export default {
             {id: 'problem',  value: 'Problem report'},
             {id: 'supervisors',  value: 'Supervisor'},
             {id: 'warehouses', value: 'Gudang'},
+            {id: 'user', value: 'Username application'},
         ]
 
         const checkedOptions = ref([])

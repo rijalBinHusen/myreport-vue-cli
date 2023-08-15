@@ -18,6 +18,7 @@ import { loaderMessage, progressMessage } from "../../components/parts/Loader/st
 import { errorDb } from "../../utils/requestToServer";
 import { loginToServer } from "../../utils/loginToServer"
 import { useIdb, type Activity } from "@/utils/localforage"
+import { syncUserToServer } from "../Login/users";
 
 export interface Backup {
     [key: string]: { [key: string]: string | number | boolean }[]
@@ -253,6 +254,9 @@ export async function syncAllDataToServer(storeName: string[]) {
                     break;
                 case 'warehouses':
                     isSynced = await syncWarehouseToServer();
+                    break;
+                case 'user':
+                    isSynced = await syncUserToServer();
                     break;
                 default:
                     break;

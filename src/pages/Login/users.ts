@@ -3,6 +3,7 @@ import { useIdb } from "@/utils/localforage"
 import { waitFor } from "@/utils/piece/waiting"
 
 const error = ref('')
+const storeName = "user"
 
 interface User {
     id: string
@@ -21,7 +22,7 @@ export interface Login {
 const signIn = async (username: string, password: string) => {
     error.value = ''
     try {
-        const db = useIdb('user');
+        const db = useIdb(storeName);
         const dbLogin = useIdb('login');
         // cari user namenya]
         const user = await db.getItemsByKeyValue<User>('username', btoa(username));
@@ -66,7 +67,7 @@ const createUser = async (username: string, password: string) => {
     error.value = ''
     // if the username form or password form empty
     try {
-        const db = useIdb('user');
+        const db = useIdb(storeName);
         if (!username || !password) {
             throw Error("Username or password can not be empty")
         }
@@ -132,3 +133,34 @@ export class LoginStorage {
 
 
 }
+
+
+import { progressMessage2 } from "../../components/parts/Loader/state";
+import { postData } from "@/utils/requestToServer"
+export async function syncUserToServer () {
+    const db = useIdb(storeName);
+
+    let allData = await db.getItems<User>();
+  
+    for(let [index, datum] of allData.entries()) {
+  
+        let dataToSend = {
+            id: datum?.id,
+            password: datum?.password,
+            username: datum?.username
+          }
+  
+      try {
+        progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
+        await postData('user/', dataToSend);
+  
+      } catch(err) {
+        
+        console.log(err)
+        // return false;
+  
+  
+      }
+    }
+    return true
+  }
