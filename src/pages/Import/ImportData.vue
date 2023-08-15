@@ -33,6 +33,7 @@ import { implantWarehouseFromServer } from '../Warehouses/Warehouses';
 import { implantFieldProblemsFromServer } from "../FieldProblems/ImplantFieldProblem"
 import { ymdTime } from '@/composable/piece/dateFormat';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
+import { implantUsersFromServer } from '../Login/users';
 
 export default {
     components: { Button, DatePicker },
@@ -55,14 +56,15 @@ export default {
 
                     await implantItemsFromServer(periode1Time);
                     await implantBaseFileFromServer(periode1Time, periode2Time);
-                    await implantAllCasesFromServer()
-                    await implantAllComplainsFromServer()
-                    await implantDocumentsFromServer(periode1Time, periode2Time)
-                    await implantFieldProblemsFromServer()
-                    await implantHeadSPVFromServer()
-                    await implantProblemsFromServer(periode1Time, periode2Time)
-                    await implantSupervisorFromServer()
-                    await implantWarehouseFromServer()
+                    await implantAllCasesFromServer();
+                    await implantAllComplainsFromServer();
+                    await implantDocumentsFromServer(periode1Time, periode2Time);
+                    await implantFieldProblemsFromServer();
+                    await implantHeadSPVFromServer();
+                    await implantProblemsFromServer(periode1Time, periode2Time);
+                    await implantSupervisorFromServer();
+                    await implantWarehouseFromServer();
+                    await implantUsersFromServer();
 
                     modalClose()
                 }

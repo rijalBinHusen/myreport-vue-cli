@@ -3,7 +3,8 @@ import { useIdb } from "@/utils/localforage"
 import { waitFor } from "@/utils/piece/waiting"
 
 const error = ref('')
-const storeName = "user"
+const storeName = "user";
+const endPoint = "user/";
 
 interface User {
     id: string
@@ -136,8 +137,8 @@ export class LoginStorage {
 
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
-import { postData } from "@/utils/requestToServer"
-export async function syncUserToServer () {
+import { postData, getData as getDataOnServer, putData, deleteData } from "@/utils/requestToServer"
+export async function syncUsersToServer () {
     const db = useIdb(storeName);
 
     let allData = await db.getItems<User>();
@@ -152,7 +153,7 @@ export async function syncUserToServer () {
   
       try {
         progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
-        await postData('user/', dataToSend);
+        await postData(endPoint, dataToSend);
   
       } catch(err) {
         
@@ -163,4 +164,158 @@ export async function syncUserToServer () {
       }
     }
     return true
+  }
+
+
+export async function syncUserRecordToServer (idRecord: string, mode: string) {
+
+if(typeof idRecord !== 'string') {
+    alert("Id record must be string");
+    return;
+}
+
+const db = useIdb(storeName);
+
+let record = await db.getItem<User>(idRecord);
+// await getDataByKey(storeName, idRecord);
+
+if(!record && mode != 'delete') {
+    // dont do anything if record doesn't exist;
+    return
+}
+
+let dataToSend = {
+    id: record?.id || '',
+    password: record?.password || '',
+    username: record?.username || ''
+  }
+
+try {
+    if(mode === 'create') {
+
+        await postData(endPoint, dataToSend);
+
+    } 
+    
+    else if(mode === 'update') {
+
+        await putData(endPoint+ idRecord, dataToSend)
+
+    }
+
+    else if (mode === 'delete') {
+        await deleteData(endPoint+ idRecord)
+    }
+
+} catch(err) {
+    
+    const errorMessage = 'Failed to send warehouse record id :' + idRecord +' with message: ' +err;
+//   alert(errorMessage); 
+    console.error(errorMessage);
+
+    return false;
+}
+
+return true;
+}
+
+  export async function checkAndsyncUserToServer(idRecord: string, mode: string) {
+
+    if(typeof idRecord !== 'string') {
+        alert("Id record warehouse must be a string");
+        return true
+    }
+  
+    const isCreateMode = mode === 'create'; 
+    const isUpdateMode = mode === 'update';
+    const isDeleteMode = mode === 'delete';
+  
+    let isSynced = false;
+  
+    if(isDeleteMode) {
+        // the server must be return 404
+        const getOnServer = await getDataOnServer(endPoint + idRecord);
+  
+        const isExistsOnServer = getOnServer?.status === 200
+  
+        if(isExistsOnServer) {
+            let syncing = await syncUserRecordToServer(idRecord, 'delete')
+            isSynced = Boolean(syncing);
+        } else {
+            isSynced = true
+        }
+    }
+  
+    else if(isCreateMode || isUpdateMode) {
+        const dbItem = useIdb(storeName);
+        const getItemInLocal = await dbItem.getItem<User>(idRecord);
+        const getItemInServer = await getDataOnServer(endPoint + idRecord);
+  
+        const isLocalExists = Boolean(getItemInLocal?.id);
+        const isServerExists = getItemInServer?.status === 200;
+  
+        if(isLocalExists && isServerExists) {
+
+            const waitingServerKeyValue = await getItemInServer.json();
+            const serverKeyValue = waitingServerKeyValue?.data[0] as User;
+            
+            const isNameNotSame = serverKeyValue["username"] != getItemInLocal?.username;
+            const isPasswordNotSame = serverKeyValue["password"] != getItemInLocal?.password;
+  
+            let isAnyValueToUpdate = isNameNotSame || isPasswordNotSame;
+  
+            if(isAnyValueToUpdate) {
+  
+              let syncing = await syncUserRecordToServer(idRecord, 'update')
+              isSynced = Boolean(syncing);
+  
+            } else {
+
+                isSynced = true
+                
+            }
+  
+        }
+  
+        else if(isLocalExists && !isServerExists) {
+  
+          let syncing = await syncUserRecordToServer(idRecord, 'create')
+          isSynced = Boolean(syncing);
+  
+        }
+
+        else {
+          isSynced = true
+        }
+    }
+
+    return isSynced
+
+  }
+
+
+  export async function implantUsersFromServer () {
+    const fetchEndPoint = await getDataOnServer(`warehouses/`);
+    const isFetchFailed = fetchEndPoint?.status != 200;
+  
+    if(isFetchFailed) return;
+  
+    const dbItem = useIdb(storeName);
+  
+    const waitingServerKeyValue = await fetchEndPoint.json();
+    const items: User[] = waitingServerKeyValue?.data
+  
+    for(let [index, item] of items.entries()) {
+        progressMessage2.value = `Menanamkan nama gudang, ${index + 1} dari ${items.length}`;
+  
+        let recordToSet:User = {
+            id: item?.id || '',
+            password: item?.password || '',
+            username: item?.username || ''
+          }
+  
+        await dbItem.setItem(item.id, recordToSet);
+    }
+  
+    progressMessage2.value = ''
   }

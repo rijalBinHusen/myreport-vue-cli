@@ -18,7 +18,7 @@ import { loaderMessage, progressMessage } from "../../components/parts/Loader/st
 import { errorDb } from "../../utils/requestToServer";
 import { loginToServer } from "../../utils/loginToServer"
 import { useIdb, type Activity } from "@/utils/localforage"
-import { syncUserToServer } from "../Login/users";
+import { checkAndsyncUserToServer, syncUserRecordToServer, syncUsersToServer } from "../Login/users";
 
 export interface Backup {
     [key: string]: { [key: string]: string | number | boolean }[]
@@ -172,6 +172,11 @@ export async function errorSyncResend() {
                     case 'warehouses':
                         isSuccess = await checkAndsyncWarehouseToServer(idRecord, activityType(record?.operation));
                         break;
+                    case 'user':
+                    case 'user/':
+                    case 'users':
+                        isSuccess = await checkAndsyncUserToServer(idRecord, activityType(record?.operation));
+                        break;
                     default:
                         break;
                 }
@@ -256,7 +261,7 @@ export async function syncAllDataToServer(storeName: string[]) {
                     isSynced = await syncWarehouseToServer();
                     break;
                 case 'user':
-                    isSynced = await syncUserToServer();
+                    isSynced = await syncUsersToServer();
                     break;
                 default:
                     break;
@@ -382,6 +387,9 @@ export async function syncBasedOnActivity() {
                             break;
                         case 'warehouses':
                             await syncWarehouseRecordToServer(activity.idRecord, activity.type);
+                            break;
+                        case 'user':
+                            await syncUserRecordToServer(activity.idRecord, activity.type);
                             break;
                         default:
                             break;

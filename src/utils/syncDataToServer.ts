@@ -14,6 +14,7 @@ import { checkAndsyncFieldProblemToServer, syncFieldProblemRecordToServer } from
 import { checkAndsyncHeadSpvToServer, syncHeadSpvRecordToServer } from "@/pages/Headspv/Headspv";
 import { checkAndsyncProblemToServer, syncProblemRecordToServer } from "@/pages/Problems/Problem";
 import { checkAndsyncWarehouseToServer, syncWarehouseRecordToServer } from "@/pages/Warehouses/Warehouses";
+import { checkAndsyncUserToServer, syncUserRecordToServer } from "@/pages/Login/users";
 
 export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
@@ -232,6 +233,9 @@ async function syncAndCheck(storeName: string, idRecord: string, activityType: s
             case 'warehouses':
                 isSuccess = await checkAndsyncWarehouseToServer(idRecord, activityType);
                 break;
+            case 'user':
+                isSuccess = await checkAndsyncUserToServer(idRecord, activityType);
+                break;
             default:
                 break;
         }
@@ -286,6 +290,9 @@ async function syncOnly(storeName: string, idRecord: string, activityType: strin
                 break;
             case 'warehouses':
                 await syncWarehouseRecordToServer(idRecord, activityType);
+                break;
+            case 'user':
+                await syncUserRecordToServer(idRecord, activityType);
                 break;
             default:
                 break;
