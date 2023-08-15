@@ -492,11 +492,14 @@ export function Documents () {
 
         if(getData.length === 0) return;
 
+        let dayLimit = dayPlusOrMinus(false, -2);
+        let timeLimit = ymdTime(dayLimit);
+
         let result = <{[key: string]: number }>{};
 
         for(let datum of getData) {
             const mapIt = await documentsMapper(datum);
-            if(mapIt?.headName) {
+            if(mapIt?.headName && Number(mapIt.collected) <= timeLimit) {
 
                 let isHeadNameExists = result.hasOwnProperty(mapIt.headName)
 
