@@ -18,9 +18,9 @@
             <br />
             <!-- <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/> -->
             <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
+            <ButtonVue primary value="Create ummy activity" type="button" @trig="createDummyByStoreName"/>
         </div>
         <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
-        <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyActivity"/>
         <!-- <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/> -->
     </div>
 </template>
@@ -94,6 +94,14 @@ export default {
             await syncAllDataToServer(checkedOptions.value)
         }
 
+        async function createDummyByStoreName () {
+            let noCheckedStoreName = checkedOptions.value.length === 0
+
+            if(noCheckedStoreName) return;
+            
+            await createDummyActivity(checkedOptions.value)
+        }
+
         const getSummary = async () => {
             getSummaryData();
         }
@@ -108,7 +116,8 @@ export default {
             errorSyncResend, 
             getSummary,
             createDummyActivity,
-            fixAllParentDocumentBaseStock
+            fixAllParentDocumentBaseStock,
+            createDummyByStoreName
         }
     },
     name: "Backup",

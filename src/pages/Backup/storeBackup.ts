@@ -429,26 +429,20 @@ export async function getSummaryData () {
     console.log(getAllKeys);
 }
 
-export async function createDummyActivity () {
+export async function createDummyActivity (storeNames: string[]) {
 
     loader();
 
-    const dbSummary = useIdb('summary');
-
-    const storeNames = await dbSummary.getKeys();
-
     const activityDb = useIdb("activity");
 
-    for(let [index, storeName] of storeNames.entries()) {
-
-        loaderMessage.value = `Membuat activity dummy ${index} dari ${storeNames.length} nama table`
+    for(let storeName of storeNames) {
         
         const dbItem = useIdb(storeName);
         const itemKeys = await dbItem.getKeys();
 
 
         for(let [index, idRecord] of itemKeys.entries()) {
-            progressMessage.value = `Menanamkan activity ${itemKeys.length - index +1}`
+            loaderMessage.value = `Menanamkan activity ${itemKeys.length - index +1}`
 
             let time = new Date();
 
