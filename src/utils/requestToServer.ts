@@ -1,5 +1,6 @@
 import { getJWTToken } from "./cookie";
 import { useIdb } from "./localforage";
+import { waitFor } from "./piece/waiting";
 
 const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "https://rijalbinhusen.cloud/myreport/";
 const timeOutRequest = 5000;
@@ -7,6 +8,9 @@ const timeOutRequest = 5000;
 interface unknownObject {
   [key: string]: number | boolean | string
 }
+
+let rateLimitTime = 0;
+const resetRateLimitTime = 600000;
 
 export interface errorDb {
   id: string
@@ -52,6 +56,8 @@ export async function postData(endpoint: string, dataToSend: unknownObject): Pro
   const controller = new AbortController();
   const signal = controller.signal;
 
+  await useRateLimitTime();
+
   const timeout = setTimeout(() => {
 
     controller.abort();
@@ -89,7 +95,6 @@ export async function postData(endpoint: string, dataToSend: unknownObject): Pro
   });
 }
 
-
 export async function putData(endpoint: string, dataToSend: unknownObject): Promise<boolean> {
 
   let token = getJWTToken();
@@ -106,6 +111,8 @@ export async function putData(endpoint: string, dataToSend: unknownObject): Prom
 
   const controller = new AbortController();
   const signal = controller.signal;
+
+  await useRateLimitTime();
 
   const timeout = setTimeout(() => {
 
@@ -143,7 +150,6 @@ export async function putData(endpoint: string, dataToSend: unknownObject): Prom
   });
 }
 
-
 export async function deleteData(endpoint: string): Promise<boolean> {
 
   let token = getJWTToken();
@@ -158,6 +164,8 @@ export async function deleteData(endpoint: string): Promise<boolean> {
 
   const controller = new AbortController();
   const signal = controller.signal;
+
+  await useRateLimitTime();
 
   const timeout = setTimeout(() => {
 
@@ -193,7 +201,6 @@ export async function deleteData(endpoint: string): Promise<boolean> {
   });
 }
 
-
 export async function getData(endpoint: string) : Promise<Response|undefined>{
 
   let token = getJWTToken();
@@ -208,6 +215,8 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
 
   const controller = new AbortController();
   const signal = controller.signal;
+
+  await useRateLimitTime();
 
   const timeout = setTimeout(() => {
 
@@ -242,3 +251,9 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
   });
 }
 
+async function useRateLimitTime(): Promise<void> {
+    rateLimitTime+= 100;
+    await waitFor(rateLimitTime);
+    if(rateLimitTime === resetRateLimitTime) { rateLimitTime = 100 };
+    return;
+}
