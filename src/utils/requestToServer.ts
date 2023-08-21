@@ -9,9 +9,6 @@ interface unknownObject {
   [key: string]: number | boolean | string
 }
 
-let rateLimitTime = 0;
-const resetRateLimitTime = 600000;
-
 export interface errorDb {
   id: string
   time: string
@@ -251,9 +248,17 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
   });
 }
 
+let rateLimitTime = 0;
 async function useRateLimitTime(): Promise<void> {
-    rateLimitTime+= 100;
+    rateLimitTime += Math.random() * 100;
+
+    // console.log(`Request would be fetch in ${rateLimitTime} second!`);
+
     await waitFor(rateLimitTime);
-    if(rateLimitTime === resetRateLimitTime) { rateLimitTime = 100 };
+
+    if(rateLimitTime === 1000) {
+
+      rateLimitTime = 0
+    }
     return;
 }
