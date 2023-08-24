@@ -250,13 +250,12 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
 
 let rateLimitTime = 0;
 async function useRateLimitTime(): Promise<void> {
-    rateLimitTime += Math.random() * 100;
+    rateLimitTime += Math.random() * 20;
 
-    // console.log(`Request would be fetch in ${rateLimitTime} second!`);
-
+    console.log(`Request would be fetch in ${rateLimitTime} second!`);
     await waitFor(rateLimitTime);
 
-    if(rateLimitTime === 1000) {
+    if(rateLimitTime === 10000) {
 
       rateLimitTime = 0
     }

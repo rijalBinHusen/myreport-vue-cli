@@ -18,7 +18,7 @@
             <br />
             <!-- <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/> -->
             <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
-            <ButtonVue primary value="Create ummy activity" type="button" @trig="createDummyByStoreName"/>
+            <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/>
         </div>
         <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
         <!-- <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/> -->
