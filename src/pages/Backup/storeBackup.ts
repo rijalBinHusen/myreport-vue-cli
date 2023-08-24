@@ -101,7 +101,7 @@ export async function errorSyncResend() {
 
         else {
 
-            let isSuccess = true;
+            let isSuccess = false;
     
             try {
     
