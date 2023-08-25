@@ -255,7 +255,7 @@ async function useRateLimitTime(): Promise<void> {
     console.log(`Request would be fetch in ${rateLimitTime} second!`);
     await waitFor(rateLimitTime);
 
-    if(rateLimitTime === 5000) {
+    if(rateLimitTime >= 2600) {
 
       rateLimitTime = 0
     }
