@@ -582,9 +582,9 @@ export function announceReport () {
             })
         }
     })
-    // https://rijalbinhusen.cloud/report/weekly?head_supervisor_id=HEA22480001&periode1=1690736400000&periode2=1691168400000
-    let message1 =  `*Tidak perlu dibalas*%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode ${periode1Name} sampai dengan periode ${periode2Name} telah selesai dikerjakan, `; 
-    let message2 = `masing masing fungsi level dapat meninjau hasil rapor denggan mengunjungi tautan berikut :%0a%0a`;
+    
+    let message1 =  `*Tidak perlu dibalas*%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode *${periode1Name}* sampai dengan *${periode2Name}* telah selesai dikerjakan, `; 
+    let message2 = `masing masing fungsi level dapat meninjau hasil rapor dengan mengunjungi tautan berikut :%0a%0a`;
     let resultString = result.map((rec) => ( `*${rec.fungsiLevelName}*%0a${encodeURIComponent(rec.link)}` ));
 
     return message1 + message2 + resultString.join("%0a%0a");
