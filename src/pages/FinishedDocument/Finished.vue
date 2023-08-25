@@ -31,6 +31,17 @@
             primary
             />
 
+            
+            <Dropdown
+                value="Annaunce"  
+                :lists="headSPVLists"
+                listsKey="phone"
+                listsValue="name"
+                @trig="annunceMessage($event)"
+                class="w3-right"
+                secondary
+            />
+
             <Button primary class="w3-right" :value="grouped.length ? 'Unmark all' :'Mark all'" type="button" @trig="markAll"/>
             
         </div>
@@ -77,11 +88,12 @@ import exportWeeklyReportToExcel from "@/excelReport/WeeklyReport"
 import exportWeeklyKabag from "@/excelReport/WeeklyKabag"
 import WeeklyWarehouses from "@/excelReport/WeeklyReportWarehouses"
 import Dropdown from "@/components/elements/Dropdown.vue"
-import { Documents, lists } from '@/pages/Documents/DocumentsPeriod'
+import { Documents, lists, announceReport } from '@/pages/Documents/DocumentsPeriod'
 import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { ref, onMounted, watch, computed } from "vue"
 import { useStore } from "vuex"
 import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
+import { headspvEnabled } from "../Headspv/Headspv"
 
 export default {
     components: {
@@ -223,84 +235,28 @@ export default {
             store.commit("Modal/active");
         }
 
-        // const mappingResult = (arrayOfDocument) => {
-        //     // expected result
-        //     // 12 Oktober:
-        //     // Total produk masuk
-        //     return arrayOfDocument.map((doc) => ([
-        //         `Periode ${doc.periode2} ${doc.warehouseName}:%0a%0a`,
-        //         // Point 1
-        //         // Total produk masuk gudang
-        //         `Total produk masuk gudang: ${doc.totalQTYIn} Karton%0a`,
-        //         // Total item yang moving
-        //         `Total item yang bergerak: ${doc.totalItemMoving} item%0a`,
-        //         // jumlah item yang terdapat variance
-        //         `Total item yang terdapat variance: ${doc.itemVariance} item%0a`,
-        //         // Pencapaian = (item moving - item variance) / item moving
-        //         `Pencapaian: *${((doc.totalItemMoving - doc.itemVariance) / doc.totalItemMoving) * 100}%*%0a%0a`,
-        //         // End of Point 1
-        
-        //         // Point 2
-        //         // Total item yang keluar
-        //         `Total item yang keluar: ${doc.totalItemKeluar} Karton%0a`,
-        //         // Total item yang tidak FIFO
-        //         `Total item yang tidak FIFO: ${doc.totalProductNotFIFO} item%0a`,
-        //         // Pencapaian = ( item keluar - item tidak fifo) / item keluar
-        //         `Pencapaian: *${((doc.totalItemKeluar - doc.totalProductNotFIFO) / doc.totalItemKeluar) * 100}%*%0a%0a`,
-        //         // End of point 2
-                
-        //         // Point 3
-        //         // Total DO
-        //         `Total DO: ${doc.totalDo} DO%0a`,
-        //         // Total Produk keluar pada DO
-        //         `Total produk keluar pada DO: ${doc.totalQTYOut} Karton%0a`,
-        //         // Total produk yang termuat
-        //         `Total produk yang termuat: ${doc.totalQTYOut - doc.planOut} Karton%0a`,
-        //         // Pencapaian Total DO yang termuat = 100%
-        //         `Pencapaian total DO yang termuat: *100%*`,
-        //         // Pencapaian jumlah produk termuat = produk termuat / total produk diDO
-        //         `Pencapaian total kuantity produk yang termuat: ${((doc.totalQTYOut - doc.planOut) / doc.totalQTYOut) * 100}%%0a%0a`,
-        //         // End of point 3
-        
-        //         // point 4
-        //         // Standart waktu muat
-        //         `Standart waktu muat: ${(doc.totalQTYOut - doc.planOut) / 10} Menit%0a`,
-        //         // Realisasi waktu muat
-        //         `Realisasi waktu muat: ${ doc.totalWaktu } Menit%0a`,
-        //         // Pencapaian = Realisasi waktu muat < (produk termuat / 10) ? ok : not ok
-        //         `Pencapaian: ${ doc.totalWaktu < ((doc.totalQTYOut - doc.planOut) / 10 ) ? 'Oke' : 'Not oke'}`
-        //         // End of point 4
-        
-        //         // Total komplain customer
-        //     ])).join('%0a%0a')
+        const headSPVLists = computed(() => headspvEnabled());
 
-        // }
+        async function annunceMessage (phone) {
+            const message = announceReport();
 
-        // const broadcastDocument = async () => {
-        //     // grouping document
-        //     let group = await groupingDocument('name')
-        //     // map the group then map the document
-        //     if(!group) { return }
-        //     for(let docs of group) {
-        //         let res = mappingResult(docs)
-        //         let confirm = await subscribeMutation('Peringatan', 'Confirm', { pesan: `Anda akan mengirim pesan kepada ${docs[0]?.spvName}` }, 'Modal/tunnelMessage')
-        //         if(confirm) {
-        //             // get supervisor info
-        //             let supervisor = await getSupervisorId(docs[0]?.name)
-        //             // send message
-        //             window.open(`https://wa.me/${supervisor.phone}?text=${res}`)
-        //             // console.log(supervisor)
-        //         }
+            if(typeof message !== 'string') return;
+            const prom = await subscribeMutation(
+                                    "", 
+                                    "Confirm",
+                                    { pesan: `Kamu akan mengirim pengumumgan`},
+                                    'Modal/tunnelMessage'
+                                    )
 
-        //     }
-        //     console.log(group)
-        // }
+            if(!prom) return;
+            window.open(`https://wa.me/${phone}?text=${message}`);
+
+        }
 
         return { 
             unfinished, lists, renderTable, 
             markAll, push, pickPeriode, details, 
-            exportReport, grouped, FinishedDocument, unFinishedDocument
-            // broadcastDocument
+            exportReport, grouped, FinishedDocument, unFinishedDocument, headSPVLists, annunceMessage
         }
 		
     },

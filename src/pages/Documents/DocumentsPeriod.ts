@@ -550,6 +550,46 @@ export function Documents () {
           
 }
 
+export function announceReport () {
+    if(lists.value.length === 0) return;
+
+    let result = <{
+        fungsiLevelName: string,
+        link: string,
+    }[]>[];
+
+    let periode1Name = lists.value[0].periode2;
+    let periode1Number = lists.value[0].periode;
+    let periode2Name = lists.value[lists.value.length -1].periode2;
+    let periode2Number = lists.value[lists.value.length -1].periode;
+
+    lists.value.forEach((rec) => {
+
+        let isSPVExists = result.find((resultRec) => resultRec?.fungsiLevelName === rec?.spvName);
+        let isHeadExists = result.find((resultRec) => resultRec?.fungsiLevelName === rec?.headName);
+
+        if(!isSPVExists) {
+            result.push({
+                fungsiLevelName: rec.spvName || "",
+                link: `https://rijalbinhusen.cloud/report/weekly?supervisor_id=${rec.name}&periode1=${periode1Number}&periode2=${periode2Number}`
+            })
+        }
+
+        if(!isHeadExists) {
+            result.push({
+                fungsiLevelName: rec.headName || "",
+                link: `https://rijalbinhusen.cloud/report/weekly?head_supervisor_id=${rec.head}&periode1=${periode1Number}&periode2=${periode2Number}`
+            })
+        }
+    })
+    // https://rijalbinhusen.cloud/report/weekly?head_supervisor_id=HEA22480001&periode1=1690736400000&periode2=1691168400000
+    let message1 =  `*Tidak perlu dibalas*%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode ${periode1Name} sampai dengan periode ${periode2Name} telah selesai dikerjakan, `; 
+    let message2 = `masing masing fungsi level dapat meninjau hasil rapor denggan mengunjungi tautan berikut :%0a%0a`;
+    let resultString = result.map((rec) => ( `*${rec.fungsiLevelName}*%0a${encodeURIComponent(rec.link)}` ));
+
+    return message1 + message2 + resultString.join("%0a%0a");
+}
+
 import { progressMessage2 } from "../../components/parts/Loader/state";
 export async function syncDocumentToServer () {
     const db = useIdb(storeName);
