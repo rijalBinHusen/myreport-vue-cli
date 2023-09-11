@@ -585,7 +585,8 @@ export async function checkAndSyncComplainRecordToServer (idRecord: string, mode
         "tanggal_info": record?.tanggalInfo || 0,
         "tanggal_komplain": record?.tanggalKomplain || 0,
         "tanggal_SJ": record?.tanggalSuratJalan || 0,
-        "type_": record?.type || 0
+        "type_": record?.type || 0,
+        "is_inserted": record?.inserted
       }
 
       endPoint = "complain_import/";
