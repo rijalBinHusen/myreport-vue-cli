@@ -550,8 +550,15 @@ export function Documents () {
           
 }
 
-export function announceReport () {
+interface announceReportResult {
+    phone: string|null
+    message: string
+}
+
+export function announceReport (): announceReportResult[]|undefined {
     if(lists.value.length === 0) return;
+
+    let annaunceResult = <announceReportResult[]>[];
 
     let result = <{
         fungsiLevelName: string,
@@ -563,31 +570,65 @@ export function announceReport () {
     let periode2Name = lists.value[lists.value.length -1].periode2;
     let periode2Number = lists.value[lists.value.length -1].periode;
 
+    let message1 =  `*Tidak perlu dibalas*%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode *${periode1Name}* sampai dengan *${periode2Name}* telah selesai dikerjakan, `; 
+
     lists.value.forEach((rec) => {
 
         let isSPVExists = result.find((resultRec) => resultRec?.fungsiLevelName === rec?.spvName);
         let isHeadExists = result.find((resultRec) => resultRec?.fungsiLevelName === rec?.headName);
 
         if(!isSPVExists) {
-            result.push({
-                fungsiLevelName: rec.spvName || "",
-                link: `https://rijalbinhusen.cloud/report/weekly?supervisor_id=${rec.name}&periode1=${periode1Number}&periode2=${periode2Number}`
-            })
+            let link = encodeURIComponent(`https://rijalbinhusen.cloud/report/weekly?supervisor_id=${rec.name}&periode1=${periode1Number}&periode2=${periode2Number}`);
+
+            result.push({ fungsiLevelName: rec.spvName || "", link })
+            
+            let messagePerson1 = `Selamat pagi bapak ${rec?.spvName}`;
+            let messagePerson2 = `%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode *${periode1Name}* sampai dengan *${periode2Name}* telah selesai dikerjakan, `;
+            let messagePerson3 = `%0abapak dapat meninjau Rapor 3R melalui tautan berikut :%0a%0a${link}`;
+            let messagePerson4 = `%0a%0aJika terdapat ketidak sesuaian pada Rapor tersebut, mohon kami diberikan informasi.`;
+            let messagePerson5 = `%0aAtas perhatian dan kerjasamanya kami sampaikan terimakasih.`;
+
+            let messagePerson = messagePerson1 + messagePerson2 + messagePerson3 + messagePerson4 + messagePerson5;
+
+            getSupervisorId(rec?.name).then((rec) => {
+                annaunceResult.push({
+                    phone: rec?.phone,
+                    message: messagePerson
+                })
+            });
         }
 
         if(!isHeadExists) {
-            result.push({
-                fungsiLevelName: rec.headName || "",
-                link: `https://rijalbinhusen.cloud/report/weekly?head_supervisor_id=${rec.head}&periode1=${periode1Number}&periode2=${periode2Number}`
-            })
+
+            let link = encodeURIComponent(`https://rijalbinhusen.cloud/report/weekly?head_supervisor_id=${rec.head}&periode1=${periode1Number}&periode2=${periode2Number}`);
+            
+            result.push({ fungsiLevelName: rec.headName || "", link })
+
+            let messagePerson1 = `Selamat pagi bapak ${rec?.headName}`;
+            let messagePerson2 = `%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode *${periode1Name}* sampai dengan *${periode2Name}* telah selesai dikerjakan, `;
+            let messagePerson3 = `%0abapak dapat meninjau Rapor 3R melalui tautan berikut :%0a%0a${link}`;
+            let messagePerson4 = `%0a%0aJika terdapat ketidak sesuaian pada Rapor tersebut, mohon kami diberikan informasi.`;
+            let messagePerson5 = `%0aAtas perhatian dan kerjasamanya kami sampaikan terimakasih.`;
+
+            let messagePerson = messagePerson1 + messagePerson2 + messagePerson3 + messagePerson4 + messagePerson5;
+
+            getHeadspvId(rec?.head).then((rec) => {
+                annaunceResult.push({
+                    phone: rec?.phone,
+                    message: messagePerson
+                })
+            });
         }
     })
     
-    let message1 =  `*Tidak perlu dibalas*%0a%0aBersama dengan ini kami sampaikan bahwa Rapor 3R periode *${periode1Name}* sampai dengan *${periode2Name}* telah selesai dikerjakan, `; 
     let message2 = `masing masing fungsi level dapat meninjau hasil rapor dengan mengunjungi tautan berikut :%0a%0a`;
     let resultString = result.map((rec) => ( `*${rec.fungsiLevelName}*%0a${encodeURIComponent(rec.link)}` ));
 
-    return message1 + message2 + resultString.join("%0a%0a");
+    let allMessage = { phone: null, message: message1 + message2 + resultString.join("%0a%0a")};
+
+    annaunceResult.push(allMessage);
+
+    return annaunceResult;
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";

@@ -240,17 +240,31 @@ export default {
         async function annunceMessage (phone) {
             const message = announceReport();
 
-            if(typeof message !== 'string') return;
-            const prom = await subscribeMutation(
-                                    "", 
-                                    "Confirm",
-                                    { pesan: `Kamu akan mengirim pengumumgan`},
-                                    'Modal/tunnelMessage'
-                                    )
+            if(typeof message.length === 0) return;
 
-            if(!prom) return;
-            window.open(`https://wa.me/${phone}?text=${message}`);
+            console.log(message);
 
+            for (let msg of message) {
+
+                const prom = await subscribeMutation(
+                                        "", 
+                                        "Confirm",
+                                        { pesan: `Kamu akan mengirim pesan kepada ${msg.phone}`},
+                                        'Modal/tunnelMessage'
+                                        )
+    
+                if(prom) {
+                    console.log(msg.message)
+    
+                    if(typeof msg.phone === 'string' && msg.phone.length > 10) {
+
+                        // window.open(`https://wa.me/${msg.phone}?text=${msg.message}`);
+                    } else {
+                        
+                        // window.open(`https://wa.me/${phone}?text=${msg.message}`);
+                    }
+                }
+            }
         }
 
         return { 
