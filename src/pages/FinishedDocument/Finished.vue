@@ -242,8 +242,6 @@ export default {
 
             if(typeof message.length === 0) return;
 
-            console.log(message);
-
             for (let msg of message) {
 
                 const prom = await subscribeMutation(
@@ -254,14 +252,13 @@ export default {
                                         )
     
                 if(prom) {
-                    console.log(msg.message)
     
                     if(typeof msg.phone === 'string' && msg.phone.length > 10) {
 
-                        // window.open(`https://wa.me/${msg.phone}?text=${msg.message}`);
+                        window.open(`https://wa.me/${msg.phone}?text=${msg.message}`);
                     } else {
                         
-                        // window.open(`https://wa.me/${phone}?text=${msg.message}`);
+                        window.open(`https://wa.me/${phone}?text=${msg.message}`);
                     }
                 }
             }

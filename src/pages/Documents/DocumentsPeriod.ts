@@ -622,7 +622,7 @@ export function announceReport (): announceReportResult[]|undefined {
     })
     
     let message2 = `masing masing fungsi level dapat meninjau hasil rapor dengan mengunjungi tautan berikut :%0a%0a`;
-    let resultString = result.map((rec) => ( `*${rec.fungsiLevelName}*%0a${encodeURIComponent(rec.link)}` ));
+    let resultString = result.map((rec) => ( `*${rec.fungsiLevelName}*%0a${rec.link}` ));
 
     let allMessage = { phone: null, message: message1 + message2 + resultString.join("%0a%0a")};
 
