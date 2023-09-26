@@ -13,9 +13,6 @@
 
 <script setup>
     import DropdownVue from '@/components/elements/Dropdown.vue';
-    import { onMounted } from 'vue';
-    import { deleteFile } from '@/composable/firebase/storage'
-    import { result, getStore, deleteDocumentByKey } from '@/composable/firebase/fireStore'
     import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import { subscribeMutation } from '@/composable/piece/subscribeMutation';
 
@@ -31,7 +28,6 @@ import { subscribeMutation } from '@/composable/piece/subscribeMutation';
             if(confirm) {
                 loader()
                 await deleteFile('myreport/'+fileName)
-                await deleteDocumentByKey('activitySaved', fileName)
                 modalClose()
             }
         }
@@ -41,8 +37,4 @@ import { subscribeMutation } from '@/composable/piece/subscribeMutation';
         { id: 0, value: 'Kunjungi' },
         { id: 1, value: 'Hapus' }
     ]
-
-    onMounted(async () => {
-        await getStore('activitySaved')
-    })
 </script>
