@@ -213,6 +213,12 @@ export function baseReportStock() {
 
     if (filterRec.length === 0) {
       const getRecord = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
+      
+      if(getRecord.length == 0) {
+        await appendData(parent, shift, "Record generated", 0, 0, 0, 0);
+        // getBaseClockByParentByShift(parent, shift);
+        return [lists[lists.length - 1]];
+      };
 
       if (getRecord && getRecord.length) {
         for(let record of getRecord) {
