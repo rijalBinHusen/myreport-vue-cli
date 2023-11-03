@@ -303,7 +303,7 @@ export function Cases() {
     }
     
     if(findIndexCaseImport > -1) {
-      listsCaseImport.value.splice(findIndex, 1)
+      listsCaseImport.value.splice(findIndexCaseImport, 1)
     }
 
     await db.removeItem(id);

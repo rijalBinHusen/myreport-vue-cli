@@ -75,9 +75,8 @@ export function baseItem () {
 
         if(findItem?.name) {
 
-            updateItem(findItem?.id, false, false, ymdTime());
-            
-            return findItem
+            updateItem(findItem?.id, findItem?.kode, findItem?.name, ymdTime());
+            return findItem;
         }
 
 
