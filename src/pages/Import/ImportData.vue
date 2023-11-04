@@ -5,6 +5,15 @@
     <br />
     <br />
     <br />
+        <div class="w3-col s3" v-for="option in options" :key="option.id">
+            <CheckboxVue 
+                :checkboxName="option.id" 
+                :value="option.id" 
+                :label="option.value"
+                @check="toggleCheckOptions"
+                :isChecked="checkedOptions.includes(option.id)"
+            />
+        </div>
          <Button 
             :style="{width: '250px' }" 
             class="" 
@@ -34,12 +43,45 @@ import { implantFieldProblemsFromServer } from "../FieldProblems/ImplantFieldPro
 import { ymdTime } from '@/composable/piece/dateFormat';
 import { loader, modalClose } from '@/composable/piece/vuexModalLauncher';
 import { implantUsersFromServer } from '../Login/users';
+import CheckboxVue from '@/components/elements/Checkbox.vue';
 
 export default {
-    components: { Button, DatePicker },
+    components: { Button, DatePicker, CheckboxVue },
     setup() {
         const store = useStore()
         const importerField = ref(null)
+
+        const options = [
+            {id: 'baseitem', value: 'Item'}, 
+            {id: 'basereportfile', value: 'Base report file'},
+            {id:'cases', value: 'Kasus'}, 
+            {id: 'complains', value: 'Komplain'}, 
+            {id: 'document', value: 'Dokumen'},
+            {id: 'fieldproblem',  value: 'Kendala lapangan'},
+            {id: 'headspv',  value: 'Kepala bagian'},
+            {id: 'problem',  value: 'Problem report'},
+            {id: 'supervisors',  value: 'Supervisor'},
+            {id: 'warehouses', value: 'Gudang'},
+            {id: 'user', value: 'Username application'},
+        ]
+
+        const checkedOptions = ref([])
+
+        function toggleCheckOptions (storeName) {
+
+            let findIndex = checkedOptions.value.indexOf(storeName);
+            let isExists = findIndex > -1;
+
+            if(isExists) {
+
+                checkedOptions.value.splice(findIndex, 1)
+
+            } else {
+
+                checkedOptions.value.push(storeName);
+
+            }
+        }
 
         const launchImporter = async () => {
             let res = await subscribeMutation(
@@ -54,17 +96,17 @@ export default {
                     const periode1Time = ymdTime(res?.periode1);
                     const periode2Time = ymdTime(res?.periode2);
 
-                    await implantItemsFromServer(periode1Time);
-                    await implantBaseFileFromServer(periode1Time, periode2Time);
-                    await implantAllCasesFromServer();
-                    await implantAllComplainsFromServer();
-                    await implantDocumentsFromServer(periode1Time, periode2Time);
-                    await implantFieldProblemsFromServer();
-                    await implantHeadSPVFromServer();
-                    await implantProblemsFromServer(periode1Time, periode2Time);
-                    await implantSupervisorFromServer();
-                    await implantWarehouseFromServer();
-                    await implantUsersFromServer();
+                    if(checkedOptions.value.includes('baseitem')) await implantItemsFromServer(periode1Time);
+                    if(checkedOptions.value.includes('basereportfile')) await implantBaseFileFromServer(periode1Time, periode2Time);
+                    if(checkedOptions.value.includes('cases')) await implantAllCasesFromServer();
+                    if(checkedOptions.value.includes('complains')) await implantAllComplainsFromServer();
+                    if(checkedOptions.value.includes('document')) await implantDocumentsFromServer(periode1Time, periode2Time);
+                    if(checkedOptions.value.includes('fieldproblem')) await implantFieldProblemsFromServer();
+                    if(checkedOptions.value.includes('headspv')) await implantHeadSPVFromServer();
+                    if(checkedOptions.value.includes('problem')) await implantProblemsFromServer(periode1Time, periode2Time);
+                    if(checkedOptions.value.includes('supervisors')) await implantSupervisorFromServer();
+                    if(checkedOptions.value.includes('warehouses')) await implantWarehouseFromServer();
+                    if(checkedOptions.value.includes('user')) await implantUsersFromServer();
 
                     modalClose()
                 }
@@ -91,7 +133,7 @@ export default {
         }
 
         return {
-            importerField, launchImporter, impor
+            importerField, launchImporter, impor, options, checkedOptions, toggleCheckOptions
         }
         
     }
