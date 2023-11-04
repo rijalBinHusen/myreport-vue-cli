@@ -84,14 +84,14 @@ export function baseReportStock() {
 
     const recordToSet = {
       awal,
-      dateEnd: "",
-      dateIn: "",
-      dateOut: "",
+      dateEnd: "-",
+      dateIn: "-",
+      dateOut: "-",
       in: masuk,
       item,
       out: keluar,
       parent,
-      parentDocument: '',
+      parentDocument: '-',
       planOut: 0,
       problem: getProblem,
       real: riil,
