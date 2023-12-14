@@ -2,6 +2,7 @@
 <!-- 
 - [ ] Halaman edit dokumen, sebelumnya dokumen sudah ditandai sebagai MP Tidak masuk, tetapi terdapat kesalahan dalam penulisan nama kepala bagian, ketika kita update kepala bagian, maka status dokumen dari tidak masuk menjadi dikumpulkan dan diparaf pada tanggal saat itu 
 - [ ] Import summary dokumen juga
+- [ ] periksa cases dan complain import is_inserted tidak terdeteksi
 -->
 
 
