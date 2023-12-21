@@ -133,7 +133,7 @@ import { getDocumentDetails, type DocumentDetails } from "./BaseFinishForm"
     }
 
     const inputs = computed(():inputsInterface[] => [
-                { label: "Total produk keluar", valueFrom: 'totalQTYOut', editable: false },
+                { label: "Total produk keluar", valueFrom: 'totalQTYOut', editable: true },
                 { label: "Total item bergerak", valueFrom: 'totalItemMoving', editable: false },
                 { label: "Total produk masuk", valueFrom: 'totalQTYIn', editable: false },
                 { label: "Coret DO", valueFrom: 'planOut', editable: false },

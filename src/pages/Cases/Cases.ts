@@ -55,18 +55,18 @@ interface CaseMapped extends Case {
 }
 
 export interface CaseImport {
-  id:string
-  bagian:string
-  divisi:string
-  fokus:string
-  import:boolean
-  inserted:boolean
-  kabag:string
-  karu:string
-  keterangan1:string
-  keterangan2:string
-  periode:string
-  temuan:string
+  id: string
+  bagian: string
+  divisi: string
+  fokus: string
+  import: boolean
+  inserted: boolean
+  kabag: string
+  karu: string
+  keterangan1: string
+  keterangan2: string
+  periode: string
+  temuan: string
 }
 
 type Partial<T> = {
@@ -110,15 +110,15 @@ export function Cases() {
       status,
       sumberMasalah,
     };
-  
+
     const insertedId = await db.createItem(rec);
 
-    if(typeof insertedId === 'undefined') return;
-      const interpretIt = await interpretCaseRecord({ id: insertedId, ...rec})
-      lists.value.unshift(interpretIt)
-    
+    if (typeof insertedId === 'undefined') return;
+    const interpretIt = await interpretCaseRecord({ id: insertedId, ...rec })
+    lists.value.unshift(interpretIt)
+
   }
-  
+
   async function addCaseImport(
     bagian: string,
     divisi: string,
@@ -145,21 +145,21 @@ export function Cases() {
     };
 
     const insertedId = await db.createItem(rec);
-    
-    if(insertedId) {
+
+    if (insertedId) {
       listsCaseImport.value.unshift({ id: insertedId, ...rec });
     }
   }
-  
+
   async function getCases() {
 
-    const getData = await db.getItemsLimitDesc<Case&CaseImport>(200);
+    const getData = await db.getItemsLimitDesc<Case & CaseImport>(200);
 
-    if(getData) {
+    if (getData) {
 
-      for(let datum of getData) {
+      for (let datum of getData) {
 
-        if(datum?.import) {
+        if (datum?.import) {
 
           listsCaseImport.value.push({
             bagian: datum?.bagian,
@@ -177,7 +177,7 @@ export function Cases() {
           });
 
         } else {
-          
+
           const interpretIt = await interpretCaseRecord({
             dl: Number(datum?.dl),
             head: datum?.head,
@@ -215,99 +215,99 @@ export function Cases() {
     };
 
   }
-  
-  async function getCaseById(idCase: string): Promise<Case|undefined> {
+
+  async function getCaseById(idCase: string): Promise<Case | undefined> {
     const findIndex = lists.value.findIndex((rec) => rec.id == idCase);
 
-    if(findIndex > -1) {
+    if (findIndex > -1) {
       return lists.value[findIndex];
     }
 
     let getRecord = await db.getItem<Case>(idCase);
 
-    if(getRecord === null) return;
+    if (getRecord === null) return;
 
-    if(getRecord?.insert) {
+    if (getRecord?.insert) {
       getRecord = await interpretCaseRecord(getRecord);
     }
 
     lists.value.push(getRecord);
     return getRecord;
-  } 
-  
-  async function getCaseImportById(idCase: string): Promise<CaseImport|undefined> {
+  }
+
+  async function getCaseImportById(idCase: string): Promise<CaseImport | undefined> {
     const findIndex = listsCaseImport.value.findIndex((rec) => rec.id == idCase);
 
-    if(findIndex > -1) {
+    if (findIndex > -1) {
       return listsCaseImport.value[findIndex];
     }
 
     let getRecord = await db.getItem<CaseImport>(idCase);
 
-    if(getRecord === null) return;
+    if (getRecord === null) return;
 
-    if(getRecord.import) {
+    if (getRecord.import) {
 
       listsCaseImport.value.push(getRecord);
       return getRecord;
-      
+
     }
 
-  } 
-  
+  }
+
   async function updateCase(idCase: string, obj: CaseUpdate) {
     const isNoValueToUpdate = Object.values(obj).length === 0;
 
-        if(isNoValueToUpdate) return;
+    if (isNoValueToUpdate) return;
 
-        const findIndex = lists.value.findIndex((rec) => rec?.id === idCase);
+    const findIndex = lists.value.findIndex((rec) => rec?.id === idCase);
 
-        if(findIndex > -1) {
-            const record = lists.value[findIndex];
-            delete record.headName;
-            delete record.insert2;
-            delete record.periode2;
-            delete record.spvName;
-            
-            const updateRecord = { ...record, ...obj };
-            const mapUpdateRecord = await interpretCaseRecord(updateRecord)
-            lists.value[findIndex] = mapUpdateRecord;
-        }
-        
-        await db.updateItem(idCase, obj);
+    if (findIndex > -1) {
+      const record = lists.value[findIndex];
+      delete record.headName;
+      delete record.insert2;
+      delete record.periode2;
+      delete record.spvName;
+
+      const updateRecord = { ...record, ...obj };
+      const mapUpdateRecord = await interpretCaseRecord(updateRecord)
+      lists.value[findIndex] = mapUpdateRecord;
+    }
+
+    await db.updateItem(idCase, obj);
   }
-  
+
   async function updateCaseImport(idCase: string, obj: CaseImportUpdate) {
     const isNoValueToUpdate = Object.values(obj).length === 0;
 
-        if(isNoValueToUpdate) return;
+    if (isNoValueToUpdate) return;
 
-        const findIndex = listsCaseImport.value.findIndex((rec) => rec?.id === idCase);
+    const findIndex = listsCaseImport.value.findIndex((rec) => rec?.id === idCase);
 
-        if(findIndex > -1) {
-            const record = listsCaseImport.value[findIndex];
-            
-            const updateRecord = { ...record, ...obj };
-            listsCaseImport.value[findIndex] = updateRecord;
-        }
-        
-        await db.updateItem(idCase, obj);
+    if (findIndex > -1) {
+      const record = listsCaseImport.value[findIndex];
+
+      const updateRecord = { ...record, ...obj };
+      listsCaseImport.value[findIndex] = updateRecord;
+    }
+
+    await db.updateItem(idCase, obj);
   }
-  
+
   const removeCase = async (id: string) => {
-    const findIndex = lists.value.findIndex((rec) => rec.id !== id);
-    const findIndexCaseImport = listsCaseImport.value.findIndex((rec) => rec.id !== id);
-    
-    if(findIndex > -1) {
+    const findIndex = lists.value.findIndex((rec) => rec.id === id);
+    const findIndexCaseImport = listsCaseImport.value.findIndex((rec) => rec.id === id);
+
+    if (findIndex > -1) {
       lists.value.splice(findIndex, 1)
     }
-    
-    if(findIndexCaseImport > -1) {
+
+    if (findIndexCaseImport > -1) {
       listsCaseImport.value.splice(findIndexCaseImport, 1)
     }
 
     await db.removeItem(id);
-    
+
   };
 
   return {
@@ -320,20 +320,20 @@ export function Cases() {
     updateCaseImport,
     removeCase
   }
-    
+
 }
 
 import { progressMessage2 } from "../../components/parts/Loader/state";
 import { postData, putData, deleteData, getData as getDataOnServer } from "../../utils/requestToServer";
 
-export async function syncCasesToServer () {
+export async function syncCasesToServer() {
 
   const db = useIdb(storeName);
 
-  let allData = await db.getItems<Case&CaseImport>();
+  let allData = await db.getItems<Case & CaseImport>();
   // getData({ store: storeName, withKey: true })
 
-  for(let [index, datum] of allData.entries()) {
+  for (let [index, datum] of allData.entries()) {
     // awal, dateEnd, dateIn, dateOut, id, in, item, 
     //out, parent, parentDocument, planOut
     //  problem, real, shift
@@ -344,7 +344,7 @@ export async function syncCasesToServer () {
     let dataToSend;
     let endPoint;
 
-    if(datum?.import) {
+    if (datum?.import) {
 
       dataToSend = {
         "id": datum?.id || 0,
@@ -362,7 +362,7 @@ export async function syncCasesToServer () {
 
       endPoint = "case_import";
 
-    } 
+    }
 
     // case
     // dl || 0, head || 0, id || 0, insert || 0, masalah || 0, name || 0, parent || 0, periode || 0, pic
@@ -391,31 +391,31 @@ export async function syncCasesToServer () {
       progressMessage2.value = `Mengirim data ${index} dari ${allData.length}`
       await postData(endPoint, dataToSend);
 
-    } catch(err) {
+    } catch (err) {
 
-        // alert(err);
-        console.log(err)
-        // return false;
+      // alert(err);
+      console.log(err)
+      // return false;
 
     }
   }
   return true
 }
 
-export async function syncCaseRecordToServer (idRecord: string, mode: string) {
+export async function syncCaseRecordToServer(idRecord: string, mode: string) {
 
-  if(typeof idRecord !== 'string') {
+  if (typeof idRecord !== 'string') {
     alert("Id record case must be a string");
     return;
   }
 
   const db = useIdb(storeName);
 
-  let record = await db.getItem<Case&CaseImport>(idRecord);
+  let record = await db.getItem<Case & CaseImport>(idRecord);
 
-  if(!record && mode != 'delete') {
-      // dont do anything if record doesn't exist;
-      return
+  if (!record && mode != 'delete') {
+    // dont do anything if record doesn't exist;
+    return
   }
 
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
@@ -428,7 +428,7 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
   let dataToSend;
   let endPoint;
 
-  if(record?.import) {
+  if (record?.import) {
 
     dataToSend = {
       "id": idRecord,
@@ -446,7 +446,7 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 
     endPoint = "case_import/";
 
-  } 
+  }
 
   // case
   // dl || 0, head || 0, id || 0, insert || 0, masalah || 0, name || 0, parent || 0, periode || 0, pic
@@ -473,27 +473,27 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 
   try {
 
-    if(mode === 'create') {
+    if (mode === 'create') {
 
       await postData(endPoint, dataToSend);
 
-    } 
-  
-    else if(mode === 'update') {
+    }
 
-        await putData(endPoint + idRecord, dataToSend)
+    else if (mode === 'update') {
+
+      await putData(endPoint + idRecord, dataToSend)
 
     }
 
     else if (mode === 'delete') {
 
-        await deleteData(endPoint + idRecord)
-        
+      await deleteData(endPoint + idRecord)
+
     }
 
-  } catch(err) {
+  } catch (err) {
 
-    const errorMessage = 'Failed to send case record id :' + idRecord +' to server with error message: ' + err;
+    const errorMessage = 'Failed to send case record id :' + idRecord + ' to server with error message: ' + err;
     // alert(errorMessage);
     console.log(errorMessage)
     return false;
@@ -503,20 +503,20 @@ export async function syncCaseRecordToServer (idRecord: string, mode: string) {
 }
 
 
-export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: string) {
+export async function checkAndsyncCaseRecordToServer(idRecord: string, mode: string) {
 
-  if(typeof idRecord !== 'string') {
+  if (typeof idRecord !== 'string') {
     alert("Id record case must be a string");
     return true;
   }
 
   const db = useIdb(storeName);
 
-  let record = await db.getItem<Case&CaseImport>(idRecord);
+  let record = await db.getItem<Case & CaseImport>(idRecord);
 
-  if(!record && mode != 'delete') {
-      // dont do anything if record doesn't exist;
-      return true
+  if (!record && mode != 'delete') {
+    // dont do anything if record doesn't exist;
+    return true
   }
 
   // awal, dateEnd, dateIn, dateOut, id, in, item, 
@@ -529,7 +529,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
   let dataToSend;
   let endPoint;
 
-  if(record?.import) {
+  if (record?.import) {
 
     dataToSend = {
       "id": idRecord,
@@ -547,7 +547,7 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
     endPoint = "case_import/";
 
-  } 
+  }
 
   // case
   // dl || 0, head || 0, id || 0, insert || 0, masalah || 0, name || 0, parent || 0, periode || 0, pic
@@ -574,39 +574,39 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
 
   try {
 
-    if(mode === 'create') {
+    if (mode === 'create') {
 
       const getServerData = await getDataOnServer(endPoint + idRecord);
       const isDataNotExists = getServerData?.status === 404;
 
-      if(isDataNotExists) {
+      if (isDataNotExists) {
 
         await postData(endPoint, dataToSend);
 
       }
 
 
-    } 
-  
-    else if(mode === 'update') {
-      
+    }
+
+    else if (mode === 'update') {
+
       const getServerData = await getDataOnServer(endPoint + idRecord);
       const isDataNotExists = getServerData?.status == 404;
 
-      if(isDataNotExists) {
+      if (isDataNotExists) {
 
         await postData(endPoint, dataToSend);
 
-      } 
-      
-      else if(!isDataNotExists && record && getServerData?.json) {
+      }
+
+      else if (!isDataNotExists && record && getServerData?.json) {
 
         const waitingServerKeyValue = await getServerData.json();
         const keyValueServerData = waitingServerKeyValue?.data[0]
 
         const isAnyValueToUpdate = isValueNotSame(record, keyValueServerData)
 
-        if(isAnyValueToUpdate) {
+        if (isAnyValueToUpdate) {
 
           await putData(endPoint + idRecord, dataToSend)
 
@@ -623,17 +623,17 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
       const getServerData = await getDataOnServer(endPoint + idRecord);
       const isDataExists = getServerData?.status === 200;
 
-      if(isDataExists) {
+      if (isDataExists) {
 
         await deleteData(endPoint + idRecord)
 
       }
-        
+
     }
 
-  } catch(err) {
+  } catch (err) {
 
-    const errorMessage = 'Failed to send case record id :' + idRecord +' to server with error message: ' + err;
+    const errorMessage = 'Failed to send case record id :' + idRecord + ' to server with error message: ' + err;
     // alert(errorMessage);
     console.log(errorMessage)
     return false;
@@ -642,14 +642,14 @@ export async function checkAndsyncCaseRecordToServer (idRecord: string, mode: st
   return true
 }
 
-function isValueNotSame(localData: Case|CaseImport, serverData: any): boolean {
+function isValueNotSame(localData: Case | CaseImport, serverData: any): boolean {
 
   const isCaseImport = localData.hasOwnProperty('import');
 
-  if(isCaseImport) {
+  if (isCaseImport) {
 
     const localDataAsCaseImport = localData as CaseImport;
-      
+
     const isBagianNotSame = localDataAsCaseImport["bagian"] != serverData["bagian"]
     const isDivisiNotSame = localDataAsCaseImport["divisi"] != serverData["divisi"]
     const isFokusNotSame = localDataAsCaseImport["fokus"] != serverData["fokus"]
@@ -661,117 +661,117 @@ function isValueNotSame(localData: Case|CaseImport, serverData: any): boolean {
     const isTemuanNotSame = localDataAsCaseImport["temuan"] != serverData["temuan"]
 
     const isAnyValueNotSame = isBagianNotSame
-                              || isDivisiNotSame
-                              || isFokusNotSame
-                              || isKabagNotSame
-                              || isKaruNotSame
-                              || isKeterangan1NotSame
-                              || isKeterangan2NotSame
-                              || isPeriodeNotSame
-                              || isTemuanNotSame;
+      || isDivisiNotSame
+      || isFokusNotSame
+      || isKabagNotSame
+      || isKaruNotSame
+      || isKeterangan1NotSame
+      || isKeterangan2NotSame
+      || isPeriodeNotSame
+      || isTemuanNotSame;
 
-    
+
     return isAnyValueNotSame
 
-    }
-    
-    else {
+  }
 
-      const localDataAsCase = localData as Case;
+  else {
 
-      const isPeriodeNotSame = serverData["periode"] != localDataAsCase?.periode 
-      const isHeadNotSame = serverData["head_spv_id"] != localDataAsCase?.head 
-      const isDLNotSame = serverData["dl"] != localDataAsCase?.dl 
-      const isMasalahNotSame = serverData["masalah"] != localDataAsCase?.masalah 
-      const isSupervisorNotSame = serverData["supervisor_id"] != localDataAsCase?.name 
-      const isParetNotSame = serverData["parent"] != localDataAsCase?.parent 
-      const isPicNotSame = serverData["pic"] != localDataAsCase?.pic 
-      const isSolusiNotSame = serverData["solusi"] != localDataAsCase?.solusi 
-      const isStatusNotSame = serverData["status"] != localDataAsCase?.status 
-      const isSumberMasalahNotSame = serverData["sumber_masalah"] != localDataAsCase?.sumberMasalah
-  
-      const isAnyValueNotSame = isPeriodeNotSame
-                                || isHeadNotSame
-                                || isDLNotSame
-                                || isMasalahNotSame
-                                || isSupervisorNotSame
-                                || isParetNotSame
-                                || isPicNotSame
-                                || isSolusiNotSame
-                                || isStatusNotSame
-                                || isSumberMasalahNotSame;
-      return isAnyValueNotSame
-    }
+    const localDataAsCase = localData as Case;
+
+    const isPeriodeNotSame = serverData["periode"] != localDataAsCase?.periode
+    const isHeadNotSame = serverData["head_spv_id"] != localDataAsCase?.head
+    const isDLNotSame = serverData["dl"] != localDataAsCase?.dl
+    const isMasalahNotSame = serverData["masalah"] != localDataAsCase?.masalah
+    const isSupervisorNotSame = serverData["supervisor_id"] != localDataAsCase?.name
+    const isParetNotSame = serverData["parent"] != localDataAsCase?.parent
+    const isPicNotSame = serverData["pic"] != localDataAsCase?.pic
+    const isSolusiNotSame = serverData["solusi"] != localDataAsCase?.solusi
+    const isStatusNotSame = serverData["status"] != localDataAsCase?.status
+    const isSumberMasalahNotSame = serverData["sumber_masalah"] != localDataAsCase?.sumberMasalah
+
+    const isAnyValueNotSame = isPeriodeNotSame
+      || isHeadNotSame
+      || isDLNotSame
+      || isMasalahNotSame
+      || isSupervisorNotSame
+      || isParetNotSame
+      || isPicNotSame
+      || isSolusiNotSame
+      || isStatusNotSame
+      || isSumberMasalahNotSame;
+    return isAnyValueNotSame
+  }
 }
 
 
-async function implantCasesFromServer () {
-  const fetchEndPoint = await getDataOnServer('cases?limit='+ 100);
+async function implantCasesFromServer() {
+  const fetchEndPoint = await getDataOnServer('cases?limit=' + 100);
   const isFetchFailed = fetchEndPoint?.status != 200;
 
-  if(isFetchFailed) return;
+  if (isFetchFailed) return;
 
   const dbBaseCase = useIdb(storeName);
 
   const waitingServerKeyValue = await fetchEndPoint.json();
   const cases: CaseFromServer[] = waitingServerKeyValue?.data
 
-  for(let [index, item] of cases.entries()) {
-      progressMessage2.value = `Menanamkan case ${index + 1} dari ${cases.length}`;
+  for (let [index, item] of cases.entries()) {
+    progressMessage2.value = `Menanamkan case ${index + 1} dari ${cases.length}`;
 
-      let recordToSet:Case = {
-          id: item.id,
-          dl: Number(item.dl),
-          head: item.head_spv_id,
-          insert: new Date().getTime(),
-          masalah: item.masalah,
-          name: item.supervisor_id,
-          parent: item.parent,
-          periode: Number(item.periode),
-          pic: item.pic,
-          solusi: item.solusi,
-          status: Boolean(item.status),
-          sumberMasalah: item.sumber_masalah
-      }
+    let recordToSet: Case = {
+      id: item.id,
+      dl: Number(item.dl),
+      head: item.head_spv_id,
+      insert: new Date().getTime(),
+      masalah: item.masalah,
+      name: item.supervisor_id,
+      parent: item.parent,
+      periode: Number(item.periode),
+      pic: item.pic,
+      solusi: item.solusi,
+      status: Boolean(item.status),
+      sumberMasalah: item.sumber_masalah
+    }
 
-      await dbBaseCase.setItem(item.id, recordToSet);
+    await dbBaseCase.setItem(item.id, recordToSet);
   }
 
   progressMessage2.value = '';
 }
 
-async function implantCasesImportFromServer () {
-  const fetchEndPoint = await getDataOnServer('cases_import?limit='+ 100);
+async function implantCasesImportFromServer() {
+  const fetchEndPoint = await getDataOnServer('cases_import?limit=' + 100);
   const isFetchFailed = fetchEndPoint?.status != 200;
 
-  if(isFetchFailed) return;
+  if (isFetchFailed) return;
 
   const dbBaseCase = useIdb(storeName);
 
   const waitingServerKeyValue = await fetchEndPoint.json();
   const casesImport: CaseImportFromServer[] = waitingServerKeyValue?.data
 
-  for(let [index, item] of casesImport.entries()) {
-      progressMessage2.value = `Menanamkan case import ${index + 1} dari ${casesImport.length}`;
+  for (let [index, item] of casesImport.entries()) {
+    progressMessage2.value = `Menanamkan case import ${index + 1} dari ${casesImport.length}`;
 
-      let recordToSet:CaseImport = {
+    let recordToSet: CaseImport = {
 
-          id: item.id,
-          bagian: item.bagian,
-          divisi: item.divisi,
-          fokus: item.fokus,
-          import: true,
-          inserted: Boolean(Number(item?.is_intered)),
-          kabag: item.kabag,
-          karu: item.karu,
-          keterangan1: item.keterangan1,
-          keterangan2: item.keterangan2,
-          periode: item.periode,
-          temuan: item.temuan
+      id: item.id,
+      bagian: item.bagian,
+      divisi: item.divisi,
+      fokus: item.fokus,
+      import: true,
+      inserted: Boolean(Number(item?.is_intered)),
+      kabag: item.kabag,
+      karu: item.karu,
+      keterangan1: item.keterangan1,
+      keterangan2: item.keterangan2,
+      periode: item.periode,
+      temuan: item.temuan
 
-      }
+    }
 
-      await dbBaseCase.setItem(item.id, recordToSet);
+    await dbBaseCase.setItem(item.id, recordToSet);
   }
 
   progressMessage2.value = '';
