@@ -32,10 +32,10 @@ export const getStockCard = async (date1: number, date2: number, warehouse: stri
     let baseReports = await dbBaseFile.getItemsByKeyGreaterOrEqualThanAndLowerOrEqualThan<BaseReportFileInterface>('periode', date1, date2);
 
     if (baseReports.length === 0) return;
-
+    
     for (let report of baseReports) {
-
-        const getStocks = await dbBaseStock.getItemsByTwoKeyValue<BaseStock>('parent', report.id, 'kode', kode);
+        
+        const getStocks = await dbBaseStock.getItemsByTwoKeyValue<BaseStock>('parent', report.id, 'item', kode);
 
         if (getStocks.length > 0) {
             for (let stock of getStocks) {
@@ -56,11 +56,11 @@ export const getStockCard = async (date1: number, date2: number, warehouse: stri
                     dateEnd: stock.dateEnd,
                     real: stock.real,
                     selisih: stock.real - (stock.awal + stock.in - stock.out),
-                    problem: problem.masalah
+                    problem: problem.masalah.replaceAll("\r\n\r\n", "")
                 })
             }
         }
     }
 
-    exportToXls(result, `Kartu stock ${result[0].item.toLowerCase()} periode ${ddmmyyyy(date1, '-')} sampai dengan ${ddmmyyyy(date2, '-')} `)
+    exportToXls(result, `Kartu stock ${result[0].item.toLocaleLowerCase()} periode ${ddmmyyyy(date1, '-')} sampai dengan ${ddmmyyyy(date2, '-')} `)
 }
