@@ -19,7 +19,7 @@ export function generateId(yourLastId: string) {
 
 export function generateIdCutomDate(yourDate: Date, yourLastId: string): string {
 
-    let id = yourLastId.substr(0, yourLastId.length -8);
+    let id = yourLastId.slice(0, yourLastId.length -8);
     // masukkan increment
     // ambil 4 string e.g 0000 akan menjadi 0001
     let increment = Number(yourLastId.slice(-4)) + 1 + "";
@@ -32,8 +32,9 @@ export function generateIdCutomDate(yourDate: Date, yourLastId: string): string 
     let year = yourLastId.slice(id.length, id.length + 2); //21
     // 05
     let week = yourLastId.slice(id.length + 2, id.length + 4); //08
+
     //if the week same
-    if (weekNow == week && year == yearNow) {
+    if (Number(weekNow) == Number(week) && year == yearNow) {
       id = id + yearNow + week;
     }
     //if the week not same
