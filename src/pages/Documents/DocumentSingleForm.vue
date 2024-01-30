@@ -19,11 +19,11 @@
             <SelectWarehouse :inSelectWarehouse="warehouse" @selectedWarehouse="warehouse = $event"  />
         </div>
         <div v-if="idDocument" class="w3-row">
-            <div class="w3-col s6"  style="padding: 0 16px 0 0px;">
+            <div class="w3-col s6" v-if="collectedModel"  style="padding: 0 16px 0 0px;">
                 <label for="periode">Dikumpulkan:</label>
                 <datepicker id="periode" class="w3-margin-bottom w3-border w3-input" v-model="collectedModel"></datepicker>
             </div>
-            <div class="w3-col s6" style="padding: 0 0px 0 16px;">
+            <div class="w3-col s6" v-if="approvalModel" style="padding: 0 0px 0 16px;">
                 <label for="periode">Diparaf:</label>
                 <datepicker id="periode" class="w3-margin-bottom w3-border w3-input" v-model="approvalModel"></datepicker>
             </div>
@@ -59,8 +59,8 @@ export default {
         // isEditMode conditional using idDocument
         const idDocument = ref(false)
         const changed = {}
-        const collectedModel = ref(new Date())
-        const approvalModel = ref(new Date())
+        const collectedModel = ref()
+        const approvalModel = ref()
         const { addData, updateDocument, findDocument } = Documents();
 
         const store = useStore()
@@ -116,9 +116,10 @@ export default {
                 head.value = doc?.head
                 warehouse.value = doc?.warehouse
                 // fill the idDocument, so the form in the edit mode
-                collectedModel.value = new Date(doc?.collected)
-                approvalModel.value = new Date(doc?.approval)
+                collectedModel.value = isNaN(doc.collected) ? "" : new Date(doc?.collected)
+                approvalModel.value = isNaN(doc.approval) ? "" : new Date(doc?.approval)
                 idDocument.value = doc?.id
+                console.log(doc)
             }
         })
 
@@ -133,4 +134,4 @@ export default {
         SelectWarehouse
     },
 }
-</script>@/pages/Documents/DocumentsPeriod
+</script>

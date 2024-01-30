@@ -76,7 +76,7 @@ export default function (arrayOfArrayOfDocuments) {
             totalDo: val2.totalDo,
             planOut: +val2.planOut,
             totalItemKeluar: val2.totalItemKeluar,
-            isGenerate: Number(val2?.generateReport)
+            isGenerate: val2?.generateReport ? val.collected : ''
           });
         });
         let waitAllProblem = await Promise.all(arrProblem);

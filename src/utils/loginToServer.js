@@ -1,18 +1,18 @@
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/" : "https://rijalbinhusen.cloud/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost:8000/" : "https://rijalbinhusen.cloud/";
 
 export function loginToServer(email, password) {
 
-   const isParameterNotOke = !Boolean(email) && !Boolean(password)
+  const isParameterNotOke = !Boolean(email) && !Boolean(password)
 
-   if(isParameterNotOke) return;
-    
-    let headersList = {
-        "Accept": "*/*",
-        "Content-Type": "application/json"
-    }
-    
-   let bodyContent = JSON.stringify({ email, password });
+  if (isParameterNotOke) return;
+
+  let headersList = {
+    "Accept": "*/*",
+    "Content-Type": "application/json"
+  }
+
+  let bodyContent = JSON.stringify({ email, password });
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -20,15 +20,15 @@ export function loginToServer(email, password) {
   return new Promise((resolve, reject) => {
     let timer;
 
-    fetch(`${hostURL}user/login`, { 
-        signal,
-        method: "POST",
-        body: bodyContent,
-        headers: headersList
+    fetch(`${hostURL}user/login`, {
+      signal,
+      method: "POST",
+      body: bodyContent,
+      headers: headersList
     })
-    .then(response => {
+      .then(response => {
         if (response.status === 200) {
-          
+
           resolve(response);
 
         } else {
@@ -38,11 +38,11 @@ export function loginToServer(email, password) {
       .catch(error => {
         reject(error);
       })
-    .finally(() => {
+      .finally(() => {
 
-      clearTimeout(timer)
-      
-    })
+        clearTimeout(timer)
+
+      })
 
     timer = setTimeout(() => {
       controller.abort();

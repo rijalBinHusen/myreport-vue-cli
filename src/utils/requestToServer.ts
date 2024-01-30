@@ -2,7 +2,7 @@ import { getJWTToken } from "./cookie";
 import { useIdb } from "./localforage";
 import { waitFor } from "./piece/waiting";
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost/rest-php/myreport/" : "https://rijalbinhusen.cloud/myreport/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost:8000/myreport/" : "https://rijalbinhusen.cloud/myreport/";
 const timeOutRequest = 5000;
 
 interface unknownObject {
@@ -198,7 +198,7 @@ export async function deleteData(endpoint: string): Promise<boolean> {
   });
 }
 
-export async function getData(endpoint: string) : Promise<Response|undefined>{
+export async function getData(endpoint: string): Promise<Response | undefined> {
 
   let token = getJWTToken();
 
@@ -229,15 +229,15 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
       headers: headersList,
     })
       .then(async (response: Response) => {
-        
+
 
         resolve(response);
-        
+
       })
       .catch((error) => {
-        
+
         resolve(error)
-        errorSyncMessage(endpoint, "GET", {  }, error)
+        errorSyncMessage(endpoint, "GET", {}, error)
 
       })
       .finally(() => {
@@ -249,15 +249,21 @@ export async function getData(endpoint: string) : Promise<Response|undefined>{
 }
 
 let rateLimitTime = 0;
+
 async function useRateLimitTime(): Promise<void> {
-    rateLimitTime += Math.random() * 20;
 
-    console.log(`Request would be fetch in ${rateLimitTime} second!`);
-    await waitFor(rateLimitTime);
+  const isDevelopmentMode = process.env.NODE_ENV === 'development';
 
-    if(rateLimitTime >= 2600) {
+  if (isDevelopmentMode) return;
 
-      rateLimitTime = 0
-    }
-    return;
+  rateLimitTime += Math.random() * 20;
+  console.log(`Request would be fetch in ${rateLimitTime} second!`);
+
+  await waitFor(rateLimitTime);
+
+  if (rateLimitTime >= 2600) {
+
+    rateLimitTime = 0
+  }
+  return;
 }
