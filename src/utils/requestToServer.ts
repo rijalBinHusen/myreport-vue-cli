@@ -227,6 +227,7 @@ export async function getData(endpoint: string): Promise<Response | undefined> {
       signal,
       method: "GET",
       headers: headersList,
+      credentials: "include"
     })
       .then(async (response: Response) => {
 

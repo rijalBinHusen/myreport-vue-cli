@@ -24,7 +24,8 @@ export function loginToServer(email, password) {
       signal,
       method: "POST",
       body: bodyContent,
-      headers: headersList
+      headers: headersList,
+      credentials: "include"
     })
       .then(response => {
         if (response.status === 200) {

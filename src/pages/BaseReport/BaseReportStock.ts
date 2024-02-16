@@ -198,6 +198,7 @@ export function baseReportStock() {
       loaderMessage.value = `Memindai dan menghapus ${index} dari ${lists.length}`;
 
       if (record.parent == parent) {
+        lists.splice(index, 1)
         await removeStock(record.id);
       }
 
@@ -213,15 +214,15 @@ export function baseReportStock() {
 
     if (filterRec.length === 0) {
       const getRecord = await db.getItemsByTwoKeyValue<BaseStock>('parent', parent, 'shift', shift);
-      
-      if(getRecord.length == 0) {
+
+      if (getRecord.length == 0) {
         await appendData(parent, shift, "Record generated", 0, 0, 0, 0);
         // getBaseClockByParentByShift(parent, shift);
         return [lists[lists.length - 1]];
       };
 
       if (getRecord && getRecord.length) {
-        for(let record of getRecord) {
+        for (let record of getRecord) {
           const interpretIt = await interpretRecord(record);
 
           lists.push(interpretIt);
@@ -239,7 +240,7 @@ export function baseReportStock() {
     const selisih = Number(record.real) - (Number(record.awal) + Number(record.in) - Number(record.out));
     const planOut = record?.planOut || 0
 
-    return { ...record, itemName: item.name , problem2, selisih, planOut }
+    return { ...record, itemName: item.name, problem2, selisih, planOut }
 
   }
 
@@ -307,24 +308,24 @@ export function baseReportStock() {
       // if state?.shift == payload.shift && payload?.parent
       if (list?.shift == shift && list?.parent == BaseFile) {
         // jika parentDocument kosong
-          progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
-          // update recordnya
-          await updateBaseStock(list.id, { parentDocument: documentId });
-          markFinished++
+        progressMessage2.value = `Total ${markFinished} record sudah ditandai.`
+        // update recordnya
+        await updateBaseStock(list.id, { parentDocument: documentId });
+        markFinished++
       }
     }
     loaderMessage.value = '';
     progressMessage2.value = '';
   }
 
-  async function reMapStock (parentDoc: string, shift: number) {
+  async function reMapStock(parentDoc: string, shift: number) {
 
-    for(let i =0; i < lists.length; i++) {
+    for (let i = 0; i < lists.length; i++) {
       let isRecordMatched = lists[i].parent === parentDoc && lists[i].shift == shift;
       let itemNotFound = lists[i].itemName === "Not found";
 
-      if(isRecordMatched && itemNotFound) {
-        
+      if (isRecordMatched && itemNotFound) {
+
         let mapIt = await interpretRecord(lists[i]);
 
         lists[i] = mapIt;
@@ -345,7 +346,7 @@ export function baseReportStock() {
       const getRecord = await db.getItemsByKeyValue<BaseStock>('parentDocument', documentId);
 
       if (getRecord && getRecord.length) {
-        for(let record of getRecord) {
+        for (let record of getRecord) {
           const interpretIt = await interpretRecord(record);
 
           lists.push(interpretIt);
@@ -483,131 +484,131 @@ export async function syncBaseStockRecordToServer(idRecord: string, mode: string
 
 export async function checkAndsyncBaseStockToServer(idRecord: string, mode: string) {
 
-  if(typeof idRecord !== 'string') {
-      alert("Id record base report stock must be a string");
-      return true
+  if (typeof idRecord !== 'string') {
+    alert("Id record base report stock must be a string");
+    return true
   }
 
-  const isCreateMode = mode === 'create'; 
+  const isCreateMode = mode === 'create';
   const isUpdateMode = mode === 'update';
   const isDeleteMode = mode === 'delete';
 
   let isSynced = false;
 
-  if(isDeleteMode) {
-      // the server must be return 404
-      const getOnServer = await getDataOnServer(endPoint + idRecord);
+  if (isDeleteMode) {
+    // the server must be return 404
+    const getOnServer = await getDataOnServer(endPoint + idRecord);
 
-      const isExistsOnServer = getOnServer?.status === 200
-      
-      if(isExistsOnServer) {
-        let syncing = await syncBaseStockRecordToServer(idRecord, 'delete')
-        isSynced = Boolean(syncing);
-        
-      } else {
-          isSynced = true
-      }
+    const isExistsOnServer = getOnServer?.status === 200
+
+    if (isExistsOnServer) {
+      let syncing = await syncBaseStockRecordToServer(idRecord, 'delete')
+      isSynced = Boolean(syncing);
+
+    } else {
+      isSynced = true
+    }
   }
 
-  else if(isCreateMode || isUpdateMode) {
-      const dbItem = useIdb(storeName);
-      const getItemInLocal = await dbItem.getItem<BaseStock>(idRecord);
-      const getItemInServer = await getDataOnServer(endPoint + idRecord);
+  else if (isCreateMode || isUpdateMode) {
+    const dbItem = useIdb(storeName);
+    const getItemInLocal = await dbItem.getItem<BaseStock>(idRecord);
+    const getItemInServer = await getDataOnServer(endPoint + idRecord);
 
-      const isLocalExists = Boolean(getItemInLocal?.id);
-      const isServerExists = getItemInServer?.status === 200;
+    const isLocalExists = Boolean(getItemInLocal?.id);
+    const isServerExists = getItemInServer?.status === 200;
 
-      if(isLocalExists && isServerExists) {
+    if (isLocalExists && isServerExists) {
 
-        const waitingServerKeyValue = await getItemInServer.json();
-        const serverKeyValue = waitingServerKeyValue?.data[0]
-          
-        const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
-        const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
-        const isItemNotSame = serverKeyValue["item"] != getItemInLocal?.item
-        const isAwalNotSame = serverKeyValue["awal"] != getItemInLocal?.awal
-        const isInNotSame = serverKeyValue["in_stock"] != getItemInLocal?.in
-        const isOutNotSame = serverKeyValue["out_stock"] != getItemInLocal?.out
-        const isDateInNotSame = serverKeyValue["date_in"] != getItemInLocal?.dateIn
-        const isPlantOutNotSame = serverKeyValue["plan_out"] != getItemInLocal?.planOut
-        const isDateOutNotSame = serverKeyValue["date_out"] != getItemInLocal?.dateOut
-        const isDateEndNotSame = serverKeyValue["date_end"] != getItemInLocal?.dateEnd
-        const isRealStockNotSame = serverKeyValue["real_stock"] != getItemInLocal?.real
-        const isProblemNotSame = serverKeyValue["problem"] != getItemInLocal?.problem.toString()
+      const waitingServerKeyValue = await getItemInServer.json();
+      const serverKeyValue = waitingServerKeyValue?.data[0]
 
-        let isAnyValueToUpdate = isParentNotSame
-                                || isShiftNotSame
-                                || isItemNotSame
-                                || isAwalNotSame
-                                || isInNotSame
-                                || isOutNotSame
-                                || isDateInNotSame
-                                || isPlantOutNotSame
-                                || isDateOutNotSame
-                                || isDateEndNotSame
-                                || isRealStockNotSame
-                                || isProblemNotSame
+      const isParentNotSame = serverKeyValue["parent"] != getItemInLocal?.parent
+      const isShiftNotSame = serverKeyValue["shift"] != getItemInLocal?.shift
+      const isItemNotSame = serverKeyValue["item"] != getItemInLocal?.item
+      const isAwalNotSame = serverKeyValue["awal"] != getItemInLocal?.awal
+      const isInNotSame = serverKeyValue["in_stock"] != getItemInLocal?.in
+      const isOutNotSame = serverKeyValue["out_stock"] != getItemInLocal?.out
+      const isDateInNotSame = serverKeyValue["date_in"] != getItemInLocal?.dateIn
+      const isPlantOutNotSame = serverKeyValue["plan_out"] != getItemInLocal?.planOut
+      const isDateOutNotSame = serverKeyValue["date_out"] != getItemInLocal?.dateOut
+      const isDateEndNotSame = serverKeyValue["date_end"] != getItemInLocal?.dateEnd
+      const isRealStockNotSame = serverKeyValue["real_stock"] != getItemInLocal?.real
+      const isProblemNotSame = serverKeyValue["problem"] != getItemInLocal?.problem.toString()
 
-          if(isAnyValueToUpdate) {
+      let isAnyValueToUpdate = isParentNotSame
+        || isShiftNotSame
+        || isItemNotSame
+        || isAwalNotSame
+        || isInNotSame
+        || isOutNotSame
+        || isDateInNotSame
+        || isPlantOutNotSame
+        || isDateOutNotSame
+        || isDateEndNotSame
+        || isRealStockNotSame
+        || isProblemNotSame
 
-            let syncing = await syncBaseStockRecordToServer(idRecord, 'update')
-            isSynced = Boolean(syncing);
+      if (isAnyValueToUpdate) {
 
-          } else {
-
-            isSynced = true
-            
-        }
-
-      }
-
-      else if(isLocalExists && !isServerExists) {
-
-        let syncing = await syncBaseStockRecordToServer(idRecord, 'create')
+        let syncing = await syncBaseStockRecordToServer(idRecord, 'update')
         isSynced = Boolean(syncing);
 
+      } else {
+
+        isSynced = true
+
       }
 
-      else {
-        isSynced = true
-      }
+    }
+
+    else if (isLocalExists && !isServerExists) {
+
+      let syncing = await syncBaseStockRecordToServer(idRecord, 'create')
+      isSynced = Boolean(syncing);
+
+    }
+
+    else {
+      isSynced = true
+    }
   }
 
   return isSynced
 }
 
-export async function implantBaseStockFromServer (parent: string) {
+export async function implantBaseStockFromServer(parent: string) {
   const fetchEndPoint = await getDataOnServer('base_stocks?parent=' + parent);
   const isFetchFailed = fetchEndPoint?.status != 200;
 
-  if(isFetchFailed) return;
+  if (isFetchFailed) return;
 
   const dbBaseClock = useIdb(storeName);
 
   const waitingServerKeyValue = await fetchEndPoint.json();
   const baseClocks: BaseStockFromServer[] = waitingServerKeyValue?.data
 
-  for(let [index, item] of baseClocks.entries()) {
-      progressMessage2.value = `Menanamkan base stock ${index + 1} dari ${baseClocks.length}`;
+  for (let [index, item] of baseClocks.entries()) {
+    progressMessage2.value = `Menanamkan base stock ${index + 1} dari ${baseClocks.length}`;
 
-      let recordToSet:BaseStock = {
-          id: item.id,
-          awal: Number(item.awal),
-          dateEnd: item.date_end,
-          dateIn: item.date_in,
-          dateOut: item.date_out,
-          in: Number(item.in_stock),
-          item: item.item,
-          out: Number(item.out_stock),
-          parent: item.parent,
-          parentDocument: item.parent,
-          planOut: Number(item.plan_out),
-          problem: item.problem != '0' ? item.problem.split(',') : [],
-          real: Number(item.real_stock),
-          shift: Number(item.shift)
-      }
+    let recordToSet: BaseStock = {
+      id: item.id,
+      awal: Number(item.awal),
+      dateEnd: item.date_end,
+      dateIn: item.date_in,
+      dateOut: item.date_out,
+      in: Number(item.in_stock),
+      item: item.item,
+      out: Number(item.out_stock),
+      parent: item.parent,
+      parentDocument: item.parent,
+      planOut: Number(item.plan_out),
+      problem: item.problem != '0' ? item.problem.split(',') : [],
+      real: Number(item.real_stock),
+      shift: Number(item.shift)
+    }
 
-      await dbBaseClock.setItem(item.id, recordToSet);
+    await dbBaseClock.setItem(item.id, recordToSet);
   }
 
   progressMessage2.value = '';
