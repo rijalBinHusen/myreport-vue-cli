@@ -36,6 +36,8 @@ const storeName = "date-expired";
 
 export function ExpiredDate() {
   const db = useIdb(storeName);
+  const dbWarehouseCustom = useIdb("expired-date-warehouse");
+  const listCustomWarehouse = <customWarehouse[]>[]
 
   async function addExpiredDate(
     no_do: string,
@@ -83,13 +85,19 @@ export function ExpiredDate() {
   }
 
   async function getWarehouseByCustomMapped(yourWarehouse: string): Promise<string|undefined> {
-    const store = useIdb("expired-date-warehouse");
 
-    const retrieveWarehouse = await store.getItem<customWarehouse>(yourWarehouse);
+    if(listCustomWarehouse.length) {
+      const findWarehouseId = listCustomWarehouse.find((rec) => rec.warehouseName === yourWarehouse);
+
+      if(findWarehouseId) return findWarehouseId.warehouseId;
+    }
+
+    const retrieveWarehouse = await dbWarehouseCustom.getItem<customWarehouse>(yourWarehouse);
 
     if(retrieveWarehouse === null) return;
-
-    return retrieveWarehouse.warehouseId
+    
+    listCustomWarehouse.push(retrieveWarehouse);
+    return retrieveWarehouse.warehouseId;
   }
 
   async function interpretCaseRecord(obj: expiredDate): Promise<expiredDateMapped> {
@@ -115,10 +123,17 @@ export function ExpiredDate() {
     return datePushed.join(", ");
   }
 
+  async function createCustomWarehouse(yourWarehouse: string, yourIdWarehouse: string){
+
+    dbWarehouseCustom.setItem(yourWarehouse, yourIdWarehouse);
+    listCustomWarehouse.push({ warehouseId: yourIdWarehouse, warehouseName: yourWarehouse})
+  }
+
   return {
     addExpiredDate,
     getWarehouseByCustomMapped,
-    getExpiredDateByKodeItem
+    getExpiredDateByKodeItem,
+    createCustomWarehouse
   }
 
 }

@@ -41,41 +41,18 @@
     import Datatable from "@/components/parts/Datatable.vue"
     import Input from '@/components/elements/Input.vue'
     import readExcel from "@/utils/readExcel"
-    import { Cases, lists as listsCaseInserted, listsCaseImport } from './Cases'
     import { subscribeMutation } from "@/composable/piece/subscribeMutation"
-    import { computed, onMounted, ref } from "vue"
+    import { ref } from "vue"
     import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
-    const { getCases, addCaseImport, removeCase } = Cases()
+    import { ExpiredDate } from "./DateExpired";
+    
 
+    const { addExpiredDate, getWarehouseByCustomMapped, createCustomWarehouse } = ExpiredDate();
     const  importerCase = ref()
 
     const launchFileImporter = () => {
         importerCase.value.click();
     }
-
-    const listsMode = ref(<'insert'|'import'>"insert");
-
-    const isInsertMode = computed(() => listsMode.value === 'insert')
-
-    const lists = computed(() => 
-        isInsertMode.value
-        ? listsCaseInserted.value
-        : listsCaseImport.value
-    );
-
-    const tables = computed(() =>
-        isInsertMode.value
-        ? {
-            heads: ["Tanggal", "Supervisor", "Kabag", "Masalah", "Sumber Masalah", "Diinput"],
-            keys: ["periode2", "spvName", "headName", "masalah", "sumberMasalah", "insert2"],
-            id: "tableCasesInserted"
-        }
-        : {
-            heads: ['Tanggal','Bagian', 'Temuan', 'Karu', 'Kabag', 'Keterangan', 'Keterangan 2'],
-            keys: ['periode','bagian', 'temuan', 'karu', 'kabag', 'keterangan1', 'keterangan2'],
-            id: "tableCasesImported"
-        }
-    );
     
     function readExcelFile(e: Event) {
         const fileInput = e.target as HTMLInputElement;
@@ -90,18 +67,65 @@
         let lengthRow = +infoRow[1].match(/\d+/)[0]
         // console.log(sheet)
         for(let i = 1; i <= lengthRow; i++) {
-            if(sheet["B"+i]) {
-                await addCaseImport(
-                    sheet["E"+i]?.v, sheet["D"+i]?.v, sheet["F"+i]?.v, sheet["J"+i]?.v , sheet["I"+i]?.v , sheet["L"+i]?.v, 
-                    sheet["M"+i]?.v , sheet["C"+i]?.w, sheet["G"+i]?.v
-                )
+            if(!sheet["B"+i]) continue;
+
+            const date_transaction = sheet["A"+i];
+            const no_do = sheet["B"+i];
+            const no_pol = sheet["C"+i];
+            const gudang = sheet["D"+i];
+            const shift = sheet["E"+i];
+            const mulai_muat = sheet["F"+i];
+            const selesai_muat = sheet["G"+i];
+            const item_kode = sheet["H"+i];
+            const item_name = sheet["I"+i];
+            const qty = sheet["J"+i];
+            const date_expired = sheet["K"+i];
+            const tally = sheet["L"+i];
+            const karu = sheet["M"+i];
+            const catatan = sheet["N"+i];
+
+            let warehouseId = await getWarehouseByCustomMapped(gudang);
+            if(!warehouseId) {
+               const getWarehouse = await selectWarehouse(gudang);
+               if(getWarehouse) {
+                    warehouseId = getWarehouse;
+                    await createCustomWarehouse(gudang, warehouseId);
+                }
+                else {
+                    alert("Record tidak di input, Gudang tidak dipilih");
+                    continue
+                }
             }
+
+            await addExpiredDate(no_do, 
+                                    date_transaction, 
+                                    Number(shift), 
+                                    item_kode, 
+                                    item_name, 
+                                    date_expired, 
+                                    mulai_muat, 
+                                    selesai_muat, 
+                                    warehouseId,
+                                    tally,
+                                    karu,
+                                    Number(qty),
+                                    no_pol,
+                                    catatan,
+                                    gudang
+                                    )
+            
         }
 
         // close the loader
         modalClose()
         })
     };
+
+    async function selectWarehouse(yourWarehouseName: string): Promise<string|undefined> {
+
+        alert("Function not implemented");
+        return;
+    }
         
     async function remove(ev: string) {
         let res = await subscribeMutation(
@@ -132,10 +156,4 @@
             'Modal/tunnelMessage'
         )
     }
-    
-    onMounted( async () => {
-        
-        await getCases()
-
-    })
 </script>
