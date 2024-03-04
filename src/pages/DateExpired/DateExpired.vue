@@ -91,11 +91,7 @@
         for (let i = 65; i <= 90; i++) {
             const letter = String.fromCharCode(i);
             const column = letter + 0;
-            if(sheet[column].v) {
-                rowHeader.push({
-                    column: letter, text: sheet[column].v
-                })
-            }
+            if(sheet[column].v) rowHeader.push({column: letter, text: sheet[column].v});
         }
 
         const keyValuePairedColumn = await setKeyValuePaired(rowHeader);
@@ -164,8 +160,8 @@
         modalTitle.value = `Pilih id gudang`;
         warehuseNameToSet.value = yourWarehouseName;
 
-        const subscribeEventWhileWarehouseSetted = await eventSubscribeEmit.waitForEvent("warehouseSetted");
-        return subscribeEventWhileWarehouseSetted
+        const choosedWarehouseId = await eventSubscribeEmit.waitForEvent("warehouseSetted");
+        return choosedWarehouseId
     }
     async function setWarehouse(params: { warehouseName: string, warehouseId: string }) {
         eventSubscribeEmit.emit("warehouseSetted", params.warehouseId);
@@ -173,13 +169,8 @@
 
     async function setKeyValuePaired(excelColumn: { column: string, text: string }[]) {
 
-        const keyValuPaired = [
-            
-        ]
-
-        const columnToSet = [
-
-        ]
+        const subscribeMutation = await eventSubscribeEmit.waitForEvent("warehouseSetted");
+        
         // the place to set what column will tighly to each value
         // e.g no_do = A, date_transaction = B
         // const a = {
