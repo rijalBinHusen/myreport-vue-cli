@@ -57,8 +57,9 @@
     import { ExpiredDate } from "./DateExpired";
     import ModalSlot from "@/components/parts/ModalSlot.vue"
     import CustomWarehouseChoose from "./CustomWarehouseChoose.vue"
+    import EventEmitter from "../../utils/EventEmitter";
     
-
+    const eventSubscribeEmit = new EventEmitter();
     const importerExpiredDate = ref();
     const isModalActive = ref(false);
     const modalTitle = ref("");
@@ -156,7 +157,6 @@
     };
 
     const warehuseNameToSet = ref("");
-    const warehouseIdChoosed = ref("");
     async function selectWarehouse(yourWarehouseName: string): Promise<string> {
 
         currentForm.value = "chooseWarehouse";
@@ -164,15 +164,11 @@
         modalTitle.value = `Pilih id gudang`;
         warehuseNameToSet.value = yourWarehouseName;
 
-        while (!warehouseIdChoosed.value) {
-
-            await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 1000));
-        }
-
-        return warehouseIdChoosed.value
+        const subscribeEventWhileWarehouseSetted = await eventSubscribeEmit.waitForEvent("warehouseSetted");
+        return subscribeEventWhileWarehouseSetted
     }
     async function setWarehouse(params: { warehouseName: string, warehouseId: string }) {
-        warehouseIdChoosed.value = params.warehouseId;
+        eventSubscribeEmit.emit("warehouseSetted", params.warehouseId);
     }
 
     async function setKeyValuePaired(excelColumn: { column: string, text: string }[]) {
