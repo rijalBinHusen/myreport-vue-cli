@@ -84,24 +84,39 @@
         let sheet = d['sheets'][sheetName]
         let infoRow = sheet["!ref"].split(":")
         let lengthRow = +infoRow[1].match(/\d+/)[0]
+        
+        const rowHeader = <{column: string, text: string}[]>[];
+
+        for (let i = 65; i <= 90; i++) {
+            const letter = String.fromCharCode(i);
+            const column = letter + 0;
+            if(sheet[column].v) {
+                rowHeader.push({
+                    column: letter, text: sheet[column].v
+                })
+            }
+        }
+
+        const keyValuePairedColumn = await setKeyValuePaired(rowHeader);
+
         // console.log(sheet)
         for(let i = 1; i <= lengthRow; i++) {
-            if(!sheet["B"+i]) continue;
+            if(!sheet["B"+i].v) continue;
 
-            const date_transaction = sheet["A"+i];
-            const no_do = sheet["B"+i];
-            const no_pol = sheet["C"+i];
-            const gudang = sheet["D"+i];
-            const shift = sheet["E"+i];
-            const mulai_muat = sheet["F"+i];
-            const selesai_muat = sheet["G"+i];
-            const item_kode = sheet["H"+i];
-            const item_name = sheet["I"+i];
-            const qty = sheet["J"+i];
-            const date_expired = sheet["K"+i];
-            const tally = sheet["L"+i];
-            const karu = sheet["M"+i];
-            const catatan = sheet["N"+i];
+            const date_transaction = sheet["A"+i].v;
+            const no_do = sheet["B"+i].v;
+            const no_pol = sheet["C"+i].v;
+            const gudang = sheet["D"+i].v;
+            const shift = sheet["E"+i].v;
+            const mulai_muat = sheet["F"+i].v;
+            const selesai_muat = sheet["G"+i].v;
+            const item_kode = sheet["H"+i].v;
+            const item_name = sheet["I"+i].v;
+            const qty = sheet["J"+i].v;
+            const date_expired = sheet["K"+i].v;
+            const tally = sheet["L"+i].v;
+            const karu = sheet["M"+i].v;
+            const catatan = sheet["N"+i].v;
 
             let warehouseId = await getWarehouseByCustomMapped(gudang);
             if(!warehouseId) {
@@ -160,7 +175,7 @@
         warehouseIdChoosed.value = params.warehouseId;
     }
 
-    async function setKeyValue(excelColumn: { column: string, text: string }[]) {
+    async function setKeyValuePaired(excelColumn: { column: string, text: string }[]) {
 
         const keyValuPaired = [
             
