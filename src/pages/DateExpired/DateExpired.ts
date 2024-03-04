@@ -84,7 +84,7 @@ export function ExpiredDate() {
 
   }
 
-  async function getWarehouseByCustomMapped(yourWarehouse: string): Promise<string|undefined> {
+  async function getWarehouseByCustomMapped(yourWarehouse: string): Promise<string> {
 
     if(listCustomWarehouse.length) {
       const findWarehouseId = listCustomWarehouse.find((rec) => rec.warehouseName === yourWarehouse);
@@ -94,7 +94,7 @@ export function ExpiredDate() {
 
     const retrieveWarehouse = await dbWarehouseCustom.getItem<customWarehouse>(yourWarehouse);
 
-    if(retrieveWarehouse === null) return;
+    if(retrieveWarehouse === null) return "";
     
     listCustomWarehouse.push(retrieveWarehouse);
     return retrieveWarehouse.warehouseId;

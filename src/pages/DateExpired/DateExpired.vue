@@ -40,6 +40,7 @@
         <CustomWarehouseChoose 
             v-if="currentForm = 'chooseWarehouse'"
             :warehouseName="warehuseNameToSet"
+            @warehouseSetted="setWarehouse($event)"
         />
     </ModalSlot>
     
@@ -140,22 +141,23 @@
     };
 
     const warehuseNameToSet = ref("");
-    async function selectWarehouse(yourWarehouseName: string): Promise<string|undefined> {
+    const warehouseIdChoosed = ref("");
+    async function selectWarehouse(yourWarehouseName: string): Promise<string> {
 
         currentForm.value = "chooseWarehouse";
         isModalActive.value = true;
         modalTitle.value = `Pilih id gudang`;
         warehuseNameToSet.value = yourWarehouseName;
 
-        const idWarehouse = await new Promise((resolve) => {
+        while (!warehouseIdChoosed.value) {
 
-            setTimeout(() => {
-                resolve("alkdsj")
-            }, 1000);
-        })
+            await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 1000));
+        }
 
-        alert("Function not implemented");
-        return;
+        return warehouseIdChoosed.value
+    }
+    async function setWarehouse(params: { warehouseName: string, warehouseId: string }) {
+        warehouseIdChoosed.value = params.warehouseId;
     }
 
     async function setKeyValue(excelColumn: { column: string, text: string }[]) {
