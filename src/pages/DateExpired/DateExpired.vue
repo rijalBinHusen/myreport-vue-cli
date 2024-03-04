@@ -4,18 +4,18 @@
         <label>Set record to show : </label>
         <Button primary value="Set" type="button" />
         <Button primary class="w3-right" value="Import" @trig="launchFileImporter" type="button"/>
-        <Button primary :class="['w3-right', isInsertMode ? '' : 'w3-disabled']" value="Imported" @trig="listsMode = 'import';" type="button"/>
-        <Button primary :class="['w3-right', isInsertMode ? 'w3-disabled' : '']" value="Cases" @trig="listsMode = 'insert'" type="button"/>
+        <!-- <Button primary :class="['w3-right', isInsertMode ? '' : 'w3-disabled']" value="Imported" @trig="listsMode = 'import';" type="button"/>
+        <Button primary :class="['w3-right', isInsertMode ? 'w3-disabled' : '']" value="Cases" @trig="listsMode = 'insert'" type="button"/> -->
         <input
             class="w3-hide"
             @change.prevent="readExcelFile($event)"
             type="file"
-            ref="importerCase"
+            ref="importerExpiredDate"
             accept=".xls, .ods"
         />
     </div>
 
-    <Datatable
+    <!-- <Datatable
         :datanya="lists"
         :heads="tables.heads"
         :keys="tables?.keys"
@@ -31,7 +31,17 @@
             
         </template>
 
-    </Datatable> 
+    </Datatable>  -->
+
+    <ModalSlot 
+        :isActive="isModalActive"
+        :judul="modalTitle"
+    >
+        <CustomWarehouseChoose 
+            v-if="currentForm = 'chooseWarehouse'"
+            :warehouseName="warehuseNameToSet"
+        />
+    </ModalSlot>
     
 </div>
 </template>
@@ -41,17 +51,25 @@
     import Datatable from "@/components/parts/Datatable.vue"
     import Input from '@/components/elements/Input.vue'
     import readExcel from "@/utils/readExcel"
-    import { subscribeMutation } from "@/composable/piece/subscribeMutation"
     import { ref } from "vue"
     import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
     import { ExpiredDate } from "./DateExpired";
+    import ModalSlot from "@/components/parts/ModalSlot.vue"
+    import CustomWarehouseChoose from "./CustomWarehouseChoose.vue"
     
 
+    const importerExpiredDate = ref();
+    const isModalActive = ref(false);
+    const modalTitle = ref("");
+    const form = {
+        chooseWarehouse: CustomWarehouseChoose
+    }
+    const currentForm = ref(<keyof typeof form>"");
+    
     const { addExpiredDate, getWarehouseByCustomMapped, createCustomWarehouse } = ExpiredDate();
-    const  importerCase = ref()
 
     const launchFileImporter = () => {
-        importerCase.value.click();
+        importerExpiredDate.value.click();
     }
     
     function readExcelFile(e: Event) {
@@ -99,7 +117,7 @@
 
             await addExpiredDate(no_do, 
                                     date_transaction, 
-                                    Number(shift), 
+                                    shift,
                                     item_kode, 
                                     item_name, 
                                     date_expired, 
@@ -108,7 +126,7 @@
                                     warehouseId,
                                     tally,
                                     karu,
-                                    Number(qty),
+                                    qty,
                                     no_pol,
                                     catatan,
                                     gudang
@@ -121,39 +139,84 @@
         })
     };
 
+    const warehuseNameToSet = ref("");
     async function selectWarehouse(yourWarehouseName: string): Promise<string|undefined> {
+
+        currentForm.value = "chooseWarehouse";
+        isModalActive.value = true;
+        modalTitle.value = `Pilih id gudang`;
+        warehuseNameToSet.value = yourWarehouseName;
+
+        const idWarehouse = await new Promise((resolve) => {
+
+            setTimeout(() => {
+                resolve("alkdsj")
+            }, 1000);
+        })
 
         alert("Function not implemented");
         return;
     }
+
+    async function setKeyValue(excelColumn: { column: string, text: string }[]) {
+
+        const keyValuPaired = [
+            
+        ]
+
+        const columnToSet = [
+
+        ]
+        // the place to set what column will tighly to each value
+        // e.g no_do = A, date_transaction = B
+        // const a = {
+
+        //     id?: string,
+        //     no_do: string,
+        //     date_transaction: string,
+        //     shift: number,
+        //     item_kode: string,
+        //     item_name: string,
+        //     date_expired: string
+        //     mulai_muat: string
+        //     selesai_muat: string,
+        //     idWarehouse: string
+        //     tally: string
+        //     karu: string
+        //     qty: number
+        //     no_pol: string
+        //     catatan: string
+        //     gudang_csv: string
+        // }
+    }
         
-    async function remove(ev: string) {
-        let res = await subscribeMutation(
-            '',
-            'Confirm',
-            {},
-            'Modal/tunnelMessage'
-        )
-        if(res) {
-            await removeCase(ev)
-        }
-    }
+    // async function remove(ev: string) {
+    //     let res = await subscribeMutation(
+    //         '',
+    //         'Confirm',
+    //         {},
+    //         'Modal/tunnelMessage'
+    //     )
+    //     if(res) {
+    //         await removeCase(ev)
+    //     }
+    // }
      
-    async function insertCase(id: string) {
-        subscribeMutation(
-            'Edit cases',
-            'CaseInsertForm',
-            { parent: id, edit: false },
-            'Modal/tunnelMessage'
-        )
-    }
+    // async function insertCase(id: string) {
+    //     subscribeMutation(
+    //         'Edit cases',
+    //         'CaseInsertForm',
+    //         { parent: id, edit: false },
+    //         'Modal/tunnelMessage'
+    //     )
+    // }
     
-    async function  edit(id: string) {
-        subscribeMutation(
-            'Edit cases',
-            'CaseInsertForm',
-            { id, edit: true },
-            'Modal/tunnelMessage'
-        )
-    }
+    // async function  edit(id: string) {
+    //     subscribeMutation(
+    //         'Edit cases',
+    //         'CaseInsertForm',
+    //         { id, edit: true },
+    //         'Modal/tunnelMessage'
+    //     )
+    // }
 </script>

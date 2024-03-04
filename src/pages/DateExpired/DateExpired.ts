@@ -6,7 +6,7 @@ interface expiredDate {
   id?: string
   no_do: string,
   date_transaction: string,
-  shift: number
+  shift: string
   item_kode: string,
   item_name: string
   date_expired: string
@@ -15,7 +15,7 @@ interface expiredDate {
   idWarehouse: string
   tally: string
   karu: string
-  qty: number
+  qty: string
   no_pol: string
   catatan: string
   gudang_csv: string
@@ -42,7 +42,7 @@ export function ExpiredDate() {
   async function addExpiredDate(
     no_do: string,
     date_transaction: string,
-    shift: number,
+    shift: string,
     item_kode: string,
     item_name: string,
     date_expired: string,
@@ -51,7 +51,7 @@ export function ExpiredDate() {
     idWarehouse: string,
     tally: string,
     karu: string,
-    qty: number,
+    qty: string,
     no_pol: string,
     catatan: string,
     gudang_csv: string
@@ -109,7 +109,7 @@ export function ExpiredDate() {
     };
   }
 
-  async function getExpiredDateByKodeItem(item_kode: string, date_transaction: string, shift: number): Promise<string|undefined> {
+  async function getExpiredDateByKodeItem(item_kode: string, date_transaction: string, shift: string): Promise<string|undefined> {
     const getOutput = await db.getItemsByThreeKeyValue<expiredDate>('item_kode', item_kode, 'date_transaction', date_transaction, 'shift', shift);
 
     if(!getOutput.length) return;
@@ -129,11 +129,43 @@ export function ExpiredDate() {
     listCustomWarehouse.push({ warehouseId: yourIdWarehouse, warehouseName: yourWarehouse})
   }
 
+  async function getColumnPaired(): Promise<expiredDate> {
+
+    const getColumnPaired = await db.getItem<expiredDate>("column-paired");
+
+    if(getColumnPaired) return getColumnPaired;
+
+    return {
+      "no_do": "",
+      "date_transaction": "",
+      "shift": "",
+      "item_kode": "",
+      "item_name": "",
+      "date_expired": "",
+      "mulai_muat": "",
+      "selesai_muat": "",
+      "idWarehouse": "",
+      "tally": "",
+      "karu": "",
+      "qty": "",
+      "no_pol": "",
+      "catatan": "",
+      "gudang_csv": "",
+    }
+  }
+
+  function setColumnPaired(keyValue: expiredDate): void {
+
+    db.setItem("column-paired", keyValue);
+  }
+
   return {
     addExpiredDate,
     getWarehouseByCustomMapped,
     getExpiredDateByKodeItem,
-    createCustomWarehouse
+    createCustomWarehouse,
+    getColumnPaired,
+    setColumnPaired
   }
 
 }
