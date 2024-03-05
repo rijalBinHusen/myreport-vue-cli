@@ -15,27 +15,20 @@
         />
     </div>
 
-    <!-- <Datatable
+    <Datatable
         :datanya="lists"
-        :heads="tables.heads"
-        :keys="tables?.keys"
+        :heads="['Nomor DO', 'Gudang', 'Item', 'Expired']"
+        :keys="['no_do', 'nameWarehouse', 'item_name', 'date_expired']"
         option
-        :id="tables?.id"
+        id="date-expired"
     >
-    
-        <template #default="{ prop }">
 
-            <Button v-if="!prop?.inserted && !isInsertMode" value="Delete" :datanya="prop.id" danger type="button" class="w3-tiny" @trig="remove($event)"/>
-            <Button v-if="!isInsertMode" value="Insert" primary type="button" class="w3-tiny" @trig="insertCase(prop?.id)"/>
-            <Button v-else value="Edit" secondary type="button" class="w3-tiny" @trig="edit(prop.id)"/>
-            
-        </template>
-
-    </Datatable>  -->
+    </Datatable> 
 
     <ModalSlot 
         :isActive="isModalActive"
         :judul="modalTitle"
+        @closeModal="isModalActive = false"
     >
         <CustomWarehouseChoose 
             v-if="currentForm = 'chooseWarehouse'"
@@ -53,7 +46,7 @@
     import Input from '@/components/elements/Input.vue'
     import { ref } from "vue"
     import { loader, modalClose } from "@/composable/piece/vuexModalLauncher"
-    import { ExpiredDate, expiredDateJSON } from "./DateExpired";
+    import { ExpiredDate, expiredDateJSON, lists } from "./DateExpired";
     import ModalSlot from "@/components/parts/ModalSlot.vue"
     import CustomWarehouseChoose from "./CustomWarehouseChoose.vue"
     import EventEmitter from "../../utils/EventEmitter";
@@ -139,6 +132,8 @@
         warehuseNameToSet.value = yourWarehouseName;
 
         const choosedWarehouseId = await eventSubscribeEmit.waitForEvent("warehouseSetted");
+        // close modal
+        isModalActive.value = false
         return choosedWarehouseId
     }
     async function setWarehouse(params: { warehouseName: string, warehouseId: string }) {

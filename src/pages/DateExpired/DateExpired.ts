@@ -50,7 +50,6 @@ interface customWarehouse {
 }
 
 export let lists = ref(<expiredDateMapped[]>[]);
-export let listsCaseImport = ref(<expiredDate[]>[])
 const storeName = "date-expired";
 
 export function ExpiredDate() {

@@ -36,6 +36,7 @@
 	import { signOut } from "./Login/users"
 	import FieldProblemVue from '@/pages/FieldProblems/FieldProblem.vue';
 	import ImportActivityUser from './Import/ImportActivity.vue'
+	import DateExpired from "./DateExpired/DateExpired.vue";
 	
 
 	export default {
@@ -92,6 +93,7 @@
 			Base,
 			FieldProblemVue,
 			ImportActivityUser,
+			DateExpired
 		},
 	}
 </script>

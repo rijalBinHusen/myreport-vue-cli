@@ -19,6 +19,7 @@ const Navbar = {
       { id: "ImportData", title: "Import data", group: "setting" },
       { id: "ReportExport", title: "Report export", group: "setting" },
       { id: "EditDocument", title: "Edit document", group: "setting" },
+      { id: "DateExpired", title: "Expired date", group: "reports" },
       { id: "FieldProblemVue", title: "Kendala lapangan", group: "reports" },
     ],
   },
