@@ -2,6 +2,25 @@ import { useIdb } from "../../utils/localforage";
 import { ref } from "vue"
 import { getWarehouseById } from "../Warehouses/Warehouses";
 
+export interface expiredDateJSON {
+    no_do: string,
+    date_transaction: string,
+    shift: number
+    item_kode: string,
+    item_name: string
+    date_expired: string
+    mulai_muat: string
+    selesai_muat: string,
+    gudang: string
+    tally: string
+    karu: string
+    qty: number
+    no_pol: string
+    catatan: string
+    fifo_or_not_fifo: string
+}
+
+
 interface expiredDate {
   id?: string
   no_do: string,
