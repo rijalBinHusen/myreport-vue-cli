@@ -54,7 +54,7 @@ const storeName = "date-expired";
 
 export function ExpiredDate() {
   const db = useIdb(storeName);
-  const dbWarehouseCustom = useIdb("expired-date-warehouse");
+  const dbWarehouseCustom = useIdb("date-expired-warehouse");
   const listCustomWarehouse = <customWarehouse[]>[]
 
   async function addExpiredDate(
@@ -110,12 +110,12 @@ export function ExpiredDate() {
       if(findWarehouseId) return findWarehouseId.warehouseId;
     }
 
-    const retrieveWarehouse = await dbWarehouseCustom.getItem<customWarehouse>(yourWarehouse);
+    const warehouseId = await dbWarehouseCustom.getItem<string>(yourWarehouse);
 
-    if(retrieveWarehouse === null) return "";
-    
-    listCustomWarehouse.push(retrieveWarehouse);
-    return retrieveWarehouse.warehouseId;
+    if(warehouseId === null) return "";
+
+    listCustomWarehouse.push({warehouseName: yourWarehouse, warehouseId });
+    return warehouseId;
   }
 
   async function interpretCaseRecord(obj: expiredDate): Promise<expiredDateMapped> {

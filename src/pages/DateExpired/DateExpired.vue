@@ -11,7 +11,7 @@
             @change.prevent="readJSONFile($event)"
             type="file"
             ref="importerExpiredDate"
-            accept=".xls, .ods"
+            accept=".json"
         />
     </div>
 
@@ -87,8 +87,12 @@
     async function startImport (records: expiredDateJSON[]) {
         for(let record of records) {
 
+            // bring the loader up
+            if(!isModalActive.value) loader();
+
             let warehouseId = await getWarehouseByCustomMapped(record.gudang);
             if(!warehouseId) {
+               modalClose();
                const getWarehouse = await selectWarehouse(record.gudang);
                if(getWarehouse) {
                     warehouseId = getWarehouse;
@@ -121,6 +125,7 @@
 
         // close the loader
         modalClose()
+        importerExpiredDate.value.value = "";
     }
 
     const warehuseNameToSet = ref("");
