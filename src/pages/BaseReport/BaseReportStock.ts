@@ -5,7 +5,8 @@ import { baseItem } from '@/pages/BaseItem/Baseitem'
 import { postData, putData, deleteData, getData as getDataOnServer } from "../../utils/requestToServer";
 import { progressMessage2, loaderMessage } from "../../components/parts/Loader/state";
 import { useIdb } from "../../utils/localforage";
-import { type Sheet } from "../../utils/xlsx.type"
+import { type Sheet } from "../../utils/xlsx.type";
+import { ExpiredDate } from "../DateExpired/DateExpired";
 
 export interface BaseStock {
   awal: number;
@@ -74,6 +75,7 @@ const endPoint = "base_stock/"
 export function baseReportStock() {
   const db = useIdb(storeName);
   const { getItemBykode } = baseItem();
+  const { getExpiredDateByKodeItem } = ExpiredDate();
 
   const appendData = async (parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
     // because we need warehouse id
@@ -82,11 +84,15 @@ export function baseReportStock() {
     let parentDetails = await findBaseReportFileById(parent);
     let getProblem = problemActive(parentDetails?.warehouse, item);
 
+    // get date output, convert parent periode to localdate
+    const parentPeriode = new Date(parentDetails.periode).toLocaleDateString("id-ID");
+    const { outputDate, oldestDate } = await getExpiredDateByKodeItem(item, parentPeriode, shift + "");
+
     const recordToSet = {
       awal,
-      dateEnd: "-",
+      dateEnd: oldestDate,
       dateIn: "-",
-      dateOut: "-",
+      dateOut: outputDate,
       in: masuk,
       item,
       out: keluar,

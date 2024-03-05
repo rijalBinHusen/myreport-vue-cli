@@ -127,18 +127,24 @@ export function ExpiredDate() {
     };
   }
 
-  async function getExpiredDateByKodeItem(item_kode: string, date_transaction: string, shift: string): Promise<string|undefined> {
+  async function getExpiredDateByKodeItem(item_kode: string, date_transaction: string, shift: string): Promise<{ outputDate: string, oldestDate: string }> {
     const getOutput = await db.getItemsByThreeKeyValue<expiredDate>('item_kode', item_kode, 'date_transaction', date_transaction, 'shift', shift);
 
-    if(!getOutput.length) return;
+    if(!getOutput.length) return { outputDate: "", oldestDate: "" };
 
     let datePushed = <string[]>[];
+    let oldestDate = "";
     for(let out of getOutput) {
       const isDatePushed = datePushed.includes(out.date_expired);
       if(!isDatePushed) datePushed.push(out.date_expired);
+
+      oldestDate = oldestDate >= out.date_expired ? oldestDate : out.date_expired
     }
 
-    return datePushed.join(", ");
+    return {
+      outputDate: datePushed.join(", "),
+      oldestDate
+    };
   }
 
   async function createCustomWarehouse(yourWarehouse: string, yourIdWarehouse: string){
