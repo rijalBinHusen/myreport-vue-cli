@@ -84,15 +84,24 @@ export function baseReportStock() {
     let parentDetails = await findBaseReportFileById(parent);
     let getProblem = problemActive(parentDetails?.warehouse, item);
 
-    // get date output, convert parent periode to localdate
-    const parentPeriode = new Date(parentDetails.periode).toLocaleDateString("id-ID");
-    const { outputDate, oldestDate } = await getExpiredDateByKodeItem(item, parentPeriode, shift + "");
+    let dateOut = "";
+    let dateEnd = "";
+
+    if(keluar > 0) {
+
+      // get date output, convert parent periode to localdate
+      const parentPeriode = new Date(parentDetails.periode).toLocaleDateString("id-ID");
+      const expiredDate = await getExpiredDateByKodeItem(item, parentPeriode, shift + "");
+
+      dateOut = expiredDate.outputDate;
+      dateEnd = expiredDate.oldestDate;
+    }
 
     const recordToSet = {
       awal,
-      dateEnd: oldestDate,
+      dateEnd,
       dateIn: "-",
-      dateOut: outputDate,
+      dateOut,
       in: masuk,
       item,
       out: keluar,
