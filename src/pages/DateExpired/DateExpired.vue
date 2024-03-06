@@ -16,6 +16,7 @@
     </div>
 
     <Datatable
+        v-if="isShowTable"
         :datanya="lists"
         :heads="['Nomor DO', 'Gudang', 'Item', 'Expired']"
         :keys="['no_do', 'nameWarehouse', 'item_name', 'date_expired']"
@@ -55,6 +56,7 @@
     const importerExpiredDate = ref();
     const isModalActive = ref(false);
     const modalTitle = ref("");
+    const isShowTable = ref(false)
     const form = {
         chooseWarehouse: CustomWarehouseChoose
     }
@@ -85,6 +87,7 @@
     };
 
     async function startImport (records: expiredDateJSON[]) {
+        isShowTable.value = false
         for(let record of records) {
 
             // bring the loader up
@@ -126,6 +129,7 @@
         // close the loader
         modalClose()
         importerExpiredDate.value.value = "";
+        isShowTable.value = true
     }
 
     const warehuseNameToSet = ref("");
