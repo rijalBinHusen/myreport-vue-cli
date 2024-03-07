@@ -94,7 +94,7 @@ export function baseReportStock() {
       const expiredDate = await getExpiredDateByKodeItem(item, parentPeriode, shift + "");
 
       dateOut = expiredDate.outputDate;
-      dateEnd = expiredDate.oldestDate;
+      dateEnd = riil > 0 ? expiredDate.oldestDate : "-";
     }
 
     const recordToSet = {
