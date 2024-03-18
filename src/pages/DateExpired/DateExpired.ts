@@ -138,7 +138,13 @@ export function ExpiredDate() {
       const isDatePushed = datePushed.includes(out.date_expired);
       if(!isDatePushed) datePushed.push(out.date_expired);
 
-      oldestDate = oldestDate >= out.date_expired ? oldestDate : out.date_expired
+      const oldDateSplitted = oldestDate.split("/");
+      const dateExpSplitted = out.date_expired.split("/");
+
+      // date and month greater than date oldest
+      const isDateExpGreater = dateExpSplitted[0] > oldDateSplitted[0] && dateExpSplitted[1] >= oldDateSplitted[1]
+
+      oldestDate = isDateExpGreater  ?  out.date_expired : oldestDate
     }
 
     return {

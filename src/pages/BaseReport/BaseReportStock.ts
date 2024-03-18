@@ -84,8 +84,8 @@ export function baseReportStock() {
     let parentDetails = await findBaseReportFileById(parent);
     let getProblem = problemActive(parentDetails?.warehouse, item);
 
-    let dateOut = "";
-    let dateEnd = "";
+    let dateOut = "-";
+    let dateEnd = "-";
 
     if(keluar > 0) {
 
