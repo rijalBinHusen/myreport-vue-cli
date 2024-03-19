@@ -141,10 +141,10 @@ export function ExpiredDate() {
       const oldDateSplitted = oldestDate.split("/");
       const dateExpSplitted = out.date_expired.split("/");
 
-      // date and month greater than date oldest
-      const isDateExpGreater = dateExpSplitted[0] > oldDateSplitted[0] && dateExpSplitted[1] >= oldDateSplitted[1]
+      const oldDateTime = new Date(`${oldDateSplitted[1]}/${oldDateSplitted[0]}/2024`).getTime();
+      const expDateTime = new Date(`${dateExpSplitted[1]}/${dateExpSplitted[0]}/2024`).getTime();
 
-      oldestDate = isDateExpGreater  ?  out.date_expired : oldestDate
+      oldestDate = expDateTime > oldDateTime  ?  out.date_expired : oldestDate
     }
 
     return {
