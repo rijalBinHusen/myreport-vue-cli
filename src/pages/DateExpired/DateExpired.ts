@@ -50,6 +50,7 @@ interface customWarehouse {
 }
 
 export let lists = ref(<expiredDateMapped[]>[]);
+let isAGetllExpiredDate  = false
 const storeName = "date-expired";
 
 export function ExpiredDate() {
@@ -97,8 +98,8 @@ export function ExpiredDate() {
     const insertedId = await db.createItem(rec);
 
     if (typeof insertedId === 'undefined') return;
-    const interpretIt = await interpretCaseRecord({ id: insertedId, ...rec })
-    lists.value.unshift(interpretIt)
+    const interpretIt = await interpretExpiredDateRecord([{ id: insertedId, ...rec }])
+    lists.value.unshift(interpretIt[0])
 
   }
 
@@ -118,17 +119,31 @@ export function ExpiredDate() {
     return warehouseId;
   }
 
-  async function interpretCaseRecord(obj: expiredDate): Promise<expiredDateMapped> {
-    const warehouse = await getWarehouseById(obj.idWarehouse);
+  async function interpretExpiredDateRecord(obj: expiredDate[]): Promise<expiredDateMapped[]> {
+    let result = <expiredDateMapped[]>[];
 
-    return {
-      ...obj,
-      nameWarehouse: warehouse.name
+    for(let exp of obj) {
+
+      const warehouse = await getWarehouseById(exp.idWarehouse);
+      result.push({
+        ...exp,
+        nameWarehouse: warehouse.name
+      })
     };
+
+    return result;
   }
 
   async function getExpiredDateByKodeItem(item_kode: string, date_transaction: string, shift: string): Promise<{ outputDate: string, oldestDate: string }> {
-    const getOutput = await db.getItemsByThreeKeyValue<expiredDate>('item_kode', item_kode, 'date_transaction', date_transaction, 'shift', shift);
+    if(!isAGetllExpiredDate) {
+
+      isAGetllExpiredDate = true;
+      const getAllOutput = await db.getItems<expiredDate>();
+      lists.value = await interpretExpiredDateRecord(getAllOutput);
+    }
+
+    // const getOutput = await db.getItemsByThreeKeyValue<expiredDate>('item_kode', item_kode, 'date_transaction', date_transaction, 'shift', shift);
+    const getOutput = lists.value.filter((rec) => rec.item_kode == item_kode && date_transaction == date_transaction && shift == shift);
 
     if(!getOutput.length) return { outputDate: "", oldestDate: "" };
 

@@ -93,8 +93,8 @@ export function baseReportStock() {
       const parentPeriode = new Date(parentDetails.periode).toLocaleDateString("id-ID");
       const expiredDate = await getExpiredDateByKodeItem(item, parentPeriode, shift + "");
 
-      dateOut = expiredDate.outputDate;
-      dateEnd = riil > 0 ? expiredDate.oldestDate : "-";
+      dateOut = expiredDate.outputDate || "-";
+      dateEnd = riil > 0 && expiredDate.oldestDate ? expiredDate.oldestDate : "-";
     }
 
     const recordToSet = {

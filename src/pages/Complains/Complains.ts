@@ -185,6 +185,10 @@ export function Complains () {
       import: true,
       inserted: false,
     };
+
+    const isComplainExists = listsComplainImport.value.filter((rec) => rec.tanggalKomplain === tanggalKomplain && rec.spv === spv && rec.kabag === kabag && rec.customer === customer && rec.item === item);
+
+    if(isComplainExists.length) return;
     
     const insertedId = await db.createItem(rec);
 
