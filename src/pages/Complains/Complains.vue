@@ -1,8 +1,8 @@
 <template>
 <div class="">
     <div class="w3-border w3-padding w3-container">
-        <label>Set record to show : </label>
-        <Button primary value="Set" type="button" />
+        <label>Export complain : </label>
+        <Button primary value="Export" type="button" @trig="exportComplainAsExcel" />
         <Button primary class="w3-right" value="Import" @trig="$refs.importerComplain.click();" type="button"/>
         <Button primary :class="['w3-right', inserted ? '' : 'w3-disabled']" value="Imported" @trig="inserted = false" type="button"/>
         <Button primary :class="['w3-right', inserted ? 'w3-disabled' : '']" value="Complains" @trig="inserted = true" type="button"/>
@@ -56,6 +56,7 @@ import { subscribeMutation } from "@/composable/piece/subscribeMutation"
 import { lists as listsComplainInserted, listsComplainImport, Complains } from './Complains'
 import { loader } from "@/composable/piece/vuexModalLauncher"
 import { computed, ref } from "vue"
+import exportToXls from "@/utils/exportToXls"
 
 const { removeComplain, getComplains } = Complains();
 
@@ -74,7 +75,11 @@ export default {
                 : listsComplainImport.value
         )
 
-        return { inserted, lists };
+        function exportComplainAsExcel() {
+            exportToXls(lists.value, `Komplain muat exported`)
+        }
+
+        return { inserted, lists, exportComplainAsExcel };
     },
     computed: {
         table() {
