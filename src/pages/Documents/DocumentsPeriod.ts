@@ -163,6 +163,21 @@ export function Documents () {
         }
     }
 
+    const getDocumentsFinishedBeforeDays = async (yourBeforeDays: number) => {
+        lists.value.length = 0;
+
+        const getDocs = await db.getItemsByKeyGreaterThan<Document>('finished', yourBeforeDays + '');
+
+        if(typeof getDocs !== 'undefined') {
+            for(let doc of getDocs) {
+
+                const mapIt = await documentsMapper(doc);
+
+                lists.value.push(mapIt)
+            }
+        }
+    }
+
     const updateDocument = async (idDocument: string, objToUpdate: DocumentUpdate) => {
 
         const isNoValueToUpdate = Object.values(objToUpdate).length === 0;
@@ -545,7 +560,8 @@ export function Documents () {
         markDocumentFinished,
         getDocumentByPeriodeByWarehouseByShift,
         addDocumentsGroup,
-        countDocumentUnApproved
+        countDocumentUnApproved,
+        getDocumentsFinishedBeforeDays
     }
           
 }

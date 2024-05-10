@@ -263,10 +263,10 @@ export const useIdb = (storeName: string) => {
     return result;
   };
 
-  const getItemsByKeyGreaterThan = async (keySearch: string, greaterThanValue: string) => {
-    let result: unknownObject[] = [];
-    return store
-      .iterate(function (value: unknownObject) {
+  const getItemsByKeyGreaterThan = async <T>(keySearch: string, greaterThanValue: string): Promise<T[]> => {
+    let result: T[] = [];
+    await store
+      .iterate(function (value: any) {
         // Resulting key/value pair -- this callback
         // will be executed for every item in the
         // database.
@@ -276,14 +276,11 @@ export const useIdb = (storeName: string) => {
           result.push(value);
         }
       })
-      .then(function () {
-        // return result
-        return result;
-      })
       .catch(function (err) {
         // This code runs if there were any errors
         console.log(err);
       });
+    return result;
   };
 
   const getItemsByTwoKeyValue = async <T>(
