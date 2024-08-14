@@ -15,6 +15,7 @@ import { checkAndsyncHeadSpvToServer, syncHeadSpvRecordToServer } from "@/pages/
 import { checkAndsyncProblemToServer, syncProblemRecordToServer } from "@/pages/Problems/Problem";
 import { checkAndsyncWarehouseToServer, syncWarehouseRecordToServer } from "@/pages/Warehouses/Warehouses";
 import { checkAndsyncUserToServer, syncUserRecordToServer } from "@/pages/Login/users";
+import { startExport } from "@/composable/piece/exportAsFile";
 
 export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
@@ -33,6 +34,10 @@ interface Activity {
     store: string
 }
 
+interface activityBackup {
+        [store: string]: [  Object  ]
+}
+
 
 async function login() {
     let email = window.prompt('Insert your email');
@@ -49,6 +54,45 @@ async function login() {
         alert(resp.message)
         return false
     }
+}
+
+async function backupActivity() {
+
+    const results = <activityBackup[]>[];
+    const storePushed = <{ [store: string]: string[]}>{};
+    const storeIndexPushed = <string[]>[];
+
+    const activityDB = useIdb('activity');
+    const activityKeys = await activityDB.getKeys();
+    for (let key of activityKeys) {
+        const activity = await activityDB.getItem<Activity>(key);
+        // skip if empty
+        if(!activity) continue;
+        // remove activity
+        activityDB.removeItem(activity.id)
+
+        const db = useIdb(activity.store);
+        const data = await db.getItem(activity.idRecord);
+        // skip if empty
+        if(!data) continue;
+        
+        // check is record is pushed
+        const isStorePushed = storePushed[activity.store] && storePushed[activity.store].includes(activity.idRecord);
+        const indexOfStore = storeIndexPushed.indexOf(activity.store);
+
+        if(isStorePushed && indexOfStore > -1) {
+            results[indexOfStore][activity.store].push(data);
+            storePushed[activity.store].push(activity.idRecord);
+        }
+        else {
+            results.push({ [activity.store]: [data] });
+            storeIndexPushed.push(activity.store);
+            storePushed[activity.store] = [activity.idRecord];
+        }
+    }
+
+    // export to json file
+    await startExport(results, `Activity backup ${new Date().toISOString()}.json`)
 }
 
 async function startSyncIng() {

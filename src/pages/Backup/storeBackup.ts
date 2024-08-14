@@ -26,28 +26,29 @@ export interface Backup {
 
 export const storeBackup = async (sendToCloud: boolean) => {
     // will store all document that we saved in idexeddb
-    let allDocuments: Backup = {}
+    // let allDocuments: Backup = {}
     // initiate documents, because activity store, not recorded in summary store
     const dbSummary = useIdb('summary');
     const summaryKeys = await dbSummary.getKeys();
-    allDocuments['summary'] = [];
+    const summaryData = dbSummary.getItems();
+    // allDocuments['summary'] = [];
+    await startExport(summaryData, `backup summary ${new Date().toISOString()}.json`, false)
 
     for (let store of summaryKeys) {
         const db = useIdb(store);
 
         const getItems = await db.getItems<{ [key: string]: string | number | boolean }>();
-        const getSummary = await dbSummary.getItem<any>(store);
+        // const getSummary = await dbSummary.getItem<any>(store);
 
-        allDocuments[store] = getItems;
-        if (getSummary !== null) {
-            allDocuments['summary'].push(getSummary);
-        }
+        // export as file
+        await startExport(getItems, `backup ${store} ${new Date().toISOString()}.json`, false)
+        
+
+        // allDocuments[store] = getItems;
+        // if (getSummary !== null) {
+        //     allDocuments['summary'].push(getSummary);
+        // }
     }
-    // export as file
-    await startExport(allDocuments,
-        `Backup myreport ${new Date().toISOString()}.json`,
-        false
-    )
 }
 
 export async function errorSyncResend() {

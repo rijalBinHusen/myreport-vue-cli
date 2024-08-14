@@ -16,7 +16,7 @@
             <br />
             <br />
             <br />
-            <!-- <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/> -->
+            <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
             <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
             <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/>
         </div>
@@ -39,14 +39,15 @@ export default {
             // // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            if(checkedOptions.includes(3)) {
-                await storeBackup(checkedOptions.includes(2))
-            }
+            // if(checkedOptions.includes(3)) {
+                // await storeBackup(checkedOptions.includes(2))
+                await storeBackup()
+            // }
             // waiting for backup user activity
             // if(checkedOptions.includes(4)) {
             //     await seperateUsers(checkedOptions.includes(2))
             // }
-            // // close the spinner
+            // close the spinner
             store.commit("Modal/active");
             // empty the option
             checkedOptions.length = 0
