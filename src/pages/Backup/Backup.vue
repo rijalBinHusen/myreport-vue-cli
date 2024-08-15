@@ -4,7 +4,7 @@
         <br />
         <br />
         <div class="w3-row w3-center">
-            <div class="w3-col s3" v-for="option in options" :key="option.id">
+            <!-- <div class="w3-col s3" v-for="option in options" :key="option.id">
                 <CheckboxVue 
                     :checkboxName="option.id" 
                     :value="option.id" 
@@ -12,16 +12,17 @@
                     @check="toggleCheckOptions"
                     :isChecked="checkedOptions.includes(option.id)"
                  />
-            </div>
+            </div> -->
             <br />
             <br />
             <br />
             <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
-            <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
-            <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/>
+            <ButtonVue primary class="mb-3" value="Export activity" type="button" @trig="handleBackupActivity"/>
+            <!-- <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
+            <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/> -->
         </div>
-        <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
-        <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/>
+        <!-- <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
+        <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/> -->
     </div>
 </template>
 
@@ -30,23 +31,25 @@ import { useStore } from "vuex"
 import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend, getSummaryData, createDummyActivity, fixAllParentDocumentBaseStock } from "./storeBackup"
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
+import { backupActivity } from "@/utils/syncDataToServer"
 import { ref } from '@vue/reactivity'
 
 export default {
     setup() {
-        const store = useStore()
+        const store = useStore();
+        async function handleBackupActivity() {
+            // // open the spinner
+            store.commit("Modal/active", { judul: "", form: "Loader" });
+            // trigger and waiting the backup function
+            await backupActivity()
+            // close the spinner
+            store.commit("Modal/active");
+        }
         const handleBackup = async () => {
             // // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            // if(checkedOptions.includes(3)) {
-                // await storeBackup(checkedOptions.includes(2))
-                await storeBackup()
-            // }
-            // waiting for backup user activity
-            // if(checkedOptions.includes(4)) {
-            //     await seperateUsers(checkedOptions.includes(2))
-            // }
+            await storeBackup()
             // close the spinner
             store.commit("Modal/active");
             // empty the option
@@ -118,7 +121,8 @@ export default {
             getSummary,
             createDummyActivity,
             fixAllParentDocumentBaseStock,
-            createDummyByStoreName
+            createDummyByStoreName,
+            handleBackupActivity
         }
     },
     name: "Backup",

@@ -16,6 +16,7 @@ import { checkAndsyncProblemToServer, syncProblemRecordToServer } from "@/pages/
 import { checkAndsyncWarehouseToServer, syncWarehouseRecordToServer } from "@/pages/Warehouses/Warehouses";
 import { checkAndsyncUserToServer, syncUserRecordToServer } from "@/pages/Login/users";
 import { startExport } from "@/composable/piece/exportAsFile";
+import { JSToExcelDate } from "@/composable/piece/dateFormat";
 
 export const isContinueBasedOnVariable = ref(true);
 export const totalToSync = ref(0);
@@ -56,7 +57,7 @@ async function login() {
     }
 }
 
-async function backupActivity() {
+export async function backupActivity() {
 
     const results = <activityBackup[]>[];
     const storePushed = <{ [store: string]: string[]}>{};
@@ -72,7 +73,7 @@ async function backupActivity() {
         activityDB.removeItem(activity.id)
 
         const db = useIdb(activity.store);
-        const data = await db.getItem(activity.idRecord);
+        const data = await db.getItem<{[key: string]: string}>(activity.idRecord);
         // skip if empty
         if(!data) continue;
         
@@ -81,11 +82,11 @@ async function backupActivity() {
         const indexOfStore = storeIndexPushed.indexOf(activity.store);
 
         if(isStorePushed && indexOfStore > -1) {
-            results[indexOfStore][activity.store].push(data);
+            results[indexOfStore][activity.store].push({ ...data, time: JSToExcelDate(new Date(activity.time))});
             storePushed[activity.store].push(activity.idRecord);
         }
         else {
-            results.push({ [activity.store]: [data] });
+            results.push({ [activity.store]: [{ ...data, time: JSToExcelDate(new Date(activity.time))}] });
             storeIndexPushed.push(activity.store);
             storePushed[activity.store] = [activity.idRecord];
         }

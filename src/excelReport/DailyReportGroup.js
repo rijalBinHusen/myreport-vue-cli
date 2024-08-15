@@ -5,6 +5,7 @@ import GetFieldProblemByPeriodeBySpv from "./GetFieldProblemByPeriodeBySpv";
 import { waitFor } from "@/utils/piece/waiting";
 import { baseItem } from "@/pages/BaseItem/Baseitem";
 import { useIdb } from "@/utils/localforage";
+import { startExport } from "@/composable/piece/exportAsFile";
 
 export default async function (baseReport) {
   const dbStock = useIdb('basereportstock');
@@ -72,6 +73,12 @@ export default async function (baseReport) {
     },
     fileName
   );
+
+  startExport({
+    base: result,
+    notes: [details],
+    kendalaLapangan: fieldProblem || [{ periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' }],
+  }, fileName + '.json')
 }
 
 function detailsDocument(arrayOfDocumentDetails) {
