@@ -51,15 +51,15 @@ export default async function (baseReport) {
   }
 
   await Promise.all(waitingLists);
-  exportToXlsSeperateSheet(
-    {
-      result: [{ id: "Bismillah" }],
-      base: result,
-      notes: [details],
-      kendalaLapangan: fieldProblem || [{ periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' }],
-    },
-    fileName
-  );
+  // exportToXlsSeperateSheet(
+  //   {
+  //     result: [{ id: "Bismillah" }],
+  //     base: result,
+  //     notes: [details],
+  //     kendalaLapangan: fieldProblem || [{ periode: '',	masalah: '',	sumberMasalah: '',	solusi: '',	pic: '',	dl: '' }],
+  //   },
+  //   fileName
+  // );
   
 
   startExport({
