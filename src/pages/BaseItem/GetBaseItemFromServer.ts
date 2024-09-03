@@ -10,7 +10,7 @@ interface ItemromServer {
     last_used: string
 }
 
-interface Item {
+export interface Item {
     id: string
     kode: string
     lastUsed: number
@@ -42,4 +42,8 @@ export async function implantItemsFromServer (periode: number) {
     }
 
     progressMessage.value = ''
+}
+
+export function convertBaseItemToArrayToExportToJson(item: Item) {
+    return [item?.id, item?.kode, item?.name, item?.lastUsed]
 }

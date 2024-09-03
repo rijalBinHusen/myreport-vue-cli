@@ -1,6 +1,6 @@
 import { useIdb } from "../../utils/localforage";
 import { ref } from "vue";
-import { dateMonth, ymdTime } from "../../composable/piece/dateFormat";
+import { dateMonth, JSToExcelDate, ymdTime } from "../../composable/piece/dateFormat";
 import { getWarehouseById, lists as warehouseLists } from "../Warehouses/Warehouses";
 import { postData, deleteData, putData, getData as getDataOnServer } from "../../utils/requestToServer";
 import { baseClock, implantBaseClockFromServer } from "./BaseReportClock";
@@ -452,4 +452,11 @@ export async function implantBaseFileFromServer (periode1: number, periode2: num
     }
   
     progressMessage.value = '';
+  }
+
+  
+export function convertbaseFileToArrayToExportToJson(baseFile: BaseReportFileInterface) {
+    const periodeInExcel = JSToExcelDate(baseFile.periode)
+    const warehouseName = getWarehouseById(baseFile.warehouse)
+    return [baseFile.id, periodeInExcel, warehouseName, baseFile.fileName, baseFile.stock, baseFile.clock, baseFile.isRecordFinished]
   }

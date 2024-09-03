@@ -446,3 +446,7 @@ export async function implantBaseClockFromServer(parent: string) {
 
   progressMessage2.value = '';
 }
+
+export function convertbaseClockToArrayToExportToJson(baseClock: BaseClock) {
+  return [baseClock.id, baseClock.parent, baseClock.noDo, baseClock.shift, baseClock.reg, baseClock.start, baseClock.finish, baseClock.rehat ]
+}

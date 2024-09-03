@@ -628,3 +628,9 @@ export async function implantBaseStockFromServer(parent: string) {
 
   progressMessage2.value = '';
 }
+
+export function convertbaseStockToArrayToExportToJson(baseStock: BaseStock) {
+  // const periodeInExcel = JSToExcelDate(baseStock.periode)
+  // const warehouseName = getWarehouseById(baseStock.warehouse)
+  // return [baseStock.id, baseStock.]
+}
