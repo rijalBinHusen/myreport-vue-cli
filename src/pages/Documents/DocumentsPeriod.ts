@@ -7,7 +7,7 @@ import { postData, deleteData, putData, getData as getDataOnServer } from "@/uti
 import { useIdb } from "@/utils/localforage"
 import { BaseReportFile } from "@/pages/BaseReport/BaseReportFile";
 
-interface Document {
+export interface Document {
     id: string
     baseReportFile: string
     generateReport: boolean
@@ -539,6 +539,7 @@ export function Documents () {
     return {
         addData,
         getDocuments,
+        documentsMapper,
         updateDocument,
         isGenerateDocument,
         removeDocument,

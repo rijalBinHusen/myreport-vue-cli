@@ -18,6 +18,7 @@
             <br />
             <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
             <ButtonVue primary class="mb-3" value="Export activity" type="button" @trig="handleBackupActivity"/>
+            <ButtonVue primary class="mb-3" value="Backup data for spreadsheet" type="button" @trig="handleBackupForSpreadsheet"/>
             <!-- <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
             <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/> -->
         </div>
@@ -32,6 +33,7 @@ import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend,
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { backupActivity } from "@/utils/syncDataToServer"
+import { getAllData } from "./backupToJSONforSpreadsheet";
 import { ref } from '@vue/reactivity'
 
 export default {
@@ -42,6 +44,14 @@ export default {
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
             await backupActivity()
+            // close the spinner
+            store.commit("Modal/active");
+        }
+        async function handleBackupForSpreadsheet() {
+            // // open the spinner
+            store.commit("Modal/active", { judul: "", form: "Loader" });
+            // trigger and waiting the backup function
+            await getAllData()
             // close the spinner
             store.commit("Modal/active");
         }
@@ -122,7 +132,8 @@ export default {
             createDummyActivity,
             fixAllParentDocumentBaseStock,
             createDummyByStoreName,
-            handleBackupActivity
+            handleBackupActivity,
+            handleBackupForSpreadsheet
         }
     },
     name: "Backup",
