@@ -16,8 +16,8 @@
             <br />
             <br />
             <br />
-            <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/>
-            <ButtonVue primary class="mb-3" value="Export activity" type="button" @trig="handleBackupActivity"/>
+            <!-- <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/> -->
+            <ButtonVue primary class="mb-3" value="Export data by activity" type="button" @trig="handleBackupByActivity"/>
             <ButtonVue primary class="mb-3" value="Backup data for spreadsheet" type="button" @trig="handleBackupForSpreadsheet"/>
             <!-- <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
             <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/> -->
@@ -33,20 +33,28 @@ import { storeBackup, syncAllDataToServer, syncBasedOnActivity, errorSyncResend,
 import CheckboxVue from "@/components/elements/Checkbox.vue"
 import ButtonVue from "@/components/elements/Button.vue"
 import { backupActivity } from "@/utils/syncDataToServer"
-import { getAllData } from "./backupToJSONforSpreadsheet";
+import { getAllData, getDataByActivity } from "./backupToJSONforSpreadsheet";
 import { ref } from '@vue/reactivity'
 
 export default {
     setup() {
         const store = useStore();
-        async function handleBackupActivity() {
+        async function handleBackupByActivity() {
             // // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
             // trigger and waiting the backup function
-            await backupActivity()
+            await getDataByActivity()
             // close the spinner
             store.commit("Modal/active");
         }
+        // async function handleBackupActivity() {
+        //     // // open the spinner
+        //     store.commit("Modal/active", { judul: "", form: "Loader" });
+        //     // trigger and waiting the backup function
+        //     await backupActivity()
+        //     // close the spinner
+        //     store.commit("Modal/active");
+        // }
         async function handleBackupForSpreadsheet() {
             // // open the spinner
             store.commit("Modal/active", { judul: "", form: "Loader" });
@@ -55,16 +63,16 @@ export default {
             // close the spinner
             store.commit("Modal/active");
         }
-        const handleBackup = async () => {
-            // // open the spinner
-            store.commit("Modal/active", { judul: "", form: "Loader" });
-            // trigger and waiting the backup function
-            await storeBackup()
-            // close the spinner
-            store.commit("Modal/active");
-            // empty the option
-            checkedOptions.length = 0
-        }
+        // const handleBackup = async () => {
+        //     // // open the spinner
+        //     store.commit("Modal/active", { judul: "", form: "Loader" });
+        //     // trigger and waiting the backup function
+        //     await storeBackup()
+        //     // close the spinner
+        //     store.commit("Modal/active");
+        //     // empty the option
+        //     checkedOptions.length = 0
+        // }
 
         const options = [
             {id: 'baseitem', value: 'Item'}, 
@@ -121,19 +129,8 @@ export default {
         }
 
         return { 
-            handleBackup, 
-            options, 
-            checkedOptions,
-            toggleCheckOptions,
-            syncCheckedStoreName, 
-            syncBasedOnActivity, 
-            errorSyncResend, 
-            getSummary,
-            createDummyActivity,
-            fixAllParentDocumentBaseStock,
-            createDummyByStoreName,
-            handleBackupActivity,
-            handleBackupForSpreadsheet
+            handleBackupForSpreadsheet,
+            handleBackupByActivity
         }
     },
     name: "Backup",

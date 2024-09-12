@@ -47,7 +47,7 @@ export async function getAllData() {
     }
 }
 
-export async function getActivity() {
+export async function getDataByActivity() {
     const dbActivity = useIdb('activity');
     const activities = await dbActivity.getItems<Activity>();
 
@@ -58,7 +58,7 @@ export async function getActivity() {
     const documentsToExport = [];
 
     for(let activity of activities) {
-        const isNotForExecute = recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord)
+        const isNotForExecute = !storeToBackup.includes(activity.store) && recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord)
         if(isNotForExecute) continue;
 
         const db = useIdb(activity.store);
@@ -104,7 +104,8 @@ class convertDataToArray {
             document.totalProductNotFIFO,
             document.totalQTYIn,
             document.totalQTYOut,
-            document.generateReport && document.collected
+            document.generateReport && document.collected,
+            JSToExcelDate(new Date())
         ]
     }
 }
