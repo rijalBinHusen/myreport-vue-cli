@@ -76,6 +76,11 @@ export async function getDataByActivity() {
                 documentsToExport.length = 0;
             }
         }
+
+        recordExported.hasOwnProperty(activity.store)
+                    ? recordExported[activity.store].push(activity.idRecord)
+                    : recordExported[activity.store] = [activity.idRecord];
+        await dbActivity.removeItem(activity.id);
     }
 
     if(documentsToExport.length) await startExport(documentsToExport, `Document exported at ${new Date().toISOString()}.json`, false);
