@@ -58,7 +58,7 @@ export async function getDataByActivity() {
     const documentsToExport = [];
 
     for(let activity of activities) {
-        const isNotForExecute = !storeToBackup.includes(activity.store) && recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord)
+        const isNotForExecute = !storeToBackup.includes(activity.store) || (recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord))
         if(isNotForExecute) continue;
 
         const db = useIdb(activity.store);
