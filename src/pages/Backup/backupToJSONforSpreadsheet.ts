@@ -3,47 +3,53 @@ import { useIdb } from "@/utils/localforage";
 import { Document, Documents, DocumentsMapped } from "@/pages/Documents/DocumentsPeriod";
 import { JSToExcelDate } from "@/composable/piece/dateFormat";
 import { Activity } from "@/utils/localforage"
+import { getWeekNumber } from "@/utils/generatorId";
+import { waitFor } from "@/utils/piece/waiting";
 
 const storeToBackup = ['document'];
 
 export async function getAllData() {
-    // const dbSummary = useIdb('summary');
-    // const summaryKeys = await dbSummary.getKeys();
-    // const summaryData = dbSummary.getItems();
-    // await startExport(summaryData, `backup summary ${new Date().toISOString()}.json`, false)
+    let documentsGroup = <{
+        [documentPeriod: string]:  any[]
+    }>{}
 
-    // for (let store of summaryKeys) {
-    //     if(store === 'baseitem') "";
-    //     const db = useIdb(store);
-    //     const getItems = await db.getItems<{ [key: string]: string | number | boolean }>();
-    //     await startExport(getItems, `backup ${store} ${new Date().toISOString()}.json`, false)
-    // }
     for(let store of storeToBackup) {
         const db = useIdb(store);
         const data = await db.getItems<any>();
         await startExport(data, `backup ${store} ${new Date().toISOString()}.json`, false);
 
-        let dataMapped = [];
         for(let datum of data) {
             if(store === "document") {
                 const mapper = Documents();
                 const mappedData = await mapper.documentsMapper(datum);
-                // id, parent, parent_document, base_report_file, periode, warehouseName, spvName, headName, shift, 
-                // collected, finished, approval, shared, total_do, total_kendaraan, total_waktu, 
-                // plan_out, total_item_keluar, total_item_moving, total_product_not_FIFO, total_qty_in, total_qty_out
-                // is_generated_document,
+
+                const monthDocument = new Date(mappedData.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+                const weekDocument = getWeekNumber(new Date(mappedData.periode)) + " - " + new Date(mappedData.periode).getFullYear();
+
                 const converter = new convertDataToArray();
                 const pickData = converter.convertDocumentStoreToArray(mappedData);
-                dataMapped.push(pickData);
 
-                if(dataMapped.length == 500){
-                    await startExport(dataMapped, `Document exported at ${new Date().toISOString()}.json`, false);
-                    dataMapped.length = 0;
-                }
+                const monthDocumentTitle = `Summary dokumen ${monthDocument}`;
+                const weekDocumentTitle = `Summary dokumen Week ${weekDocument}`;
+                
+                const isMonthDocumentPushed = documentsGroup[monthDocumentTitle] ? true : false;
+                const isWeekDocumentPushed = documentsGroup[weekDocumentTitle] ? true : false;
+                
+                if(isMonthDocumentPushed) documentsGroup[monthDocumentTitle].push(pickData);
+                else documentsGroup[monthDocumentTitle] = [pickData];
+                
+                if(isWeekDocumentPushed) documentsGroup[weekDocumentTitle].push(pickData);
+                else documentsGroup[weekDocumentTitle] = [pickData];
             }
         }
 
-        if(dataMapped.length) await startExport(dataMapped, `${store} exported at ${new Date().toISOString()}.json`, false);
+        if(!Object.keys(documentsGroup).length) return;
+
+        for(let  key in documentsGroup) {
+            await waitFor(1000);
+            await startExport(documentsGroup[key], key + ".json", false);
+         }
+
     }
 }
 
@@ -55,11 +61,16 @@ export async function getDataByActivity() {
     let recordExported = <{ [key: string]: string[] }>{};
 
     // store data to export
-    const documentsToExport = [];
+    let documentsGroup = <{
+        [documentPeriod: string]:  any[]
+    }>{}
 
     for(let activity of activities) {
         const isNotForExecute = !storeToBackup.includes(activity.store) || (recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord))
-        if(isNotForExecute) continue;
+        if(isNotForExecute) {
+            // await dbActivity.removeItem(activity.id);
+            continue; 
+        }
 
         const db = useIdb(activity.store);
         const data = await db.getItem<any>(activity.idRecord);
@@ -68,22 +79,55 @@ export async function getDataByActivity() {
             const doc = Documents();
             const documentMapped = await doc.documentsMapper(data);
 
-            const converter = new convertDataToArray();
-            const convertedData = converter.convertDocumentStoreToArray(documentMapped);
-            documentsToExport.push(convertedData)
-            if(documentsToExport.length == 500) {
-                await startExport(documentsToExport, `Document exported at ${new Date().toISOString()}.json`, false);
-                documentsToExport.length = 0;
+            const documentPeriod = new Date(documentMapped.periode);
+            const startMonthDocument = new Date(documentMapped.periode).setDate(1);
+            const endMonthDocument = new Date(documentMapped.periode + (1000 * 60 * 60 * 24 * 31)).setDate(0);
+            const startWeekDocument = new Date(documentMapped.periode).setDate(documentPeriod.getDate() - documentPeriod.getDay());
+            const endWeekDocument = new Date(startWeekDocument).setDate(new Date(startWeekDocument).getDate() + 6);
+            
+            const monthDocument = new Date(documentMapped.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+            const weekDocument = getWeekNumber(new Date(documentMapped.periode)) + " - " + new Date(documentMapped.periode).getFullYear(); 
+            const monthDocumentTitle = `Summary dokumen ${monthDocument}`;
+            const weekDocumentTitle = `Summary dokumen Week ${weekDocument}`;
+            
+            // get all document in month
+            const getAllDocumentInMonth = await db.getItemsGreatEqualLowEqual<any>('periode', startMonthDocument, 'periode',  endMonthDocument);
+            console.log('periode start: ', startMonthDocument,  'periode end: ', endMonthDocument, new Date(startMonthDocument), " - ", new Date(endMonthDocument));
+            console.log('document in month: ', getAllDocumentInMonth);
+            if(getAllDocumentInMonth) {
+                // map all document
+                for(let docInMonth of getAllDocumentInMonth) {
+                    const documentMapped2 = await doc.documentsMapper(docInMonth);
+                    const isMonthDocumentPushed = documentsGroup[monthDocumentTitle] ? true : false;
+                    const isWeekDocumentPushed = documentsGroup[weekDocumentTitle] ? true : false;
+                    // is periode document between  start and end week document
+                    const isNeedToPushToWeekDocs = documentMapped2.periode >= startWeekDocument && documentMapped2.periode <= endWeekDocument;
+                    if(isNeedToPushToWeekDocs) {
+                        // push to group week document
+                        if(isWeekDocumentPushed) documentsGroup[weekDocumentTitle].push(documentMapped2);
+                        else documentsGroup[weekDocumentTitle] = [documentMapped2];
+                    }
+
+                    // push to group month document
+                    if(isMonthDocumentPushed) documentsGroup[monthDocumentTitle].push(documentMapped2);
+                    else documentsGroup[monthDocumentTitle] = [documentMapped2];
+                    
+                    // push to record exported
+                    recordExported.hasOwnProperty(activity.store)
+                    ? recordExported[activity.store].push(documentMapped2.id)
+                    : recordExported[activity.store] = [documentMapped2.id];
+                }
+
             }
         }
-
-        recordExported.hasOwnProperty(activity.store)
-                    ? recordExported[activity.store].push(activity.idRecord)
-                    : recordExported[activity.store] = [activity.idRecord];
-        await dbActivity.removeItem(activity.id);
     }
 
-    if(documentsToExport.length) await startExport(documentsToExport, `Document exported at ${new Date().toISOString()}.json`, false);
+
+    if(!Object.keys(documentsGroup).length) return;
+
+    for(let  key in documentsGroup) {
+        await startExport(documentsGroup[key], key + ".json", false);
+     }
 }
 
 class convertDataToArray {

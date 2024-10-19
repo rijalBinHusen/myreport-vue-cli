@@ -186,7 +186,7 @@ export function Complains () {
       inserted: false,
     };
 
-    const isComplainExists = listsComplainImport.value.filter((rec) => rec.tanggalKomplain === tanggalKomplain && rec.spv === spv && rec.kabag === kabag && rec.customer === customer && rec.item === item);
+    const isComplainExists = listsComplainImport.value.filter((rec) => rec.nomorSJ === nomorSJ);
 
     if(isComplainExists.length) return;
     

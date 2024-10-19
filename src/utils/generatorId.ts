@@ -1,14 +1,16 @@
 
-function getWeekNumber(yourDate: Date) {
-    // get today
-    let currentdate = new Date(yourDate);
-    // get the 1 january day
-    var oneJan = new Date(currentdate.getFullYear(), 0, 1);
-    // get the number of today (currentdate - oneJan) would be epoch number and divide 1 day epoch number
-    var numberOfDays = Math.floor((currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
-    // get the number of day + 1 + number of days and divide 1 week ( 170 / 7)
-    return Math.ceil((currentdate.getDay() + 1 + numberOfDays) / 7);
-  }
+export function getWeekNumber(date: Date) {
+  // Create a new Date object from the input date string
+  const d = new Date(date);
+
+  // Calculate the day of the year (0-365)
+  const dayOfYear = Math.floor((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 86400000);
+
+  // Determine the week number based on the day of the year and the first day of the year
+  const weekNumber = Math.ceil((dayOfYear + 1) / 7);
+
+  return weekNumber;
+}
 
   
 export function generateId(yourLastId: string) {
