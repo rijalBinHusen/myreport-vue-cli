@@ -27,6 +27,8 @@ import { ref } from '@vue/reactivity'
 import { useStore } from "vuex"
 import Button from "@/components/elements/Button.vue"
 import { startImport } from './ImportActivity'
+import { useIdb } from '@/utils/localforage';
+import { loaderMessage } from '@/components/parts/Loader/state';
 
 export default {
     components: { Button },
@@ -47,7 +49,20 @@ export default {
 
             //when reading is completed load
             reader.onload = async (event) => {
-                await startImport(JSON.parse(event.target.result))
+                const parsedData = JSON.parse(event.target.result);
+                const isDataOke = parsedData?.storeName && parsedData?.data && parsedData.data.length;
+                if(!isDataOke) {
+                    alert("Data tidak sesuai")
+                    return; 
+                }
+
+                let index = 0;
+                const db = useIdb(parsedData.storeName);
+                for(let datum of parsedData.data) {
+                    loaderMessage.value  = `Mengimport data ke ${parsedData.storeName} (${index} / ${parsedData.data.length})`;
+                    await db.setItem(datum?.id, datum)
+                    index++
+                }
                 // close loader
                 store.commit("Modal/active")
             };

@@ -16,7 +16,8 @@ export async function getAllData() {
     for(let store of storeToBackup) {
         const db = useIdb(store);
         const data = await db.getItems<any>();
-        await startExport(data, `backup ${store} ${new Date().toISOString()}.json`, false);
+        const dataToExport = {storeName:  store, data: data};
+        await startExport(dataToExport, `backup ${store} ${new Date().toISOString()}.json`, false);
 
         for(let datum of data) {
             if(store === "document") {
@@ -92,8 +93,8 @@ export async function getDataByActivity() {
             
             // get all document in month
             const getAllDocumentInMonth = await db.getItemsGreatEqualLowEqual<any>('periode', startMonthDocument, 'periode',  endMonthDocument);
-            console.log('periode start: ', startMonthDocument,  'periode end: ', endMonthDocument, new Date(startMonthDocument), " - ", new Date(endMonthDocument));
-            console.log('document in month: ', getAllDocumentInMonth);
+            // console.log('periode start: ', startMonthDocument,  'periode end: ', endMonthDocument, new Date(startMonthDocument), " - ", new Date(endMonthDocument));
+            // console.log('document in month: ', getAllDocumentInMonth);
             if(getAllDocumentInMonth) {
                 // map all document
                 for(let docInMonth of getAllDocumentInMonth) {
