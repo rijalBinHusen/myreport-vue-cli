@@ -11,6 +11,7 @@
         >   
             <template #button>
                 <Button class="w3-bar-item" small primary value="Add data" @trig="launchForm" type="button" />
+                <Button v-if="isStockSheet" class="w3-bar-item" small primary value="Generate date" @trig="generateOutputDate" type="button" />
             </template>
             <template #text>
                 {{ excelLabel }}
@@ -115,6 +116,7 @@ import { getSupervisorId } from "@/pages/Supervisors/Supervisors"
 import { dateMonth } from "@/composable/piece/dateFormat"
 import AGDateEditorVue from "./AGDateEditor.vue"
 import { loaderMessage } from "../../components/parts/Loader/state";
+import { ExpiredDate } from "../DateExpired/DateExpired";
 
 const { markDocumentFinished, getDocumentByPeriodeByWarehouseByShiftFromDb } = Documents();
 
@@ -379,12 +381,39 @@ export default {
                 }
             }
         })
+
+        async function generateOutputDate() {
+            if(!isStockSheet) return;
+            store.commit("Modal/active", {judul: "", form: "Loader"});
+            let newList = [];
+            const { getExpiredDateByKodeItem } = ExpiredDate();
+            const { findBaseReportFileById } = BaseReportFile()
+            const baseReportFile = await findBaseReportFileById(baseId.value);
+            const periode = new Date(baseReportFile.periode).toLocaleDateString("id-ID");
+            let index = 1;
+            // for loop lists.value
+            for(let datum of lists.value) {
+                loaderMessage.value = `Memindai ${index} dari ${lists.value.length}.`;
+                if(datum?.out == 0) {
+                    newList.push(datum);
+                    continue;
+                }
+                const expiredDate = await getExpiredDateByKodeItem(datum.item, periode, nowShift.value);
+                const dateOut = expiredDate.outputDate || "-";
+                const dateEnd = datum?.real > 0 && expiredDate.oldestDate ? expiredDate.oldestDate : "-";
+                newList.push({ ...datum, dateOut, dateEnd });
+                await updateBaseStock(datum.id, {  dateOut, dateEnd });
+
+            }
+            lists.value = newList;
+            store.commit("Modal/active");
+        }
         
         return {
             isMainMode, isExcelMode, lists, renderTable, message, duplicateRecord,
             handleProblem, launchForm, markAsFinished, save, remove,
             renewLists, isBaseFinishedForm, baseId, table, isStockSheet, isClockSheet,
-            excelLabel, nowShift , mode, freezePanel
+            excelLabel, nowShift , mode, freezePanel, generateOutputDate
         }
     }
 }

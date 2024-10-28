@@ -7,6 +7,7 @@ import { getWeekNumber } from "@/utils/generatorId";
 import { waitFor } from "@/utils/piece/waiting";
 
 const storeToBackup = ['document'];
+// const storeToBackup = ['date-expired'];
 
 export async function getAllData() {
     let documentsGroup = <{
@@ -30,8 +31,8 @@ export async function getAllData() {
                 const converter = new convertDataToArray();
                 const pickData = converter.convertDocumentStoreToArray(mappedData);
 
-                const monthDocumentTitle = `Summary dokumen ${monthDocument}`;
-                const weekDocumentTitle = `Summary dokumen Week ${weekDocument}`;
+                const monthDocumentTitle = `Summary 3R ${monthDocument}`;
+                const weekDocumentTitle = `Summary 3R Week ${weekDocument}`;
                 
                 const isMonthDocumentPushed = documentsGroup[monthDocumentTitle] ? true : false;
                 const isWeekDocumentPushed = documentsGroup[weekDocumentTitle] ? true : false;
@@ -98,8 +99,8 @@ export async function getDataByActivity() {
             
                 const monthDocument = new Date(documentMapped2.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
                 const weekDocument = getWeekNumber(new Date(documentMapped2.periode)) + " - " + new Date(documentMapped2.periode).getFullYear(); 
-                const monthDocumentTitle = `Summary dokumen ${monthDocument}`;
-                const weekDocumentTitle = `Summary dokumen Week ${weekDocument}`;
+                const monthDocumentTitle = `Summary 3R ${monthDocument}`;
+                const weekDocumentTitle = `Summary 3R Week ${weekDocument}`;
                 
                 const isMonthDocumentPushed = documentsGroup[monthDocumentTitle] ? true : false;
                 const isWeekDocumentPushed = documentsGroup[weekDocumentTitle] ? true : false;
