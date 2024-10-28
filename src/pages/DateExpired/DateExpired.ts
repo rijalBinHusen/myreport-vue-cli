@@ -143,8 +143,9 @@ export function ExpiredDate() {
     }
 
     // const getOutput = await db.getItemsByThreeKeyValue<expiredDate>('item_kode', item_kode, 'date_transaction', date_transaction, 'shift', shift);
-    const getOutput = lists.value.filter((rec) => rec.item_kode == item_kode && rec.date_transaction == date_transaction && rec.shift == shift);
+    let getOutput = lists.value.filter((rec) => rec.item_kode == item_kode && rec.date_transaction == date_transaction && rec.shift == shift);
 
+    if(!getOutput.length) getOutput = lists.value.filter((rec) => rec.item_kode == item_kode && rec.date_transaction == date_transaction);
     if(!getOutput.length) return { outputDate: "", oldestDate: "" };
 
     let datePushed = <string[]>[];

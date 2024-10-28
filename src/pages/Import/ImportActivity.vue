@@ -56,11 +56,12 @@ export default {
                     return; 
                 }
 
-                let index = 0;
+                let index = 1;
                 const db = useIdb(parsedData.storeName);
                 for(let datum of parsedData.data) {
                     loaderMessage.value  = `Mengimport data ke ${parsedData.storeName} (${index} / ${parsedData.data.length})`;
                     await db.setItem(datum?.id, datum)
+                    loaderMessage.value  = ""
                     index++
                 }
                 // close loader

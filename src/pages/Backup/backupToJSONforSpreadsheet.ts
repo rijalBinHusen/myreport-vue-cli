@@ -45,26 +45,30 @@ export async function getAllData() {
         }
 
         if(!Object.keys(documentsGroup).length) return;
+        
+    }
 
-        for(let  key in documentsGroup) {
-            await waitFor(1000);
-            await startExport(documentsGroup[key], key + ".json", false);
-         }
-
+    for(let  key in documentsGroup) {
+        await waitFor(1000);
+        await startExport(documentsGroup[key], key + ".json", false);
     }
 }
 
 export async function getDataByActivity() {
+    
     const dbActivity = useIdb('activity');
     const activities = await dbActivity.getItems<Activity>();
-
     if(!activities.length) return;
     let recordExported = <{ [key: string]: string[] }>{};
 
     // store data to export
-    let documentsGroup = <{
+    const documentsGroup = <{
         [documentPeriod: string]:  any[]
     }>{}
+
+    // const documentsGroupLastUpdate = <{
+    //     [documentPeriod: string]:  number
+    // }>{}
 
     for(let activity of activities) {
         const isNotForExecute = !storeToBackup.includes(activity.store) || (recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord))
@@ -80,44 +84,61 @@ export async function getDataByActivity() {
             const doc = Documents();
             const documentMapped = await doc.documentsMapper(data);
 
-            const documentPeriod = new Date(documentMapped.periode);
             const startMonthDocument = new Date(documentMapped.periode).setDate(1);
             const endMonthDocument = new Date(documentMapped.periode + (1000 * 60 * 60 * 24 * 31)).setDate(0);
-            const startWeekDocument = new Date(documentMapped.periode).setDate(documentPeriod.getDate() - documentPeriod.getDay());
-            const endWeekDocument = new Date(startWeekDocument).setDate(new Date(startWeekDocument).getDate() + 6);
-            
-            const monthDocument = new Date(documentMapped.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
-            const weekDocument = getWeekNumber(new Date(documentMapped.periode)) + " - " + new Date(documentMapped.periode).getFullYear(); 
-            const monthDocumentTitle = `Summary dokumen ${monthDocument}`;
-            const weekDocumentTitle = `Summary dokumen Week ${weekDocument}`;
             
             // get all document in month
             const getAllDocumentInMonth = await db.getItemsGreatEqualLowEqual<any>('periode', startMonthDocument, 'periode',  endMonthDocument);
-            // console.log('periode start: ', startMonthDocument,  'periode end: ', endMonthDocument, new Date(startMonthDocument), " - ", new Date(endMonthDocument));
-            // console.log('document in month: ', getAllDocumentInMonth);
-            if(getAllDocumentInMonth) {
-                // map all document
-                for(let docInMonth of getAllDocumentInMonth) {
-                    const documentMapped2 = await doc.documentsMapper(docInMonth);
-                    const isMonthDocumentPushed = documentsGroup[monthDocumentTitle] ? true : false;
-                    const isWeekDocumentPushed = documentsGroup[weekDocumentTitle] ? true : false;
-                    // is periode document between  start and end week document
-                    const isNeedToPushToWeekDocs = documentMapped2.periode >= startWeekDocument && documentMapped2.periode <= endWeekDocument;
-                    if(isNeedToPushToWeekDocs) {
-                        // push to group week document
-                        if(isWeekDocumentPushed) documentsGroup[weekDocumentTitle].push(documentMapped2);
-                        else documentsGroup[weekDocumentTitle] = [documentMapped2];
-                    }
+            
+            if(!getAllDocumentInMonth) continue;
+            
+            // map all document
+            for(let docInMonth of getAllDocumentInMonth) {
+                const documentMapped2 = await doc.documentsMapper(docInMonth);
+            
+                const monthDocument = new Date(documentMapped2.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+                const weekDocument = getWeekNumber(new Date(documentMapped2.periode)) + " - " + new Date(documentMapped2.periode).getFullYear(); 
+                const monthDocumentTitle = `Summary dokumen ${monthDocument}`;
+                const weekDocumentTitle = `Summary dokumen Week ${weekDocument}`;
+                
+                const isMonthDocumentPushed = documentsGroup[monthDocumentTitle] ? true : false;
+                const isWeekDocumentPushed = documentsGroup[weekDocumentTitle] ? true : false;
 
-                    // push to group month document
-                    if(isMonthDocumentPushed) documentsGroup[monthDocumentTitle].push(documentMapped2);
-                    else documentsGroup[monthDocumentTitle] = [documentMapped2];
-                    
-                    // push to record exported
-                    recordExported.hasOwnProperty(activity.store)
-                    ? recordExported[activity.store].push(documentMapped2.id)
-                    : recordExported[activity.store] = [documentMapped2.id];
+                // get last updated time
+                // const lastUpdated = activities.find((rec) => rec.idRecord === documentMapped2.id);
+                // if(!lastUpdated) continue;
+                
+                // push to group week document
+                if(isWeekDocumentPushed) {
+                    documentsGroup[weekDocumentTitle].push(documentMapped2);
+                    // check the greater last updated
+                    // if(lastUpdated.time > documentsGroupLastUpdate[weekDocumentTitle]) {
+                    //     documentsGroupLastUpdate[weekDocumentTitle] = lastUpdated.time
+                    // }
                 }
+                else { 
+                    documentsGroup[weekDocumentTitle] = [documentMapped2]; 
+                    // documentsGroupLastUpdate[weekDocumentTitle] = lastUpdated.time
+                }
+
+                // push to group month document
+                if(isMonthDocumentPushed) {
+                    documentsGroup[monthDocumentTitle].push(documentMapped2); 
+                    // check the greater last updated
+                    // if(lastUpdated.time > documentsGroupLastUpdate[monthDocumentTitle]) {
+                    //     documentsGroupLastUpdate[monthDocumentTitle] = lastUpdated.time
+                    // }
+                }
+                else {
+                    documentsGroup[monthDocumentTitle] = [documentMapped2];
+                    // documentsGroupLastUpdate[monthDocumentTitle] = lastUpdated.time
+                }
+                
+                // push to record exported
+                recordExported.hasOwnProperty(activity.store)
+                ? recordExported[activity.store].push(documentMapped2.id)
+                : recordExported[activity.store] = [documentMapped2.id];
+
 
             }
         }
@@ -127,6 +148,13 @@ export async function getDataByActivity() {
     if(!Object.keys(documentsGroup).length) return;
 
     for(let  key in documentsGroup) {
+        // get last updated time on documentsGroupLastUpdate
+        // const lastUpdated = documentsGroupLastUpdate[key];
+        // // if there is no exists continue
+        // if(!lastUpdated) continue;
+        // // convert lastUpdated to localedatetime ID-id
+        // const lastUpdatedLocaledatetime = new Date(lastUpdated).toLocaleDateString('id-ID', { month: "long", year: "numeric", day: "2-digit"})
+        // await startExport(documentsGroup[key], key + " updated " + lastUpdatedLocaledatetime + ".json", false);
         await startExport(documentsGroup[key], key + ".json", false);
      }
 }
