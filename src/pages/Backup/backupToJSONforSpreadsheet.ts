@@ -74,7 +74,7 @@ export async function getDataByActivity() {
     for(let activity of activities) {
         const isNotForExecute = !storeToBackup.includes(activity.store) || (recordExported[activity.store] && recordExported[activity.store].includes(activity.idRecord))
         if(isNotForExecute) {
-            // await dbActivity.removeItem(activity.id);
+            await dbActivity.removeItem(activity.id);
             continue; 
         }
 
