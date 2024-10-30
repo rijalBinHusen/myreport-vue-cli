@@ -108,30 +108,32 @@ export async function getDataByActivity() {
                 // get last updated time
                 // const lastUpdated = activities.find((rec) => rec.idRecord === documentMapped2.id);
                 // if(!lastUpdated) continue;
-                
+            
+                const converter = new convertDataToArray();
+                const pickData = converter.convertDocumentStoreToArray(documentMapped2);
                 // push to group week document
                 if(isWeekDocumentPushed) {
-                    documentsGroup[weekDocumentTitle].push(documentMapped2);
+                    documentsGroup[weekDocumentTitle].push(pickData);
                     // check the greater last updated
                     // if(lastUpdated.time > documentsGroupLastUpdate[weekDocumentTitle]) {
                     //     documentsGroupLastUpdate[weekDocumentTitle] = lastUpdated.time
                     // }
                 }
                 else { 
-                    documentsGroup[weekDocumentTitle] = [documentMapped2]; 
+                    documentsGroup[weekDocumentTitle] = [pickData]; 
                     // documentsGroupLastUpdate[weekDocumentTitle] = lastUpdated.time
                 }
 
                 // push to group month document
                 if(isMonthDocumentPushed) {
-                    documentsGroup[monthDocumentTitle].push(documentMapped2); 
+                    documentsGroup[monthDocumentTitle].push(pickData); 
                     // check the greater last updated
                     // if(lastUpdated.time > documentsGroupLastUpdate[monthDocumentTitle]) {
                     //     documentsGroupLastUpdate[monthDocumentTitle] = lastUpdated.time
                     // }
                 }
                 else {
-                    documentsGroup[monthDocumentTitle] = [documentMapped2];
+                    documentsGroup[monthDocumentTitle] = [pickData];
                     // documentsGroupLastUpdate[monthDocumentTitle] = lastUpdated.time
                 }
                 
@@ -161,14 +163,14 @@ export async function getDataByActivity() {
 }
 
 class convertDataToArray {
-    convertDocumentStoreToArray(document: DocumentsMapped) {
+    convertDocumentStoreToArray(document: DocumentsMapped): (string|number)[] {
         return [
             document.id,
             document.baseReportFile,
             JSToExcelDate(document.periode),
-            document.warehouseName,
-            document.spvName,
-            document.headName,
+            document.warehouseName + '',
+            document.spvName + '',
+            document.headName + '',
             document.shift,
             JSToExcelDate(document.collected),
             JSToExcelDate(document.finished),
@@ -183,7 +185,7 @@ class convertDataToArray {
             document.totalProductNotFIFO,
             document.totalQTYIn,
             document.totalQTYOut,
-            document.generateReport && document.collected,
+            (document.generateReport && document.collected) + '',
             JSToExcelDate(new Date())
         ]
     }

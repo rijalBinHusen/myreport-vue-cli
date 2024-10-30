@@ -403,7 +403,7 @@ export default {
                 const dateEnd = datum?.real > 0 && expiredDate.oldestDate ? expiredDate.oldestDate : "-";
                 newList.push({ ...datum, dateOut, dateEnd });
                 await updateBaseStock(datum.id, {  dateOut, dateEnd });
-
+                index++
             }
             lists.value = newList;
             store.commit("Modal/active");
