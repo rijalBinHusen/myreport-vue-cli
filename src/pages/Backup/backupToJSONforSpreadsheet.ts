@@ -145,6 +145,8 @@ export async function getDataByActivity() {
 
             }
         }
+
+        await dbActivity.removeItem(activity.id);
     }
 
 
