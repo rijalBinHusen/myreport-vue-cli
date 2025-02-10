@@ -1,9 +1,9 @@
 import { full } from "../../composable/piece/dateFormat";
 import { startExport } from "../../composable/piece/exportAsFile"
 import { getJWTToken, setJWTToken } from "../../utils/cookie";
-import { syncClockToServer, syncClockRecordToServer, checkAndsyncBaseClockToServer } from "../BaseReport/BaseReportClock";
-import { syncBaseFileToServer, syncBaseFileRecordToServer, checkAndsyncBaseFileToServer } from "../BaseReport/BaseReportFile";
-import { syncBaseStockToServer, syncBaseStockRecordToServer, checkAndsyncBaseStockToServer } from "../BaseReport/BaseReportStock";
+import { syncClockToServer, syncClockRecordToServer, checkAndsyncBaseClockToServer, BaseClock } from "../BaseReport/BaseReportClock";
+import { syncBaseFileToServer, syncBaseFileRecordToServer, checkAndsyncBaseFileToServer, BaseReportFileInterface } from "../BaseReport/BaseReportFile";
+import { syncBaseStockToServer, syncBaseStockRecordToServer, checkAndsyncBaseStockToServer, BaseStock } from "../BaseReport/BaseReportStock";
 import { syncItemToServer, syncItemRecordToServer, checkAndsyncItemToServer } from "../BaseItem/Baseitem";
 import { syncCasesToServer, syncCaseRecordToServer, checkAndsyncCaseRecordToServer } from "../Cases/Cases";
 import { syncComplainsToServer, syncComplainRecordToServer, checkAndSyncComplainRecordToServer } from "../Complains/Complains";
@@ -24,24 +24,44 @@ export interface Backup {
     [key: string]: { [key: string]: string | number | boolean }[]
 }
 
-export const storeBackup = async (sendToCloud: boolean) => {
+export const storeBackup = async () => {
     // will store all document that we saved in idexeddb
     // let allDocuments: Backup = {}
     // initiate documents, because activity store, not recorded in summary store
     const dbSummary = useIdb('summary');
     const summaryKeys = await dbSummary.getKeys();
-    const summaryData = dbSummary.getItems();
+    const summaryData = await dbSummary.getItems();
+    console.log(summaryKeys)
     // allDocuments['summary'] = [];
-    await startExport(summaryData, `backup summary ${new Date().toISOString()}.json`, false)
+    // await startExport(summaryData, `backup summary ${new Date().toISOString()}.json`, false)
+    const response = await fetch('http://localhost:3000/myreport', {
+        method: 'POST',
+        mode:'no-cors',
+        body: JSON.stringify({ title: 'summary', data: summaryData })
+    });
+    
 
     for (let store of summaryKeys) {
         const db = useIdb(store);
 
-        const getItems = await db.getItems<{ [key: string]: string | number | boolean }>();
+        if(['basereportclock', 'basereportstock', 'login', 'user', 'activity', 'backup' ,'basereportfile'].includes(store)) continue;
+        // if(['basereportclock', 'basereportstock', 'login', 'user', 'activity', 'backup'].includes(store)) continue;
+        // if(store == 'basereportfile') await exportBaseReport();
+        else {
+
+            const getItems = await db.getItems<{ [key: string]: string | number | boolean }>();
+            await fetch('http://localhost:3000/myreport', {
+                method: 'POST',
+                body: JSON.stringify({ title: store, data: getItems }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+        }
         // const getSummary = await dbSummary.getItem<any>(store);
 
         // export as file
-        await startExport(getItems, `backup ${store} ${new Date().toISOString()}.json`, false)
+        // await startExport(getItems, `backup ${store} ${new Date().toISOString()}.json`, false)
         
 
         // allDocuments[store] = getItems;
@@ -49,6 +69,74 @@ export const storeBackup = async (sendToCloud: boolean) => {
         //     allDocuments['summary'].push(getSummary);
         // }
     }
+}
+
+interface dataToSendToBackend <T>{
+    title: string
+    data: T[]
+}
+
+async function exportBaseReport() {
+    const db = useIdb('basereportfile');
+    const getBaseReportFiles = await db.getItems<BaseReportFileInterface>();
+    if(!getBaseReportFiles.length) return;
+
+    // const resultAllBaseReportFiles = <{[title: string]: BaseReportFileInterface[]}[]>[]
+    const resultAllBaseReportFiles = <dataToSendToBackend<BaseReportFileInterface>[]>[]
+    const resultAllBaseStock = <dataToSendToBackend<BaseStock>[]>[]
+    const resultAllBaseClock = <dataToSendToBackend<BaseClock>[]>[]
+    // retrieve basereportstock
+    const dbStock = useIdb('basereportstock');
+    const getStocks = await dbStock.getItems<BaseStock>();
+    // retrieve basereportstock
+    const dbClock = useIdb('basereportclock');
+    const getClocks = await dbClock.getItems<BaseClock>();
+    for(let baseReport of getBaseReportFiles) {
+        const dateOfBaseReport = new Date(baseReport.periode);
+        // create a variable based on dateofbasereport with value YYYY-MMM
+        const dateOfBaseReportStr = dateOfBaseReport.getFullYear() +"-"+ dateOfBaseReport.toLocaleString('default', { month: 'long' });
+        // findindex on resultbasereportfiles where basereportfileid is equal to basereportfileid of basereport
+        const indexOfPeriod = resultAllBaseReportFiles.findIndex((rec) => rec.title == dateOfBaseReportStr);
+        
+        const getStock = getStocks.filter((rec) => rec.parent == baseReport.id)
+        const getClock = getClocks.filter((rec) => rec.parent == baseReport.id)
+    
+        // grouping basereportfile, basereportstock and basereportclock based on month
+        if(indexOfPeriod > -1) {
+            resultAllBaseReportFiles[indexOfPeriod].data.push(baseReport);
+            resultAllBaseStock[indexOfPeriod].data.concat(getStock);
+            resultAllBaseClock[indexOfPeriod].data.concat(getClock);
+        } 
+        else {
+            resultAllBaseReportFiles.push({ title: dateOfBaseReportStr, data: [baseReport] });
+            resultAllBaseStock.push({ title: dateOfBaseReportStr + 'base_stock', data: getStock });
+            resultAllBaseClock.push({ title: dateOfBaseReportStr + 'base_clock', data: getClock });
+        }
+    }
+
+        await fetch('http://localhost:3000/myreport', {
+            method: 'POST',
+            body: JSON.stringify(resultAllBaseReportFiles),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        await fetch('http://localhost:3000/myreport', {
+            method: 'POST',
+            body: JSON.stringify(resultAllBaseClock),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        await fetch('http://localhost:3000/myreport', {
+            method: 'POST',
+            body: JSON.stringify(resultAllBaseStock),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 }
 
 export async function errorSyncResend() {
@@ -508,22 +596,22 @@ interface BaseReportFile {
     periode2?: string
 }
 
-interface BaseStock {
-    awal: number;
-    dateEnd: string;
-    dateIn: string;
-    dateOut: string;
-    id: string;
-    in: number;
-    item: string;
-    out: number;
-    parent: string;
-    parentDocument: string;
-    planOut: number;
-    problem: string[];
-    real: number;
-    shift: number;
-  }
+// interface BaseStock {
+//     awal: number;
+//     dateEnd: string;
+//     dateIn: string;
+//     dateOut: string;
+//     id: string;
+//     in: number;
+//     item: string;
+//     out: number;
+//     parent: string;
+//     parentDocument: string;
+//     planOut: number;
+//     problem: string[];
+//     real: number;
+//     shift: number;
+//   }
 
 export async function fixAllParentDocumentBaseStock() {
     const dbDocument = useIdb('document');

@@ -4,7 +4,7 @@ import { loaderMessage, progressMessage2 } from "../../components/parts/Loader/s
 import { useIdb } from "../../utils/localforage"
 import { type Sheet } from "../../utils/xlsx.type"
 
-interface BaseClock {
+export interface BaseClock {
   id: string;
   parent: string;
   shift: number;

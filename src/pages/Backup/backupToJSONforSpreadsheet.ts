@@ -83,6 +83,7 @@ export async function getDataByActivity() {
 
         if(activity.store == 'document') {
             const doc = Documents();
+            if(!data) continue;
             const documentMapped = await doc.documentsMapper(data);
 
             const startMonthDocument = new Date(documentMapped.periode).setDate(1);

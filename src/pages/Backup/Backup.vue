@@ -4,7 +4,7 @@
         <br />
         <br />
         <div class="w3-row w3-center">
-            <!-- <div class="w3-col s3" v-for="option in options" :key="option.id">
+            <div class="w3-col s3" v-for="option in options" :key="option.id">
                 <CheckboxVue 
                     :checkboxName="option.id" 
                     :value="option.id" 
@@ -12,15 +12,16 @@
                     @check="toggleCheckOptions"
                     :isChecked="checkedOptions.includes(option.id)"
                  />
-            </div> -->
+            </div>
             <br />
             <br />
             <br />
             <!-- <ButtonVue primary class="mb-3" value="Mulai backup" type="button" @trig="handleBackup"/> -->
             <ButtonVue primary class="mb-3" value="Export data by activity" type="button" @trig="handleBackupByActivity"/>
             <ButtonVue primary class="mb-3" value="Backup data for spreadsheet" type="button" @trig="handleBackupForSpreadsheet"/>
-            <!-- <ButtonVue primary value="Sync data" type="button" @trig="syncCheckedStoreName"/>
-            <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/> -->
+            <!-- <ButtonVue primary class="mb-3" value="Backup and upload G-Drive" type="button" @trig="storeBackup"/>--->
+            <ButtonVue primary value="Sync all data to server" type="button" @trig="syncCheckedStoreName"/>
+            <!-- <ButtonVue primary value="Create dummy activity" type="button" @trig="createDummyByStoreName"/> --> -->
         </div>
         <!-- <ButtonVue primary value="Resend error sync" type="button" @trig="errorSyncResend"/>
         <ButtonVue primary value="Fix parent document" type="button" @trig="fixAllParentDocumentBaseStock"/> -->
@@ -130,7 +131,13 @@ export default {
 
         return { 
             handleBackupForSpreadsheet,
-            handleBackupByActivity
+            handleBackupByActivity,
+            storeBackup,
+            syncCheckedStoreName,
+            options,
+            toggleCheckOptions,
+            createDummyByStoreName,
+            checkedOptions
         }
     },
     name: "Backup",

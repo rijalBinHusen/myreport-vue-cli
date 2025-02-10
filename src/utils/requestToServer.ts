@@ -2,7 +2,7 @@ import { getJWTToken } from "./cookie";
 import { useIdb } from "./localforage";
 import { waitFor } from "./piece/waiting";
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost:8000/myreport/" : "https://rijalbinhusen.cloud/myreport/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost:8000/myreport/" : "https://binhusenstore.my.id/myreport/";
 const timeOutRequest = 5000;
 
 interface unknownObject {

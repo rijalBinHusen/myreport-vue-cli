@@ -1,5 +1,5 @@
 
-const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost:8000/" : "https://rijalbinhusen.cloud/";
+const hostURL = process.env.NODE_ENV === 'development' ? "http://localhost:8000/" : "https://binhusenstore.my.id/";
 
 export function loginToServer(email, password) {
 

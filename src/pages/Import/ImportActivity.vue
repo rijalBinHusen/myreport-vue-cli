@@ -19,6 +19,13 @@
             type="button" 
             @trig="launchImporter" 
         />
+         <Button 
+            :style="{width: '250px' }" 
+            class="" 
+            primary value="Backup" 
+            type="button" 
+            @trig="getRawDataGrouped" 
+        />
   </div>
 </template>
 
@@ -26,7 +33,7 @@
 import { ref } from '@vue/reactivity'
 import { useStore } from "vuex"
 import Button from "@/components/elements/Button.vue"
-import { startImport } from './ImportActivity'
+import { getRawDataGrouped } from './ExportImportDatabase'
 import { useIdb } from '@/utils/localforage';
 import { loaderMessage } from '@/components/parts/Loader/state';
 
@@ -71,7 +78,7 @@ export default {
         }
 
         return {
-            importerField, launchImporter, impor
+            importerField, launchImporter, impor, getRawDataGrouped
         }
         
     }
