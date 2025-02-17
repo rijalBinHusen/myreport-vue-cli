@@ -24,8 +24,11 @@ export async function getRawDataGrouped() {
 
     const summary = useIdb("summary");
     const getData = await summary.getItems();
+    const groupedDataToBackup = <ExportImport[]>[];
 
-    await startExport({storeName: 'summary', data: getData}, "summary db.json", false);
+    const summaryToBackup = {storeName: 'summary', data: getData};
+    groupedDataToBackup.push(summaryToBackup);
+    await startExport(summaryToBackup, "summary db.json", false);
 
     const stores = await summary.getKeys();
 
@@ -161,8 +164,15 @@ export async function getRawDataGrouped() {
         else {
 
             const dataToExport = <ExportImport>{storeName:  store, data: data};
-            await waitFor(1000)
-            await startExport(dataToExport, `backup ${store} ${new Date().toISOString()}.json`, false);
+            if(store != 'date-expired') {
+                groupedDataToBackup.push(dataToExport);
+                await waitFor(1000)
+                await startExport(dataToExport, `backup ${store} ${new Date().toISOString()}.json`, false);
+            }
+
         }
     }
+    
+    await startExport(groupedDataToBackup, `backup non periode data ${new Date().toISOString()}.json`, false);
+    
 }
