@@ -29,7 +29,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { ref } from '@vue/reactivity'
 import { useStore } from "vuex"
 import Button from "@/components/elements/Button.vue"
@@ -37,50 +37,68 @@ import { getRawDataGrouped } from './ExportImportDatabase'
 import { useIdb } from '@/utils/localforage';
 import { loaderMessage } from '@/components/parts/Loader/state';
 
-export default {
-    components: { Button },
-    setup() {
-        const store = useStore()
-        const importerField = ref(null)
+    const store = useStore()
+    const importerField = ref(<HTMLElement|null>null)
 
-        const launchImporter = () => {
+    const launchImporter = () => {
+        if(importerField.value) {
+
             importerField.value.click()
         }
-
-        const impor =async (ev) => {
-            store.commit("Modal/active", {judul: "", form: "Loader"});
-
-            const reader = new FileReader();
-            
-            reader.readAsText(ev.target.files[0]);
-
-            //when reading is completed load
-            reader.onload = async (event) => {
-                const parsedData = JSON.parse(event.target.result);
-                const isDataOke = parsedData?.storeName && parsedData?.data && parsedData.data.length;
-                if(!isDataOke) {
-                    alert("Data tidak sesuai")
-                    return; 
-                }
-
-                let index = 1;
-                const db = useIdb(parsedData.storeName);
-                for(let datum of parsedData.data) {
-                    loaderMessage.value  = `Mengimport data ke ${parsedData.storeName} (${index} / ${parsedData.data.length})`;
-                    await db.setItem(datum?.id, datum)
-                    loaderMessage.value  = ""
-                    index++
-                }
-                // close loader
-                store.commit("Modal/active")
-            };
-
-        }
-
-        return {
-            importerField, launchImporter, impor, getRawDataGrouped
-        }
-        
     }
-}
+
+    const impor =async (ev: Event) => {
+        store.commit("Modal/active", {judul: "", form: "Loader"});
+        const input = ev.target as HTMLInputElement;
+
+        if(!input.files?.length) return;
+        const reader = new FileReader();
+        
+        reader.readAsText(input.files[0]);
+
+        //when reading is completed load
+        reader.onload = async (event) => {
+
+            if(!event.target || !event.target.result || typeof event.target.result !== 'string') return;
+            const parsedData = JSON.parse(event.target.result);
+            // parsed data should be an object which contain { storeName:  string, data: any[] }, or an array of objects with the same structure
+            let isDataOke = parsedData?.storeName && parsedData?.data && parsedData.data.length;
+            const isContainArray = typeof parsedData === 'object' && Array.isArray(parsedData);
+
+            if(isContainArray) {
+                for(let datum of parsedData) {
+                    if(!datum.storeName || !datum.data || !datum.data.length) isDataOke = false;
+                }
+            }
+
+            if(!isDataOke) {
+                alert("Data tidak sesuai")
+                return;
+            }
+
+            if(isContainArray) {
+                for(let datum of parsedData) {
+                    await importData(datum.storeName, datum.data);
+                }
+            } else {
+                await importData(parsedData.storeName, parsedData.data);
+            }
+
+            // close loader
+            store.commit("Modal/active");
+        };
+
+    }
+
+    async function importData (storeName: string, data: any[]) {
+        
+        let index = 1;
+            const db = useIdb(storeName);
+            for(let datum of data) {
+                loaderMessage.value  = `Mengimport data ke ${storeName} (${index} / ${data.length})`;
+                await db.setItem(datum?.id, datum)
+                loaderMessage.value  = ""
+                index++
+            }
+    }
 </script>
