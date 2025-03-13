@@ -2,17 +2,17 @@
 import { waitFor } from "@/utils/piece/waiting"
 // import exportToXlsSeperateSheet from "@/utils/exportToXlsSeperateSheet";
 import getProblem from "./GetProblemByArrayId";
-import { baseItem } from "@/pages/BaseItem/Baseitem"
-import { useIdb } from "@/utils/localforage";
 import { startExport } from "@/composable/piece/exportAsFile";
 import { BaseReportFileInterface } from "@/pages/BaseReport/BaseReportFile";
 import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
+import { JSToExcelDate } from "@/composable/piece/dateFormat";
 
 export default async function (baseReport: BaseReportFileInterface, shift: number) {
   
   // console.log(baseReport)
-  const { warehouseName, periode2 } = baseReport
-  const details = { periode: periode2,  gudang: warehouseName, shift }
+  const { warehouseName, periode2, periode } = baseReport;
+  const excelDate = JSToExcelDate(periode);
+  const details = { periode2, periode: excelDate,  gudang: warehouseName, shift }
 
   let fileName = `${periode2} ${warehouseName} Shift ${shift}`;
   // waitingLists

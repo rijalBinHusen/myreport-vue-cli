@@ -78,7 +78,7 @@ export async function getRawDataGrouped() {
                     const isPeriodeBaseClockPushed = indexPeriode > -1;
 
                     if(isPeriodeBaseClockPushed) {
-                        baseReportToExport[indexPeriodeBaseClock].data.concat(reportClockInThisPeriod);
+                        baseReportToExport[indexPeriodeBaseClock].data = baseReportToExport[indexPeriodeBaseClock].data.concat(reportClockInThisPeriod);
                     }
                     else {
                         baseReportToExport.push({
@@ -98,7 +98,7 @@ export async function getRawDataGrouped() {
                     const isPeriodeBaseStockPushed = indexPeriode > -1;
 
                     if(isPeriodeBaseStockPushed) {
-                        baseReportToExport[indexPeriodeBaseStock].data.concat(reportStockInThisPeriod);
+                        baseReportToExport[indexPeriodeBaseStock].data = baseReportToExport[indexPeriodeBaseStock].data.concat(reportStockInThisPeriod);
                     }
                     else {
                         baseReportToExport.push({

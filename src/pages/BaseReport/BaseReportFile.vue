@@ -174,7 +174,7 @@ export default {
             for(let baseReport of lists.value) {
                 for(let i = 1; i <=3 ; i++) {
                     index++
-                    loaderMessage.value = `Exporting report ${index} of ${lists.value.length}`;
+                    loaderMessage.value = `Exporting report ${index} of ${lists.value.length * 3}`;
                     await exportDailyReport(baseReport, i);
                 }
             }
