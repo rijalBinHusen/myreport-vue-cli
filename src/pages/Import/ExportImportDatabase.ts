@@ -123,7 +123,7 @@ export async function getRawDataGrouped() {
             }
         }
 
-        if(store === "document") {
+        else if(store === "document") {
             
             const documetToExport = <{
                 storeName: string

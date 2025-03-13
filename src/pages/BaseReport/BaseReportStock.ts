@@ -74,7 +74,7 @@ const endPoint = "base_stock/"
 
 export function baseReportStock() {
   const db = useIdb(storeName);
-  const { getItemBykode } = baseItem();
+  const { getItemBykode, addItem } = baseItem();
   const { getExpiredDateByKodeItem } = ExpiredDate();
 
   const appendData = async (parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
@@ -140,6 +140,15 @@ export function baseReportStock() {
     let lengthRowStock = +lengthRow[0];
 
     for (let i = 1; i <= lengthRowStock; i++) {
+
+      const itemCode = sheets["A" + i] ? sheets["A" + i].v : "No item";
+      const itemName = await getItemBykode(itemCode);
+
+      const isItemNotExists = itemName?.name == "Not found"
+      if(isItemNotExists) {
+       const itemName = sheets["B" + i] ? sheets["B" + i].v : "No item";
+       await addItem(itemCode, itemName);
+      }
       /* 
               #STOCK 
               shift 1 jika E5.v > 0 atau F5.v > 0 , A+i !== false
@@ -152,7 +161,7 @@ export function baseReportStock() {
         await appendData(
           baseId,
           1,
-          sheets["A" + i] ? sheets["A" + i].v : "No item",
+          itemCode,
           sheets["D" + i] ? sheets["D" + i].v : 0,
           in1st,
           out1st,
@@ -170,7 +179,7 @@ export function baseReportStock() {
         await appendData(
           baseId,
           2,
-          sheets["A" + i] ? sheets["A" + i].v : "No item",
+          itemCode,
           sheets["G" + i] ? sheets["G" + i].v : 0,
           in2nd,
           out2nd,
@@ -195,7 +204,7 @@ export function baseReportStock() {
         await appendData(
           baseId,
           3,
-          sheets["A" + i] ? sheets["A" + i].v : "No item",
+          itemCode,
           sheets["J" + i] ? sheets["J" + i].v : 0,
           totalIn,
           totalOut,

@@ -66,8 +66,10 @@ import { loaderMessage } from '@/components/parts/Loader/state';
             const isContainArray = typeof parsedData === 'object' && Array.isArray(parsedData);
 
             if(isContainArray) {
+                isDataOke = true;
                 for(let datum of parsedData) {
-                    if(!datum.storeName || !datum.data || !datum.data.length) isDataOke = false;
+                    const isNotOkey = !datum.storeName || !datum.data;
+                    if(isNotOkey) isDataOke = false;
                 }
             }
 
@@ -78,6 +80,7 @@ import { loaderMessage } from '@/components/parts/Loader/state';
 
             if(isContainArray) {
                 for(let datum of parsedData) {
+                    if(!datum.data.length) continue;
                     await importData(datum.storeName, datum.data);
                 }
             } else {
@@ -96,7 +99,16 @@ import { loaderMessage } from '@/components/parts/Loader/state';
             const db = useIdb(storeName);
             for(let datum of data) {
                 loaderMessage.value  = `Mengimport data ke ${storeName} (${index} / ${data.length})`;
-                await db.setItem(datum?.id, datum)
+                if(storeName == 'summary') {
+                    const keyName = datum?.lastId;
+                    const indexOf_ = keyName.indexOf("_");
+                    const keyToSet = keyName.slice(0, indexOf_);
+                    await db.setItem(keyToSet, datum)
+
+                } else {
+
+                    await db.setItem(datum?.id, datum)
+                }
                 loaderMessage.value  = ""
                 index++
             }
