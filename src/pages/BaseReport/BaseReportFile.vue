@@ -8,6 +8,13 @@
             type="button" 
             @trig="pickPeriode" 
         />
+        <Button 
+            class="w3-right" 
+            primary 
+            value="Export all" 
+            type="button" 
+            @trig="exportAllDailyReportOnListed" 
+        />
         
         <Button 
             class="w3-right" 
@@ -69,6 +76,8 @@ import { dateMonth } from "@/composable/piece/dateFormat"
 import { getWarehouseById } from "@/pages/Warehouses/Warehouses"
 import { useStore } from "vuex"
 // import { getProblemFromDB } from '@/pages/Problems/Problem'
+import exportDailyReport from "@/excelReport/DailyReport2";
+import { loaderMessage } from "@/components/parts/Loader/state"
 
 export default {
     name: "Collect",
@@ -158,9 +167,24 @@ export default {
             importerBase.value.value = ''
 		}
 
+        async function exportAllDailyReportOnListed() {
+            loader()
+
+            let index = 0;
+            for(let baseReport of lists.value) {
+                for(let i = 1; i <=3 ; i++) {
+                    index++
+                    loaderMessage.value = `Exporting report ${index} of ${lists.value.length}`;
+                    await exportDailyReport(baseReport, i);
+                }
+            }
+
+            modalClose();
+        }
+
         return {
             importId, pickPeriode, importerBase, launch,
-            readExcel, remove, handleAddPeriode, removeBase, lists
+            readExcel, remove, handleAddPeriode, removeBase, lists, exportAllDailyReportOnListed
         }
     },
 }

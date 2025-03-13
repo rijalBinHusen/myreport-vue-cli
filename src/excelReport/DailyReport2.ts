@@ -5,29 +5,26 @@ import getProblem from "./GetProblemByArrayId";
 import { baseItem } from "@/pages/BaseItem/Baseitem"
 import { useIdb } from "@/utils/localforage";
 import { startExport } from "@/composable/piece/exportAsFile";
+import { BaseReportFileInterface } from "@/pages/BaseReport/BaseReportFile";
+import { baseReportStock } from "@/pages/BaseReport/BaseReportStock";
 
-export default async function (baseReport) {
-  const dbBaseStock = useIdb('basereportstock');
-  const { getItemBykode } = baseItem();
+export default async function (baseReport: BaseReportFileInterface, shift: number) {
+  
   // console.log(baseReport)
-  const { shift, warehouseName, periode2 } = baseReport
-  const details = { periode: periode2, 
-                    gudang: warehouseName,
-                    shift,
-                }
+  const { warehouseName, periode2 } = baseReport
+  const details = { periode: periode2,  gudang: warehouseName, shift }
 
   let fileName = `${periode2} ${warehouseName} Shift ${shift}`;
   // waitingLists
   let waitingLists = [];
   let result = [];
+  const baseStockOperation = baseReportStock();
   //   lists base report stock
-  let stocks = await dbBaseStock.getItemsByKeyValue('parentDocument', baseReport?.id);
+  let stocks = await baseStockOperation.getBaseStockByParentByShift(baseReport.id, shift);
 
   for (let [index, stock] of stocks.entries()) {
     //  add new promise
     waitingLists.push(waitFor(1000));
-    //   item name
-    let item = await getItemBykode(stock.item);
     
     //   problem info
     let problem = await getProblem(stock.problem);
@@ -35,7 +32,7 @@ export default async function (baseReport) {
       Object.assign(
         {
           row: index + 1,
-          "Nama item": item?.name,
+          "Nama item": stock?.itemName,
           "Stock awal": +stock.awal,
           "Produk masuk": +stock.in,
           "Tanggal produk masuk": stock.dateIn || "-",

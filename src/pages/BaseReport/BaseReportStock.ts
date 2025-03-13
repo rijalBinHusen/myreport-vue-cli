@@ -233,7 +233,7 @@ export function baseReportStock() {
 
   };
 
-  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStock[]> => {
+  const getBaseStockByParentByShift = async (parent: string, shift: number): Promise<BaseStockMapped[]> => {
 
     let filterRec = lists.filter(
       (rec) => rec.parent == parent && rec.shift == shift
