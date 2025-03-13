@@ -84,7 +84,7 @@ export async function getRawDataGrouped() {
                         baseReportToExport.push({
                             storeName: 'basereportclock',
                             groupedName: monthDocumentTitle + ' base-report-clock',
-                            data: [reportClockInThisPeriod]
+                            data: reportClockInThisPeriod
                         })
                     }
 
@@ -104,7 +104,7 @@ export async function getRawDataGrouped() {
                         baseReportToExport.push({
                             storeName: 'basereportstock',
                             groupedName: monthDocumentTitle + ' base-report-stock',
-                            data: [reportStockInThisPeriod]
+                            data: reportStockInThisPeriod
                         })
                     }
                 }
