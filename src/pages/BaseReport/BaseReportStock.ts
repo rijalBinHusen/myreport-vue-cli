@@ -80,6 +80,7 @@ export function baseReportStock() {
   const appendData = async (parent: string, shift: number, item: string, awal: number, masuk: number, keluar: number, riil: number) => {
     // because we need warehouse id
     const { findBaseReportFileById } = BaseReportFile();
+    if(masuk < 10 && riil == 0) return;
 
     let parentDetails = await findBaseReportFileById(parent);
     let getProblem = problemActive(parentDetails?.warehouse, item);
