@@ -1,5 +1,5 @@
 interface ExportImport {
-    storeName:  string, data: any[]
+    storeName: string, data: any[]
 }
 
 
@@ -14,7 +14,7 @@ import { waitFor } from "@/utils/piece/waiting"
 export const startImport = async (data: ExportImport) => {
     const db = useIdb(data.storeName)
     for (let datum of data.data) {
-        
+
         await db.setItem(datum?.id || "sdlf", datum)
     }
 }
@@ -26,21 +26,21 @@ export async function getRawDataGrouped() {
     const getData = await summary.getItems();
     const groupedDataToBackup = <ExportImport[]>[];
 
-    const summaryToBackup = {storeName: 'summary', data: getData};
+    const summaryToBackup = { storeName: 'summary', data: getData };
     groupedDataToBackup.push(summaryToBackup);
     await startExport(summaryToBackup, "summary db.json", false);
 
     const stores = await summary.getKeys();
 
-    for(let store of stores) {
-        
+    for (let store of stores) {
+
         // table to skip
-        if(['basereportstock', 'basereportclock'].includes(store)) continue;
+        if (['basereportstock', 'basereportclock'].includes(store)) continue;
 
         const db = useIdb(store);
         const data = await db.getItems<any>();
         // document, basereportfile need to grouped
-        if(store == 'basereportfile') {
+        if (store == 'basereportfile') {
             const basereportclock = useIdb('basereportclock');
             const basereportstock = useIdb('basereportstock');
 
@@ -53,13 +53,13 @@ export async function getRawDataGrouped() {
                 data: any[]
             }[]>[]
 
-            for(let reportFile of data as BaseReportFileInterface[]) {
+            for (let reportFile of data as BaseReportFileInterface[]) {
                 const monthDocument = new Date(reportFile.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
                 const monthDocumentTitle = `Backup 3R ${monthDocument}`;
                 const indexPeriode = baseReportToExport.findIndex((rec) => rec.groupedName === monthDocumentTitle + ' base-report-file');
                 const isPeriodePushed = indexPeriode > -1;
 
-                if(isPeriodePushed) {
+                if (isPeriodePushed) {
                     baseReportToExport[indexPeriode].data.push(reportFile);
                 }
                 else {
@@ -73,11 +73,11 @@ export async function getRawDataGrouped() {
                 const reportClockInThisPeriod = dataReportClock.filter((rec) => rec.parent === reportFile.id);
                 const isReportClockExists = reportClockInThisPeriod.length > 0;
 
-                if(isReportClockExists) {
+                if (isReportClockExists) {
                     const indexPeriodeBaseClock = baseReportToExport.findIndex((rec) => rec.storeName == 'basereportclock' && rec.groupedName === monthDocumentTitle + ' base-report-clock');
-                    const isPeriodeBaseClockPushed = indexPeriode > -1;
+                    const isPeriodeBaseClockPushed = indexPeriodeBaseClock > -1;
 
-                    if(isPeriodeBaseClockPushed) {
+                    if (isPeriodeBaseClockPushed) {
                         baseReportToExport[indexPeriodeBaseClock].data = baseReportToExport[indexPeriodeBaseClock].data.concat(reportClockInThisPeriod);
                     }
                     else {
@@ -89,15 +89,15 @@ export async function getRawDataGrouped() {
                     }
 
                 }
-                
+
                 const reportStockInThisPeriod = dataReportStock.filter((rec) => rec.parent === reportFile.id);
                 const isReportStockExists = reportStockInThisPeriod.length > 0;
 
-                if(isReportStockExists) {
+                if (isReportStockExists) {
                     const indexPeriodeBaseStock = baseReportToExport.findIndex((rec) => rec.storeName == 'basereportstock' && rec.groupedName === monthDocumentTitle + ' base-report-stock');
-                    const isPeriodeBaseStockPushed = indexPeriode > -1;
+                    const isPeriodeBaseStockPushed = indexPeriodeBaseStock > -1;
 
-                    if(isPeriodeBaseStockPushed) {
+                    if (isPeriodeBaseStockPushed) {
                         baseReportToExport[indexPeriodeBaseStock].data = baseReportToExport[indexPeriodeBaseStock].data.concat(reportStockInThisPeriod);
                     }
                     else {
@@ -108,37 +108,37 @@ export async function getRawDataGrouped() {
                         })
                     }
                 }
-                
+
             }
 
-            if(baseReportToExport.length === 0) continue;
-            for(let report of baseReportToExport) {
+            if (baseReportToExport.length === 0) continue;
+            for (let report of baseReportToExport) {
                 const dataToExport = <ExportImport>{
                     storeName: report.storeName,
                     data: report.data
                 }
-                
+
                 await waitFor(1000)
-               await startExport(dataToExport, report.groupedName + ".json", false);
+                await startExport(dataToExport, report.groupedName + ".json", false);
             }
         }
 
-        else if(store === "document") {
-            
+        else if (store === "document") {
+
             const documetToExport = <{
                 storeName: string
                 groupedName: string,
                 data: any[]
             }[]>[]
 
-            for(let document of data as Document[]) {
+            for (let document of data as Document[]) {
 
                 const monthDocument = new Date(document.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
                 const monthDocumentTitle = `Backup 3R ${monthDocument} document`;
                 const indexPeriode = documetToExport.findIndex((rec) => rec.groupedName === monthDocumentTitle);
                 const isPeriodePushed = indexPeriode > -1;
-    
-                if(isPeriodePushed) {
+
+                if (isPeriodePushed) {
                     documetToExport[indexPeriode].data.push(document);
                 }
                 else {
@@ -148,23 +148,23 @@ export async function getRawDataGrouped() {
                         data: [document]
                     })
                 }
-            }            
+            }
 
-            if(documetToExport.length === 0) continue;
-            for(let report of documetToExport) {
+            if (documetToExport.length === 0) continue;
+            for (let report of documetToExport) {
                 const dataToExport = <ExportImport>{
                     storeName: report.storeName,
                     data: report.data
                 }
                 await waitFor(1000)
-               await startExport(dataToExport, report.groupedName + ".json", false);
+                await startExport(dataToExport, report.groupedName + ".json", false);
             }
         }
 
         else {
 
-            const dataToExport = <ExportImport>{storeName:  store, data: data};
-            if(store != 'date-expired') {
+            const dataToExport = <ExportImport>{ storeName: store, data: data };
+            if (store != 'date-expired') {
                 groupedDataToBackup.push(dataToExport);
                 await waitFor(1000)
                 await startExport(dataToExport, `backup ${store} ${new Date().toISOString()}.json`, false);
@@ -172,7 +172,7 @@ export async function getRawDataGrouped() {
 
         }
     }
-    
+
     await startExport(groupedDataToBackup, `backup non periode data ${new Date().toISOString()}.json`, false);
-    
+
 }
