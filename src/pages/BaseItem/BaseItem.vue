@@ -35,8 +35,8 @@
     <Datatable
       v-if="renderTable"
       :datanya="listItems"
-      :heads="['Kode item', 'Nama item']"
-      :keys="['kode', 'name']"
+      :heads="['ID', 'Kode item', 'Nama item']"
+      :keys="['id', 'kode', 'name']"
       option
       id="tableBaseFile"
       v-slot:default="slotProp"

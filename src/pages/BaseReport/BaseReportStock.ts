@@ -147,7 +147,7 @@ export function baseReportStock() {
 
       const isItemNotExists = itemName?.name == "Not found"
       if(isItemNotExists) {
-       const itemName = sheets["B" + i] ? sheets["B" + i].v : "No item";
+       const itemName = sheets["C" + i] ? sheets["C" + i].v : "No item";
        await addItem(itemCode, itemName);
       }
       /* 
