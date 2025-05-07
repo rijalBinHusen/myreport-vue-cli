@@ -54,7 +54,11 @@ export async function getRawDataGrouped() {
             }[]>[]
 
             for (let reportFile of data as BaseReportFileInterface[]) {
-                const monthDocument = new Date(reportFile.periode).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+                // only pick 2 months ago
+                const period = new Date(reportFile.periode);
+                const period2MonthsAgo = new Date(period.getTime() - (1000 * 60 * 60 * 24 * 30 * 2));
+                if(period < period2MonthsAgo) continue;
+                const monthDocument = period.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
                 const monthDocumentTitle = `Backup 3R ${monthDocument}`;
                 const indexPeriode = baseReportToExport.findIndex((rec) => rec.groupedName === monthDocumentTitle + ' base-report-file');
                 const isPeriodePushed = indexPeriode > -1;
